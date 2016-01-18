@@ -6,4 +6,4 @@ BASEDIR=$(dirname $0)
 explain "Installation de NodeJS 5x"
   curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
   tell sudo apt-get install -y nodejs
-  tell npm install -g tldr
+  tell sudo npm install -g tldr
