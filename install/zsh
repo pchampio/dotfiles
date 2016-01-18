@@ -1,0 +1,26 @@
+#!/bin/sh
+
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+explain "Installation de zsh"
+  tell sudo apt-get install zsh
+  tell chsh -s /bin/zsh
+
+explain "Installation de oh-my-zsh"
+  tell sudo apt-get install -y curl
+  tell sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+explain "Installation de zsh-syntax-highlighting"
+  tell git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
+
+explain "Installation de pure prompt pour zsh"
+  tell sudo apt-get install zsh
+  tell cd ~
+  tell sudo rm -rf ~/.oh-my-zsh/themes/pure.zsh-theme
+  tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/purePRT
+  tell mv ".oh-my-zsh/purePRT/pure.zsh" "~/.oh-my-zsh/custom/pure.zsh-theme"
+  tell mv ".oh-my-zsh/purePRT/async.zsh" "~/.oh-my-zsh/custom/async.zsh"
+  tell cp $(dirname $BASEDIR)/.zshrc $HOME/.zshrc
+  tell source ~/.zshrc

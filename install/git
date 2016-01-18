@@ -1,0 +1,16 @@
+#!/bin/sh
+
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+if [ $# -eq 0 ]; then
+    echo "need paramètres 'name_git' 'email_git'";
+    exit;
+fi
+
+explain "config de git"
+  git config --global user.name $1
+  git config --global user.email $2
+  git config --global push.default current
+  git config --global color.ui true
