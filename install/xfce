@@ -31,6 +31,7 @@ explain "Installation de compton pour la compo des fenetre"
 
 explain "Installation du gestionnaire du moniteur système"
   tell sudo apt-get install gnome-system-monitor
+  tell sudo apt-get install htop
 
 explain "Mise en place de la configuration personnalisée"
   cp $BASEDIR/files/xfce4-keyboard-shortcuts.xml $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
