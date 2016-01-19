@@ -1,0 +1,21 @@
+#!/bin/sh
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+VERSION=https://github.com/atom/atom/releases/download/v1.4.0/atom-amd64.deb
+
+explain "Installation de ATOM text editor"
+  tell wget $VERSION
+  tell sudo dpkg --install atom-amd64.deb
+  tell apm install advanced-open-file
+  tell apm install auto-indent
+  tell apm install autocomplete-paths
+  tell apm install color-picker
+  tell apm install emmet
+  tell apm install file-icons
+  tell apm install foldername-tabs
+  tell apm install language-lua
+  tell apm install merge-conflicts
+  tell apm install minimap
+  tell apm install remote-atom
