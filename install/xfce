@@ -19,7 +19,7 @@ explain "Installation de flat icons"
   tell sudo apt-get install ultra-flat-icons
 
 explain "Installation du theme pour le terminal"
-  cp $BASEDIR/files/terminalrc ~/.config/xfce4/terminal/terminalrc
+  tell cp $BASEDIR/files/terminalrc ~/.config/xfce4/terminal/terminalrc
 
 explain "Désactivation du Alt+Clic"
   tell xfconf-query -c xfwm4 -p /general/easy_click -s none

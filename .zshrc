@@ -84,3 +84,4 @@ source  ~/.oh-my-zsh/syntax_highlighting/zsh-syntax-highlighting.zsh
 # Example aliases
 alias cls="clear && ls"
 alias gs="git status"
+alias e="thunar"

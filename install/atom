@@ -19,3 +19,4 @@ explain "Installation de ATOM text editor"
   tell apm install merge-conflicts
   tell apm install minimap
   tell apm install remote-atom
+  tell rm atom*.deb
