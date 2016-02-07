@@ -12,7 +12,7 @@ explain "Installation de zsh"
   tell chsh -s /bin/zsh
 
 explain "Installation de oh-my-zsh"
-  tell sudo apt-get install -y curl
+  tell apt-get install -y curl
   sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 explain "Installation de zsh-syntax-highlighting"
