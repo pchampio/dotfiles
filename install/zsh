@@ -8,7 +8,7 @@ echo $BASEDIR
 echo $(dirname $BASEDIR)
 
 explain "Installation de zsh"
-  tell sudo apt-get install zsh
+  tell apt-get install zsh
   tell chsh -s /bin/zsh
 
 explain "Installation de oh-my-zsh"
