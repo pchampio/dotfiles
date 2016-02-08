@@ -8,20 +8,19 @@ echo $BASEDIR
 echo $(dirname $BASEDIR)
 
 explain "Installation de zsh"
-  tell sudo apt-get install zsh
+  tell apt-get install zsh
   tell chsh -s /bin/zsh
 
 explain "Installation de oh-my-zsh"
-  tell sudo apt-get install -y curl
-  sudo sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  tell apt-get install -y curl
+  sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 explain "Installation de zsh-syntax-highlighting"
   tell git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
 
 explain "Installation de pure prompt pour zsh"
-  tell sudo apt-get install zsh
   tell cd ~
-  tell sudo rm -rf ~/.oh-my-zsh/themes/pure.zsh-theme
+  tell rm -rf ~/.oh-my-zsh/themes/pure.zsh-theme
   tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/pure_theme
   tell cp ~/.oh-my-zsh/pure_theme/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
   tell cp ~/.oh-my-zsh/pure_theme/async.zsh ~/.oh-my-zsh/custom/async.zsh
