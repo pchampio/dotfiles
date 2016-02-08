@@ -1,4 +1,6 @@
 #!/bin/sh
+# Inspiration : https://github.com/Grafikart/dotfiles
+
 tell() {
   echo "\033[0;33m|-- ${*}\033[0m"
   $* || {

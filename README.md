@@ -10,4 +10,3 @@ $ chmod +x -R install
 $ ./install/....
 ```
 
-Inspiration : https://github.com/Grafikart/dotfiles
