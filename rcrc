@@ -1,2 +1,2 @@
-EXCLUDES="README.md LICENSE compton.conf"
+EXCLUDES="README.md LICENSE compton.conf screenshot.png"
 DOTFILES_DIRS="$HOME/dotfiles"
