@@ -1,4 +1,4 @@
-dotfiles
+Dotfiles
 ===================
 ![screenshot](https://github.com/mscoutermarsh/dotfiles/blob/master/screenshot.png)
 (Here's what my setup looks like. Vim/Tmux)
@@ -7,7 +7,7 @@ dotfiles
 + [Learning Vim in a Week](https://mikecoutermarsh.com/boston-vim-learning-vim-in-a-week/)
 + [Vim and Tmux](https://www.youtube.com/watch?v=5r6yzFEXaj)
 
-## Apt-Installation
+## Apt-Installll
 ```
 $ cd dotfiles/
 $ chmod +x -R install
