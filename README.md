@@ -33,7 +33,7 @@ $ git clone https://github.com/Drakirus/dotfiles.git dotfiles
 ```
 #### Install RCM
 
-RC file (dotfile) management.
+RC file (dotfile) management.  
 Download here: https://github.com/thoughtbot/rcm
 
 Run rcm (this command expects that you cloned your dotfiles to `~/dotfiles/`)
