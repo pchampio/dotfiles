@@ -67,7 +67,8 @@ $ sudo apt-get install tmux
 
 For OSX,
 ```
-# Add this to tmux.conf et-option -g default-command "reattach-to-user-namespace -l zsh -l"
+# Add this to tmux.conf   
+set-option -g default-command "reattach-to-user-namespace -l zsh -l"  
 $ brew install reattach-to-user-namespace
 ```
 ---
