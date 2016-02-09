@@ -1,0 +1,19 @@
+#! /bin/bash
+
+WINTITLE="Terminal"  # Main Termianl window has this in titlebar
+PROGNAME="xfce4-terminal" # This is the name of the binary
+
+# Use wmctrl to list all windows, count how many contain WINTITLE,
+# and test if that count is non-zero:
+
+if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
+then
+	wmctrl -a "$WINTITLE" # If it exists, bring t-bird window to front
+	if [ $# -eq 0 ]; then
+    xfce4-terminal --tab
+  fi
+  xfce4-terminal --tab --working-directory $1
+else
+	$PROGNAME & # Otherwise, just launch PROGNAME
+fi
+exit 0

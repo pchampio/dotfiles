@@ -1,0 +1,2 @@
+EXCLUDES="README.md LICENSE compton.conf"
+DOTFILES_DIRS="$HOME/dotfiles"
