@@ -18,7 +18,7 @@ You can chose to install :
 * Atom remote (useful on serveur)
 * Java :grimacing:
 * Node Js
-   * That comes with [tldr-man-pages](https://github.com/tldr-pages/tldr)
+   * with [tldr-man-pages](https://github.com/tldr-pages/tldr)
 * Vim-bundles (Installation of vim Plugins with vundle)
 * xfce (just my own tweaks)
 * zsh :heart:
