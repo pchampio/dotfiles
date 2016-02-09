@@ -54,8 +54,9 @@ $ cd dotfiles/ && chmod +x -R ./install/vimBundle && ./install/vimBundle
 Make sure you update ```gitconfig``` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:
 
 #### Custom Fonts
-You'll need to use a custom font for Airline to look nice. (Seeing weird symbols? This is why!). See here: https://github.com/Lokaltog/powerline-fonts
-I use *hack* (size 12).
+You'll need to use a custom font for Airline to look nice. (Seeing weird symbols? This is why!).  
+See here: https://github.com/Lokaltog/powerline-fonts
+> I use *hack* (size 12).
 
 ### Recommended
 
