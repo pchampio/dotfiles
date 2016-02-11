@@ -40,7 +40,7 @@ $ cd dotfiles/ && chmod +x -R ./install/vimBundle && ./install/vimBundle
 
 ### Apt-Installll
 ```
-$ cd dotfiles/
+$ cd ~/dotfiles/
 $ chmod +x -R install
 $ ./install/....
 ```
