@@ -9,6 +9,7 @@ Dotfiles
 
 ## Installation
 
+#### Clone
 Clone this repo (or your own fork!) to your **home** directory (`/Users/username`).
 
 ```
@@ -30,15 +31,14 @@ RCM creates dotfile symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home d
 ### Vim standalone
 Plugins are listed in `vimrc.bundles`.
 ```
-cd ~
-ln ./dotfiles/vimrc .vimrc
-ln ./dotfiles/vimrc.bundles .vimrc.bundles
-cd dotfiles/ && chmod +x -R ./install/vimBundle && ./install/vimBundle
+$ cd ~
+$ ln ./dotfiles/vimrc .vimrc
+$ ln ./dotfiles/vimrc.bundles .vimrc.bundles
+$ cd dotfiles/ && chmod +x -R ./install/vimBundle && ./install/vimBundle
 ```
 > ./install/vimBundle is used to Install/Update/Clean all vim's Plugins
 
-
-## Apt-Installll
+### Apt-Installll
 ```
 $ cd dotfiles/
 $ chmod +x -R install
