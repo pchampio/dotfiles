@@ -4,7 +4,7 @@ runtime macros/matchit.vim
 set ttyfast
 set lazyredraw
 
-let g:ruby_path="~/.rvm/bin/ruby"
+nnoremap <F3> :NumbersToggle<CR>
 
 " have jsx highlighting/indenting work in .js files as well
 let g:jsx_ext_required = 0
@@ -14,15 +14,13 @@ let $PATH='/usr/local/bin:' . $PATH
 :au FocusLost * :wa "Save on focus lost
 
 " Clipboard
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 " Sessions
 let g:session_autoload = 'no'
 
 " Leader Mappings
 let mapleader = ","
-map <Leader>w :w<CR>
-map <Leader>q :q!<CR>
 
 " Toggle nerdtree
 map <leader>n :NERDTreeToggle<CR>
@@ -225,8 +223,15 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
 " configure syntastic syntax checking to check on open as well as save
-let g:syntastic_ruby_checkers = ['mri']
-let g:syntastic_enable_highlighting=0
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_loc_list_height=2
 
 " Local config
 if filereadable($HOME . "/.vimrc.local")
