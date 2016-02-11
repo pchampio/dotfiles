@@ -20,7 +20,6 @@ explain "Installation de zsh-syntax-highlighting"
 explain "Installation de pure prompt pour zsh"
   tell cd ~
   tell rm -rf ~/.oh-my-zsh/themes/pure.zsh-theme
-  tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/pure_theme
-  tell cp ~/.oh-my-zsh/pure_theme/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
-  tell cp ~/.oh-my-zsh/pure_theme/async.zsh ~/.oh-my-zsh/custom/async.zsh
+  tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/custom
+  tell cp ~/.oh-my-zsh/custom/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
   tell zsh
