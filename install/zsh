@@ -12,14 +12,14 @@ explain "Installation de zsh"
   tell chsh -s /bin/zsh
 
 explain "Installation de oh-my-zsh"
+  rm -rf ~/.oh-my-zsh
   sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 
 explain "Installation de zsh-syntax-highlighting"
   tell git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
 
 explain "Installation de pure prompt pour zsh"
-  tell cd ~
-  tell rm -rf ~/.oh-my-zsh/themes/pure.zsh-theme
+  cd ~
   tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/custom
-  tell cp ~/.oh-my-zsh/custom/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
-  tell zsh
+  cp ~/.oh-my-zsh/custom/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
+  zsh
