@@ -1,8 +1,14 @@
 set shell=/bin/bash
 runtime macros/matchit.vim
 
-set ttyfast
-set lazyredraw
+set showcmd
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<c-q>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
 nnoremap <F3> :NumbersToggle<CR>
 
@@ -12,6 +18,9 @@ let g:jsx_ext_required = 0
 let $PATH='/usr/local/bin:' . $PATH
 
 :au FocusLost * :wa "Save on focus lost
+
+"Display cmd
+set showcmd
 
 " Clipboard
 set clipboard=unnamedplus
@@ -28,7 +37,6 @@ map <leader>k :NERDTreeFind<cr>
 
 let NERDTreeMapActivateNode='<space>'
 let NERDTreeMapOpenInTab='<ENTER>'
-
 " -- Beep
 set visualbell " Empeche Vim de beeper
 set noerrorbells " Empeche Vim de beeper

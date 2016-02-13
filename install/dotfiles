@@ -1,0 +1,25 @@
+#!/bin/sh
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+ignoreRC="README.md|.gitmodules|.gitignore|screenshot.png|compton.conf|LICENSE"
+dir=~/dotfiles
+olddir=~/dotfiles-backup
+
+explain "Create symlink for dotfiles"
+# change to the dotfiles directory
+cd $dir
+
+# create dotfiles_old in homedir
+mkdir -p $olddir
+
+echo "Moving any existing dotfiles from ~ to $olddir"
+
+files=`find . -maxdepth 1 -type f | sed 's|./||' | egrep -v $ignoreRC`
+
+# create symlinks from the homedir to any files in the ~/dotfiles directory specified
+for file in $files; do
+    mv ~/.$file $olddir
+    tell ln -s $dir/$file ~/.$file
+done

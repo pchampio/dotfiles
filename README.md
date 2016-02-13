@@ -15,33 +15,29 @@ Clone this repo (or your own fork!) to your **home** directory (`/Users/username
 ```
 $ cd ~
 $ git clone https://github.com/Drakirus/dotfiles.git dotfiles
+$ chmod +x -R dotfiles/install
 ```
 
-#### Install RCM
+#### Dotfiles
 
-RC file (dotfile) management.
-Download here: https://github.com/thoughtbot/rcm
-
-Run rcm (this command expects that you cloned your dotfiles to `~/dotfiles/`)
+RC file (dotfile) management.  
+(this command expects that you cloned your dotfiles to `~/dotfiles/`)
 ```
-$ env RCRC=$HOME/dotfiles/rcrc rcup
+$ ~/dotfiles/install/dotfiles
 ```
-RCM creates dotfile symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.
+It creates symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.  
+Old dotfiles are saved in ~/dotfiles-backup/
 
-### Vim standalone
+### Vim Plugins
 Plugins are listed in `vimrc.bundles`.
 ```
-$ cd ~
-$ ln ./dotfiles/vimrc .vimrc
-$ ln ./dotfiles/vimrc.bundles .vimrc.bundles
-$ cd dotfiles/ && chmod +x -R ./install/vimBundle && ./install/vimBundle
+$ ./install/vimBundle
 ```
-> ./install/vimBundle is used to Install/Update/Clean all vim's Plugins
+> Used to Install / Update / Clean all vim's Plugins
 
 ### Apt-Installll
 ```
 $ cd ~/dotfiles/
-$ chmod +x -R install
 $ ./install/....
 ```
 You can chose to install :
@@ -50,6 +46,7 @@ You can chose to install :
 * Java :grimacing:
 * Node Js
    * with [tldr-man-pages](https://github.com/tldr-pages/tldr)
+* Dotfiles
 * Vim-bundles (Installation of vim Plugins with vundle)
 * xfce (just my own tweaks)
 * zsh :heart:
@@ -62,6 +59,7 @@ Make sure you update ```gitconfig``` with your own name and email address. Other
 You'll need to use a custom font for Airline to look nice. (Seeing weird symbols? This is why!).
 See here: https://github.com/Lokaltog/powerline-fonts
 > I use *hack* (size 12).
+Get the icons fonts used in NerdTree here: https://github.com/ryanoasis/nerd-fonts#font-installation
 
 ### Recommended
 
@@ -79,6 +77,6 @@ $ brew install reattach-to-user-namespace
 ```
 ---
 These are a modified version of Thoughtbot's dotfiles.
-More detailed instructions are available here:  
-https://github.com/mscoutermarsh/dotfiles  
+More detailed instructions are available here:
+https://github.com/mscoutermarsh/dotfiles
 http://github.com/thoughtbot/dotfiles
