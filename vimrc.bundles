@@ -36,9 +36,9 @@ Bundle 'terryma/vim-expand-region'
 Bundle 'mhinz/vim-startify'
 Bundle 'ryanoasis/vim-devicons'
 
-
-" Track the engine.
 Plugin 'SirVer/ultisnips'
+Plugin 'ervandew/supertab'
+
 
 " Snippets are separated from the engine. Add this if you want them:
 Plugin 'honza/vim-snippets'

@@ -20,18 +20,18 @@ $ chmod +x -R dotfiles/install
 
 #### Dotfiles
 
-RC file (dotfile) management.  
+RC file (dotfile) management.
 (this command expects that you cloned your dotfiles to `~/dotfiles/`)
 ```
 $ ~/dotfiles/install/dotfiles
 ```
-It creates symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.  
+It creates symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.
 Old dotfiles are saved in ~/dotfiles-backup/
 
 ### Vim Plugins
 Plugins are listed in `vimrc.bundles`.
 ```
-$ ./install/vimBundle
+$ ~/dotfiles/install/dotfiles
 ```
 > Used to Install / Update / Clean all vim's Plugins
 
