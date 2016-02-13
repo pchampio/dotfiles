@@ -31,7 +31,7 @@ Old dotfiles are saved in ~/dotfiles-backup/
 ### Vim Plugins
 Plugins are listed in `vimrc.bundles`.
 ```
-$ ~/dotfiles/install/dotfiles
+$ ~/dotfiles/install/vimBundle
 ```
 > Used to Install / Update / Clean all vim's Plugins
 
