@@ -20,3 +20,5 @@ export PATH=$HOME/dotfiles/bin:$PATH
 alias cls="clear && ls"
 alias gs="git status"
 alias e="thunar"
+alias tmux="TERM=screen-256color-bce tmux "
+alias tat="TERM=screen-256color-bce tmux attach -t `basename $PWD`"
