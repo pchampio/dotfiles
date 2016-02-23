@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo -n "Enter the network and press [ENTER]: "
 read ip
 echo $ip
