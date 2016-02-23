@@ -10,8 +10,17 @@ let g:UltiSnipsJumpBackwardTrigger="<c-q>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
+" nginx colors
+au BufRead,BufNewFile * if &ft == '' | setfiletype nginx | endif
 nnoremap <F3> :NumbersToggle<CR>
 nnoremap <F4> :NumbersOnOff<CR>
+"
+" Gundo key
+nnoremap <F5> :GundoToggle<CR>
+let g:gundo_width = 30
+"
+" no more ex Mode
+nnoremap Q <nop>
 
 " have jsx highlighting/indenting work in .js files as well
 let g:jsx_ext_required = 0
@@ -158,11 +167,6 @@ set numberwidth=5
 " Snippets are activated by Shift+Tab
 let g:snippetsEmu_key = "<S-Tab>"
 
-" Persistent undo
-set undodir=~/.vim/undo/
-set undofile
-set undolevels=1000
-set undoreload=10000
 
 :nnoremap <expr> y (v:register ==# '"' ? '"+' : '') . 'y'
 :nnoremap <expr> yy (v:register ==# '"' ? '"+' : '') . 'yy'

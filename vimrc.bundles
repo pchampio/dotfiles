@@ -31,14 +31,15 @@ Bundle 'kchmck/vim-coffee-script'
 Bundle 'pangloss/vim-javascript'
 Bundle 'jelera/vim-javascript-syntax'
 Bundle 'terryma/vim-expand-region'
-
-
+Bundle 'christoomey/vim-tmux-navigator'
+Bundle 'sjl/gundo.vim'
 Bundle 'mhinz/vim-startify'
 Bundle 'ryanoasis/vim-devicons'
 
 Plugin 'SirVer/ultisnips'
 Plugin 'ervandew/supertab'
 
+Plugin 'evanmiller/nginx-vim-syntax'
 
 " Snippets are separated from the engine. Add this if you want them:
 Plugin 'honza/vim-snippets'

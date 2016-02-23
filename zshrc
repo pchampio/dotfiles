@@ -19,6 +19,9 @@ export PATH=$HOME/dotfiles/bin:$PATH
 # aliases
 alias cls="clear && ls"
 alias gs="git status"
-alias e="thunar"
+alias e="thunar &> /dev/null &"
 alias tmux="TERM=screen-256color-bce tmux "
-alias tat="TERM=screen-256color-bce tmux attach -t `basename $PWD`"
+
+#Tab completion for ssh
+hosts=(pi@192.168.16.136 ubuntu@52.36.243.11)
+zstyle ':completion:*:hosts'  hosts $hosts

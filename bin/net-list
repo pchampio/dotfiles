@@ -3,4 +3,4 @@
 echo -n "Enter the network and press [ENTER]: "
 read ip
 echo $ip
-nmap -T4 -sP $(ip)/24
+nmap -T4 -sP $ip/24
