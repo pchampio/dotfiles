@@ -1,4 +1,3 @@
 #!/bin/bash
-
 sudo hostapd -d /etc/hostapd/hostap.conf  &> ~/hotspot.log & echo $! >> ~/hotspot.pid
 echo "Hotspot PID's: $(cat ~/hotspot.pid )"
