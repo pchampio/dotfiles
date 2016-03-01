@@ -6,3 +6,5 @@ fi
 vim -u $HOME/.vimrc.bundles +BundleInstall +qa
 vim -u $HOME/.vimrc.bundles +PluginUpdate +qa
 vim -u $HOME/.vimrc.bundles +PluginClean +qa
+
+mkdir -p ~/.vimundo

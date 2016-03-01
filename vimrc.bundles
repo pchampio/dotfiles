@@ -45,4 +45,7 @@ Plugin 'evanmiller/nginx-vim-syntax'
 Plugin 'honza/vim-snippets'
 Plugin 'terryma/vim-multiple-cursors'
 
+Plugin 'tpope/vim-obsession'
+"Plugin 'dhruvasagar/vim-prosession'
+
 filetype on

@@ -15,14 +15,14 @@
   st = status
   up = !git fetch origin && git rebase origin/master
 [core]
-  excludesfile = ~/.gitignore
+	excludesfile = /home/drakirus/.gitignore
   autocrlf = input
 [merge]
   ff = only
 [include]
   path = .gitconfig.local
 [commit]
-	template = ~/.gitmessage
+	template = /home/drakirus/.gitmessage
 [user]
   name = Drakirus
   email = pierrescalade@gmail.com

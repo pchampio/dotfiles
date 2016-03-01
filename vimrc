@@ -1,24 +1,26 @@
 set shell=/bin/bash
 runtime macros/matchit.vim
 
-set showcmd
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<ENTER>"
 let g:UltiSnipsJumpBackwardTrigger="<c-q>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-" nginx colors
-au BufRead,BufNewFile * if &ft == '' | setfiletype nginx | endif
 nnoremap <F3> :NumbersToggle<CR>
 nnoremap <F4> :NumbersOnOff<CR>
 "
 " Gundo key
 nnoremap <F5> :GundoToggle<CR>
-let g:gundo_width = 30
+let g:gundo_width = 50
 "
+" tell it to use an undo file
+set undofile
+" set a directory to store the undo history
+set undodir=~/.vimundo/
+
 " no more ex Mode
 nnoremap Q <nop>
 
@@ -29,14 +31,15 @@ let $PATH='/usr/local/bin:' . $PATH
 
 :au FocusLost * :wa "Save on focus lost
 
-"Display cmd
-set showcmd
+nnoremap <F6> :m .+1<CR>==
+nnoremap <F7> :m .-2<CR>==
+inoremap <F6> <Esc>:m .+1<CR>==gi
+inoremap <F7> <Esc>:m .-2<CR>==gi
+vnorema <F6> :m '>+1<CR>gv=gv
+vnoremap <F7> :m '<-2<CR>gv=gv
 
 " Clipboard
 set clipboard=unnamedplus
-
-" Sessions
-let g:session_autoload = 'no'
 
 " Leader Mappings
 let mapleader = ","
@@ -47,6 +50,13 @@ map <leader>k :NERDTreeFind<cr>
 
 let NERDTreeMapActivateNode='<space>'
 let NERDTreeMapOpenInTab='<ENTER>'
+let NERDTreeIgnore = ['\.pyc$','\.o$']
+
+" Note that remapping C-s requires flow control to be disabled
+" (e.g. in .bashrc or .zshrc)
+map <C-s> <esc>:w<CR>
+imap <C-s> <esc>:w<CR>
+
 " -- Beep
 set visualbell " Empeche Vim de beeper
 set noerrorbells " Empeche Vim de beeper
@@ -163,10 +173,6 @@ hi CursorLineNr guifg=#050505
 " Numbers
 set number
 set numberwidth=5
-
-" Snippets are activated by Shift+Tab
-let g:snippetsEmu_key = "<S-Tab>"
-
 
 :nnoremap <expr> y (v:register ==# '"' ? '"+' : '') . 'y'
 :nnoremap <expr> yy (v:register ==# '"' ? '"+' : '') . 'yy'

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+rm -rf ~/.tmux/addons*
+git clone https://github.com/tmux-plugins/tmux-battery ~/.tmux/addonsBAT
+#git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/addonsRES
+
