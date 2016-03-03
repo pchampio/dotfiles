@@ -69,7 +69,6 @@ Get the icons fonts used in NerdTree here: https://github.com/ryanoasis/nerd-fon
 
 https://github.com/zolrath/wemux
 
-```
 **Tmux**
 ```
 $ sudo apt-get install tmux
