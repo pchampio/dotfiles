@@ -8,44 +8,82 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 
 " Define bundles via Github repos
+"
 Bundle 'tpope/vim-sensible'
-Bundle 'tmhedberg/matchit'
+
 Bundle 'blarghmatey/split-expander'
+" leader m to expand a split
+
 Bundle 'rking/ag.vim'
-Bundle 'sjl/vitality.vim'
-Bundle 'ctrlpvim/ctrlp.vim'
+" :Ag method -> search that method in dir
+
 Bundle 'airblade/vim-gitgutter'
+" Git newline ..
+
 Bundle 'bling/vim-airline'
+" tabline for vim (powerline)
+
 Bundle 'vim-airline/vim-airline-themes'
+"theme for airline
+
 Bundle 'tpope/vim-surround'
+" change surround cs('
+
 Bundle 'scrooloose/nerdcommenter'
+" leader c <space> to comment
+
 Bundle 'scrooloose/nerdtree'
+" list file in a tree
+
 Plugin 'Xuyuanp/nerdtree-git-plugin'
+" git status flags
+
 Plugin 'jiangmiao/auto-pairs'
+" Insert or delete brackets
+
 Bundle 'tpope/vim-repeat'
+" . command after a plugin map
+
 Bundle 'scrooloose/syntastic'
+" Linter
+
 Bundle 'tpope/vim-haml'
+" Haml, Sass, and SCSS
+
 Bundle 'altercation/vim-colors-solarized'
-Bundle 'myusuf3/numbers.vim'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'pangloss/vim-javascript'
+"colors
+"
+Plugin 'myusuf3/numbers.vim'
+"alternates for relativenumber
+"
 Bundle 'jelera/vim-javascript-syntax'
+" JS
+
 Bundle 'terryma/vim-expand-region'
+" J K to select in visual
+
 Bundle 'christoomey/vim-tmux-navigator'
+" tmux-navigator configuration
+
 Bundle 'sjl/gundo.vim'
-Bundle 'mhinz/vim-startify'
+" <F5> for git like undo
+
 Bundle 'ryanoasis/vim-devicons'
+" icons need to patch fonts
 
 Plugin 'SirVer/ultisnips'
+" snippets
+
+Plugin 'honza/vim-snippets'
+" Snippets are separated from the engine.
+
 Plugin 'ervandew/supertab'
+" auto completion
 
 Plugin 'evanmiller/nginx-vim-syntax'
+" nginx syntax
 
-" Snippets are separated from the engine. Add this if you want them:
-Plugin 'honza/vim-snippets'
 Plugin 'terryma/vim-multiple-cursors'
-
-Plugin 'tpope/vim-obsession'
-"Plugin 'dhruvasagar/vim-prosession'
+" Ctr n new curssors
 
 filetype on

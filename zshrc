@@ -7,7 +7,7 @@ plugins=(git)
 # User configuration
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
-#
+
 export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
@@ -20,6 +20,7 @@ alias cls="clear && ls"
 alias gs="git status"
 alias e="thunar &> /dev/null &"
 alias tmux="TERM=screen-256color-bce tmux "
+alias wemux='TERM=xterm-256color wemux'
 
 # Save a ton of history
 HISTSIZE=20000
@@ -47,13 +48,3 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 #Tab completion for ssh
 hosts=(pi@192.168.16.136 ubuntu@52.36.243.11)
 zstyle ':completion:*:hosts'  hosts $hosts
-
-function vim() {
-  if test $# -gt 0; then
-    env vim "$@"
-  elif test -f Session.vim; then
-    env vim -S
-  else
-    env vim -c Obsession
-  fi
-}

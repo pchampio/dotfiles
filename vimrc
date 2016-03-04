@@ -37,6 +37,10 @@ inoremap <F6> <Esc>:m .+1<CR>==gi
 inoremap <F7> <Esc>:m .-2<CR>==gi
 vnorema <F6> :m '>+1<CR>gv=gv
 vnoremap <F7> :m '<-2<CR>gv=gv
+"
+" visual select
+map K <Plug>(expand_region_expand)
+map J <Plug>(expand_region_shrink)
 
 " Clipboard
 set clipboard=unnamedplus
