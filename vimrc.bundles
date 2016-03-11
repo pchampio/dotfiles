@@ -59,9 +59,6 @@ Plugin 'myusuf3/numbers.vim'
 Bundle 'jelera/vim-javascript-syntax'
 " JS
 
-Bundle 'terryma/vim-expand-region'
-" J K to select in visual
-
 Bundle 'christoomey/vim-tmux-navigator'
 " tmux-navigator configuration
 
@@ -85,5 +82,11 @@ Plugin 'evanmiller/nginx-vim-syntax'
 
 Plugin 'terryma/vim-multiple-cursors'
 " Ctr n new curssors
+
+Plugin 'vim-scripts/ReplaceWithRegister'
+" gr replace motion
+
+Plugin 'easymotion/vim-easymotion'
+Plugin 'michaeljsmith/vim-indent-object'
 
 filetype on

@@ -1,5 +1,21 @@
+" ALT / META KEY on 7bits term
+let c='a'
+while c <= 'z'
+  exec "set <A-".c.">=\e".c
+  exec "imap \e".c." <A-".c.">"
+  let c = nr2char(1+char2nr(c))
+endw
+
+set timeout ttimeoutlen=50
+nnoremap <M-c> :echoe "ALT/meta is working !!!"<CR>
+
+" resizing a window split
+map <Left> <C-w><
+map <Down> <C-W>-
+map <Up> <C-W>+
+map <Right> <C-w>>
+
 set shell=/bin/bash
-runtime macros/matchit.vim
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -27,20 +43,17 @@ nnoremap Q <nop>
 " have jsx highlighting/indenting work in .js files as well
 let g:jsx_ext_required = 0
 
+
 let $PATH='/usr/local/bin:' . $PATH
 
 :au FocusLost * :wa "Save on focus lost
 
-nnoremap <F6> :m .+1<CR>==
-nnoremap <F7> :m .-2<CR>==
-inoremap <F6> <Esc>:m .+1<CR>==gi
-inoremap <F7> <Esc>:m .-2<CR>==gi
-vnorema <F6> :m '>+1<CR>gv=gv
-vnoremap <F7> :m '<-2<CR>gv=gv
-"
-" visual select
-map K <Plug>(expand_region_expand)
-map J <Plug>(expand_region_shrink)
+nnoremap <M-j> :m .+1<CR>==
+nnoremap <M-k> :m .-2<CR>==
+inoremap <M-j> <Esc>:m .+1<CR>==gi
+inoremap <M-k> <Esc>:m .-2<CR>==gi
+vnorema <M-j> :m '>+1<CR>gv=gv
+vnoremap <M-k> :m '<-2<CR>gv=gv
 
 " Clipboard
 set clipboard=unnamedplus
@@ -145,10 +158,6 @@ set tabstop=2
 set shiftwidth=2
 set expandtab
 
-let g:rspec_command = 'call Send_to_Tmux("bin/rspec {spec}\n")'
-let g:mocha_js_command = 'call Send_to_Tmux("mocha --opts spec/javascripts/mocha.opts {spec}\n")'
-let g:rspec_runner = "os_x_iterm"
-
 " Display extra whitespace
 set list listchars=tab:»·,trail:·
 
@@ -176,16 +185,7 @@ hi CursorLineNr guifg=#050505
 
 " Numbers
 set number
-set numberwidth=5
-
-:nnoremap <expr> y (v:register ==# '"' ? '"+' : '') . 'y'
-:nnoremap <expr> yy (v:register ==# '"' ? '"+' : '') . 'yy'
-:nnoremap <expr> Y (v:register ==# '"' ? '"+' : '') . 'Y'
-:xnoremap <expr> y (v:register ==# '"' ? '"+' : '') . 'y'
-:xnoremap <expr> Y (v:register ==# '"' ? '"+' : '') . 'Y'
-
-" convert hash rockets
-nmap <leader>rh :%s/\v:(\w+) \=\>/\1:/g<cr>
+set numberwidth=4
 
 " Tab completion
 " will insert tab at beginning of line,
@@ -205,14 +205,6 @@ inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
 " Exclude Javascript files in :Rtags via rails.vim due to warnings when parsing
 let g:Tlist_Ctags_Cmd="ctags --exclude='*.js'"
 
-" Switch between the last two files
-nnoremap <leader><leader> <c-^>
-
-" Get off my lawn
-nnoremap <Left> :echoe "Use h"<CR>
-nnoremap <Right> :echoe "Use l"<CR>
-nnoremap <Up> :echoe "Use k"<CR>
-nnoremap <Down> :echoe "Use j"<CR>
 
 " Treat <li> and <p> tags like the block tags they are
 let g:html_indent_tags = 'li\|p'
@@ -236,14 +228,14 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-let g:syntastic_loc_list_height=2
+let g:syntastic_loc_list_height=5
 
 " Local config
 if filereadable($HOME . "/.vimrc.local")
   source ~/.vimrc.local
 endif
 
-" Remove trailing whitespace on save for ruby files.
+" Remove trailing whitespace on save
 function! s:RemoveTrailingWhitespaces()
   "Save last cursor position
   let l = line(".")
@@ -259,12 +251,6 @@ au BufWritePre * :call <SID>RemoveTrailingWhitespaces()
 " cmd n, cmd p for fwd/backward in search
 map <C-n> :cn<CR>
 map <C-p> :cp<CR>
-
-" Easy navigation between splits. Instead of ctrl-w + j. Just ctrl-j
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
 
 " Enable mouse use in all modes
 set mouse=a
