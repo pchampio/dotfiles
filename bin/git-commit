@@ -15,7 +15,7 @@ if ARGV[0] == '-s'
 end
 
 branch = (branch == "master") ? "" : "[#{branch}] "
-commit_msg = "#{branch}#{ARGV}#{skip}"
+commit_msg = "#{branch}#{ARGV.join('')}#{skip}"
 
 command = "git commit -m \"#{commit_msg}\""
 
