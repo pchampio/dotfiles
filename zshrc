@@ -128,6 +128,8 @@ function extract() {
 
 alias x=extract
 
+alias gc=git-commit
+
 # Theme
 
 # indicate a job (for example, vim) has been backgrounded
