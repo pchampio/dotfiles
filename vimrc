@@ -6,6 +6,9 @@ while c <= 'z'
   let c = nr2char(1+char2nr(c))
 endw
 
+" relativ number
+set relativenumber
+
 set timeout ttimeoutlen=50
 nnoremap <M-c> :echoe "ALT/meta is working !!!"<CR>
 
@@ -15,8 +18,6 @@ map <Down> <C-W>-
 map <Up> <C-W>+
 map <Right> <C-w>>
 
-set shell=/bin/bash
-
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<ENTER>"
@@ -25,13 +26,10 @@ let g:UltiSnipsJumpBackwardTrigger="<c-q>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-nnoremap <F3> :NumbersToggle<CR>
-nnoremap <F4> :NumbersOnOff<CR>
-"
 " Gundo key
 nnoremap <F5> :GundoToggle<CR>
 let g:gundo_width = 50
-"
+
 " tell it to use an undo file
 set undofile
 " set a directory to store the undo history
@@ -39,14 +37,6 @@ set undodir=~/.vimundo/
 
 " no more ex Mode
 nnoremap Q <nop>
-
-" have jsx highlighting/indenting work in .js files as well
-let g:jsx_ext_required = 0
-
-
-let $PATH='/usr/local/bin:' . $PATH
-
-:au FocusLost * :wa "Save on focus lost
 
 nnoremap <M-j> :m .+1<CR>==
 nnoremap <M-k> :m .-2<CR>==
@@ -84,6 +74,11 @@ set ttimeout
 set ttimeoutlen=20
 set notimeout
 
+" add bundles
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+endif
+
 " Edit another file in the same directory as the current file
 " uses expression to extract path from current file's path
 
@@ -104,51 +99,13 @@ set nowritebackup
 set noswapfile    " http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
 set history=500
 set ruler         " show the cursor position all the time
-set showcmd       " display incomplete commands
 set incsearch     " do incremental searching
 set hlsearch      " highlight matches
 set laststatus=2  " Always display the status line
 set autowrite     " Automatically :write before running commands
 
-" Fuzzy finder: ignore stuff that can't be opened, and generated files
-let g:fuzzy_ignore = "*.png;*.PNG;*.JPG;*.jpg;*.GIF;*.gif;vendor/**;coverage/**;tmp/**;rdoc/**"
-
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
-  syntax on
-endif
-
-if filereadable(expand("~/.vimrc.bundles"))
-  source ~/.vimrc.bundles
-endif
 
 filetype plugin indent on
-
-augroup vimrcEx
-  autocmd!
-
-  " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
-
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it for commit messages, when the position is invalid, or when
-  " inside an event handler (happens when dropping a file on gvim).
-  autocmd BufReadPost *
-    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
-    \   exe "normal g`\"" |
-    \ endif
-
-  " Set syntax highlighting for specific file types
-  autocmd BufRead,BufNewFile Appraisals set filetype=ruby
-  autocmd BufRead,BufNewFile *.md set filetype=markdown
-
-  " Enable spellchecking for Markdown
-  autocmd FileType markdown setlocal spell
-
-  " Automatically wrap at 80 characters for Markdown
-  autocmd BufRead,BufNewFile *.md setlocal textwidth=80
-augroup END
 
 " bind K to search word under cursor
 nnoremap K :Ag "\b<C-R><C-W>\b"<CR>:cw<CR>
@@ -187,28 +144,6 @@ hi CursorLineNr guifg=#050505
 set number
 set numberwidth=4
 
-" Tab completion
-" will insert tab at beginning of line,
-" will use completion if not at beginning
-set wildmode=list:longest,list:full
-set complete=.,w,t
-function! InsertTabWrapper()
-    let col = col('.') - 1
-    if !col || getline('.')[col - 1] !~ '\k'
-        return "\<tab>"
-    else
-        return "\<c-p>"
-    endif
-endfunction
-inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
-
-" Exclude Javascript files in :Rtags via rails.vim due to warnings when parsing
-let g:Tlist_Ctags_Cmd="ctags --exclude='*.js'"
-
-
-" Treat <li> and <p> tags like the block tags they are
-let g:html_indent_tags = 'li\|p'
-
 " Open new split panes to right and bottom, which feels more natural
 set splitbelow
 set splitright
@@ -230,11 +165,6 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_loc_list_height=5
 
-" Local config
-if filereadable($HOME . "/.vimrc.local")
-  source ~/.vimrc.local
-endif
-
 " Remove trailing whitespace on save
 function! s:RemoveTrailingWhitespaces()
   "Save last cursor position
@@ -248,13 +178,5 @@ endfunction
 
 au BufWritePre * :call <SID>RemoveTrailingWhitespaces()
 
-" cmd n, cmd p for fwd/backward in search
-map <C-n> :cn<CR>
-map <C-p> :cp<CR>
-
 " Enable mouse use in all modes
 set mouse=a
-
-" Set this to the name of your terminal that supports mouse codes.
-" Must be one of: xterm, xterm2, netterm, dec, jsbterm, pterm
-set ttymouse=xterm2

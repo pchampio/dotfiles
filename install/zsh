@@ -7,6 +7,8 @@ BASEDIR=$(dirname $0)
 echo $BASEDIR
 echo $(dirname $BASEDIR)
 
+touch -p ~/.zsh_history
+
 explain "Installation de zsh"
   tell sudo apt-get install zsh
 
@@ -23,4 +25,4 @@ explain "Installation de pure prompt pour zsh"
   tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/custom
   cp ~/.oh-my-zsh/custom/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
   tell sudo  chsh -s /bin/zsh
-  explain "Run ./install/dotfiles to get the theme" 
+  explain "Run ./install/dotfiles to get the theme"

@@ -21,6 +21,9 @@ alias gs="git status"
 alias e="thunar &> /dev/null &"
 alias tmux="TERM=screen-256color-bce tmux "
 alias wemux='TERM=xterm-256color wemux'
+alias x=extract #Function extract
+alias gc=git-commit
+alias q="exit"
 
 # Save a ton of history
 HISTSIZE=20000
@@ -126,9 +129,6 @@ function extract() {
   done
 }
 
-alias x=extract
-
-alias gc=git-commit
 
 # Theme
 

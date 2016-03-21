@@ -52,10 +52,7 @@ Bundle 'tpope/vim-haml'
 
 Bundle 'altercation/vim-colors-solarized'
 "colors
-"
-Plugin 'myusuf3/numbers.vim'
-"alternates for relativenumber
-"
+
 Bundle 'jelera/vim-javascript-syntax'
 " JS
 
@@ -86,7 +83,7 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'vim-scripts/ReplaceWithRegister'
 " gr replace motion
 
-Plugin 'easymotion/vim-easymotion'
 Plugin 'michaeljsmith/vim-indent-object'
+" Indent ii
 
 filetype on
