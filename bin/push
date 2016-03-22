@@ -1,0 +1,157 @@
+#!/bin/bash
+set -uo pipefail
+IFS=$'\n\t'
+
+#
+# Upload files using https://transfer.sh
+# Add the transfer.sh link to your own gist
+# Using github gist-api
+#
+
+getpassword(){
+  unset PASSWORD
+  prompt="Enter Password: "
+  while IFS= read -p "$prompt" -r -s -n 1 char
+  do
+    if [[ $char == $'\0' ]]
+    then
+      break
+    fi
+    prompt='*'
+    PASSWORD+="$char"
+  done
+  echo -e "\n"
+}
+
+curl --version 2>&1 > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Could not find curl."
+  exit 1
+fi
+
+
+# check arguments
+if [ $# -eq 0 ];
+then
+  echo -e "No arguments specified. Usage:\n\n$ push /tmp/test.md\n\n$ cat | push test.md\n<TYPE TEXT> (ctrl-d to quit) "
+  exit 1
+fi
+
+# get temporarily filename, output is written to this file show progress can be showed
+tmpfile=$( mktemp -t transferXXX )
+
+# upload stdin or file
+file=$1
+
+if tty -s;
+then
+  basefile=$(basename "$file" | sed -e 's/[^a-zA-Z0-9._-]/-/g')
+
+  if [ ! -e $file ];
+  then
+    echo "File $file doesn't exists."
+    exit 1
+  fi
+
+  if [ -d $file ];
+  then
+    cd $(dirname $file) && zip -r tmp_upload.zip $file
+    curl --progress-bar --upload-file tmp_upload.zip "https://transfer.sh/$basefile.zip" >> $tmpfile
+    rm -f tmp_upload.zip
+  else
+    # transfer file
+    curl --progress-bar --upload-file "$file" "https://transfer.sh/$basefile" >> $tmpfile
+  fi
+else
+  # transfer pipe
+  curl -s --upload-file "-" "https://transfer.sh/$file" >> $tmpfile
+fi
+
+LINK=`cat $tmpfile`
+
+# cat output link
+echo -e "\nLink :\n$LINK"
+
+# cleanup
+rm -f $tmpfile
+
+#Date
+DATE=`date +%A-%d-%B`
+HOUR=`date +%H:%M`
+# config file
+# 1 line = token, 2 line = github use name, last line = last gist_ID
+CONFIG_FILE=~/.uploadGistList
+
+
+# New PC, no config_file ?
+if [ ! -e $CONFIG_FILE ]; then
+  echo -e "\nCreate new token for a gist\n"
+
+
+  # Ask for user github accout and password
+  read -p "Github account: " ACCOUNT
+  getpassword
+
+
+  # create new token for current PC
+  curl -s -i -H "Content-Type: application/json" -u $ACCOUNT:$PASSWORD -d '{"scopes":["gist"],"note":"Upload_APP_'$DATE$HOUR'"}' https://api.github.com/authorizations | grep \"token\" | awk '{ print $2 }' | sed s/\"//g | sed s/,//g > $CONFIG_FILE
+  if [ $? -ne 1 ]; then
+    echo "Token Saved to ~/.uploadGistList"
+    echo $ACCOUNT >> $CONFIG_FILE #Save user name
+    chmod 600 $CONFIG_FILE #Safety first
+  else
+    echo "Failed to generate token"
+    rm -f $CONFIG_FILE
+    exit 1
+  fi
+
+  TOKEN_ID=$( head -1 $CONFIG_FILE | tail -n 1 )
+
+
+  # Existing upload list ?
+  curl -s  https://api.github.com/users/$ACCOUNT/gists | grep "Upload.md" 2>&1 > /dev/null
+
+  if [ $? -ne 0 ]; then
+    # NO -> Create New upload list
+
+    curl -s -i -H  "Authorization: token $TOKEN_ID" -d '{"description":"Upload List", "public":"true", "files":{"Upload.md":{"content":"Upload list\n==\n *   '$DATE'  **'$HOUR'**   ['$file' ]('$LINK')" }}' https://api.github.com/gists | grep \"id\" | awk '{ print $2 }' | sed s/\"//g | sed s/,//g | head -1 >> $CONFIG_FILE
+
+    if [ $? -ne 1 ]; then
+      echo "New Gist created !"
+      exit 0
+
+    else
+      echo "Failed create Gist"
+    fi
+
+  else
+    # YES -> Add the Existing upload list ID to the config file
+    curl -s  https://api.github.com/users/$ACCOUNT/gists | grep -B 6 "Upload.md" |  grep \"id\" | awk '{ print $2  }' | sed s/\"//g | sed s/,//g | head -1 >> $CONFIG_FILE
+
+  fi
+
+fi
+
+# From the config file
+TOKEN_ID=$( head -1 $CONFIG_FILE | tail -n 1 )
+USERGIT=$( head -2 $CONFIG_FILE | tail -n 1  )
+ID_GIST=$(cat $CONFIG_FILE | tail -n 1)
+
+# get the content of the Gist
+OLD_TEXT=$(curl -s  https://api.github.com/users/$USERGIT/gists |  grep -A 6 "Upload.md" |  grep \"raw_url\" | awk '{ print $2  }' | sed s/\"//g | sed s/,//g | head -1 )
+OLD_TEXT=$(curl -s "$OLD_TEXT" )
+ESCAPE_TEXT=$(printf  '%q' "$OLD_TEXT" | sed s/^$\'//g | sed s/\'$//g)
+
+# update it with new upload
+curl -s --request PATCH -H "Authorization: token $TOKEN_ID" -d '{"description": "updated list","public": true,"files": {"Upload.md": {"content": "'$ESCAPE_TEXT'\n *   '$DATE'  **'$HOUR'**   ['$file' ]('$LINK')"}}}' https://api.github.com/gists/$ID_GIST | grep "Upload.md"  2>&1 > /dev/null
+
+if [ $? -ne 0 ]; then
+  echo -e "\nFailed to uptdate Gist\n\nCreate a new setup"
+  read -r -p " -> Delete $CONFIG_FILE ? [y/N] " response
+  if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
+  then
+    rm -f $CONFIG_FILE
+  fi
+else
+  echo "Gist Uptdated !"
+fi
