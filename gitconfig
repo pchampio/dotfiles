@@ -1,2 +1,16 @@
+[push]
+  default = current
+[color]
+  ui = auto
+[core]
+	excludesfile = /home/drakirus/.gitignore
+  autocrlf = input
+[merge]
+  ff = only
+[include]
+  path = .gitconfig.local
+[commit]
+	template = /home/drakirus/.gitmessage
 [user]
-	email = pierrescalade@gmail.com
+  name = Drakirus
+  email = pierrescalade@gmail.com
