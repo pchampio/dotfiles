@@ -51,10 +51,8 @@ Bundle 'tpope/vim-haml'
 " Haml, Sass, and SCSS
 
 Bundle 'altercation/vim-colors-solarized'
-"colors
 
 Bundle 'jelera/vim-javascript-syntax'
-" JS
 
 Bundle 'christoomey/vim-tmux-navigator'
 " tmux-navigator configuration
@@ -85,5 +83,16 @@ Plugin 'vim-scripts/ReplaceWithRegister'
 
 Plugin 'michaeljsmith/vim-indent-object'
 " Indent ii
+
+Plugin 'joequery/Stupid-EasyMotion'
+" motion that applies on the current line <leader leader w>
+
+Plugin 'godlygeek/tabular'
+" easy to align regions of text that match a pattern
+
+Plugin 'plasticboy/vim-markdown'
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_new_list_item_indent = 2
+let g:vim_markdown_conceal = 0
 
 filetype on

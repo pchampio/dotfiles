@@ -20,4 +20,6 @@ explain "Installation de ATOM text editor"
   tell apm install minimap
   tell apm install remote-atom
   tell apm install flat-ui-syntax
+  tell apm install pdf-view
+  tell apm install markdown-themeable-pdf
   tell rm atom*.deb

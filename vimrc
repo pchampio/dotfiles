@@ -6,6 +6,9 @@ while c <= 'z'
   let c = nr2char(1+char2nr(c))
 endw
 
+" Leader Mappings
+let mapleader = ","
+
 " relativ number
 set relativenumber
 
@@ -17,6 +20,27 @@ map <Left> <C-w><
 map <Down> <C-W>-
 map <Up> <C-W>+
 map <Right> <C-w>>
+
+" Uncomment the following to have Vim jump to the last position when reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+    \| exe "normal! g'\"" | endif
+endif
+
+" Tab completion
+" will insert tab at beginning of line,
+" will use completion if not at beginning
+set wildmode=list:longest,list:full
+set complete=.,w,t
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -38,18 +62,22 @@ set undodir=~/.vimundo/
 " no more ex Mode
 nnoremap Q <nop>
 
+"Easy :noh
+map <leader>h :noh<CR>
+
+"Moving lines and character
 nnoremap <M-j> :m .+1<CR>==
 nnoremap <M-k> :m .-2<CR>==
 inoremap <M-j> <Esc>:m .+1<CR>==gi
 inoremap <M-k> <Esc>:m .-2<CR>==gi
-vnorema <M-j> :m '>+1<CR>gv=gv
+vnoremap <M-j> :m '>+1<CR>gv=gv
 vnoremap <M-k> :m '<-2<CR>gv=gv
 
 " Clipboard
 set clipboard=unnamedplus
 
-" Leader Mappings
-let mapleader = ","
+" Easymotion shortcut
+map <leader>j <Leader><Leader>w
 
 " Toggle nerdtree
 map <leader>n :NERDTreeToggle<CR>
@@ -116,8 +144,8 @@ set shiftwidth=2
 set expandtab
 
 " Display extra whitespace
-set list listchars=tab:»·,trail:·
-
+set list listchars=tab:▸\ ,trail:·
+highlight SpecialKey guifg=dark
 
 " Airline
 let g:airline_powerline_fonts = 1
@@ -128,9 +156,9 @@ let g:airline_symbols.space = "\ua0"
 let g:airline_theme='solarized'
 set t_Co=256
 
-:set smartcase
-:set ignorecase
-:set noantialias
+set smartcase
+set ignorecase
+set noantialias
 
 " Color scheme
 colorscheme solarized
