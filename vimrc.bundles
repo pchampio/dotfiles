@@ -5,91 +5,154 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
 " Let Vundle manage Vundle
+" Define bundles via Github repos
 Bundle 'gmarik/vundle'
 
-" Define bundles via Github repos
-"
 Bundle 'tpope/vim-sensible'
 
-Bundle 'blarghmatey/split-expander'
 " leader m to expand a split
+Bundle 'blarghmatey/split-expander'
 
-Bundle 'rking/ag.vim'
-" :Ag method -> search that method in dir
-
+" A Vim plugin which shows a git diff in the numberline
 Bundle 'airblade/vim-gitgutter'
-" Git newline ..
+
+" Insert or delete brackets
+Plugin 'jiangmiao/auto-pairs'
+
+" . command after a plugin map
+Bundle 'tpope/vim-repeat'
+
+" -------------------
+" change surround cs"'
+" -------------------
+Bundle 'tpope/vim-surround'
+
+" -------------------
+" Commanter
+" -------------------
+Bundle 'scrooloose/nerdcommenter'
+
+" -------------------
+" NERDTree
+" -------------------
+" git status flags
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+Bundle 'scrooloose/nerdtree'
+map <leader>n :NERDTreeToggle<CR>
+map <leader>k :NERDTreeFind<cr>
+let NERDTreeMapActivateNode='<space>'
+let NERDTreeMapOpenInTab='<ENTER>'
+let NERDTreeIgnore = ['\.pyc$','\.o$']
+
+" -------------------
+" syntastic
+" -------------------
+Bundle 'scrooloose/syntastic'
+
+" configure syntastic syntax checking to check on open as well as save
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_loc_list_height=5
+
+" -------------------
+" THEME-SYNTAX  Color solarized
+" -------------------
+Bundle 'altercation/vim-colors-solarized'
+colorscheme solarized
+set background=dark
+set encoding=utf-8
+
+" Haml, Sass, Scss, js, nginx
+Bundle 'jelera/vim-javascript-syntax'
+Bundle 'tpope/vim-haml'
+Plugin 'evanmiller/nginx-vim-syntax'
+
+" icons need to patch fonts
+Bundle 'ryanoasis/vim-devicons'
+
+" tmux-navigator configuration
+Bundle 'christoomey/vim-tmux-navigator'
+
+" -------------------
+" tabline for vim (powerline)
+" -------------------
+"theme for airline
+Bundle 'vim-airline/vim-airline-themes'
 
 Bundle 'bling/vim-airline'
-" tabline for vim (powerline)
+let g:airline_powerline_fonts = 1
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
+let g:airline_theme='solarized'
+set t_Co=256
 
-Bundle 'vim-airline/vim-airline-themes'
-"theme for airline
 
-Bundle 'tpope/vim-surround'
-" change surround cs('
-
-Bundle 'scrooloose/nerdcommenter'
-" leader c <space> to comment
-
-Bundle 'scrooloose/nerdtree'
-" list file in a tree
-
-Plugin 'Xuyuanp/nerdtree-git-plugin'
-" git status flags
-
-Plugin 'jiangmiao/auto-pairs'
-" Insert or delete brackets
-
-Bundle 'tpope/vim-repeat'
-" . command after a plugin map
-
-Bundle 'scrooloose/syntastic'
-" Linter
-
-Bundle 'tpope/vim-haml'
-" Haml, Sass, and SCSS
-
-Bundle 'altercation/vim-colors-solarized'
-
-Bundle 'jelera/vim-javascript-syntax'
-
-Bundle 'christoomey/vim-tmux-navigator'
-" tmux-navigator configuration
-
-Bundle 'sjl/gundo.vim'
+" -------------------
 " <F5> for git like undo
+" -------------------
+Bundle 'sjl/gundo.vim'
+nnoremap <F5> :GundoToggle<CR>
+let g:gundo_width = 50
 
-Bundle 'ryanoasis/vim-devicons'
-" icons need to patch fonts
+" -------------------
+" snippets
+" -------------------
+" Snippets are separated from the engine.
+Plugin 'honza/vim-snippets'
 
 Plugin 'SirVer/ultisnips'
-" snippets
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<ENTER>"
+let g:UltiSnipsJumpBackwardTrigger="<c-q>"
 
-Plugin 'honza/vim-snippets'
-" Snippets are separated from the engine.
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
 
+" -------------------
+" AUTO-complete
+" -------------------
 Plugin 'ervandew/supertab'
-" auto completion
 
-Plugin 'evanmiller/nginx-vim-syntax'
-" nginx syntax
-
+" -------------------
+" (Ctr n) new curssors
+" -------------------
 Plugin 'terryma/vim-multiple-cursors'
-" Ctr n new curssors
 
-Plugin 'vim-scripts/ReplaceWithRegister'
+" -------------------
+" Replace + motion
+" -------------------
 " gr replace motion
+Plugin 'vim-scripts/ReplaceWithRegister'
 
+" -------------------
+" Motion in indent
+" -------------------
 Plugin 'michaeljsmith/vim-indent-object'
 " Indent ii
 
+" -------------------
+" EasyMotion
+" -------------------
 Plugin 'joequery/Stupid-EasyMotion'
-" motion that applies on the current line <leader leader w>
+map <leader>j <Leader><Leader>w
 
+" -------------------
+" Tabular (aligning text)
+" -------------------
+" :Tab /pater (=) or with \zs
 Plugin 'godlygeek/tabular'
-" easy to align regions of text that match a pattern
 
+" -------------------
+" Markdown
+" -------------------
 Plugin 'plasticboy/vim-markdown'
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_new_list_item_indent = 2

@@ -3,10 +3,6 @@ Dotfiles
 ![screenshot](https://github.com/mscoutermarsh/dotfiles/blob/master/screenshot.png)
 (Here's what my setup looks like)
 
-## New to Vim?
-+ [Learning Vim in a Week](https://mikecoutermarsh.com/boston-vim-learning-vim-in-a-week/)
-+ [Vim and Tmux](https://www.youtube.com/watch?v=5r6yzFEXaj)
-
 ## Installation
 
 #### Clone
@@ -53,9 +49,9 @@ You can chose to install :
 
 
 ### Git Config
-Make sure you update ```gitconfig``` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:
-```git config --global core.excludesfile ~/.gitignore```
-```git config --global commit.template ~/.gitmessage```
+Make sure you update `gitconfig` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:
+`git config --global core.excludesfile ~/.gitignore`
+`git config --global commit.template ~/.gitmessage`
 
 ### Custom Fonts
 You'll need to use a custom font for Airline to look nice. (Seeing weird symbols? This is why!).
