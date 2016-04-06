@@ -1,6 +1,6 @@
 Dotfiles
 ===================
-![screenshot](https://github.com/mscoutermarsh/dotfiles/blob/master/screenshot.png)
+![screenshot](https://github.com/Drakirus/dotfiles/blob/master/screenshot.png)
 (Here's what my setup looks like)
 
 ## Installation
