@@ -139,7 +139,8 @@ function! s:RemoveTrailingWhitespaces()
   call cursor(l,c)
 endfunction
 
-au BufWritePre * :call <SID>RemoveTrailingWhitespaces()
+let blacklist = ['md', 'markdown', 'mrd']
+au BufWritePre * if index(blacklist, &ft) < 0 | :call <SID>RemoveTrailingWhitespaces()
 
 " Enable mouse use in all modes
 set mouse=a

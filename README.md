@@ -16,13 +16,12 @@ $ chmod +x -R dotfiles/install
 
 #### Dotfiles
 
-RC file (dotfile) management.
+RC file (dotfile) management.  
 (this command expects that you cloned your dotfiles to `~/dotfiles/`)
 ```
 $ ~/dotfiles/install/dotfiles
 ```
-It creates symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.
-Old dotfiles are saved in ~/dotfiles-backup/
+It creates symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.  
 
 ### Vim Plugins
 Plugins are listed in `vimrc.bundles`.
@@ -49,15 +48,15 @@ You can chose to install :
 
 
 ### Git Config
-Make sure you update `gitconfig` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:
-`git config --global core.excludesfile ~/.gitignore`
-`git config --global commit.template ~/.gitmessage`
+Make sure you update `gitconfig` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:  
+`git config --global core.excludesfile ~/.gitignore`  
+`git config --global commit.template ~/.gitmessage`  
 
 ### Custom Fonts
-You'll need to use a custom font for Airline to look nice. (Seeing weird symbols? This is why!).
+You'll need to use a custom font for Airline to look nice. (Seeing weird symbols? This is why!).  
 See here: https://github.com/Lokaltog/powerline-fonts
-> I use *hack* (size 12).
-Get the icons fonts used in NerdTree here: https://github.com/ryanoasis/nerd-fonts#font-installation
+> I use *hack* (size 12).  
+> Get the icons fonts used in NerdTree here: https://github.com/ryanoasis/nerd-fonts#font-installation
 
 ### Recommended
 
@@ -78,7 +77,7 @@ set-option -g default-command "reattach-to-user-namespace -l zsh -l"
 $ brew install reattach-to-user-namespace
 ```
 ---
-These are a modified version of Thoughtbot's dotfiles.
-More detailed instructions are available here:
+These are a modified version of Thoughtbot's dotfiles.  
+More detailed instructions are available here:  
 https://github.com/mscoutermarsh/dotfiles
 http://github.com/thoughtbot/dotfiles
