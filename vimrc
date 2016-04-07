@@ -14,6 +14,7 @@ let mapleader = ","
 " relativ number
 set numberwidth=4
 set relativenumber
+set number
 set timeout ttimeoutlen=50
 
 " resizing a window split

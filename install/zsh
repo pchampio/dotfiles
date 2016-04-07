@@ -7,22 +7,19 @@ BASEDIR=$(dirname $0)
 echo $BASEDIR
 echo $(dirname $BASEDIR)
 
-touch -p ~/.zsh_history
+sudo rm -rf ~/.oh-my-zsh/
+touch ~/.zsh_history
 
 explain "Installation de zsh"
   tell sudo apt-get install zsh
 
 explain "Installation de oh-my-zsh"
-  rm -rf ~/.oh-my-zsh
-  sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+  echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+  sudo chown $USER ~/.zsh-update
 
 explain "Installation de zsh-syntax-highlighting"
   tell git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
 
-explain "Installation de pure prompt pour zsh"
-  cd ~
-  rm -rf ~/.oh-my-zsh/custom
-  tell git clone https://github.com/sindresorhus/pure.git ~/.oh-my-zsh/custom
-  cp ~/.oh-my-zsh/custom/pure.zsh ~/.oh-my-zsh/custom/pure.zsh-theme
-  tell sudo  chsh -s /bin/zsh
-  explain "Run ./install/dotfiles to get the theme"
+tell sudo  chsh -s /bin/zsh
+success "Run ./install/dotfiles to get the theme"
+zsh
