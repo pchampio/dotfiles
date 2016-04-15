@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if [ ! -e $HOME/.vim/autoload ]; then
+  #git clone https://github.com/gmarik/vundle.git $HOME/.vim/bundle/vundle
+  curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
+
+if [ ! -e $HOME/.vim/spell ]; then
+  mkdir -p ~/.vim/spell
+  cd ~/.vim/spell
+  wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.spl
+  wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.sug
+  wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.spl
+  wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.sug
+  wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.sug
+  wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.spl
+fi
+
+if [ ! -e  $HOME/.vim/syntax/ngnix.vim ]; then
+  # Nginx syntax
+  curl -flo ~/.vim/syntax/ngnix.vim --create-dirs \
+    https://raw.githubusercontent.com/nginx/nginx/master/contrib/vim/syntax/nginx.vim
+fi
+
+vim -u $HOME/.vimrc.bundles +PlugUpgrade +qa
+vim -u $HOME/.vimrc.bundles +PlugInstall +qa
+vim -u $HOME/.vimrc.bundles +PlugUpdate +qa
+vim -u $HOME/.vimrc.bundles +PlugClean +qa
+
+mkdir -p ~/.vimundo
+

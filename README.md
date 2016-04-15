@@ -49,6 +49,7 @@ You can chose to install :
 
 ### Git Config
 Make sure you update `gitconfig` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:  
+`git config github.user {USERNAME}`  
 `git config --global core.excludesfile ~/.gitignore`  
 `git config --global commit.template ~/.gitmessage`  
 

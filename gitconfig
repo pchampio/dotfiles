@@ -5,8 +5,6 @@
 [core]
 	excludesfile = /home/drakirus/.gitignore
   autocrlf = input
-[include]
-  path = .gitconfig.local
 [commit]
 	template = /home/drakirus/.gitmessage
 [user]

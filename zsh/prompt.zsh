@@ -1,5 +1,6 @@
 
 # Copied from https://github.com/nicknisi/dotfiles/blob/master/zsh/prompt.zsh
+
 # heavily inspired by the wonderful pure theme
 # https://github.com/sindresorhus/pure
 
@@ -71,7 +72,6 @@ cmd_exec_time() {
 }
 
 # Get the intial timestamp for cmd_exec_time
-#
 preexec() {
   cmd_timestamp=`date +%s`
 }
@@ -90,6 +90,9 @@ suspended_jobs() {
 
 precmd() {
   vcs_info
-  print -P '\n%F{33}%~%F{yellow}$(cmd_exec_time)%f'
+  print -P '\n%F{blue}%~%F{yellow}$(cmd_exec_time)%f'
+
+  # remove the cmd_timestamp, indicating that precmd has completed
+  unset cmd_timestamp
 }
 
