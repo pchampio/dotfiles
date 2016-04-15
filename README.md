@@ -21,12 +21,12 @@ RC file (dotfile) management.
 ```
 $ ~/dotfiles/install/dotfiles
 ```
-It creates symlinks ex.(`.vimrc` -> `/dotfiles/vimrc`) from your home directory to your `/dotfiles/` directory.  
+It creates symlinks ex.(`.vimrc` -> `~/dotfiles/vimrc`) from your home directory to your `~/dotfiles/` directory.  
 
 ### Vim Plugins
 Plugins are listed in `vimrc.bundles`.
 ```
-$ ~/dotfiles/install/vimBundle
+$ ~/dotfiles/install/vimplug
 ```
 > Used to Install / Update / Clean all vim's Plugins
 
@@ -35,7 +35,7 @@ $ ~/dotfiles/install/vimBundle
 $ cd ~/dotfiles/
 $ ./install/....
 ```
-You can chose to install :
+You can choose to install :  
 * Atom with my usual plugins
 * Atom remote (useful on serveur)
 * Java :grimacing:
@@ -48,7 +48,7 @@ You can chose to install :
 
 
 ### Git Config
-Make sure you update `gitconfig` with your own name and email address. Otherwise you'll be committing as me. :smile_cat:  
+Make sure you update `gitconfig` with your own name and email address otherwise, you'll be committing as me. :smile_cat:  
 `git config github.user {USERNAME}`  
 `git config --global core.excludesfile ~/.gitignore`  
 `git config --global commit.template ~/.gitmessage`  

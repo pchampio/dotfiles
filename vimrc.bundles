@@ -33,6 +33,24 @@ Plug 'tpope/vim-surround'
 " https://languagetool.org/fr/
 " -------------------
 Plug 'rhysd/vim-grammarous'
+let g:grammarous#hooks = {}
+function! g:grammarous#hooks.on_check(errs)
+    nmap <buffer><C-n> <Plug>(grammarous-move-to-next-error)
+    nmap <buffer><C-p> <Plug>(grammarous-move-to-previous-error)
+endfunction
+
+function! g:grammarous#hooks.on_reset(errs)
+    nunmap <buffer><C-n>
+    nunmap <buffer><C-p>
+endfunction
+
+" -------------------
+" Vim Markdown pandoc
+" -------------------
+Plug 'vim-pandoc/vim-pandoc-syntax'
+augroup pandoc_syntax
+  au! BufNewFile,BufFilePRe,BufRead *.md set filetype=markdown.pandoc
+augroup END
 
 " -------------------
 " (Ctr n) new curssors

@@ -192,7 +192,7 @@ vmap > >gv
 
 " FileType syntax highlight
 au BufNewFile,BufRead *.conf setf ngnix
-au BufNewFile,BufReadPost *.md set filetype=markdown
+"au BufNewFile,BufReadPost *.md set filetype=markdown
 
 " --------------------------
 " function
@@ -253,7 +253,7 @@ function! s:RemoveTrailingWhitespaces()
   call cursor(l,c)
 endfunction
 
-let blacklist = ['md', 'markdown', 'mrd']
+let blacklist = ['md', 'markdown', 'mrd', 'markdown.pandoc']
 au BufWritePre * if index(blacklist, &ft) < 0 | :call <SID>RemoveTrailingWhitespaces()
 
 
