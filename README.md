@@ -90,5 +90,5 @@ $ brew install reattach-to-user-namespace
 
 These are a modified version of Thoughtbot's dotfiles.  
 More detailed instructions are available here:  
-https://github.com/mscoutermarsh/dotfiles
+https://github.com/mscoutermarsh/dotfiles / 
 http://github.com/thoughtbot/dotfiles
