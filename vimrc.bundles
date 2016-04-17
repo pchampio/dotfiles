@@ -52,6 +52,8 @@ augroup pandoc_syntax
   au! BufNewFile,BufFilePRe,BufRead *.md set filetype=markdown.pandoc
 augroup END
 
+let g:pandoc#syntax#codeblocks#embeds#langs = ["ruby", "C=c", "c", "bash=sh", "sh", "html", "css", "vim", "python"]
+
 " -------------------
 " (Ctr n) new curssors
 " -------------------
@@ -135,6 +137,7 @@ let g:syntastic_loc_list_height=5
 " THEME-SYNTAX  Color solarized
 " -------------------
 Plug 'altercation/vim-colors-solarized'
+Plug 'morhetz/gruvbox'
 
 " Haml, Sass, Scss, js
 Plug 'jelera/vim-javascript-syntax'
@@ -157,8 +160,9 @@ if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
 let g:airline_symbols.space = "\ua0"
-let g:airline_theme         = 'solarized'
+let g:airline_theme         = 'gruvbox'
 set t_Co=256
+au BufNewFile,BufRead *.md silent call airline#extensions#whitespace#toggle()
 
 
 " -------------------
@@ -198,7 +202,7 @@ Plug 'Shougo/neocomplete.vim'
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#sources#syntax#min_keyword_length = 2
+let g:neocomplete#sources#syntax#min_keyword_length = 1
 let g:neocomplete#lock_buffer_name_pattern = '\*kj\*'
 " Define keyword.
 if !exists('g:neocomplete#keyword_patterns')

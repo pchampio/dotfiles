@@ -13,7 +13,10 @@ compinit
 stty start undef
 stty stop undef
 
-# change dir color https://github.com/seebi/dircolors-solarized#installation
-eval `dircolors ~/dotfiles/dircolors`
+source "$HOME/.vim/autoload/gruvbox/gruvbox_256palette.sh"
+
+# change dir color
+
+eval `dircolors ~/dotfiles/dircolors/gruvbox.dir_colors`
 # colored completion - use my LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}

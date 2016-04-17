@@ -6,9 +6,9 @@ Dotfiles
 ## Installation
 
 #### Clone
-Clone this repo (or your own fork!) to your **home** directory (`/Users/username`).
+Clone this repo (or your own fork!) to your **home** directory (`/home/{USERNAME}/dotfiles`).
 
-```
+``` sh
 $ cd ~
 $ git clone https://github.com/Drakirus/dotfiles.git dotfiles
 $ chmod +x -R dotfiles/install
@@ -18,31 +18,37 @@ $ chmod +x -R dotfiles/install
 
 RC file (dotfile) management.  
 (this command expects that you cloned your dotfiles to `~/dotfiles/`)
-```
+
+``` sh
 $ ~/dotfiles/install/dotfiles
 ```
+
 It creates symlinks ex.(`.vimrc` -> `~/dotfiles/vimrc`) from your home directory to your `~/dotfiles/` directory.  
 
 ### Vim Plugins
 Plugins are listed in `vimrc.bundles`.
+
 ```
 $ ~/dotfiles/install/vimplug
 ```
+
 > Used to Install / Update / Clean all vim's Plugins
 
 ### Apt-Installll
-```
+
+``` sh
 $ cd ~/dotfiles/
 $ ./install/....
 ```
+
 You can choose to install :  
 * Atom with my usual plugins
 * Atom remote (useful on serveur)
-* Java :grimacing:
+* Java
 * Node Js
    * with [tldr-man-pages](https://github.com/tldr-pages/tldr)
 * Dotfiles
-* Vim-bundles (Installation of vim Plugins with vundle)
+* Vim-Plugins (Installation of vim Plugins with [Vim-Plug](https://github.com/junegunn/vim-plug))
 * xfce (just my own tweaks)
 * zsh :heart:
 
@@ -66,18 +72,22 @@ See here: https://github.com/Lokaltog/powerline-fonts
 https://github.com/zolrath/wemux
 
 **Tmux**
+
 ```
 $ sudo apt-get install tmux
 ```
 
 For OSX,
+
 ```
 # Add this to tmux.conf
 set-option -g default-command "reattach-to-user-namespace -l zsh -l"
 # one more
 $ brew install reattach-to-user-namespace
 ```
+
 ---
+
 These are a modified version of Thoughtbot's dotfiles.  
 More detailed instructions are available here:  
 https://github.com/mscoutermarsh/dotfiles

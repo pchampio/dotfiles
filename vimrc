@@ -11,7 +11,6 @@ endif
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 filetype plugin indent on
-set omnifunc=syntaxcomplete#Complete
 
 " Regenerate tags
 map <leader>rt :!ctags --extra=+f  --exclude=.git  --exclude=log -R * <CR><C-M>"
@@ -30,7 +29,7 @@ au WinEnter * set cursorline
 set cursorline
 
 " Theme
-colorscheme solarized
+colorscheme gruvbox
 set background=dark
 
 " relativ number
