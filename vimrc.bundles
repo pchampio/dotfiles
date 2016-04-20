@@ -55,11 +55,6 @@ augroup END
 let g:pandoc#syntax#codeblocks#embeds#langs = ["ruby", "C=c", "c", "bash=sh", "sh", "html", "css", "vim", "python"]
 
 " -------------------
-" (Ctr n) new curssors
-" -------------------
-Plug 'terryma/vim-multiple-cursors'
-
-" -------------------
 " Replace + motion
 " -------------------
 Plug 'vim-scripts/ReplaceWithRegister'
@@ -78,7 +73,7 @@ Plug 'joequery/Stupid-EasyMotion'
 map <leader>j <Leader><Leader>w
 
 " -------------------
-" aligning text
+" Aligning text
 " -------------------
 Plug 'junegunn/vim-easy-align'
 nmap ga <Plug>(EasyAlign)
@@ -202,15 +197,15 @@ Plug 'Shougo/neocomplete.vim'
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#sources#syntax#min_keyword_length = 1
-let g:neocomplete#lock_buffer_name_pattern = '\*kj\*'
+let g:neocomplete#auto_completion_start_length = 1
+"let g:neocomplete#lock_buffer_name_pattern = '\*kj\*'
 " Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-  let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+"if !exists('g:neocomplete#keyword_patterns')
+  "let g:neocomplete#keyword_patterns = {}
+"endif
+"let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 
 
 " -------------------
@@ -223,17 +218,13 @@ Plug 'honza/vim-snippets'
 
 " 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
-let g:UltiSnipsJumpForwardTrigger  = "<tab>"
-let g:UltiSnipsJumpBackwardTrigger = "<leader><tab>"
+let g:UltiSnipsJumpForwardTrigger  = "<leader><TAB>"
 
+" Enable heavy omni completion.
+if !exists('g:neocomplete#force_omni_input_patterns')
+  let g:neocomplete#force_omni_input_patterns = {}
+endif
 
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
 " ----------------------------- END -----------------------------
 call plug#end()

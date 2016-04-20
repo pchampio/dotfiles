@@ -2,18 +2,53 @@
 # Stolen from : https://github.com/Grafikart/dotfiles
 
 tell() {
-  echo  "\033[0;33m|-- ${*}\033[0m"
-  $* || {
-    echo  "\033[0;31mFail !" 1>&2 ;
-    echo   "\033[0m"
-    exit 1 ;
+  echo "\033[0;33m|-- ${*}\033[0m"
+    $* || {
+    echo "\033[0;31mFail !" 1>&2 ;
+    echo "\033[0m"
+    exit 1;
   }
 }
 
 explain() {
-  echo  "\033[0;34m${1}\033[0m"
+  echo "\033[0;34m${1}\033[0m"
 }
 
 success() {
-  echo  "\033[0;32m${1}\033[0m"
+  echo "\033[0;32m${1}\033[0m"
+}
+
+install_cmd(){
+
+  PACKAGE_NAME=$@
+
+  YUM_CMD=$(which yum)
+  APT_GET_CMD=$(which apt-get)
+  BREW_CMD=$(which brew)
+
+  # add your own package
+
+  #TEMPLATE=$(which template)
+
+  if [ ! -z $YUM_CMD ]; then
+    sudo yum install $PACKAGE_NAME
+
+  elif [ ! -z $APT_GET_CMD ]; then
+    sudo apt-get install $PACKAGE_NAME
+
+  elif [ ! -z $BREW_CMD ]; then
+    sudo brew install $PACKAGE_NAME
+
+  #elif [ ! -z $TEMPLATE ]; then
+    #sudo template install $PACKAGE_NAME
+
+  else
+
+    echo "\033[0;31m" 1>&2 ;
+    echo "Error can't install package $PACKAGE_NAME"
+    echo "\033[0m"
+    echo "No package manager found"
+    echo "please add yours to $HOME/dotfiles/install/inc/functions"
+    exit 1;
+  fi
 }

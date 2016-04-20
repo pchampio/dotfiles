@@ -3,7 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-ignoreRC="README.md|.gitmodules|.gitignore|screenshot.png|compton.conf|LICENSE.md|dircolors|riot.txt"
+ignoreRC="README.md|.gitignore|screenshot.png|compton.conf|LICENSE.md|dircolors|riot.txt"
 dir=~/dotfiles
 
 explain "Create symlink for dotfiles"

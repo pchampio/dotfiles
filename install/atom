@@ -3,11 +3,12 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-VERSION=https://github.com/atom/atom/releases/download/v1.4.0/atom-amd64.deb
+wget -q https://github.com/atom/atom/releases/latest -O /tmp/latest
+explain "Download ATOM text editor"
+  wget --progress=bar -q 'https://github.com'$(cat /tmp/latest | grep -o -E 'href="([^"#]+)atom-amd64.deb"' | cut -d'"' -f2 | sort | uniq) -O /tmp/atom-amd64.deb -q --show-progress
 
-explain "Installation de ATOM text editor"
-  tell wget $VERSION
-  tell sudo dpkg --install atom-amd64.deb
+explain "Install ATOM text editor"
+  tell sudo dpkg -i /tmp/atom-amd64.deb
   tell apm install advanced-open-file
   tell apm install auto-indent
   tell apm install autocomplete-paths
@@ -22,4 +23,3 @@ explain "Installation de ATOM text editor"
   tell apm install flat-ui-syntax
   tell apm install pdf-view
   tell apm install markdown-themeable-pdf
-  tell rm atom*.deb

@@ -13,7 +13,7 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 filetype plugin indent on
 
 " Regenerate tags
-map <leader>rt :!ctags --extra=+f  --exclude=.git  --exclude=log -R * <CR><C-M>"
+map <leader>rt :!ctags --extra=+f  --exclude=.git  --exclude=log -R * <CR><C-M>
 
 " Clipboard
 if has('unnamedplus')
@@ -22,6 +22,9 @@ endif
 
 " Show command
 set showcmd
+
+" Very magic
+nnoremap / /\v
 
 " highlight vertical column of cursor
 au WinLeave * set nocursorline nocursorcolumn
@@ -82,6 +85,7 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8
 
+set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add
 set ttyfast    " u got a fast terminal
 set lazyredraw " to avoid scrolling problems
 
@@ -118,8 +122,8 @@ noremap * *<c-o>
 
 " Note that remapping C-s requires flow control to be disabled
 " (e.g. in .bashrc or .zshrc)
-map <C-s> <esc>:w<CR>
-imap <C-s> <esc>:w<CR>
+map <C-s> <esc>:w!<CR>
+imap <C-s> <esc>:w!<CR>
 
 " Spell-Checking
 " zg add word to the spelling dictionary
@@ -154,8 +158,8 @@ nnoremap <C-l> <C-w>l
 " Quicker navigation
 noremap H ^
 noremap L g_
-noremap K 5k
-noremap J 5j
+noremap K <ScrollWheelUp>
+noremap J <ScrollWheelDown>
 
 
 " Pipe output of shell command into vim buffer
@@ -193,6 +197,12 @@ vmap > >gv
 au BufNewFile,BufRead *.conf setf ngnix
 "au BufNewFile,BufReadPost *.md set filetype=markdown
 
+if has("autocmd") && exists("+omnifunc")
+  autocmd Filetype *
+        \	if &omnifunc == "" |
+        \		setlocal omnifunc=syntaxcomplete#Complete |
+        \	endif
+endif
 " --------------------------
 " function
 " --------------------------
@@ -213,21 +223,6 @@ if has("autocmd")
         \| exe "normal! g'\"" | endif
 endif
 
-" Tab completion
-" will insert tab at beginning of line,
-" will use completion if not at beginning
-set wildmode=list:longest,list:full
-set complete=.,w,t
-function! InsertTabWrapper()
-  let col = col('.') - 1
-  if !col || getline('.')[col - 1] !~ '\k'
-    return "\<tab>"
-  else
-    return "\<c-p>"
-  endif
-endfunction
-inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
-
 " Call gramamr Plugin
 function! Grammar()
 call inputsave()
@@ -239,7 +234,6 @@ nnoremap <Leader>s :call Grammar()<cr>
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en
 autocmd FileType gitcommit setlocal spell
 noremap <M-s> ei<C-x>s
-set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add
 
 " Remove trailing whitespace on save
 function! s:RemoveTrailingWhitespaces()
@@ -282,4 +276,12 @@ function! s:NextTextObject(motion, dir)
   endif
 
   exe "normal! ".a:dir.c."v".a:motion.c
+endfunction
+
+" This allows you to visually select a section and then hit @ to run a macro on all lines.
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+
+function! ExecuteMacroOverVisualRange()
+  echo "@".getcmdline()
+  execute ":'<,'>normal @".nr2char(getchar())
 endfunction

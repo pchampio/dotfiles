@@ -4,22 +4,25 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-echo $BASEDIR
-echo $(dirname $BASEDIR)
 
 sudo rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
 explain "Installation de zsh"
-  tell sudo apt-get install zsh
+  tell install_cmd wget curl zsh
 
 explain "Installation de oh-my-zsh"
   echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
   sudo chown $USER ~/.zsh-update
 
 explain "Installation de zsh-syntax-highlighting"
-  tell git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
+  tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
 
 tell sudo  chsh -s /bin/zsh
-success "Run ./install/dotfiles to get the theme"
-zsh
+success "Success"
+
+read -r -p "Install the Theme ? [y/N] " response
+if [ $response = "y" ];
+then
+  $HOME/dotfiles/install/dotfiles
+fi

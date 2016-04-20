@@ -14,15 +14,18 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/g
 
 export MANPATH="/usr/local/man:$MANPATH"
 
+# add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
 source  ~/.oh-my-zsh/syntax_highlighting/zsh-syntax-highlighting.zsh
-
-export PATH=$HOME/dotfiles/bin:$PATH
 
 # Show contents of directory after cd-ing into it
 chpwd() {
   ls
 }
 
+# ADD own path
+export PATH=$HOME/dotfiles/bin:$PATH
+
+# PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '
 export RPROMPT='`git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`'
