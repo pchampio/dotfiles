@@ -1,6 +1,6 @@
 Dotfiles
 ===================
-![screenshot](https://github.com/Drakirus/dotfiles/blob/master/screenshot.png)
+![Fullscreen](https://raw.githubusercontent.com/Drakirus/dotfiles/master/screenshot.png)  
 (Here's what my setup looks like)
 
 ## Installation
