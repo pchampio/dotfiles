@@ -65,28 +65,20 @@ See here: https://github.com/Lokaltog/powerline-fonts
 > I use *hack* (size 12).  
 > Get the icons fonts used in NerdTree here: https://github.com/ryanoasis/nerd-fonts#font-installation
 
-### Recommended
+### TMUX
 
-**Wemux**
-
-https://github.com/zolrath/wemux
-
-**Tmux**
+TODO
 
 ```
 $ sudo apt-get install tmux
 ```
 
-For OSX,
-
-```
-# Add this to tmux.conf
-set-option -g default-command "reattach-to-user-namespace -l zsh -l"
-# one more
-$ brew install reattach-to-user-namespace
-```
-
 ---
+
+### TODO
+
+rxvt-unicode-256color  
+
 
 These are a modified version of Thoughtbot's dotfiles.  
 More detailed instructions are available here:  

@@ -3,7 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-ignoreRC="README.md|.gitignore|screenshot.png|compton.conf|LICENSE.md|dircolors|riot.txt"
+ignoreRC="termite_config|README.md|.gitignore|screenshot.png|compton.conf|LICENSE.md|dircolors|riot.txt|iTerm.png"
 dir=~/dotfiles
 
 explain "Create symlink for dotfiles"
@@ -17,4 +17,8 @@ for file in $files; do
     rm ~/.$file
     tell ln -s $dir/$file ~/.$file
 done
+
+rm ~/.config/termite/config
+tell ln -s $dir/termite_config ~/.config/termite/config
+
 zsh

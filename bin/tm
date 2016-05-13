@@ -1,6 +1,9 @@
 #!/bin/bash
 # abort if we're already inside a TMUX session
-[ "$TMUX" == "" ] || exit 0
+if [ "$TMUX" != "" ]; then
+  echo "Already inside a TMUX session !!"
+  exit 1
+fi
 # startup a "default" session if non currently exists
 # tmux has-session -t _default || tmux new-session -s _default -d
 
@@ -12,8 +15,8 @@ if [ $SessionNb -eq 0 ]; then
 else
   # present menu for user to choose which workspace to open
   PS3="Please choose your session: "
-  options=($(tmux list-sessions -F "#S" 2>/dev/null) "New Session")
-  echo "Available sessions"
+  options=($(tmux list-sessions -F "#S" 2>/dev/null) "New Session" "Independent attach")
+  echo "Available Options"
   echo "------------------"
   echo " "
   select opt in "${options[@]}"
@@ -23,6 +26,18 @@ else
         read -p "Enter new session name: " SESSION_NAME
         TERM=screen-256color-bce tmux new -s "$SESSION_NAME"
         break
+        ;;
+
+      "Independent attach")
+        optionsATTACH=($(tmux list-sessions -F "#S" 2>/dev/null))
+        echo " "
+        echo "Available sessions"
+        echo "------------------"
+        select optATT in "${optionsATTACH[@]}"
+        do
+          TERM=screen-256color-bce tmux new -s "Agent_infiltré" -t $optATT
+          exit 0
+        done
         ;;
       *)
         TERM=screen-256color-bce tmux attach-session -t $opt

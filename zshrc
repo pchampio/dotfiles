@@ -16,15 +16,18 @@ export MANPATH="/usr/local/man:$MANPATH"
 
 # add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
-source  ~/.oh-my-zsh/syntax_highlighting/zsh-syntax-highlighting.zsh
+source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
 
 # Show contents of directory after cd-ing into it
 chpwd() {
   ls
 }
 
-# ADD own path
+# ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
+
+# xterm cursor I-beam | vertical bar?
+# echo -e -n "\x1b[\x36 q"
 
 # PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '

@@ -1,10 +1,15 @@
 set nocompatible
 
-filetype off
-
 call plug#begin('~/.vim/autoload')
 
 Plug 'tpope/vim-sensible'
+
+" -------------------
+" A collection of +70 language packs for Vim
+" -------------------
+Plug 'sheerun/vim-polyglot'
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh", "sh", "html", "css", "vim", "python"]
 
 " -------------------
 " leader m to expand a split
@@ -45,32 +50,10 @@ function! g:grammarous#hooks.on_reset(errs)
 endfunction
 
 " -------------------
-" Vim Markdown pandoc
-" -------------------
-Plug 'vim-pandoc/vim-pandoc-syntax'
-augroup pandoc_syntax
-  au! BufNewFile,BufFilePRe,BufRead *.md set filetype=markdown.pandoc
-augroup END
-
-let g:pandoc#syntax#codeblocks#embeds#langs = ["ruby", "C=c", "c", "bash=sh", "sh", "html", "css", "vim", "python"]
-
-" -------------------
 " Replace + motion
 " -------------------
 Plug 'vim-scripts/ReplaceWithRegister'
 " gr replace motion
-
-" -------------------
-" Motion in indent
-" -------------------
-Plug 'michaeljsmith/vim-indent-object'
-" Indent ii
-
-" -------------------
-" EasyMotion
-" -------------------
-Plug 'joequery/Stupid-EasyMotion'
-map <leader>j <Leader><Leader>w
 
 " -------------------
 " Aligning text
@@ -85,19 +68,14 @@ xmap ga <Plug>(EasyAlign)
 Plug 'Valloric/MatchTagAlways'
 
 " -------------------
-" Gist in Vim
-" -------------------
-Plug 'mattn/gist-vim' |  Plug 'mattn/webapi-vim'
-let g:gist_open_browser_after_post = 1
-
-" Ag searcher
-Plug 'rking/ag.vim'
-nnoremap <Leader>K :Ag "\b<C-R><C-W>\b"<CR>:cw<CR>
-
-" -------------------
 " Commanter
 " -------------------
 Plug 'scrooloose/nerdcommenter'
+let NERDUsePlaceHolders=0
+let NERDSpaceDelims=1
+let g:NERDCustomDelimiters = {
+    \ 'c': { 'left' : '//', 'leftAlt' : '/*', 'rightAlt': '*/' }
+\ }
 
 " -------------------
 " NERDTree
@@ -111,6 +89,11 @@ let NERDTreeMapActivateNode='<space>'
 let NERDTreeMapOpenInTab='<ENTER>'
 let NERDTreeIgnore = ['\.pyc$','\.o$', '\~$', '\.db$', '\.sqlite$', '__pycache__']
 let NERDTreeShowHidden=1
+
+" icons need to patch fonts
+Plug 'ryanoasis/vim-devicons', { 'on':  [ 'NERDTreeToggle' , 'NERDTreeFind'] }
+" let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+" let g:WebDevIconsUnicodeGlyphDoubleWidth = 0
 
 " -------------------
 " syntastic
@@ -128,24 +111,17 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_loc_list_height=5
 
-highlight link SyntasticErrorSign SignColumn
-highlight link SyntasticWarningSign SignColumn
-highlight link SyntasticStyleErrorSign SignColumn
-highlight link SyntasticStyleWarningSign SignColumn
-
-
 " -------------------
-" THEME-SYNTAX  Color solarized
+" THEME-SYNTAX
 " -------------------
-Plug 'altercation/vim-colors-solarized'
+"Plug 'altercation/vim-colors-solarized'
 Plug 'morhetz/gruvbox'
+let g:gruvbox_contrast_dark="medium"
+let g:gruvbox_contrast_light="medium"
 
-" Haml, Sass, Scss, js
-Plug 'jelera/vim-javascript-syntax'
-Plug 'tpope/vim-haml'
-
-" icons need to patch fonts
-Plug 'ryanoasis/vim-devicons', { 'on':  [ 'NERDTreeToggle' , 'NERDTreeFind'] }
+let g:gruvbox_sign_column="dark0"
+let g:gruvbox_color_column="dark0"
+let g:gruvbox_vert_split="dark0"
 
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
@@ -153,66 +129,59 @@ Plug 'christoomey/vim-tmux-navigator'
 " -------------------
 " tabline for vim (powerline)
 " -------------------
-Plug 'vim-airline/vim-airline-themes'
-
 Plug 'bling/vim-airline'
 let g:airline_powerline_fonts = 1
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
-let g:airline_symbols.space = "\ua0"
-let g:airline_theme         = 'gruvbox'
+let g:airline_symbols.space="\ua0"
+let g:airline_theme='gruvbox'
 set t_Co=256
+let &t_EI = "\<Esc>[2 q"
+
 au BufNewFile,BufRead *.md silent call airline#extensions#whitespace#toggle()
 
+" Set cursor to vertical line when in insert mode.
+if exists('$TMUX')
+  let &t_SI="\ePtmux;\e\e[6 q\e\\"
+  let &t_EI="\ePtmux;\e\e[2 q\e\\"
+endif
+set guicursor=a:blinkon0
 
 " -------------------
-" <F5> for git like undo
+" <leader>u for git like undo
 " -------------------
-Plug 'sjl/gundo.vim', { 'on':  'GundoToggle' }
-nnoremap <F5> :GundoToggle<CR>
-let g:gundo_width = 50
-
+Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
+nnoremap <leader>u :UndotreeToggle<cr>
+let g:undotree_WindowLayout = 2
 
 " TAGS
-" sudo apt-get install exuberant-ctags
+" install exuberant-ctags
 Plug 'majutsushi/tagbar'
 nmap <leader>t :TagbarToggle<CR>
 let g:tagbar_compact = 1
 
 
+
 " -------------------
 " AUTO-complete
 " -------------------
-if !has("python")
 
-  "echo 'python NOT loaded'
+" Plug 'ajh17/VimCompletesMe'
+" let g:vcm_direction = 'n'
+" let b:vcm_tab_complete = 'tags'
 
-  Plug 'ajh17/VimCompletesMe'
-  let g:vcm_direction = 'n'
-  let b:vcm_tab_complete = 'tags'
-
-  finish
-
-endif
+" OR
 
 Plug 'Shougo/neocomplete.vim'
-
-" 'Shougo/neocomplete' options.
-
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
 let g:neocomplete#auto_completion_start_length = 1
-"let g:neocomplete#lock_buffer_name_pattern = '\*kj\*'
-" Define keyword.
-"if !exists('g:neocomplete#keyword_patterns')
-  "let g:neocomplete#keyword_patterns = {}
-"endif
-"let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+let g:neocomplete#lock_buffer_name_pattern = '\*kj\*'
+let g:neocomplete#enable_fuzzy_completion = 1
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
-
 
 " -------------------
 "  Snippets
@@ -231,7 +200,5 @@ if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
 
-
 " ----------------------------- END -----------------------------
 call plug#end()
-filetype on

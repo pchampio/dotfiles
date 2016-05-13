@@ -90,9 +90,16 @@ suspended_jobs() {
 
 precmd() {
   vcs_info
-  print -P '\n%F{blue}%~%F{yellow}$(cmd_exec_time)%f'
+
+  # show username@host if logged in through SSH
+  [[ "$SSH_CONNECTION" != ''  ]] && prompt_username=' %F{242}%n@%m%f'
+  print -P '\n%F{blue}%~$prompt_username%F{yellow}$(cmd_exec_time)%f'
 
   # remove the cmd_timestamp, indicating that precmd has completed
   unset cmd_timestamp
 }
 
+# TRAPWINCH (){
+  # clear
+  # zle && zle reset-prompt
+# }

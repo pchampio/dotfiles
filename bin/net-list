@@ -3,4 +3,4 @@
 echo -n "Enter the network and press (192.168.16.0) [ENTER]: "
 read ip
 echo $ip
-nmap -T4 -sP $ip/24
+sudo nmap -sP $ip/24
