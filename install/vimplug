@@ -43,10 +43,10 @@ if [ ! -e  $HOME/.vim/syntax/ngnix.vim ]; then
 fi
 
 explain "Vim plugins"
-vim -u $HOME/.vimrc.bundles +PlugUpgrade +qa
-vim -u $HOME/.vimrc.bundles +PlugInstall +qa
-vim -u $HOME/.vimrc.bundles +PlugUpdate +qa
-vim -u $HOME/.vimrc.bundles +PlugClean +qa
+vim +PlugUpgrade +qa
+vim +PlugInstall +qa
+vim +PlugUpdate +qa
+vim +PlugClean +qa
 
 mkdir -p ~/.vimundo
 

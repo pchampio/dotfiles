@@ -29,15 +29,25 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+zip --version 2>&1 > /dev/null
+if [ $? -ne 0 ]; then
+  CC=0 #"tar.gz"
+  FORMAT='tar.gz'
+else
+  CC=1 #"zip"
+  FORMAT='zip'
+fi
 
 # check arguments
 if [ $# -eq 0 ];
 then
-  echo -e "No arguments specified. Usage:\n\n$ push /tmp/test.md\n\n$ cat | push test.md\n<TYPE TEXT> (ctrl-d to quit) "
+  echo -e "No arguments specified. Usage:\n\n$ push /tmp/test.md\n
+$ cat | push test.md\n<TYPE TEXT> \n(ctrl-d to quit) "
   exit 1
 fi
 
-# get temporarily filename, output is written to this file show progress can be showed
+# get temporarily filename
+#  output is written to this file show progress can be showed
 tmpfile=$( mktemp -t transferXXX )
 
 # upload stdin or file
@@ -53,15 +63,25 @@ then
     exit 1
   fi
 
-  if [ -d $file ];
+  if [ -d $file ]; # FILE -> Create archive
   then
-    cd $(dirname $file) && zip -r tmp_upload.zip $file
-    curl --progress-bar --upload-file tmp_upload.zip "https://transfer.sh/$basefile.zip" >> $tmpfile
-    rm -f tmp_upload.zip
+
+    if [[ $CC -eq 1 ]]; then # ZIP
+      cd $(dirname $file) && zip -r /tmp/tmp_upload.zip $file
+    else # TAR
+      cd $(dirname $file) && tar -zcvf /tmp/tmp_upload.tar.gz $file
+    fi
+
+    curl --progress-bar --upload-file /tmp/tmp_upload.* \
+      "https://transfer.sh/$basefile.$FORMAT" >> $tmpfile
+    rm -f /tmp/tmp_upload.*
+
   else
     # transfer file
-    curl --progress-bar --upload-file "$file" "https://transfer.sh/$basefile" >> $tmpfile
+    curl --progress-bar --upload-file "$file" \
+      "https://transfer.sh/$basefile" >> $tmpfile
   fi
+
 else
   # transfer pipe
   curl -s --upload-file "-" "https://transfer.sh/$file" >> $tmpfile
@@ -77,6 +97,7 @@ rm -f $tmpfile
 
 #Date
 DATE=`date +%A-%d-%B`
+DATE_RAW=`date +%Y%m%d`
 HOUR=`date +%H:%M`
 # config file
 # 1 line = token, 2 line = github use name, last line = last gist_ID
@@ -94,7 +115,11 @@ if [ ! -e $CONFIG_FILE ]; then
 
 
   # create new token for current PC
-  curl -s -i -H "Content-Type: application/json" -u $ACCOUNT:$PASSWORD -d '{"scopes":["gist"],"note":"Upload_APP_'$DATE$HOUR'"}' https://api.github.com/authorizations | grep \"token\" | awk '{ print $2 }' | sed s/\"//g | sed s/,//g > $CONFIG_FILE
+  curl -s -i -H "Content-Type: application/json" -u $ACCOUNT:$PASSWORD -d \
+    '{"scopes":["gist"],"note":"Upload_APP_'$DATE$HOUR'"}' \
+    https://api.github.com/authorizations | grep \"token\" | awk '{ print $2 }'\
+    | sed s/\"//g | sed s/,//g > $CONFIG_FILE
+
   if [ $? -ne 1 ]; then
     echo "Token Saved to $CONFIG_FILE"
     echo $ACCOUNT >> $CONFIG_FILE #Save user name
@@ -109,12 +134,17 @@ if [ ! -e $CONFIG_FILE ]; then
 
 
   # Existing upload list ?
-  curl -s  https://api.github.com/users/$ACCOUNT/gists | grep "Upload.md" 2>&1 > /dev/null
+  curl -s  https://api.github.com/users/$ACCOUNT/gists \
+  | grep "Upload.md" 2>&1 > /dev/null
 
   if [ $? -ne 0 ]; then
     # NO -> Create New upload list
 
-    curl -s -i -H  "Authorization: token $TOKEN_ID" -d '{"description":"Upload List", "public":"true", "files":{"Upload.md":{"content":"Upload list\n==\n *   '$DATE'  **'$HOUR'**   ['$file' ]('$LINK')" }}' https://api.github.com/gists | grep \"id\" | awk '{ print $2 }' | sed s/\"//g | sed s/,//g | head -1 >> $CONFIG_FILE
+    curl -s -i -H  "Authorization: token $TOKEN_ID" -d \
+      '{"description":"Upload List", "public":"true", "files":\
+      {"Upload.md":{"content":"Upload list\n==\n *   '$DATE'  **'$HOUR'**\
+        ['$file' ]('$LINK')" }}' https://api.github.com/gists | grep \"id\" |\
+        awk '{ print $2 }' | sed s/\"//g | sed s/,//g | head -1 >> $CONFIG_FILE
 
     if [ $? -ne 1 ]; then
       echo "New Gist created !"
@@ -126,7 +156,9 @@ if [ ! -e $CONFIG_FILE ]; then
 
   else
     # YES -> Add the Existing upload list ID to the config file
-    curl -s  https://api.github.com/users/$ACCOUNT/gists | grep -B 6 "Upload.md" |  grep \"id\" | awk '{ print $2  }' | sed s/\"//g | sed s/,//g | head -1 >> $CONFIG_FILE
+    curl -s https://api.github.com/users/$ACCOUNT/gists | grep -B 6 "Upload.md"\
+      |  grep \"id\" | awk '{ print $2  }' | sed s/\"//g | sed s/,//g | head -1\
+      >> $CONFIG_FILE
 
   fi
 
@@ -138,12 +170,40 @@ USERGIT=$( head -2 $CONFIG_FILE | tail -n 1  )
 ID_GIST=$(cat $CONFIG_FILE | tail -n 1)
 
 # get the content of the Gist
-OLD_TEXT=$(curl -s  https://api.github.com/users/$USERGIT/gists |  grep -A 6 "Upload.md" |  grep \"raw_url\" | awk '{ print $2  }' | sed s/\"//g | sed s/,//g | head -1 )
-OLD_TEXT=$(curl -s "$OLD_TEXT" )
+OLD_TEXT=$(curl -s  https://api.github.com/users/$USERGIT/gists |\
+  grep -A 6 "Upload.md" |  grep \"raw_url\" | awk '{ print $2  }' |\
+  sed s/\"//g | sed s/,//g | head -1 )
+
+LINK_GIST=`echo -e $OLD_TEXT | sed -e "s/\/raw.*$//"`
+# OLD_TEXT=$(curl -s "$OLD_TEXT" )
+curl -s "$OLD_TEXT" > /tmp/OLD_TEXT
+
+
+DATE_AGO=`date '+%Y%m%d' --date='14 days ago'`
+
+for EACH_DATE in `cat /tmp/OLD_TEXT | sed -n "/<\!---/,/-->/p" | sed "/-/d"`; do
+  if [[ EACH_DATE -le DATE_AGO ]]; then
+
+    let deleteline=`grep -n $EACH_DATE /tmp/OLD_TEXT | cut -d":" -f1`
+
+    let min=`expr $deleteline-1`
+    let max=`expr $deleteline+3`
+
+    echo -e "Item : `sed -n ${max}p /tmp/OLD_TEXT` -> deleted"
+
+    sed -i ${min},${max}d /tmp/OLD_TEXT
+
+  fi
+done
+
+OLD_TEXT=`cat /tmp/OLD_TEXT`
 ESCAPE_TEXT=$(printf  '%q' "$OLD_TEXT" | sed s/^$\'//g | sed s/\'$//g)
 
 # update it with new upload
-curl -s --request PATCH -H "Authorization: token $TOKEN_ID" -d '{"description": "updated list","public": true,"files": {"Upload.md": {"content": "'$ESCAPE_TEXT'\n *   '$DATE'  **'$HOUR'**   ['$file' ]('$LINK')"}}}' https://api.github.com/gists/$ID_GIST | grep "Upload.md"  2>&1 > /dev/null
+curl -s --request PATCH -H "Authorization: token $TOKEN_ID" -d\
+  '{"description": "updated list","public": true,"files": {"Upload.md":
+{"content": "'$ESCAPE_TEXT'\n<!---\n'$DATE_RAW'\n-->\n\n * '$DATE'  **'$HOUR'** ['$file' ]('$LINK')"}}}'\
+  https://api.github.com/gists/$ID_GIST | grep "Upload.md"  2>&1 > /dev/null
 
 if [ $? -ne 0 ]; then
   echo -e "\nFailed to uptdate Gist\n\nCreate a new setup"
@@ -153,5 +213,6 @@ if [ $? -ne 0 ]; then
     rm -f $CONFIG_FILE
   fi
 else
-  echo "Gist Updated !"
+  echo -e "\nGist Updated !"
+  echo -e $LINK_GIST
 fi

@@ -18,7 +18,9 @@ for file in $files; do
     tell ln -s $dir/$file ~/.$file
 done
 
-rm ~/.config/termite/config
-tell ln -s $dir/termite_config ~/.config/termite/config
+if [ -f ~/.config/termite ]; then
+  rm ~/.config/termite/config
+  tell ln -s $dir/termite_config ~/.config/termite/config
+fi
 
 zsh
