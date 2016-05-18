@@ -343,8 +343,16 @@ imap <C-s> <esc>:w!<CR>
 " Spell-Checking
 " zg add word to the spelling dictionary
 " zw remove it
-map <silent> <F7> "<Esc>:silent setlocal spell! spelllang=en<CR>"
-map <silent> <F6> "<Esc>:silent setlocal spell! spelllang=fr<CR>"
+map <silent> <leader><leader>en "<Esc>:silent setlocal spell! spelllang=en<CR>"
+map <silent> <leader><leader>fr "<Esc>:silent setlocal spell! spelllang=fr<CR>"
+hi clear SpellBad
+hi clear SpellCap
+hi clear SpellRare
+hi clear SpellLocal
+hi SpellBad   cterm=underline ctermfg=9  ctermbg=0 gui=undercurl
+hi SpellCap   cterm=underline ctermfg=14 ctermbg=0 gui=undercurl
+hi SpellRare  cterm=underline ctermfg=13 ctermbg=0 gui=undercurl
+hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
 " no morennoremap Q <nop>ex Mode
 nnoremap Q <nop>
