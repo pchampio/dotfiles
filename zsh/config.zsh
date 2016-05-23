@@ -4,7 +4,7 @@ HISTFILE=~/.zsh_history
 SAVEHIST=20000000
 
 
-[ -d ~/.vim/autoload/gruvbox ] && source ~/.vim/autoload/gruvbox/gruvbox_256palette.sh
+[ -d ~/.vim/bundle/gruvbox ] && source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 eval `dircolors ~/dotfiles/dircolors/gruvbox.dir_colors`
 
 # colored completion - use my LS_COLORS

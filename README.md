@@ -53,7 +53,7 @@ You can choose to install :
 * zsh :heart:
 
 
-### Git Config
+### Git Configuration
 Make sure you update `gitconfig` with your own name and email address otherwise, you'll be committing as me. :smile_cat:  
 `git config github.user {USERNAME}`  
 `git config --global core.excludesfile ~/.gitignore`  
