@@ -8,6 +8,13 @@ call plug#begin('~/.vim/bundle/')
 
 Plug 'tpope/vim-sensible'
 
+Plug 'tpope/vim-vinegar'
+let g:netrw_liststyle=3
+let g:netrw_special_syntax=1
+" let g:netrw_winsize=15
+nnoremap <silent> <Leader>k :Vexplore!<cr>
+nnoremap <silent> <Leader>n :Sexplore<cr>
+
 Plug 'henrik/vim-indexed-search'
 " don't move on *
 let g:indexed_search_dont_move=1
@@ -48,13 +55,14 @@ let g:gitgutter_map_keys = 0
 
 " Insert or delete brackets
 Plug 'cohama/lexima.vim'
+
 " -------------------
 " . command after a plugin map
 " -------------------
 Plug 'tpope/vim-repeat'
 
 " -------------------
-" change surround cs"'
+" surround
 " -------------------
 Plug 'tpope/vim-surround'
 
@@ -128,39 +136,6 @@ let g:NERDCustomDelimiters = {
 \ }
 
 " -------------------
-" Tree
-" -------------------
-Plug 'troydm/easytree.vim'
-
-function! EasyTreeFind()
-  let windows=[]
-  windo call add(windows, bufname('%'))
-  if windows == ['']
-    exe ':EasyTree '.expand('%:p:h')
-    exe 'set norelativenumber'
-    return
-  endif
-  for window in windows
-    if window =~ "easytree"
-       exe ':EasyTreeToggle'
-       break
-       " return
-    endif
-  endfor
-  let @a="\\<".expand('%:t')."\\>"
-  exe ':EasyTree '.expand('%:p:h')
-  exe 'set norelativenumber'
-  try
-    exe "normal! gg/\<c-r>a\<cr>"
-  catch
-    echo "noSuchfile"
-  endtry
-endfunction
-
-nnoremap <silent> <Leader>k :call EasyTreeFind()<cr>
-nmap <silent><Leader>n :EasyTreeToggle<cr>
-
-" -------------------
 " syntastic
 " -------------------
 Plug 'scrooloose/syntastic'
@@ -190,7 +165,9 @@ Plug 'christoomey/vim-tmux-navigator'
 " -------------------
 "  Powerline status line
 " -------------------
-Plug 'itchyny/lightline.vim'
+Plug 'vim-airline/vim-airline'
+let g:airline_powerline_fonts = 1
+" Plug 'itchyny/lightline.vim'
 
 let g:lightline = {
       \ 'colorscheme': 'gruvbox',
@@ -225,7 +202,7 @@ let g:lightline = {
 function! LightlineMode()
   let fname = expand('%:t')
   return fname == 'ControlP' ? 'CtrlP' :
-        \ fname =~ 'easytree' ? 'Easytree' :
+        \ fname =~ 'NetrwTree' ? 'Netrw' :
         \ fname == '__Mundo__' ? 'Gundo' :
         \ fname == '__Mundo_Preview__' ? 'Gundo Preview' :
         \ winwidth(0) > 60 ? lightline#mode() : ''
@@ -234,7 +211,7 @@ endfunction
 function! LightLineFilename()
   let l:basename=expand('%:p:h')
   let l:filename=expand('%:t')
-  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|easytree'
+  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
     return ''
   endif
   if l:filename == ''
@@ -274,16 +251,6 @@ let g:ctrlp_status_func = {
 \ 'prog': 'LightlineCtrlPStatusProgress',
 \ }
 
-" Main statusline callback function
-" Arguments:
-"   a:focus   : The focus of the prompt: "prt" or "win".
-"   a:byfname : In filename mode or in full path mode: "file" or "path".
-"   a:regex   : In regex mode: 1 or 0.
-"   a:prev    : The previous search mode.
-"   a:item    : The current search mode.
-"   a:next    : The next search mode.
-"   a:marked  : The number of marked files, or a comma separated list of
-"               the marked filenames.
 function! LightlineCtrlPStatusMain(focus, byfname, regex, prev, item, next, marked)
   let g:lightline.ctrlp_regex = a:regex
   let g:lightline.ctrlp_prev = a:prev
@@ -294,11 +261,6 @@ function! LightlineCtrlPStatusMain(focus, byfname, regex, prev, item, next, mark
   return lightline#statusline(0)
 endfunction
 
-" Progress statusline callback function
-" Arguments:
-"   a:status  : Either the number of files scanned so far, or a string
-"               indicating the current directory is being scanned with
-"               a user_command
 function! LightlineCtrlPStatusProgress(status)
   let g:lightline.ctrlp_status = a:status
   return lightline#statusline(0)
@@ -425,7 +387,7 @@ au WinEnter * set cursorline
 set cursorline
 
 " 80 columns
-set colorcolumn=80      " highlight the 80 column
+" set colorcolumn=80      " highlight the 80 column
 
 " relativ number
 set numberwidth=4
@@ -481,7 +443,7 @@ highlight SpecialKey ctermbg=none cterm=none
 set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add
 
 set ttyfast    " u got a fast terminal
-set lazyredraw " to avoid scrolling problems
+set lazyredraw
 set fillchars=vert:\|
 
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
