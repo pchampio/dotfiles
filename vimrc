@@ -8,8 +8,13 @@ call plug#begin('~/.vim/bundle/')
 
 Plug 'tpope/vim-sensible'
 
+Plug 'henrik/vim-indexed-search'
+" don't move on *
+let g:indexed_search_dont_move=1
+
 " -------------------
 "  Ctrl-P FuzzyFinder
+" -------------------
 Plug 'ctrlpvim/ctrlp.vim'
 let g:ctrlp_map='<c-p>'
 let g:ctrlp_cmd = 'CtrlPMixed'
@@ -386,10 +391,16 @@ set guicursor=a:blinkon0
 " Highlight VCS conflict markers
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
-set wildignore=*.a,*.o
-set wildignore+=.DS_Store,.git
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip
-set wildignore+=*~,*.swp,*.tmp
+set wildignore+=.hg,.git,.svn                           " Version control
+set wildignore+=*.aux,*.out,*.toc                       " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
+set wildignore+=*.luac                                  " Lua byte code
+set wildignore+=*.o,*.lo,*.obj,*.exe,*.dll,*.manifest   " compiled object files
+set wildignore+=*.pyc                                   " Python byte code
+set wildignore+=*.spl                                   " compiled spelling word lists
+set wildignore+=*.sw?                                   " Vim swap files
+set wildignore+=*~,*.swp,*.tmp                          " Swp and tmp files
+set wildignore+=*.DS_Store?                             " OSX bullshit
 
 filetype plugin indent on
 
@@ -413,9 +424,8 @@ au WinLeave * set nocursorline nocursorcolumn
 au WinEnter * set cursorline
 set cursorline
 
-" 90 columns
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-match OverLength /\%91v.\+/
+" 80 columns
+set colorcolumn=80      " highlight the 80 column
 
 " relativ number
 set numberwidth=4
@@ -539,9 +549,6 @@ endfunction
 nnoremap <silent> n :call <SID>nice_next('n')<cr>
 nnoremap <silent> N :call <SID>nice_next('N')<cr>
 
-" don't move on *
-noremap * *<c-o>zz
-
 " Note that remapping C-s requires flow control to be disabled
 " (e.g. in .bashrc or .zshrc)
 map <C-s> <esc>:w!<CR>
@@ -596,6 +603,7 @@ cnoreabbrev W! w!
 cnoreabbrev Q! q!
 cnoreabbrev Wq wq
 cnoreabbrev Wa wa
+cnoreabbrev aq qa
 cnoreabbrev wQ wq
 cnoreabbrev WQ wq
 cnoreabbrev W w
@@ -625,11 +633,14 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 " function
 " --------------------------
 
-" Vim jump to the last position when reopening a file
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-        \| exe "normal! g'\"" | endif
-endif
+" Go to the last known cursor position in a file
+autocmd BufReadPost *
+    \ if !(bufname("%") =~ '\(COMMIT_EDITMSG\)') &&
+    \   line("'\"") > 1 && line("'\"") < line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+autocmd FileType gitcommit startinsert
 
 " Remove trailing whitespace on save ignore markdown files
 function! s:RemoveTrailingWhitespaces()
@@ -639,7 +650,6 @@ function! s:RemoveTrailingWhitespaces()
   %s/\s\+$//ge
   call cursor(l,c)
 endfunction
-
 
 let blacklist = ['md', 'markdown', 'mrd', 'markdown.pandoc']
 au BufWritePre * if index(blacklist, &ft) < 0 | :call <SID>RemoveTrailingWhitespaces()
