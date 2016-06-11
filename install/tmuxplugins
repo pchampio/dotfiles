@@ -1,7 +1,0 @@
-#!/bin/bash
-
-rm -rf ~/.tmux/addons*
-git clone https://github.com/tmux-plugins/tmux-battery ~/.tmux/addonsBAT --depth 1
-git clone https://github.com/tmux-plugins/tmux-net-speed ~/.tmux/netSpeed
-#git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/addonsRES
-

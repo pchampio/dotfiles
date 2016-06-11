@@ -1,11 +1,9 @@
-
-snippet     malloc
-	(${1}*)malloc(sizeof($1)*${2});
-#===========================================================
-# scanf
-#===========================================================
-snippet     scanf
-	scanf("${1}", ${2});
-
-snippet     fscanf
-	fscanf(${1:#:file_pointer}, "${2}", ${3});
+snippet     malloc "malloc(sizeof())"
+malloc(sizeof($1)*${2:1});
+endsnippet
+snippet     scanf "scanf()"
+scanf("%${1}", ${2});
+endsnippet
+snippet     fscanf "fscanf(FILE, '%s', var)"
+fscanf(${1:#:file_pointer}, "${2}", ${3});
+endsnippet

@@ -1,0 +1,70 @@
+# ----------------------------------------------------------------------
+# file:     ~/.config/termite/config
+# Termite config file
+# ----------------------------------------------------------------------
+
+[options]
+  # Font
+  font = Hack 11
+
+  geometry = 1280x680
+  icon_name = terminal
+  audible_bell = false
+  mouse_autohide = true
+  allow_bold = true
+  dynamic_title = true
+  clickable_url = true
+
+  # "system", "on" or "off"
+  cursor_blink = off
+
+  # "block", "underline" or "ibeam"
+  cursor_shape = block
+
+  # $BROWSER is used by default
+  browser = /usr/bin/google-chrome-stable
+
+  scroll_on_output = false
+  scroll_on_keystroke = false
+
+[colors]
+
+  # hard contrast: background = #1d2021
+  background = #282828
+  # soft contrast: background = #32302f
+  foreground = #ebdbb2
+  foreground_bold = #ebdbb2
+
+  # dark0 + gray
+  color0 = #282828
+  color8 = #928374
+
+  # neutral_red + bright_red
+  color1 = #cc241d
+  color9 = #fb4934
+
+  # neutral_green + bright_green
+  color2 = #98971a
+  color10 = #b8bb26
+
+  # neutral_yellow + bright_yellow
+  color3 = #d79921
+  color11 = #fabd2f
+
+  # neutral_blue + bright_blue
+  color4 = #458588
+  color12 = #83a598
+
+  # neutral_purple + bright_purple
+  color5 = #b16286
+  color13 = #d3869b
+
+  # neutral_aqua + faded_aqua
+  color6 = #689d6a
+  color14 = #8ec07c
+
+  # light4 + light1
+  color7 = #a89984
+  color15 = #ebdbb2
+
+# vim:set ft=config:

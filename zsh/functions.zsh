@@ -97,3 +97,62 @@ function spectrum_ls() {
     print -P -- "$code: %F{$code}Test%f"
   done
 }
+
+# Share your terminal as a web application
+# https://github.com/yudai/gotty
+#
+# ON HOST/CLIENT
+#   GatewayPorts yes
+#   AllowTcpForwarding yes
+share() {
+  cmd="tmux -2 attach-session -t `tmux display -p '#S'`"
+  echo "User = pair"
+  unset TMUX;
+
+  passwd=pierre
+  args=""
+  host="localhost"
+
+  vared -p ' Password : ' -c passwd
+  echo -n '\nAllow inputs [default no] : '
+  read inputs
+  if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
+  then
+    cmd="tm"
+    args+="-w"
+  fi
+
+  echo -n '\nAccept only one client [default yes] : '
+  read inputs
+  if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]
+  then
+  else
+    args+=" --once"
+  fi
+
+  # When you send secret information through GoTTY, we strongly recommend you use the -t option
+  echo -n '\nEnables TLS/SSL [default no] : '
+  read inputs
+  if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
+  then
+    args+=" -t"
+    if [[ ! -f ~/.gotty.key ]]; then
+      echo -n "\nNeed ->  openssl req -x509 -nodes -days 9999 -newkey rsa:2048 -keyout ~/.gotty.key -out ~/.gotty.crt\n"
+      exit
+    fi
+  fi
+
+  if [[ $# -eq 1 ]]; then
+    cmd=$1
+  fi
+
+  # Share
+  ssh -NR 22280:localhost:2280 ubuntu@drakirus.xyz 2>&1 &
+  PID=$!
+
+  # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
+  eval "gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd"
+
+  kill -9 $PID
+
+}

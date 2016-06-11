@@ -1,23 +1,52 @@
+set nocompatible
+runtime! macros/matchit.vim
+
 " Leader Mappings
 let mapleader = ","
 
 " Add bundles
-set nocompatible
-
 call plug#begin('~/.vim/bundle/')
+Plug 'KabbAmine/vCoolor.vim'
 
-Plug 'tpope/vim-sensible'
+Plug 'scrooloose/nerdtree'
 
-Plug 'tpope/vim-vinegar'
-let g:netrw_liststyle=3
-let g:netrw_special_syntax=1
-" let g:netrw_winsize=15
-nnoremap <silent> <Leader>k :Vexplore!<cr>
-nnoremap <silent> <Leader>n :Sexplore<cr>
+" NERDTress File highlighting
+function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
+exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+endfunction
+
+au VimEnter * call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
+au VimEnter * call NERDTreeHighlightFile('html', 'green', 'none', 'green', '#151515')
+au VimEnter * call NERDTreeHighlightFile('slim', 'green', 'none', 'green', '#151515')
+au VimEnter * call NERDTreeHighlightFile('coffee', '5', 'none', '#ff00ff', '#151515')
+au VimEnter * call NERDTreeHighlightFile('styl', '5', 'none', '#ff00ff', '#151515')
+au VimEnter * call NERDTreeHighlightFile('less', '5', 'none', '#ff00ff', '#151515')
+au VimEnter * call NERDTreeHighlightFile('scss', '5', 'none', '#ff00ff', '#151515')
+au VimEnter * call NERDTreeHighlightFile('sass', '5', 'none', '#ff00ff', '#151515')
+au VimEnter * call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
+au VimEnter * call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
+au VimEnter * call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
+au VimEnter * call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
+au VimEnter * call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
+au VimEnter * call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
+au VimEnter * call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
+au VimEnter * call NERDTreeHighlightFile('js', 'cyan', 'none', 'cyan', '#151515')
+au VimEnter * call NERDTreeHighlightFile('rb', 'Red', 'none', '#ffa500', '#151515')
+au VimEnter * call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
+
+map <Leader>n :NERDTreeToggle<CR>
+map <Leader>k :NERDTreeFind<CR>
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let g:NERDTreeWinSize=35
+let g:NERDTreeMinimalUI=1
 
 Plug 'henrik/vim-indexed-search'
 " don't move on *
 let g:indexed_search_dont_move=1
+nmap c* cgn
 
 " -------------------
 "  Ctrl-P FuzzyFinder
@@ -29,6 +58,14 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
     \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
 \ }
+let g:ctrlp_buffer_func = { 'enter': 'BrightHighlightOn', 'exit':  'BrightHighlightOff', }
+function BrightHighlightOn()
+  highlight  CursorLine ctermbg=238 ctermfg=None
+endfunction
+
+function BrightHighlightOff()
+  highlight  CursorLine ctermbg=237 ctermfg=None
+endfunction
 " use ctrl p for searching
 nnoremap \ :CtrlPLine<cr>
 " Tag fzf
@@ -55,6 +92,7 @@ let g:gitgutter_map_keys = 0
 
 " Insert or delete brackets
 Plug 'cohama/lexima.vim'
+nmap <leader>p :let b:lexima_disabled=1<CR>
 
 " -------------------
 " . command after a plugin map
@@ -101,7 +139,7 @@ function! Comments() " comment or not
 endfunction
 
 nnoremap <leader><leader>r :GrammarousReset<cr>
-nnoremap <Leader><Leader>s : GrammarousCheck
+nnoremap <Leader><Leader>s :GrammarousCheck
       \ --lang=<c-r>=GetLang()<cr> <c-r>=Comments()<cr><cr>
 
 vnoremap <Leader><Leader>s :'<,'> GrammarousCheck
@@ -165,14 +203,12 @@ Plug 'christoomey/vim-tmux-navigator'
 " -------------------
 "  Powerline status line
 " -------------------
-Plug 'vim-airline/vim-airline'
-let g:airline_powerline_fonts = 1
-" Plug 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'
 
 let g:lightline = {
       \ 'colorscheme': 'gruvbox',
       \ 'component': {
-      \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
+      \   'readonly': '%{&filetype=="help"?"":&filetype=="netrw"?"":&readonly?"":""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":""}',
       \ },
       \ 'component_function': {
@@ -181,17 +217,18 @@ let g:lightline = {
       \   'filetype':     'LightlineFiletype',
       \   'fileencoding': 'LightlineFileencoding',
       \   'ctrlp':        'LightlineCtrlP',
+      \   'ctrlpNbfile':  'LightlineCtrlPNbFile',
       \   'mode':         'LightlineMode',
       \   'percent':      'LightlineFilepercent',
       \ },
       \ 'active': {
-      \   'left': [ [ 'mode', 'paste', 'spell' ],
-      \             [ 'filename', 'ctrlp', 'modified' ] ],
+      \   'left': [ [ 'mode', 'paste', 'spell', 'readonly' ],
+      \             [ 'filename', 'ctrlp', 'ctrlpNbfile', 'modified' ] ],
       \   'right': [ [ 'lineinfo' ], ['percent'],
       \ [ 'fileformat', 'fileencoding', 'filetype' ] ]
       \ },
       \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
+      \   'readonly': '(&filetype!="help"&& &filetype!="netrw" && &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified))',
       \ },
       \ 'separator': { 'left': '', 'right': '' },
@@ -202,10 +239,10 @@ let g:lightline = {
 function! LightlineMode()
   let fname = expand('%:t')
   return fname == 'ControlP' ? 'CtrlP' :
-        \ fname =~ 'NetrwTree' ? 'Netrw' :
+        \ fname =~ 'NERD_tree' ? 'NERDTree' :
         \ fname == '__Mundo__' ? 'Gundo' :
         \ fname == '__Mundo_Preview__' ? 'Gundo Preview' :
-        \ winwidth(0) > 60 ? lightline#mode() : ''
+        \ winwidth(0) > 70 ? lightline#mode() : ''
 endfunction
 
 function! LightLineFilename()
@@ -232,17 +269,21 @@ function! LightlineCtrlP()
       return g:lightline.ctrlp_status
     else
       if exists('g:lightline.ctrlp_item')
-        return lightline#concatenate(
-              \  [
-              \    g:lightline.ctrlp_item,
-              \  ],
-              \  0
-              \)
+        return g:lightline.ctrlp_item
       endif
     endif
   else
     return ''
   endif
+endfunction
+
+function! LightlineCtrlPNbFile()
+  if expand('%:t') =~ 'ControlP'
+    if exists('g:lightline.ctrlp_item')
+      return g:lightline.ctrlp_marked
+    endif
+  endif
+  return ''
 endfunction
 
 " Set CtrlP statusline callback functions
@@ -252,10 +293,7 @@ let g:ctrlp_status_func = {
 \ }
 
 function! LightlineCtrlPStatusMain(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_regex = a:regex
-  let g:lightline.ctrlp_prev = a:prev
   let g:lightline.ctrlp_item = a:item
-  let g:lightline.ctrlp_next = a:next
   let g:lightline.ctrlp_marked = a:marked
   silent! unlet g:lightline.ctrlp_status
   return lightline#statusline(0)
@@ -267,21 +305,42 @@ function! LightlineCtrlPStatusProgress(status)
 endfunction
 
 function! LightlineFileformat()
+  let l:filename=expand('%:t')
+  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
+    return ''
+  endif
   return winwidth(0) > 70 ? &fileformat : ''
 endfunction
 
 function! LightlineFiletype()
+  let l:filename=expand('%:t')
+  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
+    return ''
+  endif
   return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : '?') : ''
 endfunction
 
 function! LightlineFileencoding()
+  let l:filename=expand('%:t')
+  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
+    if l:filename =~ 'ControlP'
+      return 'path :'
+    endif
+    return ''
+  endif
   return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
 endfunction
 
 function! LightlineFilepercent()
+  let l:filename=expand('%:t')
+  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
+    if l:filename =~ 'ControlP'
+      return getcwd()
+    endif
+    return ''
+  endif
   return winwidth(0) > 70 ? (line('.') * 100 / line('$') . '%') : ''
 endfunction
-
 
 " -------------------
 " <leader>u for git like undo
@@ -310,6 +369,7 @@ let g:neocomplete#auto_completion_start_length = 1
 let g:neocomplete#enable_fuzzy_completion = 1
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
+inoremap <expr><leader>s  pumvisible() ? "\<C-y><esc>:w!\<cr>" : "\<esc>:w!\<cr>"
 
 " -------------------
 "  Snippets
@@ -318,10 +378,11 @@ Plug 'SirVer/ultisnips'
 
 " Snippets are separated from the engine.
 Plug 'honza/vim-snippets'
+let g:UltiSnipsSnippetDirectories=["UltiSnips", $HOME.'/dotfiles/snippets']
 
 " 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
-let g:UltiSnipsJumpForwardTrigger  = "<leader><TAB>"
+let g:UltiSnipsJumpForwardTrigger  = "<leader>s"
 
 " Enable heavy omni completion.
 if !exists('g:neocomplete#force_omni_input_patterns')
@@ -387,7 +448,7 @@ au WinEnter * set cursorline
 set cursorline
 
 " 80 columns
-" set colorcolumn=80      " highlight the 80 column
+set colorcolumn=80      " highlight the 80 column
 
 " relativ number
 set numberwidth=4
@@ -462,10 +523,10 @@ set splitbelow
 set splitright
 
 " resizing a window split
-map <Left> <C-w><
-map <Down> <C-W>-
-map <Up> <C-W>+
-map <Right> <C-w>>
+map <Left> <C-w>10<
+map <Down> <C-W>5-
+map <Up> <C-W>5+
+map <Right> <C-w>10>
 
 "Moving lines
 nnoremap <M-j> :m .+1<CR>==
@@ -480,21 +541,30 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
 " Quicker navigation
-noremap H ^
+noremap H 0^
 noremap L g_
 " noremap K 5k
 " noremap J 5j
 noremap K {
 noremap J }
 
+" Easy yank
+noremap Y y$
+
 "Easy :noh
 map <leader>h :noh<cr>
+
+" Switch CMD to the dir of the open buffer
+map <leader>cd :cd %:p:h<cr> :pwd<cr>
 
 " Sudo save
 cmap w!! w !sudo tee > /dev/null %
 
 " Insert New line
 noremap U o<ESC>
+
+" Përfect tag closer (xml)
+inoremap </ </<C-x><C-o>
 
 " Insert Content of register "
 inoremap <Leader><Leader> <c-r>"
@@ -513,8 +583,8 @@ nnoremap <silent> N :call <SID>nice_next('N')<cr>
 
 " Note that remapping C-s requires flow control to be disabled
 " (e.g. in .bashrc or .zshrc)
-map <C-s> <esc>:w!<CR>
-imap <C-s> <esc>:w!<CR>
+map <Leader>s <esc>:w!<CR>
+" imap <C-s> <esc>:w!<CR>
 
 " Spell-Checking
 " zg add word to the spelling dictionary
@@ -571,6 +641,7 @@ cnoreabbrev WQ wq
 cnoreabbrev W w
 cnoreabbrev Q q
 cnoreabbrev qq q
+cnoreabbrev push !cat\|push <c-r>=expand('%:t')<cr> > /tmp/up.tmp<cr>u:vs /tmp/up.tmp<cr> :set ft=help
 
 " open file name under cursor create if necessary
 nnoremap gf :view <cfile><cr>
@@ -640,6 +711,5 @@ function! s:VSetSearch()
   let @/ = '\V' . substitute(escape(@@, '\'), '\n', '\\n', 'g')
   let @@ = temp
 endfunction
-
 vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>
 vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
