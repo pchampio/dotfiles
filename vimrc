@@ -7,6 +7,7 @@ let mapleader = ","
 " Add bundles
 call plug#begin('~/.vim/bundle/')
 Plug 'KabbAmine/vCoolor.vim'
+Plug 'ap/vim-css-color'
 
 Plug 'scrooloose/nerdtree'
 
@@ -75,9 +76,11 @@ nnoremap <leader>t :CtrlPTag<cr>
 " A collection of +70 language packs for Vim
 " -------------------
 Plug 'sheerun/vim-polyglot'
+let g:polyglot_disabled = ['javascript']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
+Plug 'jelera/vim-javascript-syntax'
 
 " -------------------
 " leader m to expand a split
@@ -370,6 +373,7 @@ let g:neocomplete#enable_fuzzy_completion = 1
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 inoremap <expr><leader>s  pumvisible() ? "\<C-y><esc>:w!\<cr>" : "\<esc>:w!\<cr>"
+inoremap <expr><leader><tab>  pumvisible() ? "\<C-y><esc>:w!\<cr>" : "\<esc>:w!\<cr>"
 
 " -------------------
 "  Snippets
@@ -459,11 +463,6 @@ set number
 set visualbell   " Empeche Vim de beeper
 set noerrorbells " Empeche Vim de beeper
 
-" Reduce timeout after <ESC> is recvd. This is only a good idea on fast links.
-set ttimeout
-set ttimeoutlen=50
-set notimeout
-
 " tell it to use an undo file
 set undofile
 " set a directory to store the undo history
@@ -528,12 +527,26 @@ map <Down> <C-W>5-
 map <Up> <C-W>5+
 map <Right> <C-w>10>
 
-"Moving lines
-nnoremap <M-j> :m .+1<CR>==
-nnoremap <M-k> :m .-2<CR>==
-vnoremap <M-j> :m '>+1<CR>gv=gv
-vnoremap <M-k> :m '<-2<CR>gv=gv
+" ALT Mappings
+if !has('gui_running')
+  set ttimeoutlen=10
+  augroup FastEscape
+    autocmd!
+    autocmd InsertEnter * set timeoutlen=0
+    autocmd InsertLeave * set timeoutlen=500
+  augroup END
+endif
 
+function! Altmap(char)
+  if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
+endfunction
+
+"Moving lines
+execute 'nnoremap'.Altmap('k').":m .-2<CR>=="
+execute 'nnoremap'.Altmap('j').":m .+1<CR>=="
+execute 'vnoremap'.Altmap('k').":m '<-2<CR>gv=gv"
+
+execute 'vnoremap'.Altmap('j').":m '>+1<CR>gv=gv"
 " Quicker window movement
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -612,11 +625,6 @@ nnoremap Q <nop>
 " use space for moving to the newt word
 noremap <space> 2w
 
-" ALT Mappings (Macro conflict)
-execute "set <M-k>=\ek"
-execute "set <M-j>=\ej"
-execute "set <M-s>=\es"
-
 noremap <F1> <Nop>
 
 " Pipe output of shell command into vim buffer
@@ -688,21 +696,11 @@ let blacklist = ['md', 'markdown', 'mrd', 'markdown.pandoc']
 au BufWritePre * if index(blacklist, &ft) < 0 | :call <SID>RemoveTrailingWhitespaces()
 
 " This allows you to visually select a section and then hit @ to run a macro on all lines.
-" Prevent the collision between escape and alt
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 function! ExecuteMacroOverVisualRange()
-  execute "nnoremap @ @"
-  execute "set <M-k>="
-  execute "set <M-j>="
-  execute "set <M-s>="
   echo "@".getcmdline()
   execute ":'<,'>normal @".nr2char(getchar())
-  execute "set <M-k>=\ek"
-  execute "set <M-j>=\ej"
-  execute "set <M-s>=\es"
-  execute "nnoremap @ v:<C-u>call ExecuteMacroOverVisualRange()<CR>"
 endfunction
-nnoremap @ v:<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 " Visual search mappings
 function! s:VSetSearch()
