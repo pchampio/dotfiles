@@ -1,20 +1,21 @@
 set nocompatible
 runtime! macros/matchit.vim
-
 " Leader Mappings
 let mapleader = ","
 
 " Add bundles
 call plug#begin('~/.vim/bundle/')
+
 Plug 'KabbAmine/vCoolor.vim'
-Plug 'ap/vim-css-color'
+let g:vcoolor_map = '<c-b>'
+
+Plug 'gorodinskiy/vim-coloresque'
 
 Plug 'scrooloose/nerdtree'
-
 " NERDTress File highlighting
 function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
-exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
-exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+  exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
+  exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
 endfunction
 
 au VimEnter * call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
@@ -29,6 +30,7 @@ au VimEnter * call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#15
 au VimEnter * call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
 au VimEnter * call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
 au VimEnter * call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
+au VimEnter * call NERDTreeHighlightFile('rc', 'yellow', 'none', 'yellow', '#151515')
 au VimEnter * call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
 au VimEnter * call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
 au VimEnter * call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
@@ -38,23 +40,26 @@ au VimEnter * call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#
 
 map <Leader>n :NERDTreeToggle<CR>
 map <Leader>k :NERDTreeFind<CR>
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeWinSize=35
 let g:NERDTreeMinimalUI=1
 
-Plug 'henrik/vim-indexed-search'
-" don't move on *
-let g:indexed_search_dont_move=1
 nmap c* cgn
 
 " -------------------
 "  Ctrl-P FuzzyFinder
 " -------------------
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'nixprime/cpsm', {
+      \   'do': './install.sh'
+      \ }
+let g:ctrlp_match_func = {'match': 'cpsm#CtrlPMatch'}
+let g:cpsm_query_inverting_delimiter = " "
+let g:ctrlp_max_files = 0
+let g:ctrlp_line_prefix = ' '
 let g:ctrlp_map='<c-p>'
 let g:ctrlp_cmd = 'CtrlPMixed'
+" let g:ctrlp_dotfiles = 1
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
     \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
@@ -63,7 +68,6 @@ let g:ctrlp_buffer_func = { 'enter': 'BrightHighlightOn', 'exit':  'BrightHighli
 function BrightHighlightOn()
   highlight  CursorLine ctermbg=238 ctermfg=None
 endfunction
-
 function BrightHighlightOff()
   highlight  CursorLine ctermbg=237 ctermfg=None
 endfunction
@@ -111,6 +115,7 @@ Plug 'tpope/vim-surround'
 " https://languagetool.org/fr/
 " -------------------
 Plug 'rhysd/vim-grammarous'
+let g:grammarous#jar_url = 'https://www.languagetool.org/download/LanguageTool-3.3.zip'
 let g:grammarous#hooks = {}
 function! g:grammarous#hooks.on_check(errs)
     nmap <buffer><C-n> <Plug>(grammarous-move-to-next-error)
@@ -141,11 +146,11 @@ function! Comments() " comment or not
   endif
 endfunction
 
-nnoremap <leader><leader>r :GrammarousReset<cr>
-nnoremap <Leader><Leader>s :GrammarousCheck
+nnoremap <leader>R :GrammarousReset<cr>
+nnoremap <Leader>S :GrammarousCheck
       \ --lang=<c-r>=GetLang()<cr> <c-r>=Comments()<cr><cr>
 
-vnoremap <Leader><Leader>s :'<,'> GrammarousCheck
+vnoremap <Leader>S :'<,'> GrammarousCheck
       \ --lang=<c-r>=GetLang()<cr> <c-r>=Comments()<cr><cr>
 
 " -------------------
@@ -363,8 +368,8 @@ let g:mundo_verbose_graph=0
 " let b:vcm_tab_complete = 'tags'
 
 " OR
-
 Plug 'Shougo/neocomplete.vim'
+
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
@@ -372,10 +377,9 @@ let g:neocomplete#auto_completion_start_length = 1
 let g:neocomplete#enable_fuzzy_completion = 1
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
-inoremap <expr><leader>s  pumvisible() ? "\<C-y><esc>:w!\<cr>" : "\<esc>:w!\<cr>"
-inoremap <expr><leader><tab>  pumvisible() ? "\<C-y><esc>:w!\<cr>" : "\<esc>:w!\<cr>"
+inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w!\<cr>"
+nnoremap <leader><leader> :w!<cr>
 
-" -------------------
 "  Snippets
 " -------------------
 Plug 'SirVer/ultisnips'
@@ -386,12 +390,7 @@ let g:UltiSnipsSnippetDirectories=["UltiSnips", $HOME.'/dotfiles/snippets']
 
 " 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
-let g:UltiSnipsJumpForwardTrigger  = "<leader>s"
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
+let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
 
 let g:simpledb_show_timing = 0
 Plug 'ivalkeen/vim-simpledb'
@@ -420,7 +419,7 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 set wildignore+=.hg,.git,.svn                           " Version control
 set wildignore+=*.aux,*.out,*.toc                       " LaTeX intermediate files
-set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
+" set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
 set wildignore+=*.luac                                  " Lua byte code
 set wildignore+=*.o,*.lo,*.obj,*.exe,*.dll,*.manifest   " compiled object files
 set wildignore+=*.pyc                                   " Python byte code
@@ -453,6 +452,7 @@ set cursorline
 
 " 80 columns
 set colorcolumn=80      " highlight the 80 column
+set synmaxcol=190
 
 " relativ number
 set numberwidth=4
@@ -527,16 +527,10 @@ map <Down> <C-W>5-
 map <Up> <C-W>5+
 map <Right> <C-w>10>
 
-" ALT Mappings
-if !has('gui_running')
-  set ttimeoutlen=10
-  augroup FastEscape
-    autocmd!
-    autocmd InsertEnter * set timeoutlen=0
-    autocmd InsertLeave * set timeoutlen=500
-  augroup END
-endif
+" TIME Out len
+set timeoutlen=300 ttimeoutlen=0
 
+" ALT keys Mappings
 function! Altmap(char)
   if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
 endfunction
@@ -545,8 +539,8 @@ endfunction
 execute 'nnoremap'.Altmap('k').":m .-2<CR>=="
 execute 'nnoremap'.Altmap('j').":m .+1<CR>=="
 execute 'vnoremap'.Altmap('k').":m '<-2<CR>gv=gv"
-
 execute 'vnoremap'.Altmap('j').":m '>+1<CR>gv=gv"
+
 " Quicker window movement
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -558,11 +552,10 @@ noremap H 0^
 noremap L g_
 " noremap K 5k
 " noremap J 5j
-noremap K {
 noremap J }
+noremap K {
 
-" Easy yank
-noremap Y y$
+inoremap ;; <esc>A;<esc>
 
 "Easy :noh
 map <leader>h :noh<cr>
@@ -579,9 +572,6 @@ noremap U o<ESC>
 " Përfect tag closer (xml)
 inoremap </ </<C-x><C-o>
 
-" Insert Content of register "
-inoremap <Leader><Leader> <c-r>"
-
 " searching
 function! s:nice_next(cmd)
   let view = winsaveview()
@@ -594,20 +584,15 @@ endfunction
 nnoremap <silent> n :call <SID>nice_next('n')<cr>
 nnoremap <silent> N :call <SID>nice_next('N')<cr>
 
-" Note that remapping C-s requires flow control to be disabled
-" (e.g. in .bashrc or .zshrc)
-map <Leader>s <esc>:w!<CR>
-" imap <C-s> <esc>:w!<CR>
-
 " Spell-Checking
 " zg add word to the spelling dictionary
 " zw remove it
-map <silent> <leader><leader>en <Esc>:silent setlocal spell! spelllang=en<CR>
-map <silent> <leader><leader>fr <Esc>:silent setlocal spell! spelllang=fr<CR>
-map <silent> <leader><leader>a <Esc>zg
-map <silent> <leader><leader>d <Esc>zw
+nnoremap <silent> <leader>en <Esc>:silent setlocal spell! spelllang=en<CR>
+nnoremap <silent> <leader>fr <Esc>:silent setlocal spell! spelllang=fr<CR>
+nnoremap <silent> <leader>all <Esc>:silent setlocal spell! spelllang=fr,en<CR>
+nnoremap <silent> <leader>a <Esc>zg
+nnoremap <silent> <leader>d <Esc>zw
 hi clear SpellBad
-hi clear SpellCap
 hi clear SpellRare
 hi clear SpellLocal
 hi SpellBad   cterm=underline ctermfg=9  ctermbg=0 gui=undercurl
@@ -617,7 +602,7 @@ hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en
 autocmd FileType gitcommit setlocal spell spelllang=fr,en
-noremap <silent> <M-s> ei<C-x>s
+execute 'nnoremap'.Altmap('s')."ei<c-x>s"
 
 " no more ex Mode
 nnoremap Q <nop>
@@ -664,16 +649,15 @@ vmap > >gv
 au BufNewFile,BufRead *.conf setf ngnix
 
 " Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType css setlocal omnifunc=
 
 " --------------------------
 " function
 " --------------------------
-
 " Go to the last known cursor position in a file
 autocmd BufReadPost *
     \ if !(bufname("%") =~ '\(COMMIT_EDITMSG\)') &&

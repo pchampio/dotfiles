@@ -70,7 +70,7 @@ function extract() {
     esac
 
     (( success = $success > 0 ? $success : $? ))
-    (( $success == 0 )) && (( $remove_archive == 0 )) && rm "$1"
+    (( $success == 0 )) && (( $remove_archive == 1 )) && rm "$1"
     shift
   done
 }
