@@ -235,7 +235,6 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'itchyny/lightline.vim'
 
 let g:lightline = {
-;q
       \ 'colorscheme': 'gruvbox',
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&filetype=="netrw"?"":&readonly?"":""}',
