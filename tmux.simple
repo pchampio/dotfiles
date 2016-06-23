@@ -1,0 +1,14 @@
+# vim:set ft=tmux:
+source-file "$HOME/.tmux.conf"
+bind C-c display "Compatible mode on"\;
+
+set-window-option -g window-status-format "#[fg=colour235,bg=colour8] #[fg=black,bg=colour8]#I:#P #[fg=colour8,bg=brightblue] #[bg=brightblue,fg=black]#W #[fg=brightblue,bg=colour235] "
+set-window-option -g window-status-current-format "#[fg=colour235,bg=colour8] #[fg=black,bg=colour8]#I:#P #[fg=colour8,bg=colour5] #[bg=colour5,fg=black]#W #[fg=colour5,bg=colour235] "
+
+set -g status-left "#[bold,fg=colour232,bg=colour254] #H #[nobold,fg=colour254,bg=colour235] "
+set -g status-right "#{prefix_highlight} #[fg=colour7]%a %d %b %Y#[fg=colour8, bg=colour235] #[fg=black, bg=colour8] %H:%M:%S#[fg=colour254, bg=colour8] #[fg=colour232,bg=colour254, bold] #S "
+
+bind C-c source-file "$HOME/.tmux.conf"
+
+set -g @prefix_highlight_show_copy_mode 'on'
+run-shell ~/dotfiles/bin/prefix_highlight.tmux

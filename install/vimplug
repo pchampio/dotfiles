@@ -35,13 +35,6 @@ if [ ! -e $HOME/.vim/spell ]; then
   wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.spl
 fi
 
-if [ ! -e  $HOME/.vim/syntax/ngnix.vim ]; then
-  explain "Nginx syntax"
-  # Nginx syntax
-  curl -flo ~/.vim/syntax/ngnix.vim --create-dirs \
-    https://raw.githubusercontent.com/nginx/nginx/master/contrib/vim/syntax/nginx.vim
-fi
-
 explain "Vim plugins"
 vim +PlugUpgrade +qa
 vim +PlugInstall +qa

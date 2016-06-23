@@ -2,6 +2,7 @@ set nocompatible
 runtime! macros/matchit.vim
 " Leader Mappings
 let mapleader = ","
+noremap ; :
 
 " Add bundles
 call plug#begin('~/.vim/bundle/')
@@ -43,8 +44,28 @@ map <Leader>k :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeWinSize=35
 let g:NERDTreeMinimalUI=1
+let g:LoupeHighlightGroup='IncSearch'
 
+" searching
+Plug 'wincent/loupe'
 nmap c* cgn
+map <leader>h <Plug>(LoupeClearHighlight)
+let g:LoupeCenterResults=0
+let g:LoupeHighlightGroup='IncSearch'
+
+function! s:nice_next(cmd)
+  let view = winsaveview()
+  execute "normal! " . a:cmd
+  if view.topline != winsaveview().topline
+    normal! zz
+  endif
+endfunction
+
+nnoremap <silent> n :call <SID>nice_next('n')<cr>
+nnoremap <silent> N :call <SID>nice_next('N')<cr>
+
+execute 'nnoremap <silent> # :keepjumps normal #``<cr>:call loupe#private#hlmatch()<cr>'
+execute 'nnoremap <silent> * :keepjumps normal *``<cr>:call loupe#private#hlmatch()<cr>'
 
 " -------------------
 "  Ctrl-P FuzzyFinder
@@ -84,7 +105,7 @@ let g:polyglot_disabled = ['javascript']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
-Plug 'jelera/vim-javascript-syntax'
+Plug 'othree/yajs.vim'
 
 " -------------------
 " leader m to expand a split
@@ -214,6 +235,7 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'itchyny/lightline.vim'
 
 let g:lightline = {
+;q
       \ 'colorscheme': 'gruvbox',
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&filetype=="netrw"?"":&readonly?"":""}',
@@ -550,15 +572,14 @@ nnoremap <C-l> <C-w>l
 " Quicker navigation
 noremap H 0^
 noremap L g_
-" noremap K 5k
-" noremap J 5j
-noremap J }
-noremap K {
+noremap J :keepjumps normal }<cr>
+noremap K :keepjumps normal {<cr>
+vnoremap J }
+vnoremap K {
+noremap j gj
+noremap k gk
 
 inoremap ;; <esc>A;<esc>
-
-"Easy :noh
-map <leader>h :noh<cr>
 
 " Switch CMD to the dir of the open buffer
 map <leader>cd :cd %:p:h<cr> :pwd<cr>
@@ -569,20 +590,8 @@ cmap w!! w !sudo tee > /dev/null %
 " Insert New line
 noremap U o<ESC>
 
-" Përfect tag closer (xml)
+" Perfect tag closer (xml)
 inoremap </ </<C-x><C-o>
-
-" searching
-function! s:nice_next(cmd)
-  let view = winsaveview()
-  execute "normal! " . a:cmd
-  if view.topline != winsaveview().topline
-    normal! zz
-  endif
-endfunction
-
-nnoremap <silent> n :call <SID>nice_next('n')<cr>
-nnoremap <silent> N :call <SID>nice_next('N')<cr>
 
 " Spell-Checking
 " zg add word to the spelling dictionary
@@ -610,8 +619,6 @@ nnoremap Q <nop>
 " use space for moving to the newt word
 noremap <space> 2w
 
-noremap <F1> <Nop>
-
 " Pipe output of shell command into vim buffer
 function! ShellIntoBuff()
   call inputsave()
@@ -634,19 +641,18 @@ cnoreabbrev WQ wq
 cnoreabbrev W w
 cnoreabbrev Q q
 cnoreabbrev qq q
-cnoreabbrev push !cat\|push <c-r>=expand('%:t')<cr> > /tmp/up.tmp<cr>u:vs /tmp/up.tmp<cr> :set ft=help
+
+cnoreabbrev push !cat\|push <c-r>=expand('%:t')<cr> > /tmp/up.tmp<cr>u:vs /tmp/up.tmp<cr> :set ft=help <cr>
+
+nnoremap ; :
+nnoremap : ;
+vnoremap ; :
+vnoremap : ;
+cnoreabbrev ; :
+cnoreabbrev : ;
 
 " open file name under cursor create if necessary
 nnoremap gf :view <cfile><cr>
-
-" Align blocks of text and keep them selected
-nmap < <C-v><
-nmap > <C-v>>
-vmap < <gv
-vmap > >gv
-
-" FileType syntax highlight
-au BufNewFile,BufRead *.conf setf ngnix
 
 " Enable omni completion.
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -695,3 +701,16 @@ function! s:VSetSearch()
 endfunction
 vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>
 vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
+
+function! RenameFile()
+  let old_name = expand('%')
+  let new_name = input('New file name: ', expand('%'), 'file')
+  if new_name != '' && new_name != old_name
+    exec ':saveas ' . new_name
+    exec ':silent !rm ' . old_name
+    redraw!
+  endif
+endfunction
+map <Leader>rn :call RenameFile()<cr>
+
+hi! link Search SpellBad

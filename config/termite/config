@@ -13,7 +13,7 @@
   mouse_autohide = true
   allow_bold = true
   dynamic_title = true
-  clickable_url = true
+  clickable_url = false
 
   # "system", "on" or "off"
   cursor_blink = off

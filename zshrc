@@ -26,6 +26,9 @@ chpwd() {
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
 
+# 10ms for key sequences
+export KEYTIMEOUT=1
+
 # xterm cursor I-beam | vertical bar?
 # echo -e -n "\x1b[\x36 q"
 
