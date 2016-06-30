@@ -1,0 +1,5 @@
+preferences {
+    font_size = 15
+    background_color = "rgb(40, 40, 40)"
+    font_family = "'Hack','DejaVu Sans Mono', 'Everson Mono', FreeMono, 'Menlo', 'Terminal', monospace"
+}

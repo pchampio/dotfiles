@@ -7,7 +7,7 @@ for config ($DOTFILES/**/*.zsh) source $config
 
 export EDITOR='vim'
 
-plugins=(git)
+plugins=(git docker-enter)
 
 # User configuration
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
@@ -28,9 +28,6 @@ export PATH=$HOME/dotfiles/bin:$PATH
 
 # 10ms for key sequences
 export KEYTIMEOUT=1
-
-# xterm cursor I-beam | vertical bar?
-# echo -e -n "\x1b[\x36 q"
 
 # PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '

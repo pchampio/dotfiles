@@ -21,5 +21,6 @@ done
 explain "Create symlink for files config"
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
+tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
 
 zsh

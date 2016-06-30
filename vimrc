@@ -2,7 +2,6 @@ set nocompatible
 runtime! macros/matchit.vim
 " Leader Mappings
 let mapleader = ","
-noremap ; :
 
 " Add bundles
 call plug#begin('~/.vim/bundle/')
@@ -39,8 +38,8 @@ au VimEnter * call NERDTreeHighlightFile('js', 'cyan', 'none', 'cyan', '#151515'
 au VimEnter * call NERDTreeHighlightFile('rb', 'Red', 'none', '#ffa500', '#151515')
 au VimEnter * call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
 
-map <Leader>n :NERDTreeToggle<CR>
-map <Leader>k :NERDTreeFind<CR>
+nnoremap <Leader>n :NERDTreeToggle<CR>
+nnoremap <Leader>k :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeWinSize=35
 let g:NERDTreeMinimalUI=1
@@ -48,7 +47,7 @@ let g:LoupeHighlightGroup='IncSearch'
 
 " searching
 Plug 'wincent/loupe'
-nmap c* cgn
+Plug 'wincent/scalpel'
 map <leader>h <Plug>(LoupeClearHighlight)
 let g:LoupeCenterResults=0
 let g:LoupeHighlightGroup='IncSearch'
@@ -63,9 +62,11 @@ endfunction
 
 nnoremap <silent> n :call <SID>nice_next('n')<cr>
 nnoremap <silent> N :call <SID>nice_next('N')<cr>
-
 execute 'nnoremap <silent> # :keepjumps normal #``<cr>:call loupe#private#hlmatch()<cr>'
 execute 'nnoremap <silent> * :keepjumps normal *``<cr>:call loupe#private#hlmatch()<cr>'
+
+" enhances Vim's integration with the terminal
+Plug 'wincent/terminus'
 
 " -------------------
 "  Ctrl-P FuzzyFinder
@@ -79,7 +80,7 @@ let g:cpsm_query_inverting_delimiter = " "
 let g:ctrlp_max_files = 0
 let g:ctrlp_line_prefix = ' '
 let g:ctrlp_map='<c-p>'
-let g:ctrlp_cmd = 'CtrlPMixed'
+" let g:ctrlp_cmd = 'CtrlPMixed'
 " let g:ctrlp_dotfiles = 1
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
@@ -96,6 +97,8 @@ endfunction
 nnoremap \ :CtrlPLine<cr>
 " Tag fzf
 nnoremap <leader>t :CtrlPTag<cr>
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | :CtrlPCurWD | endif
 
 " -------------------
 " A collection of +70 language packs for Vim
@@ -106,11 +109,7 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
 Plug 'othree/yajs.vim'
-
-" -------------------
-" leader m to expand a split
-" -------------------
-Plug 'blarghmatey/split-expander'
+Plug 'zsiciarz/caddy.vim'
 
 " -------------------
 " A Vim plugin which shows a git diff in the numberline
@@ -200,6 +199,7 @@ let NERDUsePlaceHolders=0
 let NERDSpaceDelims=1
 let g:NERDCustomDelimiters = {
     \ 'c': { 'left' : '//', 'leftAlt' : '/*', 'rightAlt': '*/' },
+    \ 'caddy': { 'left' : '#' },
 \ }
 
 " -------------------
@@ -237,7 +237,7 @@ Plug 'itchyny/lightline.vim'
 let g:lightline = {
       \ 'colorscheme': 'gruvbox',
       \ 'component': {
-      \   'readonly': '%{&filetype=="help"?"":&filetype=="netrw"?"":&readonly?"":""}',
+      \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":""}',
       \ },
       \ 'component_function': {
@@ -257,7 +257,7 @@ let g:lightline = {
       \ [ 'fileformat', 'fileencoding', 'filetype' ] ]
       \ },
       \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &filetype!="netrw" && &readonly)',
+      \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified))',
       \ },
       \ 'separator': { 'left': '', 'right': '' },
@@ -283,12 +283,21 @@ function! LightLineFilename()
   if l:filename == ''
     return '[New File]'
   endif
-  " If the Path is too long just print the 2 directory above
-  if strlen(l:basename) > 50
+  " Make sure we show $HOME as ~.
+  let l:simple=substitute(l:basename . '/', '\C^' . $HOME, '~', '').l:filename
+  if l:simple =~ "\\\~"
+    " If the Path is too long for wind just print the 2 directory above
+    if winwidth(0) > strlen(l:simple) + 30
+      return l:simple
+    else
+      return l:filename
+    endif
+  endif
+  if winwidth(0) < strlen(l:basename.l:filename) + 50
+    " return pathshorten(l:basename."/".l:filename)
     return substitute(l:basename , ".*/\\ze.*/", '../', '').'/'.l:filename
   endif
-  " Make sure we show $HOME as ~.
-  return substitute(l:basename . '/', '\C^' . $HOME, '~', '').l:filename
+  return l:basename."/".l:filename
 endfunction
 
 " CtrlP Status Line Section return ctrlP current state
@@ -427,14 +436,6 @@ set background=dark
 "  256 colors
 set t_Co=256
 
-" Set cursor to vertical line when in insert mode.
-let &t_EI = "\<Esc>[2 q"
-if exists('$TMUX')
-  let &t_SI="\ePtmux;\e\e[6 q\e\\"
-  let &t_EI="\ePtmux;\e\e[2 q\e\\"
-endif
-set guicursor=a:blinkon0
-
 " Highlight VCS conflict markers
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
@@ -534,7 +535,7 @@ set so=7
 set mouse=a
 
 " Open vimrc in new tab
-map <leader>vim :tabe ~/.vimrc<cr>
+noremap <leader>vi :tabe ~/.vimrc<cr>
 " Open vim help on the left of the screen
 autocmd FileType help wincmd L
 
@@ -543,10 +544,10 @@ set splitbelow
 set splitright
 
 " resizing a window split
-map <Left> <C-w>10<
-map <Down> <C-W>5-
-map <Up> <C-W>5+
-map <Right> <C-w>10>
+nnoremap <Left> <C-w>10<
+nnoremap <Down> <C-W>5-
+nnoremap <Up> <C-W>5+
+nnoremap <Right> <C-w>10>
 
 " TIME Out len
 set timeoutlen=300 ttimeoutlen=0
@@ -559,8 +560,8 @@ endfunction
 "Moving lines
 execute 'nnoremap'.Altmap('k').":m .-2<CR>=="
 execute 'nnoremap'.Altmap('j').":m .+1<CR>=="
-execute 'vnoremap'.Altmap('k').":m '<-2<CR>gv=gv"
-execute 'vnoremap'.Altmap('j').":m '>+1<CR>gv=gv"
+execute "vnoremap <up> :m '<-2<CR>gv=gv"
+execute "vnoremap <Down> :m '>+1<CR>gv=gv"
 
 " Quicker window movement
 nnoremap <C-j> <C-w>j
@@ -571,8 +572,36 @@ nnoremap <C-l> <C-w>l
 " Quicker navigation
 noremap H 0^
 noremap L g_
-noremap J :keepjumps normal }<cr>
-noremap K :keepjumps normal {<cr>
+
+noremap <silent> J :call MatchitDOWN()<cr>
+function! MatchitDOWN()
+  let l:startline=line(".")
+  normal %
+  if line(".") == l:startline
+    normal $%
+  endif
+  if line(".") == l:startline
+    normal ^%
+  endif
+  if line(".") == l:startline
+    :keepjumps normal }
+  endif
+endfunction
+noremap <silent> K :call MatchitUP()<cr>
+function! MatchitUP()
+  let l:startline=line(".")
+  normal %
+  if line(".") == l:startline
+    normal $%
+  endif
+  if line(".") == l:startline
+    normal ^%
+  endif
+  if line(".") == l:startline
+    :keepjumps normal {
+  endif
+endfunction
+
 vnoremap J }
 vnoremap K {
 noremap j gj
@@ -581,10 +610,10 @@ noremap k gk
 inoremap ;; <esc>A;<esc>
 
 " Switch CMD to the dir of the open buffer
-map <leader>cd :cd %:p:h<cr> :pwd<cr>
+noremap <leader>cd :CtrlP <c-r>=expand("%:p:h")<cr>
 
 " Sudo save
-cmap w!! w !sudo tee > /dev/null %
+cnoreabbrev w!! w !sudo tee > /dev/null %
 
 " Insert New line
 noremap U o<ESC>
@@ -658,7 +687,7 @@ autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType css setlocal omnifunc=
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 
 " --------------------------
 " function
@@ -698,8 +727,8 @@ function! s:VSetSearch()
   let @/ = '\V' . substitute(escape(@@, '\'), '\n', '\\n', 'g')
   let @@ = temp
 endfunction
-vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>
-vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
+vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>:call loupe#private#hlmatch()<cr>
+vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>:call loupe#private#hlmatch()<cr>
 
 function! RenameFile()
   let old_name = expand('%')
@@ -713,3 +742,5 @@ endfunction
 map <Leader>rn :call RenameFile()<cr>
 
 hi! link Search SpellBad
+
+au Syntax * set isk-=.

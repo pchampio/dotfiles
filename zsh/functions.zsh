@@ -118,29 +118,28 @@ share() {
   read inputs
   if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
   then
+    echo -n '\nAccept only one client [default yes] : '
+    read inputs
     cmd="tm"
     args+="-w"
-  fi
-
-  echo -n '\nAccept only one client [default yes] : '
-  read inputs
-  if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]
-  then
-  else
-    args+=" --once"
+    if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]
+    then
+    else
+      args+=" --once"
+    fi
   fi
 
   # When you send secret information through GoTTY, we strongly recommend you use the -t option
-  echo -n '\nEnables TLS/SSL [default no] : '
-  read inputs
-  if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
-  then
-    args+=" -t"
-    if [[ ! -f ~/.gotty.key ]]; then
-      echo -n "\nNeed ->  openssl req -x509 -nodes -days 9999 -newkey rsa:2048 -keyout ~/.gotty.key -out ~/.gotty.crt\n"
-      exit
-    fi
-  fi
+  # echo -n '\nEnables TLS/SSL [default no] : '
+  # read inputs
+  # if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
+  # then
+    # args+=" -t"
+    # if [[ ! -f ~/.gotty.key ]]; then
+      # echo -n "\nNeed ->  openssl req -x509 -nodes -days 9999 -newkey rsa:2048 -keyout ~/.gotty.key -out ~/.gotty.crt\n"
+      # exit
+    # fi
+  # fi
 
   if [[ $# -eq 1 ]]; then
     cmd=$1
@@ -154,5 +153,10 @@ share() {
   eval "gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd"
 
   kill -9 $PID
-
 }
+
+function cpf {
+  emulate -L zsh
+  clipcopy $1
+}
+
