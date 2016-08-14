@@ -34,6 +34,20 @@ $ ~/dotfiles/install/vimplug
 
 > Used to Install / Update / Clean all vim's Plugins
 
+``` sh
+./configure --with-features=huge \
+            --enable-rubyinterp \
+            --enable-pythoninterp \
+            --enable-python3interp \
+            --enable-perlinterp \
+            --enable-gui=no \
+            --with-x \
+            --enable-luainterp \
+            --enable-lua
+```
+
+> Used to configure before make
+
 ### Apt-Installll
 
 ``` sh

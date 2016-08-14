@@ -84,7 +84,7 @@ suspended_jobs() {
   if [[ $sj == "" ]]; then
     echo ""
   else
-    echo "%{$FG[208]%}✱%f"
+    echo "%{$FG[208]%}✱%f "`jobs | cut --d=" " --f=5- | sed -r 's/^\s*//' | cut --d=" " --f=1 | tr '\n' ' '`
   fi
 }
 

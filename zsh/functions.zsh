@@ -1,10 +1,5 @@
-# ------------------------------------------------------------------------------
-#          FILE:  extract.plugin.zsh
-#   DESCRIPTION:  oh-my-zsh plugin file.
-#        AUTHOR:  Sorin Ionescu (sorin.ionescu@gmail.com)
-#       VERSION:  1.0.1
-# ------------------------------------------------------------------------------
 
+# AUTHOR:  Sorin Ionescu (sorin.ionescu@gmail.com)
 function extract() {
   local remove_archive
   local success
@@ -146,11 +141,11 @@ share() {
   fi
 
   # Share
-  ssh -NR 22280:localhost:2280 ubuntu@drakirus.xyz 2>&1 &
+  ssh -NR 22280:localhost:22280 ubuntu@drakirus.xyz 2>&1 &
   PID=$!
 
   # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
-  eval "gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd"
+  eval "gotty ${args} -p 22280 -c pair:$passwd $cmd"
 
   kill -9 $PID
 }
@@ -160,3 +155,31 @@ function cpf {
   clipcopy $1
 }
 
+_fzf_complete_s() {
+  _fzf_complete "+m --reverse" "$@" < <(
+    echo 'ubuntu@drakirus.xyz'
+    echo 'ubuntu@drakirus.xyz -NR 22280:localhost:??'
+    echo 'pi@192.168.16.145'
+  )
+}
+[ -n "$BASH" ] && complete -F _fzf_complete_ssh -o default -o bashdefault s
+
+v() {
+  which tmux 2>&1 > /dev/null
+  if [ $? -ne 0 ]; then
+    ~/vim/src/vim $@
+  fi
+
+  VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
+    | grep -i 'vim' | cut --d=" " --f=1`
+  if [ -z $VIM_PANE ]; then
+    ~/vim/src/vim $@
+  else
+    for file in $@; do
+      tmux send-keys -t $VIM_PANE Escape
+      tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
+      tmux send-keys -t $VIM_PANE Enter
+      shift
+    done
+  fi
+}

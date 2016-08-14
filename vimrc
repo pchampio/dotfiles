@@ -9,13 +9,15 @@ call plug#begin('~/.vim/bundle/')
 Plug 'KabbAmine/vCoolor.vim'
 let g:vcoolor_map = '<c-b>'
 
-Plug 'gorodinskiy/vim-coloresque'
+" Plug 'gorodinskiy/vim-coloresque'
 
 Plug 'scrooloose/nerdtree'
+
 " NERDTress File highlighting
 function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
   exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
   exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
+  exec 'autocmd FileType nerdtree :vertical resize 31'
 endfunction
 
 au VimEnter * call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
@@ -38,71 +40,73 @@ au VimEnter * call NERDTreeHighlightFile('js', 'cyan', 'none', 'cyan', '#151515'
 au VimEnter * call NERDTreeHighlightFile('rb', 'Red', 'none', '#ffa500', '#151515')
 au VimEnter * call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
 
+let g:NERDTreeRespectWildIgnore = 1
+
+" Like vim-vinegar.
+nnoremap <silent> - :silent edit <C-R>=expand('%:p:h')<CR><CR>
 nnoremap <Leader>n :NERDTreeToggle<CR>
 nnoremap <Leader>k :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeWinSize=35
 let g:NERDTreeMinimalUI=1
-let g:LoupeHighlightGroup='IncSearch'
 
 " searching
-Plug 'wincent/loupe'
 Plug 'wincent/scalpel'
-map <leader>h <Plug>(LoupeClearHighlight)
+Plug 'wincent/loupe'
+let g:LoupeHighlightGroup='IncSearch'
+map <leader><space> <Plug>(LoupeClearHighlight)
 let g:LoupeCenterResults=0
 let g:LoupeHighlightGroup='IncSearch'
-
-function! s:nice_next(cmd)
-  let view = winsaveview()
-  execute "normal! " . a:cmd
-  if view.topline != winsaveview().topline
-    normal! zz
-  endif
-endfunction
-
-nnoremap <silent> n :call <SID>nice_next('n')<cr>
-nnoremap <silent> N :call <SID>nice_next('N')<cr>
-execute 'nnoremap <silent> # :keepjumps normal #``<cr>:call loupe#private#hlmatch()<cr>'
-execute 'nnoremap <silent> * :keepjumps normal *``<cr>:call loupe#private#hlmatch()<cr>'
+nmap <Nop> <Plug>(LoupeStar)
+au VimEnter * unmap <Esc>[200~
+au VimEnter * nmap <silent> * *``zz
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
 
-" -------------------
-"  Ctrl-P FuzzyFinder
-" -------------------
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'nixprime/cpsm', {
-      \   'do': './install.sh'
-      \ }
-let g:ctrlp_match_func = {'match': 'cpsm#CtrlPMatch'}
-let g:cpsm_query_inverting_delimiter = " "
-let g:ctrlp_max_files = 0
-let g:ctrlp_line_prefix = ' '
-let g:ctrlp_map='<c-p>'
-" let g:ctrlp_cmd = 'CtrlPMixed'
-" let g:ctrlp_dotfiles = 1
-let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
-    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
-\ }
-let g:ctrlp_buffer_func = { 'enter': 'BrightHighlightOn', 'exit':  'BrightHighlightOff', }
-function BrightHighlightOn()
-  highlight  CursorLine ctermbg=238 ctermfg=None
-endfunction
-function BrightHighlightOff()
-  highlight  CursorLine ctermbg=237 ctermfg=None
-endfunction
-" use ctrl p for searching
-nnoremap \ :CtrlPLine<cr>
-" Tag fzf
-nnoremap <leader>t :CtrlPTag<cr>
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | :CtrlPCurWD | endif
 
-" -------------------
+ " " Ctrl-P FuzzyFinder
+" Plug 'ctrlpvim/ctrlp.vim'
+" let g:ctrlp_line_prefix = ' '
+" let g:ctrlp_map='<c-p>'
+" " let g:ctrlp_dotfiles = 1
+" let g:ctrlp_prompt_mappings = {
+    " \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
+    " \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
+" \ }
+" nnoremap \ :CtrlPLine<cr>
+" nnoremap <leader>t :CtrlPTag<cr>
+
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+fun! s:fzf_root()
+  let path = finddir(".git", expand("%:p:h").";")
+  return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
+endfun
+nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
+let g:fzf_layout = { 'down': '~40%' }
+nnoremap \ :BLines<cr>
+nnoremap <leader>b :Buffers
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-s': 'vsplit' }
+let g:fzf_buffers_jump = 1
+let g:fzf_colors = {
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
+
 " A collection of +70 language packs for Vim
-" -------------------
 Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascript']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
@@ -111,29 +115,23 @@ let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
 Plug 'othree/yajs.vim'
 Plug 'zsiciarz/caddy.vim'
 
-" -------------------
 " A Vim plugin which shows a git diff in the numberline
-" -------------------
 Plug 'airblade/vim-gitgutter'
 let g:gitgutter_map_keys = 0
 
 " Insert or delete brackets
 Plug 'cohama/lexima.vim'
-nmap <leader>p :let b:lexima_disabled=1<CR>
+nnoremap <leader>p :let b:lexima_disabled=1<CR>
 
-" -------------------
 " . command after a plugin map
-" -------------------
 Plug 'tpope/vim-repeat'
 
-" -------------------
 " surround
-" -------------------
 Plug 'tpope/vim-surround'
 
-" -------------------
+Plug 'gorkunov/smartpairs.vim'
+
 " https://languagetool.org/fr/
-" -------------------
 Plug 'rhysd/vim-grammarous'
 let g:grammarous#jar_url = 'https://www.languagetool.org/download/LanguageTool-3.3.zip'
 let g:grammarous#hooks = {}
@@ -173,27 +171,29 @@ nnoremap <Leader>S :GrammarousCheck
 vnoremap <Leader>S :'<,'> GrammarousCheck
       \ --lang=<c-r>=GetLang()<cr> <c-r>=Comments()<cr><cr>
 
-" -------------------
+vnoremap <silent><expr>  ++  VMATH_YankAndAnalyse()
+nnoremap <silent>        ++  vip++
+
 " Replace + motion
-" -------------------
 Plug 'vim-scripts/ReplaceWithRegister'
 " gr replace motion
 
-" -------------------
 " Aligning text
-" -------------------
 Plug 'junegunn/vim-easy-align'
 nmap ga <Plug>(EasyAlign)
 xmap ga <Plug>(EasyAlign)
 
-" -------------------
 " Always highlight enclosing tags HTML XML
-" -------------------
 Plug 'Valloric/MatchTagAlways'
 
-" -------------------
+Plug 'ludovicchabant/vim-gutentags'
+" Exclude css, html, js files from generating tag files
+let g:gutentags_exclude = ['*.css', '*.html', '*.js']
+" Where to store tag files
+let g:gutentags_cache_dir = '~/.vim/gutentags'
+let g:gutentags_project_root = ['Makefile']
+
 " Commanter
-" -------------------
 Plug 'scrooloose/nerdcommenter'
 let NERDUsePlaceHolders=0
 let NERDSpaceDelims=1
@@ -202,9 +202,7 @@ let g:NERDCustomDelimiters = {
     \ 'caddy': { 'left' : '#' },
 \ }
 
-" -------------------
 " syntastic
-" -------------------
 Plug 'scrooloose/syntastic'
 
 " configure syntastic syntax checking to check on save
@@ -214,9 +212,7 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_loc_list_height=5
 
-" -------------------
 " THEME-SYNTAX
-" -------------------
 "Plug 'altercation/vim-colors-solarized'
 Plug 'morhetz/gruvbox'
 let g:gruvbox_contrast_dark="medium"
@@ -229,178 +225,19 @@ let g:gruvbox_vert_split="dark0"
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
 
-" -------------------
-"  Powerline status line
-" -------------------
-Plug 'itchyny/lightline.vim'
-
-let g:lightline = {
-      \ 'colorscheme': 'gruvbox',
-      \ 'component': {
-      \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":""}',
-      \ },
-      \ 'component_function': {
-      \   'filename':     'LightLineFilename',
-      \   'fileformat':   'LightlineFileformat',
-      \   'filetype':     'LightlineFiletype',
-      \   'fileencoding': 'LightlineFileencoding',
-      \   'ctrlp':        'LightlineCtrlP',
-      \   'ctrlpNbfile':  'LightlineCtrlPNbFile',
-      \   'mode':         'LightlineMode',
-      \   'percent':      'LightlineFilepercent',
-      \ },
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste', 'spell', 'readonly' ],
-      \             [ 'filename', 'ctrlp', 'ctrlpNbfile', 'modified' ] ],
-      \   'right': [ [ 'lineinfo' ], ['percent'],
-      \ [ 'fileformat', 'fileencoding', 'filetype' ] ]
-      \ },
-      \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
-      \   'modified': '(&filetype!="help"&&(&modified))',
-      \ },
-      \ 'separator': { 'left': '', 'right': '' },
-      \ 'subseparator': { 'left': '', 'right': '' }
-      \ }
-
-
-function! LightlineMode()
-  let fname = expand('%:t')
-  return fname == 'ControlP' ? 'CtrlP' :
-        \ fname =~ 'NERD_tree' ? 'NERDTree' :
-        \ fname == '__Mundo__' ? 'Gundo' :
-        \ fname == '__Mundo_Preview__' ? 'Gundo Preview' :
-        \ winwidth(0) > 70 ? lightline#mode() : ''
-endfunction
-
-function! LightLineFilename()
-  let l:basename=expand('%:p:h')
-  let l:filename=expand('%:t')
-  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
-    return ''
-  endif
-  if l:filename == ''
-    return '[New File]'
-  endif
-  " Make sure we show $HOME as ~.
-  let l:simple=substitute(l:basename . '/', '\C^' . $HOME, '~', '').l:filename
-  if l:simple =~ "\\\~"
-    " If the Path is too long for wind just print the 2 directory above
-    if winwidth(0) > strlen(l:simple) + 30
-      return l:simple
-    else
-      return l:filename
-    endif
-  endif
-  if winwidth(0) < strlen(l:basename.l:filename) + 50
-    " return pathshorten(l:basename."/".l:filename)
-    return substitute(l:basename , ".*/\\ze.*/", '../', '').'/'.l:filename
-  endif
-  return l:basename."/".l:filename
-endfunction
-
-" CtrlP Status Line Section return ctrlP current state
-function! LightlineCtrlP()
-  if expand('%:t') =~ 'ControlP'
-    if exists('g:lightline.ctrlp_status')
-      return g:lightline.ctrlp_status
-    else
-      if exists('g:lightline.ctrlp_item')
-        return g:lightline.ctrlp_item
-      endif
-    endif
-  else
-    return ''
-  endif
-endfunction
-
-function! LightlineCtrlPNbFile()
-  if expand('%:t') =~ 'ControlP'
-    if exists('g:lightline.ctrlp_item')
-      return g:lightline.ctrlp_marked
-    endif
-  endif
-  return ''
-endfunction
-
-" Set CtrlP statusline callback functions
-let g:ctrlp_status_func = {
-\ 'main': 'LightlineCtrlPStatusMain',
-\ 'prog': 'LightlineCtrlPStatusProgress',
-\ }
-
-function! LightlineCtrlPStatusMain(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_item = a:item
-  let g:lightline.ctrlp_marked = a:marked
-  silent! unlet g:lightline.ctrlp_status
-  return lightline#statusline(0)
-endfunction
-
-function! LightlineCtrlPStatusProgress(status)
-  let g:lightline.ctrlp_status = a:status
-  return lightline#statusline(0)
-endfunction
-
-function! LightlineFileformat()
-  let l:filename=expand('%:t')
-  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
-    return ''
-  endif
-  return winwidth(0) > 70 ? &fileformat : ''
-endfunction
-
-function! LightlineFiletype()
-  let l:filename=expand('%:t')
-  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
-    return ''
-  endif
-  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : '?') : ''
-endfunction
-
-function! LightlineFileencoding()
-  let l:filename=expand('%:t')
-  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
-    if l:filename =~ 'ControlP'
-      return 'path :'
-    endif
-    return ''
-  endif
-  return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
-endfunction
-
-function! LightlineFilepercent()
-  let l:filename=expand('%:t')
-  if l:filename =~'__Mundo\|NERD_tree\|ControlP\|NetrwTree'
-    if l:filename =~ 'ControlP'
-      return getcwd()
-    endif
-    return ''
-  endif
-  return winwidth(0) > 70 ? (line('.') * 100 / line('$') . '%') : ''
-endfunction
-
-" -------------------
 " <leader>u for git like undo
-" -------------------
 Plug 'simnalamburt/vim-mundo'
 nnoremap <leader>u :MundoToggle<CR>
 let g:mundo_width=70
 let g:mundo_playback_delay=40
 let g:mundo_verbose_graph=0
 
-" -------------------
-" AUTO-complete
-" -------------------
-
 " Plug 'ajh17/VimCompletesMe'
 " let g:vcm_direction = 'n'
 " let b:vcm_tab_complete = 'tags'
 
-" OR
 Plug 'Shougo/neocomplete.vim'
-
-let g:acp_enableAtStartup = 0
+" Plug 'wellle/tmux-complete.vim'
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
 let g:neocomplete#auto_completion_start_length = 1
@@ -408,10 +245,35 @@ let g:neocomplete#enable_fuzzy_completion = 1
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w!\<cr>"
-nnoremap <leader><leader> :w!<cr>
+if !exists('g:neocomplete#force_omni_input_patterns')
+  let g:neocomplete#force_omni_input_patterns = {}
+endif
+
+Plug 'davidhalter/jedi-vim'
+let g:jedi#documentation_command = ""
+let g:jedi#usages_command = "<leader>N"
+let g:jedi#goto_definitions_command = "<leader>g"
+let g:jedi#completions_enabled = 0
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#smart_auto_mappings = 0
+
+autocmd FileType python setlocal completeopt-=preview
+let g:neocomplete#force_omni_input_patterns.python =
+      \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+
+" Enable omni completion.
+augroup COMPLETE
+  autocmd!
+  autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+  autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+  autocmd FileType python setlocal omnifunc=jedi#completions
+  autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+  autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+augroup end
+
+
 
 "  Snippets
-" -------------------
 Plug 'SirVer/ultisnips'
 
 " Snippets are separated from the engine.
@@ -428,6 +290,10 @@ Plug 'krisajenkins/vim-postgresql-syntax'
 
 " ----------------------------- END -----------------------------
 call plug#end()
+
+" 80 columns
+set colorcolumn=80      " highlight the 80 column
+set synmaxcol=190
 
 " Theme
 colorscheme gruvbox
@@ -449,11 +315,9 @@ set wildignore+=*.spl                                   " compiled spelling word
 set wildignore+=*.sw?                                   " Vim swap files
 set wildignore+=*~,*.swp,*.tmp                          " Swp and tmp files
 set wildignore+=*.DS_Store?                             " OSX bullshit
+set wildignore+=*.sqlite3
 
 filetype plugin indent on
-
-" Regenerate tags
-noremap <leader>rt :!ctags --extra=+f --exclude=.git --exclude=log -R * <CR><C-M>
 
 " Clipboard
 if has('unnamedplus')
@@ -465,16 +329,11 @@ set showcmd
 
 " lightline powerline status
 set laststatus=2 " Always display the statusline in all windows
-set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
 
 " highlight vertical column of cursor
 au WinLeave * set nocursorline nocursorcolumn
 au WinEnter * set cursorline
 set cursorline
-
-" 80 columns
-set colorcolumn=80      " highlight the 80 column
-set synmaxcol=190
 
 " relativ number
 set numberwidth=4
@@ -494,8 +353,7 @@ set backspace=2  " Backspace deletes like most programs in insert mode
 set nobackup     " No *.ext~
 set nowritebackup
 set noswapfile   " No *.swp
-set history=500
-set ruler        " show the cursor position all the time
+set history=10000
 set incsearch    " do incremental searching
 set hlsearch     " highlight matches
 set autowrite    " Automatically :write before running commands
@@ -503,12 +361,18 @@ set showmatch    "  Highlight matching brace
 
 " Softtabs, 2 spaces
 set tabstop=2
+set softtabstop=2
 set shiftwidth=2
 set expandtab
 
 " Case
 set smartcase
 set ignorecase
+
+" command autocomplet list
+set wildmenu
+set wildchar=<Tab>
+set wildmode=full
 
 " UTF-8
 set encoding=utf-8
@@ -525,11 +389,11 @@ highlight SpecialKey ctermbg=none cterm=none
 set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add
 
 set ttyfast    " u got a fast terminal
-set lazyredraw
+" set lazyredraw
 set fillchars=vert:\|
 
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
-set so=7
+set so=4
 
 " Enable mouse use in all modes
 set mouse=a
@@ -557,17 +421,15 @@ function! Altmap(char)
   if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
 endfunction
 
+" spell
+execute 'nnoremap'.Altmap('s')."ei<c-x>s"
+execute 'nnoremap'.Altmap('l')."[s1z=``"
+
 "Moving lines
 execute 'nnoremap'.Altmap('k').":m .-2<CR>=="
 execute 'nnoremap'.Altmap('j').":m .+1<CR>=="
 execute "vnoremap <up> :m '<-2<CR>gv=gv"
 execute "vnoremap <Down> :m '>+1<CR>gv=gv"
-
-" Quicker window movement
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
 
 " Quicker navigation
 noremap H 0^
@@ -577,13 +439,16 @@ noremap <silent> J :call MatchitDOWN()<cr>
 function! MatchitDOWN()
   let l:startline=line(".")
   normal %
-  if line(".") == l:startline
+  if line(".") < l:startline
+    :keepjumps normal }j
+  endif
+  if line(".") <= l:startline
     normal $%
   endif
-  if line(".") == l:startline
+  if line(".") <= l:startline
     normal ^%
   endif
-  if line(".") == l:startline
+  if line(".") <= l:startline
     :keepjumps normal }
   endif
 endfunction
@@ -591,16 +456,23 @@ noremap <silent> K :call MatchitUP()<cr>
 function! MatchitUP()
   let l:startline=line(".")
   normal %
-  if line(".") == l:startline
+  if line(".") > l:startline
+    :keepjumps normal {k
+  endif
+  if line(".") >= l:startline
     normal $%
   endif
-  if line(".") == l:startline
+  if line(".") >= l:startline
     normal ^%
   endif
-  if line(".") == l:startline
+  if line(".") >= l:startline
     :keepjumps normal {
   endif
 endfunction
+
+noremap <leader>g <c-]>
+noremap <Leader>G :vsp <cr> <c-]>
+nnoremap <leader><leader> :w!<cr>
 
 vnoremap J }
 vnoremap K {
@@ -610,7 +482,7 @@ noremap k gk
 inoremap ;; <esc>A;<esc>
 
 " Switch CMD to the dir of the open buffer
-noremap <leader>cd :CtrlP <c-r>=expand("%:p:h")<cr>
+noremap <leader>cd :lcd <c-r>=expand("%:p:h")<cr>
 
 " Sudo save
 cnoreabbrev w!! w !sudo tee > /dev/null %
@@ -639,22 +511,12 @@ hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en
 autocmd FileType gitcommit setlocal spell spelllang=fr,en
-execute 'nnoremap'.Altmap('s')."ei<c-x>s"
 
 " no more ex Mode
 nnoremap Q <nop>
 
 " use space for moving to the newt word
 noremap <space> 2w
-
-" Pipe output of shell command into vim buffer
-function! ShellIntoBuff()
-  call inputsave()
-  let cmd = input('Enter shell cmd: ')
-  call inputrestore()
-  execute 'new | r !'.cmd.''
-endfunction
-cnoreabbrev shell call ShellIntoBuff()
 
 " remapping
 cnoreabbrev qwa wqa
@@ -681,13 +543,6 @@ cnoreabbrev : ;
 
 " open file name under cursor create if necessary
 nnoremap gf :view <cfile><cr>
-
-" Enable omni completion.
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 
 " --------------------------
 " function
@@ -727,20 +582,48 @@ function! s:VSetSearch()
   let @/ = '\V' . substitute(escape(@@, '\'), '\n', '\\n', 'g')
   let @@ = temp
 endfunction
-vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>:call loupe#private#hlmatch()<cr>
-vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>:call loupe#private#hlmatch()<cr>
+vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>
+vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
 
-function! RenameFile()
+function! RenameFile() abort
   let old_name = expand('%')
-  let new_name = input('New file name: ', expand('%'), 'file')
+  let new_name = input('New file name: ', substitute(expand('%'), expand('%:t'), '', 'g'), 'file')
+  if isdirectory(new_name)
+    let new_name = substitute(new_name, "/$", '', 'g')
+    let new_name .= '/' . expand('%:t')
+  endif
   if new_name != '' && new_name != old_name
     exec ':saveas ' . new_name
     exec ':silent !rm ' . old_name
-    redraw!
   endif
+  redraw!
 endfunction
-map <Leader>rn :call RenameFile()<cr>
+nnoremap <Leader>rn :call RenameFile()<cr>
+
+function s:MkNonExDir(file, buf) abort
+    if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
+        let dir=fnamemodify(a:file, ':h')
+        if !isdirectory(dir)
+            call mkdir(dir, 'p')
+        endif
+    endif
+endfunction
+augroup BWCCreateDir
+    autocmd!
+    autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
+augroup END
+
+function! ExpandWidth()
+  let b:expandWidth_lastWidth = winwidth(0)
+  let maxWidth = max(map(getline(line("w0"),line('w$')), 'len(v:val)')) + 1
+  if b:expandWidth_lastWidth > maxWidth || &filetype == "nerdtree"
+    return
+  endif
+  let g:expandWidth#defaultMaxWidth = 200
+  let widthResult = min([ ( maxWidth + 5 ), g:expandWidth#defaultMaxWidth ])
+  execute 'vertical resize ' . widthResult
+endfunction
+au BufEnter * :call ExpandWidth()
 
 hi! link Search SpellBad
-
-au Syntax * set isk-=.
+au VimEnter * set isk-=.

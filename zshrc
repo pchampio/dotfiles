@@ -32,3 +32,6 @@ export KEYTIMEOUT=1
 # PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '
 export RPROMPT='`git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`'
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'

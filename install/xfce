@@ -24,11 +24,6 @@ explain "Installation du theme pour le terminal"
 explain "Désactivation du Alt+Clic"
   tell xfconf-query -c xfwm4 -p /general/easy_click -s none
 
-explain "Installation de compton pour la compo des fenetre"
-  tell sudo apt-get update
-  tell sudo apt-get install compton
-  tell cp $(dirname $BASEDIR)/.compton.conf $HOME/.compton.conf
-
 explain "Installation du gestionnaire du moniteur système"
   tell sudo apt-get install gnome-system-monitor
   tell sudo apt-get install htop
