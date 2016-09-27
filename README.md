@@ -35,15 +35,13 @@ $ ~/dotfiles/install/vimplug
 > Used to Install / Update / Clean all vim's Plugins
 
 ``` sh
-./configure --with-features=huge \
+sudo apt-get install libluajit-5.1
+./configure --enable-luainterp=yes \
+            --with-features=huge \
             --enable-rubyinterp \
             --enable-pythoninterp \
             --enable-python3interp \
-            --enable-perlinterp \
-            --enable-gui=no \
-            --with-x \
-            --enable-luainterp \
-            --enable-lua
+            --enable-perlinterp
 ```
 
 > Used to configure before make

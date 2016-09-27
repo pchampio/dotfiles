@@ -1,0 +1,45 @@
+! -----------------------------------------------------------------------------
+! File: gruvbox-dark.xresources
+! Description: Retro groove colorscheme generalized
+! Author: morhetz <morhetz@gmail.com>
+! Source: https://github.com/morhetz/gruvbox-generalized
+! Last Modified: 6 Sep 2014
+! -----------------------------------------------------------------------------
+
+! XTerm scheme
+!
+XTerm*faceSize: 12.0
+
+
+XTerm*faceName: Hack
+
+XTerm*locale: UTF-8
+XTerm*utf8: always
+! hard contrast: *background: #1d2021
+XTerm*background: #282828
+! soft contrast: *background: #32302f
+XTerm*foreground: #ebdbb2
+! Black + DarkGrey
+XTerm*color0:  #282828
+XTerm*color8:  #928374
+! DarkRed + Red
+XTerm*color1:  #cc241d
+XTerm*color9:  #fb4934
+! DarkGreen + Green
+XTerm*XTermcolor2:  #98971a
+XTerm*XTermcolor10: #b8bb26
+! DarkYellow + Yellow
+XTerm*XTermcolor3:  #d79921
+XTerm*XTermcolor11: #fabd2f
+! DarkBlue + Blue
+XTerm*color4:  #458588
+XTerm*color12: #83a598
+! DarkMagenta + Magenta
+XTerm*color5:  #b16286
+XTerm*color13: #d3869b
+! DarkCyan + Cyan
+XTerm*color6:  #689d6a
+XTerm*color14: #8ec07c
+! LightGrey + White
+XTerm*color7:  #a89984
+XTerm*color15: #ebdbb2

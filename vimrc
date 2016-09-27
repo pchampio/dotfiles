@@ -86,7 +86,7 @@ endfun
 nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
 let g:fzf_layout = { 'down': '~40%' }
 nnoremap \ :BLines<cr>
-nnoremap <leader>b :Buffers
+nnoremap <leader>b :Buffers<cr>
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
@@ -383,7 +383,8 @@ set fileformat=unix
 " Display extra whitespace
 set sidescroll=1
 set nowrap
-set list listchars=tab:▸\ ,trail:·,extends:›,precedes:‹
+" set list listchars=tab:▸\ ,trail:·,extends:›,precedes:‹
+set list listchars=tab:\ \ ,trail:·,extends:›,precedes:‹
 highlight SpecialKey ctermbg=none cterm=none
 
 set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add

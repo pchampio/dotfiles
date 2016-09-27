@@ -167,13 +167,13 @@ _fzf_complete_s() {
 v() {
   which tmux 2>&1 > /dev/null
   if [ $? -ne 0 ]; then
-    ~/vim/src/vim $@
+    vim $@
   fi
 
   VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
     | grep -i 'vim' | cut --d=" " --f=1`
   if [ -z $VIM_PANE ]; then
-    ~/vim/src/vim $@
+    vim $@
   else
     for file in $@; do
       tmux send-keys -t $VIM_PANE Escape
