@@ -18,6 +18,7 @@ function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
   exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
   exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
   exec 'autocmd FileType nerdtree :vertical resize 31'
+  exec 'autocmd FileType nerdtree :set winfixwidth'
 endfunction
 
 au VimEnter * call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
@@ -191,7 +192,11 @@ Plug 'ludovicchabant/vim-gutentags'
 let g:gutentags_exclude = ['*.css', '*.html', '*.js']
 " Where to store tag files
 let g:gutentags_cache_dir = '~/.vim/gutentags'
-let g:gutentags_project_root = ['Makefile']
+let g:gutentags_project_root = ['.git', 'Makefile', 'makefile']
+noremap <leader>rt :GutentagsUpdate!<cr>redraw!
+
+Plug 'majutsushi/tagbar'
+nnoremap <leader>t :TagbarToggle<CR>
 
 " Commanter
 Plug 'scrooloose/nerdcommenter'
@@ -326,6 +331,7 @@ endif
 
 " Show command
 set showcmd
+set virtualedit=block
 
 " lightline powerline status
 set laststatus=2 " Always display the statusline in all windows
@@ -358,8 +364,11 @@ set incsearch    " do incremental searching
 set hlsearch     " highlight matches
 set autowrite    " Automatically :write before running commands
 set showmatch    "  Highlight matching brace
+set autoindent   " maintain indent of current line
+" set foldmethod=indent
+set hidden
 
-" Softtabs, 2 spaces
+" Softtabs, 2 spaces tabs
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
@@ -394,7 +403,13 @@ set ttyfast    " u got a fast terminal
 set fillchars=vert:\|
 
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
-set so=4
+set sidescrolloff=4
+set scrolloff=4
+
+set nojoinspaces
+if v:version > 703 " join 2 commants = 1 def comment
+  set formatoptions+=j
+endif
 
 " Enable mouse use in all modes
 set mouse=a
@@ -512,6 +527,7 @@ hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en
 autocmd FileType gitcommit setlocal spell spelllang=fr,en
+set spellcapcheck=
 
 " no more ex Mode
 nnoremap Q <nop>
@@ -617,14 +633,17 @@ augroup END
 function! ExpandWidth()
   let b:expandWidth_lastWidth = winwidth(0)
   let maxWidth = max(map(getline(line("w0"),line('w$')), 'len(v:val)')) + 1
-  if b:expandWidth_lastWidth > maxWidth || &filetype == "nerdtree"
+  if b:expandWidth_lastWidth > maxWidth
     return
+  endif
+  if &filetype == "nerdtree"
+    let maxWidth = 23
   endif
   let g:expandWidth#defaultMaxWidth = 200
   let widthResult = min([ ( maxWidth + 5 ), g:expandWidth#defaultMaxWidth ])
   execute 'vertical resize ' . widthResult
 endfunction
-au BufEnter * :call ExpandWidth()
+" au BufEnter * :call ExpandWidth()
 
 hi! link Search SpellBad
 au VimEnter * set isk-=.

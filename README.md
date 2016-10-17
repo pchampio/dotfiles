@@ -1,4 +1,4 @@
-Dotfiles
+My . Files
 ===================
 ![Fullscreen](https://raw.githubusercontent.com/Drakirus/dotfiles/master/screenshot.png)  
 (Here's what my setup looks like)
