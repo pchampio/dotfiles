@@ -45,7 +45,7 @@ let g:NERDTreeRespectWildIgnore = 1
 
 " Like vim-vinegar.
 nnoremap <silent> - :silent edit <C-R>=expand('%:p:h')<CR><CR>
-nnoremap <Leader>n :NERDTreeToggle<CR>
+nnoremap <Leader>m :NERDTreeToggle<CR>
 nnoremap <Leader>k :NERDTreeFind<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeWinSize=35
@@ -61,6 +61,12 @@ let g:LoupeHighlightGroup='IncSearch'
 nmap <Nop> <Plug>(LoupeStar)
 au VimEnter * unmap <Esc>[200~
 au VimEnter * nmap <silent> * *``zz
+
+Plug 'wincent/ferret'
+let g:FerretMap=0
+nmap <leader>* <Plug>(FerretAckWord)
+noremap <leader>n :cnf<cr>
+noremap <leader>N :cpf<cr>
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
@@ -448,7 +454,7 @@ execute "vnoremap <up> :m '<-2<CR>gv=gv"
 execute "vnoremap <Down> :m '>+1<CR>gv=gv"
 
 " Quicker navigation
-noremap H 0^
+noremap H ^
 noremap L g_
 
 noremap <silent> J :call MatchitDOWN()<cr>
@@ -516,7 +522,7 @@ nnoremap <silent> <leader>en <Esc>:silent setlocal spell! spelllang=en<CR>
 nnoremap <silent> <leader>fr <Esc>:silent setlocal spell! spelllang=fr<CR>
 nnoremap <silent> <leader>all <Esc>:silent setlocal spell! spelllang=fr,en<CR>
 nnoremap <silent> <leader>a <Esc>zg
-nnoremap <silent> <leader>d <Esc>zw
+nnoremap <silent> <leader>d <Esc>zug
 hi clear SpellBad
 hi clear SpellRare
 hi clear SpellLocal
