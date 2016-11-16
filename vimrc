@@ -93,10 +93,11 @@ endfun
 nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
 let g:fzf_layout = { 'down': '~40%' }
 nnoremap \ :BLines<cr>
+nnoremap <c-t> :Tags<cr>
 nnoremap <leader>b :Buffers<cr>
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
+  \ 'ctrl-i': 'split',
   \ 'ctrl-s': 'vsplit' }
 let g:fzf_buffers_jump = 1
 let g:fzf_colors = {
@@ -113,12 +114,26 @@ let g:fzf_colors = {
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment'] }
 
+" Respect wildignore
+function! s:with_agignore(bang, args)
+  let agignore = '/tmp/agignore-for-fzf'
+  let entries = split(&wildignore, ',')
+  let source = 'ag --path-to-agignore '.agignore.' -g ""'
+  call writefile(entries, agignore)
+  call fzf#vim#files(a:args, extend(fzf#vim#layout(a:bang), {'source': source}))
+endfunction
+
+autocmd VimEnter * command! -bang -nargs=? -complete=dir Files
+      \ call s:with_agignore(<bang>0, <q-args>)
+
+
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascript']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
+
 Plug 'othree/yajs.vim'
 Plug 'zsiciarz/caddy.vim'
 
@@ -523,6 +538,9 @@ nnoremap <silent> <leader>fr <Esc>:silent setlocal spell! spelllang=fr<CR>
 nnoremap <silent> <leader>all <Esc>:silent setlocal spell! spelllang=fr,en<CR>
 nnoremap <silent> <leader>a <Esc>zg
 nnoremap <silent> <leader>d <Esc>zug
+inoremap <leader>a à
+inoremap <leader>e é
+inoremap <c-e> è
 hi clear SpellBad
 hi clear SpellRare
 hi clear SpellLocal

@@ -5,7 +5,7 @@
 
 [options]
   # Font
-  font = Hack 11
+  font = Hack 10
 
   geometry = 1280x680
   icon_name = terminal

@@ -204,4 +204,22 @@ thunarCmd(){
   fi
 }
 
+clpset(){
+  read -d"" text
+  print `curl --silent --data "clp=$text" http://drakirus.xyz:8808`
+}
 
+clpget(){
+  A=`curl --silent http://drakirus.xyz:8808`
+  print $A
+  emulate -L zsh
+  echo $A > /tmp/clp.tmp
+  clipcopy /tmp/clp.tmp
+}
+
+http(){
+  if (( $# == 0 )); then
+    echo "Usage: http [port]"
+  fi
+  python -m SimpleHTTPServer $1
+}
