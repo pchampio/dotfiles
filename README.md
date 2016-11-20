@@ -3,6 +3,31 @@ My . Files
 ![Fullscreen](https://raw.githubusercontent.com/Drakirus/dotfiles/master/screenshot.png)  
 (Here's what my setup looks like)
 
+## Mouse
+
+```sh
+# config range
+less /var/log/Xorg.0.log | grep -i range
+# Palm detection config
+synclient PalmDetect=1 PalmMinWidth=0 PalmMinZ=0
+# disable Right side of trackpad
+synclient AreaLeftEdge=0 AreaRightEdge=850 AreaTopEdge=70
+```
+> /etc/X11/xorg.conf.d/10-synaptics.conf
+``` conf
+Section "InputClass"
+        Identifier "touchpad catchall"
+        Driver "synaptics"
+        MatchIsTouchpad "on"
+                Option "PalmDetect" "on"
+                Option "PalmDetect=PalmMinWidth" "0"
+                Option "PalmMinZ" "0"
+                Option "AreaLeftEdge" "0"
+                Option "AreaRightEdge" "850"
+                Option "AreaTopEdge" "70"
+EndSection
+```
+
 ## Installation
 
 #### Clone

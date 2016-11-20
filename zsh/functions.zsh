@@ -150,20 +150,6 @@ share() {
   kill -9 $PID
 }
 
-function cpf {
-  emulate -L zsh
-  clipcopy $1
-}
-
-_fzf_complete_s() {
-  _fzf_complete "+m --reverse" "$@" < <(
-    echo 'ubuntu@drakirus.xyz'
-    echo 'ubuntu@drakirus.xyz -NR 22280:localhost:??'
-    echo 'pi@192.168.16.145'
-  )
-}
-[ -n "$BASH" ] && complete -F _fzf_complete_ssh -o default -o bashdefault s
-
 v() {
   which tmux 2>&1 > /dev/null
   if [ $? -ne 0 ]; then
@@ -212,9 +198,8 @@ clpset(){
 clpget(){
   A=`curl --silent http://drakirus.xyz:8808`
   print $A
-  emulate -L zsh
   echo $A > /tmp/clp.tmp
-  clipcopy /tmp/clp.tmp
+  xclip -in -selection clipboard /tmp/clp.tmp
 }
 
 http(){
@@ -223,3 +208,4 @@ http(){
   fi
   python -m SimpleHTTPServer $1
 }
+

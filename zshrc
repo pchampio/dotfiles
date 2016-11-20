@@ -1,4 +1,4 @@
-# Path to your oh-my-zsh installation.  export ZSH=~/.oh-my-zsh
+# Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
 export DOTFILES=$HOME/dotfiles
@@ -7,7 +7,8 @@ for config ($DOTFILES/**/*.zsh) source $config
 
 export EDITOR='vim'
 
-plugins=(git docker-enter)
+# faster startup
+DISABLE_AUTO_UPDATE="true"
 
 # User configuration
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
@@ -17,6 +18,7 @@ export MANPATH="/usr/local/man:$MANPATH"
 # add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
 source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
+source $ZSH/custom/plugins/zsh-completions/zsh-completions.plugin.zsh
 
 # Show contents of directory after cd-ing into it
 chpwd() {
@@ -41,7 +43,7 @@ export RPROMPT='`git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
-
+export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 # Android studio
 export ANDROID_HOME=~/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools

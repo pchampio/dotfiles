@@ -1,0 +1,25 @@
+snippet pcm "private_class_method :new"
+private_class_method :new
+endsnippet
+
+snippet "(\S+)\.up(to)" "<int>.upto do |<int>| <block> end" r
+`!p snip.rv=match.group(1)`.upto(${1:10}) { |${2:e}| $0 }
+endsnippet
+
+snippet "(\S+)\.Up(to)" "<int>.upto do |<int>| <block> end" r
+`!p snip.rv=match.group(1)`.upto(${1:10}) do |${2:e}|
+	$0
+end
+endsnippet
+
+snippet "(\S+)\.down(to)" "<int>.downto do |<int>| <block> end" r
+`!p snip.rv=match.group(1)`.downto(${1:0}) { |${2:e}| $0 }
+endsnippet
+
+snippet "(\S+)\.Down(to)" "<int>.downto do |<int>| <block> end" r
+`!p snip.rv=match.group(1)`.downto(${1:0}) do |${2:e}|
+	$0
+end
+endsnippet
+
+# vim:set foldmethod=manual:

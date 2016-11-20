@@ -114,19 +114,6 @@ let g:fzf_colors = {
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment'] }
 
-" Respect wildignore
-function! s:with_agignore(bang, args)
-  let agignore = '/tmp/agignore-for-fzf'
-  let entries = split(&wildignore, ',')
-  let source = 'ag --path-to-agignore '.agignore.' -g ""'
-  call writefile(entries, agignore)
-  call fzf#vim#files(a:args, extend(fzf#vim#layout(a:bang), {'source': source}))
-endfunction
-
-autocmd VimEnter * command! -bang -nargs=? -complete=dir Files
-      \ call s:with_agignore(<bang>0, <q-args>)
-
-
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascript']
@@ -297,14 +284,12 @@ augroup COMPLETE
   autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 augroup end
 
-
-
 "  Snippets
 Plug 'SirVer/ultisnips'
 
 " Snippets are separated from the engine.
 Plug 'honza/vim-snippets'
-let g:UltiSnipsSnippetDirectories=["UltiSnips", $HOME.'/dotfiles/snippets']
+let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets']
 
 " 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
@@ -320,6 +305,9 @@ call plug#end()
 " 80 columns
 set colorcolumn=80      " highlight the 80 column
 set synmaxcol=190
+
+" set autoread " disable 'read-only to writeable' warnings
+autocmd FileChangedShell * echohl WarningMsg | echo "File changed shell." | echohl None
 
 " Theme
 colorscheme gruvbox

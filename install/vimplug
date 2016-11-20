@@ -39,10 +39,10 @@ if [ ! -e $HOME/.vim/spell ]; then
 fi
 
 explain "Vim plugins"
-~/vim/src/vim +PlugUpgrade +qa
-~/vim/src/vim +PlugInstall +qa
-~/vim/src/vim +PlugUpdate +qa
-~/vim/src/vim +PlugClean +qa
+vim +PlugUpgrade +qa
+vim +PlugInstall +qa
+vim +PlugUpdate +qa
+vim +PlugClean +qa
 
 mkdir -p ~/.vimundo
 

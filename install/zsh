@@ -8,9 +8,6 @@ BASEDIR=$(dirname $0)
 sudo rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
-explain "Installation de zsh"
-  tell install_cmd wget curl zsh
-
 explain "Installation de oh-my-zsh"
   echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
   sudo chown $USER ~/.zsh-update
