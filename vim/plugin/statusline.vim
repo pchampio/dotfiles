@@ -46,6 +46,8 @@ if has('statusline')
   set statusline+=%([%M%R%{statusline#ft()}%{statusline#fenc()}]%)
   set statusline+=%*   " Reset highlight group.
   set statusline+=%=   " Split point for left and right groups.
+
+  set statusline+=%{WordCount()}
   set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}]%)
   set statusline+=%6*  " Switch to User4 highlight group (Powerline arrow).
   set statusline+=\    " Space.

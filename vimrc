@@ -1,18 +1,33 @@
 set nocompatible
 runtime! macros/matchit.vim
+
+filetype plugin indent on
+syntax enable
+
 " Leader Mappings
 let mapleader = ","
 
 " Add bundles
 call plug#begin('~/.vim/bundle/')
 
-Plug 'KabbAmine/vCoolor.vim'
-let g:vcoolor_map = '<c-b>'
+" Plug 'KabbAmine/vCoolor.vim'
+" let g:vcoolor_map = '<c-b>'
+
+Plug 'machakann/vim-highlightedyank'
+map y <Plug>(highlightedyank)
+hi! link HighlightedyankRegion SpellRare
+
+" slide
+" Plug 'blindFS/vim-reveal'
+
+" cd the path
+" git cline https://github.com/hakimel/reveal.js/ --depth=1
+" let g:reveal_config = {'path': '/home/ubuntu/APP/data/www/slide/'}
+nnoremap <leader>rr :RevealIt md<cr>
 
 " Plug 'gorodinskiy/vim-coloresque'
 
 Plug 'scrooloose/nerdtree'
-
 " NERDTress File highlighting
 function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
   exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
@@ -65,8 +80,8 @@ au VimEnter * nmap <silent> * *``zz
 Plug 'wincent/ferret'
 let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
-noremap <leader>n :cnf<cr>
-noremap <leader>N :cpf<cr>
+nnoremap <c-n> :cnf<cr>
+nnoremap <c-b> :cpf<cr>
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
@@ -122,6 +137,7 @@ let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
 
 Plug 'othree/yajs.vim'
+Plug 'lepture/vim-jinja'
 Plug 'zsiciarz/caddy.vim'
 
 " A Vim plugin which shows a git diff in the numberline
@@ -132,13 +148,17 @@ let g:gitgutter_map_keys = 0
 Plug 'cohama/lexima.vim'
 nnoremap <leader>p :let b:lexima_disabled=1<CR>
 
-" . command after a plugin map
-Plug 'tpope/vim-repeat'
-
 " surround
-Plug 'tpope/vim-surround'
+Plug 'machakann/vim-sandwich'
+xmap is <Plug>(textobj-sandwich-query-i)
+xmap as <Plug>(textobj-sandwich-query-a)
+omap is <Plug>(textobj-sandwich-query-i)
+omap as <Plug>(textobj-sandwich-query-a)
 
-Plug 'gorkunov/smartpairs.vim'
+xmap ii <Plug>(textobj-sandwich-auto-i)
+xmap aa <Plug>(textobj-sandwich-auto-a)
+omap ii <Plug>(textobj-sandwich-auto-i)
+omap aa <Plug>(textobj-sandwich-auto-a)
 
 " https://languagetool.org/fr/
 Plug 'rhysd/vim-grammarous'
@@ -225,6 +245,9 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_loc_list_height=5
 
+" Use Python 3 when the shebang calls for it.
+autocmd BufRead *.py let b:syntastic_python_python_exec = syntastic#util#parseShebang()['exe']
+
 " THEME-SYNTAX
 "Plug 'altercation/vim-colors-solarized'
 Plug 'morhetz/gruvbox'
@@ -253,14 +276,34 @@ Plug 'Shougo/neocomplete.vim'
 " Plug 'wellle/tmux-complete.vim'
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#auto_completion_start_length = 1
+let g:neocomplete#auto_completion_start_length = 2
 let g:neocomplete#enable_fuzzy_completion = 1
+" User must pause before completions are shown.
+" https://www.reddit.com/r/vim/comments/2xl33m
+let g:neocomplete#enable_cursor_hold_i = 1
+let g:neocomplete#cursor_hold_i_time = 500 " milliseconds
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w!\<cr>"
 if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
+
+" autocmd FileType ruby compiler ruby
+let g:rubycomplete_buffer_loading = 1
+let g:rubycomplete_classes_in_global = 1
+" let g:rubycomplete_rails = 1
+let g:rubycomplete_load_gemfile = 1
+" let g:rubycomplete_gemfile_path = 'Gemfile.aux'
+Plug 'vim-ruby/vim-ruby'
+let g:neocomplete#sources#omni#input_patterns = {
+\ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
+\ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
+\ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
+\ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}',
+\}
+set completeopt-=preview
+" let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w\{1,}\|\h\w*::'
 
 Plug 'davidhalter/jedi-vim'
 let g:jedi#documentation_command = ""
@@ -270,13 +313,22 @@ let g:jedi#completions_enabled = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#smart_auto_mappings = 0
 
-autocmd FileType python setlocal completeopt-=preview
+let g:jedi#force_py_version = 2
+
 let g:neocomplete#force_omni_input_patterns.python =
-      \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
+      \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}'
+
+Plug 'justmao945/vim-clang' " need clang installed
+" disable auto completion for vim-clang
+let g:clang_auto = 0
+" default 'longest' can not work with neocomplete
+let g:clang_c_completeopt = 'menuone'
+let g:clang_cpp_completeopt = 'menuone'
 
 " Enable omni completion.
 augroup COMPLETE
   autocmd!
+  autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
   autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
   autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
   autocmd FileType python setlocal omnifunc=jedi#completions
@@ -289,7 +341,8 @@ Plug 'SirVer/ultisnips'
 
 " Snippets are separated from the engine.
 Plug 'honza/vim-snippets'
-let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets']
+" let g:UltiSnipsSnippetsDir="~/.vim/bundle/vim-snippets/"
+let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets', 'snips', 'UltiSnips']
 
 " 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
@@ -330,8 +383,6 @@ set wildignore+=*.sw?                                   " Vim swap files
 set wildignore+=*~,*.swp,*.tmp                          " Swp and tmp files
 set wildignore+=*.DS_Store?                             " OSX bullshit
 set wildignore+=*.sqlite3
-
-filetype plugin indent on
 
 " Clipboard
 if has('unnamedplus')
@@ -448,7 +499,6 @@ endfunction
 
 " spell
 execute 'nnoremap'.Altmap('s')."ei<c-x>s"
-execute 'nnoremap'.Altmap('l')."[s1z=``"
 
 "Moving lines
 execute 'nnoremap'.Altmap('k').":m .-2<CR>=="
@@ -505,6 +555,7 @@ noremap j gj
 noremap k gk
 
 inoremap ;; <esc>A;<esc>
+inoremap <c-l> <esc>A
 
 " Switch CMD to the dir of the open buffer
 noremap <leader>cd :lcd <c-r>=expand("%:p:h")<cr>
@@ -537,7 +588,7 @@ hi SpellCap   cterm=underline ctermfg=14 ctermbg=0 gui=undercurl
 hi SpellRare  cterm=underline ctermfg=13 ctermbg=0 gui=undercurl
 hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
-autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en
+autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en tw=80
 autocmd FileType gitcommit setlocal spell spelllang=fr,en
 set spellcapcheck=
 
@@ -616,12 +667,21 @@ vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
 
 function! RenameFile() abort
   let old_name = expand('%')
+  let ext_file = expand('%:e')
+  if !empty(ext_file)
+    let ext_file = ".".ext_file
+  endif
   let new_name = input('New file name: ', substitute(expand('%'), expand('%:t'), '', 'g'), 'file')
   if isdirectory(new_name)
     let new_name = substitute(new_name, "/$", '', 'g')
     let new_name .= '/' . expand('%:t')
+    let ext_file = ""
   endif
   if new_name != '' && new_name != old_name
+    let ext_keep = matchstr(new_name, '.*\.')
+    if empty(ext_keep) && !empty(ext_file)
+      let new_name .= ext_file
+    endif
     exec ':saveas ' . new_name
     exec ':silent !rm ' . old_name
   endif

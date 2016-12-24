@@ -3,6 +3,8 @@ HISTSIZE=20000000
 HISTFILE=~/.zsh_history
 SAVEHIST=20000000
 
+# Disable % eof
+unsetopt prompt_cr prompt_sp
 
 [ -d ~/.vim/bundle/gruvbox ] && source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
 eval `dircolors ~/dotfiles/dircolors/gruvbox.dir_colors`

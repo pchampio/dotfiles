@@ -11,7 +11,7 @@ export EDITOR='vim'
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -47,3 +47,10 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 # Android studio
 export ANDROID_HOME=~/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools
+
+if ! pgrep -u $USER ssh-agent > /dev/null; then
+    ssh-agent > ~/.ssh-agent-thing
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+    eval $(<~/.ssh-agent-thing)
+fi

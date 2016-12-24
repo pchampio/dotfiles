@@ -5,6 +5,7 @@
 
 [options]
   # Font
+  # font = Meslo 10.7
   font = Hack 10.7
 
   geometry = 1280x680

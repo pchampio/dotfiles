@@ -202,10 +202,13 @@ clpget(){
   xclip -in -selection clipboard /tmp/clp.tmp
 }
 
-http(){
-  if (( $# == 0 )); then
-    echo "Usage: http [port]"
-  fi
-  python -m SimpleHTTPServer $1
+net-list(){
+  echo "Please, select a network interface:"
+  select interface in `ls /sys/class/net/ | cut -d/ -f4`; do
+    echo $interface selected
+    ip=`ifconfig $interface | grep 'inet ' | sed 's/  */ /g' | cut -d" " -f 3`
+    break
+  done
+  vared -p 'Enter the network and press [ENTER]: ' -c ip
+  sudo nmap -sP $ip/24
 }
-

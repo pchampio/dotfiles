@@ -1,21 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 # Stolen from : https://github.com/Grafikart/dotfiles
 
 tell() {
-  echo "\033[0;33m|-- ${*}\033[0m"
-    $* || {
-    echo "\033[0;31mFail !" 1>&2 ;
-    echo "\033[0m"
-    exit 1;
+  printf "\033[0;33m|-- ${*}\033[0m\n"
+  printf "\033[0;31m" 1>&2 ;
+  $* || {
+    printf "\033[0m"
   }
 }
 
 explain() {
-  echo "\033[0;34m${1}\033[0m"
+  printf "\033[0;34m${1}\033[0m\n"
 }
 
 success() {
-  echo "\033[0;32m${1}\033[0m"
+  printf "\033[0;32m${1}\033[0m\n"
 }
 
 install_cmd(){
@@ -45,11 +44,11 @@ install_cmd(){
 
   else
 
-    echo "\033[0;31m" 1>&2 ;
-    echo "Error can't install package $PACKAGE_NAME"
-    echo "\033[0m"
-    echo "No package manager found"
-    echo "please add yours to $HOME/dotfiles/install/inc/functions"
+    printf "\033[0;31m" 1>&2 ;
+    printf "Error can't install package $PACKAGE_NAME"
+    printf "\033[0m"
+    printf "No package manager found"
+    printf "please add yours to $HOME/dotfiles/install/inc/functions"
     exit 1;
   fi
 }

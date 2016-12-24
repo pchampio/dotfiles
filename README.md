@@ -11,7 +11,7 @@ less /var/log/Xorg.0.log | grep -i range
 # Palm detection config
 synclient PalmDetect=1 PalmMinWidth=0 PalmMinZ=0
 # disable Right side of trackpad
-synclient AreaLeftEdge=0 AreaRightEdge=850 AreaTopEdge=70
+synclient AreaLeftEdge=100 AreaRightEdge=850 AreaTopEdge=70
 ```
 > /etc/X11/xorg.conf.d/10-synaptics.conf
 ``` conf
@@ -22,7 +22,7 @@ Section "InputClass"
                 Option "PalmDetect" "on"
                 Option "PalmDetect=PalmMinWidth" "0"
                 Option "PalmMinZ" "0"
-                Option "AreaLeftEdge" "0"
+                Option "AreaLeftEdge" "100"
                 Option "AreaRightEdge" "850"
                 Option "AreaTopEdge" "70"
 EndSection
@@ -107,7 +107,24 @@ You'll need to use a custom font for statusline to look nice. (Seeing weird symb
 
 ### Terminal emulator
 
+```
+setxkbmap -option caps:escape &
+```
+
+
+```
+for x in $(cat package_list.txt); do pacman -S $x; done
+```
+
 https://www.archlinux.org/packages/community/x86_64/termite/  
+
+
+
+terminus.vim
+```
+    inoremap <expr><f20> pumvisible() ? "<c-e><c-o>:silent doautocmd <nomodeline> FocusLost %<cr>" : "<c-o>:silent doautocmd <nomodeline> FocusLost %<cr>"
+
+```
 
 
 These are a modified version of Thoughtbot's dotfiles.  

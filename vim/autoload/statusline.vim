@@ -105,3 +105,15 @@ function! s:get_custom_statusline(action) abort
   return 1 " Use default.
 endfunction
 
+function! WordCount()
+  if &spell
+    let lnum = 1
+    let n = 0
+    while lnum <= line('$')
+      let n = n + len(split(getline(lnum)))
+      let lnum = lnum + 1
+    endwhile
+    return "Words:" . n . " "
+  endif
+  return ""
+endfunction
