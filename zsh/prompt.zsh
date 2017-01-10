@@ -55,7 +55,11 @@ git_arrows() {
       sed 's/\// /g') | cut -f1)
     local local_commit=$(git rev-parse HEAD)
     local ancestor=$(git merge-base --is-ancestor $local_commit $remote_commit 2>/dev/null )
-    if [[ $local_commit != $remote_commit && $ancestor -eq 0 ]]; then
+    if [[ $? -ne 0 ]]; then
+      echo $arrows
+      return
+    fi
+    if [[ $local_commit != $remote_commit && $ancestor -ne 0 ]]; then
       arrows+="%F{011}⇣%f"
     fi
   fi
