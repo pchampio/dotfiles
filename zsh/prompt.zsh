@@ -49,9 +49,15 @@ git_arrows() {
 
   # if no git fetch has been done
   # check on remote depo the commit hash
+  local remote_commit=""
   if  [[  ! ${right:-0} > 0 &&  $# -ne 0 ]]; then
-    [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-      sed 's/\// /g') | cut -f1) ] || arrows+="%F{011}⇣%f"
+    local remote_commit=$(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+      sed 's/\// /g') | cut -f1)
+    local local_commit=$(git rev-parse HEAD)
+    local ancestor=$(git merge-base --is-ancestor $local_commit $remote_commit 2>/dev/null )
+    if [[ $local_commit != $remote_commit && $ancestor -eq 0 ]]; then
+      arrows+="%F{011}⇣%f"
+    fi
   fi
 
   echo $arrows
@@ -96,7 +102,7 @@ suspended_jobs() {
 
 # Right-hand prompt
 function RightPromptFunc() {
-    echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
+  echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
 }
 
 # Right-hand prompt
