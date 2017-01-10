@@ -59,7 +59,6 @@ git_arrows() {
     if [[ $? -ne 0 ]]; then
       arrows+="%F{011}⇣%f"
     fi
-    echo fait
   fi
 
   echo $arrows
