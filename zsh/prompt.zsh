@@ -35,7 +35,6 @@ git_arrows() {
   command git rev-parse --abbrev-ref @'{u}' &>/dev/null || return
 
   local arrows=""
-  local status
   arrow_status="$(command git rev-list --left-right --count HEAD...@'{u}' 2>/dev/null)"
 
   # do nothing if the command failed
@@ -45,8 +44,15 @@ git_arrows() {
   arrow_status=(${(ps:\t:)arrow_status})
   local left=${arrow_status[1]} right=${arrow_status[2]}
 
-  (( ${right:-0} > 0 )) && arrows+="%F{011}⇣%f"
   (( ${left:-0} > 0 )) && arrows+="%F{012}⇡%f"
+  (( ${right:-0} > 0 )) && arrows+="%F{011}⇣%f"
+
+  # if no git fetch has been done
+  # check on remote depo the commit hash
+  if  [[  ! ${right:-0} > 0 &&  $# -ne 0 ]]; then
+    [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+      sed 's/\// /g') | cut -f1) ] || arrows+="%F{011}⇣%f"
+  fi
 
   echo $arrows
 }
@@ -89,8 +95,13 @@ suspended_jobs() {
 }
 
 # Right-hand prompt
-function RCMD() {
-  echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
+function RightPromptFunc() {
+    echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
+}
+
+# Right-hand prompt
+function RightPromptFuncArrowsPull() {
+  echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows 1``suspended_jobs`
 }
 
 ASYNC_PROC=0
@@ -106,7 +117,13 @@ precmd() {
 
   function async() {
     # save to temp file
-    printf "%s" "$(RCMD)" > "${HOME}/.zsh_tmp_prompt"
+    printf "%s" "$(RightPromptFunc)" > "${HOME}/.zsh_tmp_prompt"
+
+    # signal parent
+    kill -s USR1 $$
+
+    # save to temp file
+    printf "%s" "$(RightPromptFuncArrowsPull)" > "${HOME}/.zsh_tmp_prompt"
 
     # signal parent
     kill -s USR1 $$
