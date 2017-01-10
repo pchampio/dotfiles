@@ -1,6 +1,10 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
+
+setopt prompt_subst # enable command substition in prompt
+
+
 export DOTFILES=$HOME/dotfiles
 # source all .zsh files inside of the zsh/ directory
 for config ($DOTFILES/**/*.zsh) source $config
@@ -39,7 +43,7 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
 
 # PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '
-export RPROMPT='`git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`'
+export RPROMPT='' # set asynchronously and dynamically
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
@@ -53,4 +57,8 @@ if ! pgrep -u $USER ssh-agent > /dev/null; then
 fi
 if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing)
+fi
+
+if [ ! "$TMUX" != "" ]; then
+  tm
 fi

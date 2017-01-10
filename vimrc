@@ -1,6 +1,11 @@
 set nocompatible
 runtime! macros/matchit.vim
 
+" ALT keys Mappings
+function! Altmap(char)
+  if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
+endfunction
+
 filetype plugin indent on
 syntax enable
 
@@ -106,6 +111,7 @@ fun! s:fzf_root()
   return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
 endfun
 nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
+" will ignore content in .gitignore (global)
 let g:fzf_layout = { 'down': '~40%' }
 nnoremap \ :BLines<cr>
 nnoremap <c-t> :Tags<cr>
@@ -142,6 +148,8 @@ Plug 'zsiciarz/caddy.vim'
 
 " A Vim plugin which shows a git diff in the numberline
 Plug 'airblade/vim-gitgutter'
+nnoremap [g :GitGutterNextHunk<cr>
+nnoremap ]g :GitGutterPrevHunk<cr>
 let g:gitgutter_map_keys = 0
 
 " Insert or delete brackets
@@ -156,9 +164,9 @@ omap is <Plug>(textobj-sandwich-query-i)
 omap as <Plug>(textobj-sandwich-query-a)
 
 xmap ii <Plug>(textobj-sandwich-auto-i)
-xmap aa <Plug>(textobj-sandwich-auto-a)
+xmap ai <Plug>(textobj-sandwich-auto-a)
 omap ii <Plug>(textobj-sandwich-auto-i)
-omap aa <Plug>(textobj-sandwich-auto-a)
+omap ai <Plug>(textobj-sandwich-auto-a)
 
 " https://languagetool.org/fr/
 Plug 'rhysd/vim-grammarous'
@@ -215,13 +223,30 @@ xmap ga <Plug>(EasyAlign)
 " Always highlight enclosing tags HTML XML
 Plug 'Valloric/MatchTagAlways'
 
+" simplifies the transition between multiline and single-lin
+Plug 'AndrewRadev/splitjoin.vim'
+
+" move function arguments
+Plug 'AndrewRadev/sideways.vim'
+
+execute 'nnoremap'.Altmap('h').":SidewaysLeft<cr>"
+execute 'nnoremap'.Altmap('l').":SidewaysRight<cr>"
+" nnoremap <c-h> :SidewaysLeft<cr>
+" nnoremap <c-l> :SidewaysRight<cr>
+
+"argument text object.
+omap aa <Plug>SidewaysArgumentTextobjA
+xmap aa <Plug>SidewaysArgumentTextobjA
+omap ia <Plug>SidewaysArgumentTextobjI
+xmap ia <Plug>SidewaysArgumentTextobjI
+
 Plug 'ludovicchabant/vim-gutentags'
 " Exclude css, html, js files from generating tag files
-let g:gutentags_exclude = ['*.css', '*.html', '*.js']
+" let g:gutentags_exclude = ['*.css', '*.html', '*.js']
 " Where to store tag files
 let g:gutentags_cache_dir = '~/.vim/gutentags'
-let g:gutentags_project_root = ['.git', 'Makefile', 'makefile']
-noremap <leader>rt :GutentagsUpdate!<cr>redraw!
+let g:gutentags_project_root = ['.git', 'Makefile', 'makefile', 'Gemfile']
+noremap <leader>rt :GutentagsUpdate<cr>:redraw!<cr>
 
 Plug 'majutsushi/tagbar'
 nnoremap <leader>t :TagbarToggle<CR>
@@ -492,11 +517,6 @@ nnoremap <Right> <C-w>10>
 " TIME Out len
 set timeoutlen=300 ttimeoutlen=0
 
-" ALT keys Mappings
-function! Altmap(char)
-  if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
-endfunction
-
 " spell
 execute 'nnoremap'.Altmap('s')."ei<c-x>s"
 
@@ -561,7 +581,13 @@ inoremap <c-l> <esc>A
 noremap <leader>cd :lcd <c-r>=expand("%:p:h")<cr>
 
 " Sudo save
-cnoreabbrev w!! w !sudo tee > /dev/null %
+cnoreabbrev <silent> w!! call SudoSave()
+function! SudoSave()
+  cnoreabbrev q q!
+  cnoreabbrev <silent> w call SudoSave()
+  cnoreabbrev <silent> wq w call SudoSave()
+  execute ":w !sudo tee > /dev/null %"
+endfunction
 
 " Insert New line
 noremap U o<ESC>

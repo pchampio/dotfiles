@@ -88,6 +88,12 @@ suspended_jobs() {
   fi
 }
 
+# Right-hand prompt
+function RCMD() {
+  echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
+}
+
+ASYNC_PROC=0
 precmd() {
   vcs_info
 
@@ -97,9 +103,41 @@ precmd() {
 
   # remove the cmd_timestamp, indicating that precmd has completed
   unset cmd_timestamp
+
+  function async() {
+    # save to temp file
+    printf "%s" "$(RCMD)" > "${HOME}/.zsh_tmp_prompt"
+
+    # signal parent
+    kill -s USR1 $$
+  }
+
+  # do not clear RPROMPT, let it persist
+
+  # kill child if necessary
+  if [[ "${ASYNC_PROC}" != 0 ]]; then
+    kill -s HUP $ASYNC_PROC >/dev/null 2>&1 || :
+  fi
+
+  # start background computation
+  async &!
+  ASYNC_PROC=$!
+
 }
 
+function TRAPUSR1() {
+  # read from temp file
+  RPROMPT="$(<${HOME}/.zsh_tmp_prompt)"
+
+  # reset proc number
+  ASYNC_PROC=0
+
+  # redisplay
+  zle && zle reset-prompt
+}
+
+
 # TRAPWINCH (){
-  # clear
-  # zle && zle reset-prompt
+# clear
+# zle && zle reset-prompt
 # }

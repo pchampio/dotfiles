@@ -1,4 +1,3 @@
-# aliases
 alias cls="clear && ls"
 alias gs="git status"
 alias gau="git add -u"
@@ -18,4 +17,10 @@ alias sshuttle="sshuttle --dns -vvr ubuntu@drakirus.xyz 0/0"
 alias STFU="pulseaudio -k && sudo alsa force-reload"
 alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
 alias backup="rsync -avP --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/lab ."
-alias nfs="echo 'mount -t nfs 192.168.16.131:/export/1To-Nas-Do .'"
+alias nfs="sudo mount -t nfs 192.168.16.131:/export/1To-Nas-Do ~/media"
+# alias cp="rsync -ah --partial --inplace --info=progress2"
+alias tri="exiftool -if '\$rating >= 1' -d './Tri' '-directory<createdate' ."
+alias pls='sudo $(fc -ln -1)'
+alias bt="sudo systemctl start bluetooth.service"
+alias neof="neofetch --memory_display barinfo"
+alias rv="sudo ramViewer"

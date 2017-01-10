@@ -8,7 +8,7 @@
   # font = Meslo 10.7
   font = Hack 10.7
 
-  geometry = 1280x680
+  geometry = 1920x1080
   icon_name = terminal
   audible_bell = false
   mouse_autohide = true
