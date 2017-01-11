@@ -49,16 +49,17 @@ git_arrows() {
 
   # if no git fetch has been done
   # check on remote depo the commit hash
-  local remote_commit=""
   if  [[  ! ${right:-0} > 0 &&  $# -ne 0 ]]; then
     local remote_commit=$(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-      sed 's/\// /g') | cut -f1)
+      sed 's/\// /g') 2> /dev/null || echo $arrows && return| cut -f1)
     local local_commit=$(git rev-parse HEAD)
     $(git merge-base --is-ancestor $remote_commit $local_commit 2>/dev/null )
     # echo $ancestor $local_commit $remote_commit
     if [[ $? -ne 0 ]]; then
       arrows+="%F{011}⇣%f"
     fi
+  else
+    echo "  ."
   fi
 
   echo $arrows
