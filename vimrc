@@ -25,6 +25,8 @@ hi! link HighlightedyankRegion SpellRare
 " slide
 " Plug 'blindFS/vim-reveal'
 
+Plug 'lervag/vimtex'
+
 " cd the path
 " git cline https://github.com/hakimel/reveal.js/ --depth=1
 " let g:reveal_config = {'path': '/home/ubuntu/APP/data/www/slide/'}
@@ -141,6 +143,8 @@ let g:polyglot_disabled = ['javascript']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
+
+Plug 'posva/vim-vue'
 
 Plug 'othree/yajs.vim'
 Plug 'lepture/vim-jinja'
@@ -297,6 +301,10 @@ let g:mundo_verbose_graph=0
 " let g:vcm_direction = 'n'
 " let b:vcm_tab_complete = 'tags'
 
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
+inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w\<cr>"
+
 Plug 'Shougo/neocomplete.vim'
 " Plug 'wellle/tmux-complete.vim'
 let g:neocomplete#enable_at_startup = 1
@@ -307,12 +315,21 @@ let g:neocomplete#enable_fuzzy_completion = 1
 " https://www.reddit.com/r/vim/comments/2xl33m
 let g:neocomplete#enable_cursor_hold_i = 1
 let g:neocomplete#cursor_hold_i_time = 500 " milliseconds
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
-inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w!\<cr>"
 if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
+let g:neocomplete#sources#omni#input_patterns = {
+      \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
+      \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
+      \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
+      \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}',
+      \}
+" let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w\{1,}\|\h\w*::'
+let g:neocomplete#force_omni_input_patterns.python =
+      \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}'
+
+
+set complete=i,.,b,w,u,U,]
 
 " autocmd FileType ruby compiler ruby
 let g:rubycomplete_buffer_loading = 1
@@ -321,14 +338,7 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_load_gemfile = 1
 " let g:rubycomplete_gemfile_path = 'Gemfile.aux'
 Plug 'vim-ruby/vim-ruby'
-let g:neocomplete#sources#omni#input_patterns = {
-\ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
-\ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
-\ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
-\ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}',
-\}
 set completeopt-=preview
-" let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w\{1,}\|\h\w*::'
 
 Plug 'davidhalter/jedi-vim'
 let g:jedi#documentation_command = ""
@@ -340,8 +350,6 @@ let g:jedi#smart_auto_mappings = 0
 
 let g:jedi#force_py_version = 2
 
-let g:neocomplete#force_omni_input_patterns.python =
-      \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}'
 
 Plug 'justmao945/vim-clang' " need clang installed
 " disable auto completion for vim-clang
@@ -382,7 +390,7 @@ call plug#end()
 
 " 80 columns
 set colorcolumn=80      " highlight the 80 column
-set synmaxcol=190
+set synmaxcol=190         " limit syntax Highlighting
 
 " set autoread " disable 'read-only to writeable' warnings
 autocmd FileChangedShell * echohl WarningMsg | echo "File changed shell." | echohl None
@@ -422,8 +430,8 @@ set virtualedit=block
 set laststatus=2 " Always display the statusline in all windows
 
 " highlight vertical column of cursor
-au WinLeave * set nocursorline nocursorcolumn
-au WinEnter * set cursorline
+au WinLeave * set nocursorline
+au WinEnter,FocusGained  * set cursorline
 set cursorline
 
 " relativ number
@@ -518,7 +526,7 @@ nnoremap <Right> <C-w>10>
 set timeoutlen=300 ttimeoutlen=0
 
 " spell
-execute 'nnoremap'.Altmap('s')."ei<c-x>s"
+execute 'nnoremap'.Altmap('s')."w[sei<c-x>s"
 
 "Moving lines
 execute 'nnoremap'.Altmap('k').":m .-2<CR>=="
@@ -567,7 +575,7 @@ endfunction
 
 noremap <leader>g <c-]>
 noremap <Leader>G :vsp <cr> <c-]>
-nnoremap <leader><leader> :w!<cr>
+nnoremap <leader><leader> :w<cr>
 
 vnoremap J }
 vnoremap K {
@@ -584,8 +592,8 @@ noremap <leader>cd :lcd <c-r>=expand("%:p:h")<cr>
 cnoreabbrev <silent> w!! call SudoSave()
 function! SudoSave()
   cnoreabbrev q q!
-  cnoreabbrev <silent> w call SudoSave()
-  cnoreabbrev <silent> wq w call SudoSave()
+  cabbrev <silent> w call SudoSave()
+  cabbrev <silent> wq w call SudoSave()
   execute ":w !sudo tee > /dev/null %"
 endfunction
 
@@ -742,6 +750,38 @@ function! ExpandWidth()
   execute 'vertical resize ' . widthResult
 endfunction
 " au BufEnter * :call ExpandWidth()
+
+" Dim inactive windows using 'colorcolumn' setting
+" This tends to slow down redrawing, but is very useful.
+" Based on https://groups.google.com/d/msg/vim_use/IJU-Vk-QLJE/xz4hjPjCRBUJ
+" XXX: this will only work with lines containing text (i.e. not '~')
+
+" hi ColorColumn ctermbg=236
+
+" function! s:DimInactiveWindows()
+  " for i in range(1, tabpagewinnr(tabpagenr(), '$'))
+    " let l:range = ""
+    " if i != winnr()
+      " if &wrap
+        " " HACK: when wrapping lines is enabled, we use the maximum number
+        " " of columns getting highlighted. This might get calculated by
+        " " looking for the longest visible line and using a multiple of
+        " " winwidth().
+        " let l:width=256 " max
+      " else
+        " let l:width=winwidth(i)
+      " endif
+      " let l:range = join(range(1, l:width), ',')
+    " endif
+    " call setwinvar(i, '&colorcolumn', l:range)
+  " endfor
+" endfunction
+" augroup DimInactiveWindows
+  " au!
+  " au WinEnter * call s:DimInactiveWindows()
+  " au WinEnter,FocusGained * set cursorline
+  " au WinLeave,FocusLost * set nocursorline
+" augroup END
 
 hi! link Search SpellBad
 au VimEnter * set isk-=.

@@ -13,8 +13,8 @@ eval `dircolors ~/dotfiles/dircolors/gruvbox.dir_colors`
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # Enable completion
-autoload -Uz compinit
-compinit
+# autoload -Uz compinit
+# compinit
 
 # Disable flow control commands (keeps C-s from freezing everything)
 stty start undef

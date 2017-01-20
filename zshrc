@@ -1,9 +1,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
-
 setopt prompt_subst # enable command substition in prompt
-
 
 export DOTFILES=$HOME/dotfiles
 # source all .zsh files inside of the zsh/ directory
@@ -15,7 +13,7 @@ export EDITOR='vim'
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -59,6 +57,9 @@ if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing)
 fi
 
-if [ ! "$TMUX" != "" ]; then
-  tm
+  SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
+if [ $SessionNb -eq 0 ]; then
+  tm && exit
 fi
+
+source /etc/bash_completion.d/climate_completion
