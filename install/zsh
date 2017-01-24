@@ -19,7 +19,7 @@ explain "Installation de zsh-syntax-highlighting"
 explain "Installation de zsh-completions"
   tell git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 
-sudo chsh -s /bin/zsh
+sudo vi /etc/passwd
 success "Success"
 
 read -r -p "Install the Theme ? [y/N] " response
