@@ -267,6 +267,8 @@ let g:NERDCustomDelimiters = {
 " syntastic
 Plug 'scrooloose/syntastic'
 
+let g:syntastic_javascript_checkers = ['eslint']
+
 " configure syntastic syntax checking to check on save
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
@@ -492,7 +494,7 @@ highlight SpecialKey ctermbg=none cterm=none
 set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add
 
 set ttyfast    " u got a fast terminal
-" set lazyredraw
+set lazyredraw
 set fillchars=vert:\|
 
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
@@ -598,7 +600,7 @@ function! SudoSave()
 endfunction
 
 " Insert New line
-noremap U o<ESC>
+noremap U :call append(line('.'), '')<CR>j
 
 " Perfect tag closer (xml)
 inoremap </ </<C-x><C-o>
@@ -751,37 +753,14 @@ function! ExpandWidth()
 endfunction
 " au BufEnter * :call ExpandWidth()
 
-" Dim inactive windows using 'colorcolumn' setting
-" This tends to slow down redrawing, but is very useful.
-" Based on https://groups.google.com/d/msg/vim_use/IJU-Vk-QLJE/xz4hjPjCRBUJ
-" XXX: this will only work with lines containing text (i.e. not '~')
-
-" hi ColorColumn ctermbg=236
-
-" function! s:DimInactiveWindows()
-  " for i in range(1, tabpagewinnr(tabpagenr(), '$'))
-    " let l:range = ""
-    " if i != winnr()
-      " if &wrap
-        " " HACK: when wrapping lines is enabled, we use the maximum number
-        " " of columns getting highlighted. This might get calculated by
-        " " looking for the longest visible line and using a multiple of
-        " " winwidth().
-        " let l:width=256 " max
-      " else
-        " let l:width=winwidth(i)
-      " endif
-      " let l:range = join(range(1, l:width), ',')
-    " endif
-    " call setwinvar(i, '&colorcolumn', l:range)
-  " endfor
-" endfunction
-" augroup DimInactiveWindows
-  " au!
-  " au WinEnter * call s:DimInactiveWindows()
-  " au WinEnter,FocusGained * set cursorline
-  " au WinLeave,FocusLost * set nocursorline
-" augroup END
-
 hi! link Search SpellBad
 au VimEnter * set isk-=.
+
+
+function! Slow()
+  set nocursorcolumn
+  set nocursorline
+  set norelativenumber
+  syntax sync minlines=256
+endfunction
+command Slow call Slow()

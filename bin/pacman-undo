@@ -1,0 +1,212 @@
+#!/usr/bin/env ruby
+
+###
+# Copyright (c) 2009, Paul Gideon Dann <pdgiddie at gmail>
+# 
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+###
+
+require 'time'
+require 'tempfile'
+
+PACMAN_CONFIG_PATH = '/etc/pacman.conf'
+PACMAN_LOG_FILE_PATH = '/var/log/pacman.log'
+PACMAN_CACHE_PATH = '/var/cache/pacman/pkg'
+PACKAGE_EXTENSION = 'pkg.tar.xz'
+
+if not File.exists?(PACMAN_LOG_FILE_PATH)
+  warn "Unable to find the Pacman log file at '#{PACMAN_LOG_FILE_PATH}'."
+  exit 1
+end
+
+class Configuration
+  def self.architecture
+    if @architecture.nil?
+      matches = open(PACMAN_CONFIG_PATH).read.match(/^Architecture *=(.*)/)
+      @architecture = matches.nil? ? 'auto' : matches[1].strip
+      if @architecture == 'auto'
+        @architecture = `uname -m`.chomp
+      end
+    end
+    @architecture
+  end
+end
+
+class Console
+  def self.width
+    self.dimensions[0]
+  end
+
+  def self.height
+    self.dimensions[1]
+  end
+
+  private
+  def self.dimensions
+    if not @dimensions
+      @dimensions = [80, 25]
+      tiocgwinsz = 0x5413
+      data = [0, 0, 0, 0].pack('SSSS')
+      if STDOUT.ioctl(tiocgwinsz, data) >= 0
+        rows, cols = data.unpack('SSSS')
+        @dimensions = [cols, rows]
+      end
+    end
+    @dimensions
+  end
+end
+
+class Action
+  attr_accessor :type
+  attr_accessor :time
+  attr_accessor :package_name
+  attr_accessor :old_version_number
+  attr_accessor :new_version_number
+
+  def self.action_log
+    entries = []
+    File.open(PACMAN_LOG_FILE_PATH, 'r') do |log_file|
+      last_time = 0
+      log_file.each_line do |line|
+        matches =
+          line.match(/\[(.*)\] (upgraded|installed|removed) .* \(.*\)/).to_a
+        if not matches.empty?
+          cur_time = Time.parse(matches[1])
+          # The rescue below is for the first line, for which last_time isn't a
+          #   Time object
+          entries << ('#' * 80 + "\n") if (cur_time - last_time) > 120 rescue false
+          last_time = cur_time
+          entries << line
+        end
+      end
+    end
+    entries.reverse.join
+  end
+
+  def self.parse(log_line)
+    matches = log_line.match(/\[(.*)\] (.*?) (.*?) \((.*?)(?: -> (.*))?\)/).
+                to_a.drop(1)
+    if not matches.empty?
+      action = Action.new
+      action.time = Time.parse(matches.shift)
+      action.type = matches.shift
+      action.package_name = matches.shift
+      action.old_version_number = matches.shift
+      action.new_version_number = matches.shift
+      action
+    end
+  end
+
+  def package_path
+    [Configuration.architecture, 'any'].lazy.map {|arch|
+      package_path_for_arch(arch)
+    }.find {|path|
+      File.exists?(path)
+    }
+  end
+
+  private
+
+  def package_path_for_arch(arch)
+    filename = [@package_name, @old_version_number, arch].join('-') +
+                 '.' + PACKAGE_EXTENSION
+    path = PACMAN_CACHE_PATH + '/' + filename
+    path
+  end
+end
+
+class ActionSet < Array
+  def undo
+    need_installing = []
+    need_removing = []
+    self.each do |action|
+      case action.type
+        when 'upgraded', 'removed'
+          need_installing << action
+        when 'installed'
+          need_removing << action
+      end
+    end
+
+    commands = []
+
+    if not need_installing.empty?
+      package_list = need_installing.map {|action|
+                       action.package_path
+                     }.join(' ')
+      commands << "sudo pacman -U #{package_list}"
+    end
+
+    if not need_removing.empty?
+      package_list = need_removing.map {|action|
+                       action.package_name
+                     }.join(' ')
+      commands << "sudo pacman -R #{package_list}"
+    end
+
+    if not commands.empty?
+      puts '#' * Console.width
+      puts commands.join("\n" + ('-' * Console.width) + "\n")
+      puts '#' * Console.width
+      exit unless user_wants_to_proceed?
+      puts
+      commands.each do |command|
+        system(command)
+      end
+      puts
+    end
+  end
+
+  protected
+  def user_wants_to_proceed?
+    print 'Proceed? [Y/n] '
+    answer = gets.chomp
+    answer.empty? or answer.downcase == 'y'
+  end
+end
+
+# Write log of Pacman actions to a temporary file
+file = Tempfile.new('pacman-undo')
+file.write(Action.action_log)
+original_file_length = file.length
+file.close
+
+# Present the file to the user in an editor
+editor = ENV['EDITOR']
+editor ||= 'vim'
+system("#{editor} #{file.path}")
+
+# Undo all the actions the user left in the file
+# Each group of actions separated by non-log lines (i.e. unparsable lines) will
+# be performed separately
+actionsets = []
+file.open
+if not file.length == original_file_length
+  actionsets << ActionSet.new
+  file.each_line do |line|
+    action = Action.parse(line)
+    if action
+      actionsets.last << action
+    else
+      actionsets << ActionSet.new
+    end
+  end
+else
+  warn 'File was not changed; doing nothing.'
+end
+file.close!
+
+# Undo the actions in each actionset
+actionsets.each do |actionset|
+  actionset.undo if not actionset.empty?
+end

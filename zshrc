@@ -56,10 +56,9 @@ fi
 if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing)
 fi
-
+if [[ "$SSH_CONNECTION" == ''  ]]; then
   SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
-if [ $SessionNb -eq 0 ]; then
-  tm && exit
+  if [ $SessionNb -eq 0 ]; then
+    tm && exit
+  fi
 fi
-
-source /etc/bash_completion.d/climate_completion
