@@ -141,11 +141,11 @@ share() {
   fi
 
   # Share
-  ssh -NR 22280:localhost:22280 ubuntu@drakirus.xyz 2>&1 &
+  ssh -NR 2280:0.0.0.0:2280 drakirus@drakirus.xyz 2>&1 &
   PID=$!
 
   # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
-  eval "gotty ${args} -p 22280 -c pair:$passwd $cmd"
+  eval "gotty ${args} -p 2280 -c pair:$passwd $cmd"
 
   kill -9 $PID
 }

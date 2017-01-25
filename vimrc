@@ -137,6 +137,9 @@ let g:fzf_colors = {
       \ 'spinner': ['fg', 'Label'],
       \ 'header':  ['fg', 'Comment'] }
 
+" autocmd StdinReadPre * let g:isReadingFromStdin = 1
+" autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | vsplit && Files| endif
+
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascript']
