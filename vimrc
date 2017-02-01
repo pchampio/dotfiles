@@ -697,6 +697,8 @@ function! ExecuteMacroOverVisualRange()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
+vnoremap . :norm.<CR>
+
 " Visual search mappings
 function! s:VSetSearch()
   let temp = @@
