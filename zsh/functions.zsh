@@ -151,9 +151,10 @@ share() {
 }
 
 v() {
-  which tmux 2>&1 > /dev/null
-  if [ $? -ne 0 ]; then
+
+  if [ -z ${TMUX+x} ]; then
     vim $@
+    return
   fi
 
   VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\

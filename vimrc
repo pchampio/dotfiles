@@ -25,8 +25,6 @@ hi! link HighlightedyankRegion SpellRare
 " slide
 " Plug 'blindFS/vim-reveal'
 
-Plug 'lervag/vimtex'
-
 " cd the path
 " git cline https://github.com/hakimel/reveal.js/ --depth=1
 " let g:reveal_config = {'path': '/home/ubuntu/APP/data/www/slide/'}
@@ -43,11 +41,7 @@ function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
   exec 'autocmd FileType nerdtree :set winfixwidth'
 endfunction
 
-au VimEnter * call NERDTreeHighlightFile('jade', 'green', 'none', 'green', '#151515')
 au VimEnter * call NERDTreeHighlightFile('html', 'green', 'none', 'green', '#151515')
-au VimEnter * call NERDTreeHighlightFile('slim', 'green', 'none', 'green', '#151515')
-au VimEnter * call NERDTreeHighlightFile('coffee', '5', 'none', '#ff00ff', '#151515')
-au VimEnter * call NERDTreeHighlightFile('styl', '5', 'none', '#ff00ff', '#151515')
 au VimEnter * call NERDTreeHighlightFile('less', '5', 'none', '#ff00ff', '#151515')
 au VimEnter * call NERDTreeHighlightFile('scss', '5', 'none', '#ff00ff', '#151515')
 au VimEnter * call NERDTreeHighlightFile('sass', '5', 'none', '#ff00ff', '#151515')
@@ -94,51 +88,58 @@ nnoremap <c-b> :cpf<cr>
 Plug 'wincent/terminus'
 
 
- " " Ctrl-P FuzzyFinder
-" Plug 'ctrlpvim/ctrlp.vim'
-" let g:ctrlp_line_prefix = ' '
-" let g:ctrlp_map='<c-p>'
-" " let g:ctrlp_dotfiles = 1
-" let g:ctrlp_prompt_mappings = {
-    " \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
-    " \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
-" \ }
-" nnoremap \ :CtrlPLine<cr>
-" nnoremap <leader>t :CtrlPTag<cr>
+ " Ctrl-P FuzzyFinder
+Plug 'ctrlpvim/ctrlp.vim'
+let g:ctrlp_line_prefix = ' '
+let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_map='<c-p>'
+" let g:ctrlp_dotfiles = 1
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
+    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
+\ }
+if executable('rg')
+  set grepprg=rg\ --color=never
+  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+  let g:ctrlp_use_caching = 0
+endif
+nnoremap \ :CtrlPLine<cr>
+nnoremap <c-t> :CtrlPTag<cr>
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-fun! s:fzf_root()
-  let path = finddir(".git", expand("%:p:h").";")
-  return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
-endfun
-nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
-" will ignore content in .gitignore (global)
-let g:fzf_layout = { 'down': '~40%' }
-nnoremap \ :BLines<cr>
-nnoremap <c-t> :Tags<cr>
-nnoremap <leader>b :Buffers<cr>
-let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-i': 'split',
-  \ 'ctrl-s': 'vsplit' }
-let g:fzf_buffers_jump = 1
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plug 'junegunn/fzf.vim'
+" fun! s:fzf_root()
+  " let path = finddir(".git", expand("%:p:h").";")
+  " return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
+" endfun
+" nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
+" " will ignore content in .gitignore (global)
+" let g:fzf_layout = { 'down': '~40%' }
+" nnoremap \ :BLines<cr>
+" nnoremap <c-t> :Tags<cr>
+" nnoremap <leader>b :Buffers<cr>
+" let g:fzf_action = {
+  " \ 'ctrl-t': 'tab split',
+  " \ 'ctrl-i': 'split',
+  " \ 'ctrl-s': 'vsplit' }
+" let g:fzf_buffers_jump = 1
+" let g:fzf_colors = {
+      " \ 'fg':      ['fg', 'Normal'],
+      " \ 'bg':      ['bg', 'Normal'],
+      " \ 'hl':      ['fg', 'Comment'],
+      " \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      " \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      " \ 'hl+':     ['fg', 'Statement'],
+      " \ 'info':    ['fg', 'PreProc'],
+      " \ 'prompt':  ['fg', 'Conditional'],
+      " \ 'pointer': ['fg', 'Exception'],
+      " \ 'marker':  ['fg', 'Keyword'],
+      " \ 'spinner': ['fg', 'Label'],
+      " \ 'header':  ['fg', 'Comment'] }
 
-" autocmd StdinReadPre * let g:isReadingFromStdin = 1
-" autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | vsplit && Files| endif
+autocmd StdinReadPre * let g:isReadingFromStdin = 1
+" OHHH Sale mais marche au top
+autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | exe '!tmux send-keys -t $TMUX_PANE c-p' | endif
 
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
@@ -147,7 +148,7 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
 
-Plug 'posva/vim-vue'
+" Plug 'posva/vim-vue'
 
 Plug 'othree/yajs.vim'
 Plug 'lepture/vim-jinja'
@@ -174,6 +175,11 @@ xmap ii <Plug>(textobj-sandwich-auto-i)
 xmap ai <Plug>(textobj-sandwich-auto-a)
 omap ii <Plug>(textobj-sandwich-auto-i)
 omap ai <Plug>(textobj-sandwich-auto-a)
+
+xmap im <Plug>(textobj-sandwich-literal-query-i)
+xmap am <Plug>(textobj-sandwich-literal-query-a)
+omap im <Plug>(textobj-sandwich-literal-query-i)
+omap am <Plug>(textobj-sandwich-literal-query-a)
 
 " https://languagetool.org/fr/
 Plug 'rhysd/vim-grammarous'
@@ -327,11 +333,8 @@ let g:neocomplete#sources#omni#input_patterns = {
       \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
       \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
       \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
-      \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}',
+      \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
       \}
-" let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w\{1,}\|\h\w*::'
-let g:neocomplete#force_omni_input_patterns.python =
-      \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w\{1,}'
 
 
 set complete=i,.,b,w,u,U,]
@@ -353,7 +356,7 @@ let g:jedi#completions_enabled = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#smart_auto_mappings = 0
 
-let g:jedi#force_py_version = 2
+let g:jedi#force_py_version = 3
 
 
 Plug 'justmao945/vim-clang' " need clang installed
@@ -580,7 +583,7 @@ endfunction
 
 noremap <leader>g <c-]>
 noremap <Leader>G :vsp <cr> <c-]>
-nnoremap <leader><leader> :w<cr>
+nnoremap <leader><leader> :w!<cr>
 
 vnoremap J }
 vnoremap K {

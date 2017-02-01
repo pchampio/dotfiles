@@ -38,5 +38,7 @@ config.codekit
 */ISO/
 **/zup3x
 **/gif
+**/node_modules/
+**/venv/
 
 # vim:set ft=conf:

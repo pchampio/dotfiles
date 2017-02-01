@@ -19,7 +19,6 @@ function handler_record()
     mp.osd_message("Rendering Gif",0.7)
     mp.msg.log("warn", timePos["start"] , "gif start time")
     mp.msg.log("warn", timePos["end"] , "gif end time")
-    print (tostring(timePos["start"]))
 
     getmetatable('').__call = string.sub
     local key = (tostring(timePos["start"])(0,3))
@@ -27,7 +26,11 @@ function handler_record()
     local cap = filename:match("(.+)%..+")
     cap = cap:gsub("%s+", "_")
 
-    local cmd = "~/dotfiles/bin/2gif -l -r820 -f14 -s"..timePos["start"].." -t"..timePos["end"]
+
+    local duration = timePos["end"] - timePos["start"]
+    mp.msg.log("warn","duration ", duration)
+
+    local cmd = "~/dotfiles/bin/2gif -l -r820 -f14 -s"..timePos["start"].." -d"..duration
     .." \""..path.."\" ~/Weeb/"..cap.."_"..key..".gif"
     os.execute(cmd)
 
