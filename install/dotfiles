@@ -3,7 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-ignoreRC="termite_config|README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|iTerm.png|background.png|.notags"
+ignoreRC="termite_config|README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|iTerm.png|background.png|.notags|vimium|package.list"
 dir=~/dotfiles
 
 explain "Create symlink for dotfiles"
@@ -21,9 +21,12 @@ for file in $files; do
 done
 
 explain "Create symlink for files config"
-mkdir ~/.config/
+[ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
 # tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
+
+[ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
+
 
 zsh

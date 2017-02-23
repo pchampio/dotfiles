@@ -25,6 +25,9 @@ source $ZSH/custom/plugins/zsh-completions/zsh-completions.plugin.zsh
 # Show contents of directory after cd-ing into it
 chpwd() {
   ls
+  if [ -f ./venv/bin/activate ]; then
+    source ./venv/bin/activate
+  fi
 }
 
 # ADD own dotfiles/bin app to Path
@@ -45,7 +48,8 @@ export RPROMPT='' # set asynchronously and dynamically
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
-export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+# export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
 # Android studio
 export ANDROID_HOME=~/Android/Sdk
 export PATH=${PATH}:${ANDROID_HOME}/tools

@@ -19,3 +19,5 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 # Disable flow control commands (keeps C-s from freezing everything)
 stty start undef
 stty stop undef
+
+setxkbmap -option caps:escape

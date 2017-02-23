@@ -89,53 +89,53 @@ Plug 'wincent/terminus'
 
 
  " Ctrl-P FuzzyFinder
-Plug 'ctrlpvim/ctrlp.vim'
-let g:ctrlp_line_prefix = ' '
-let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_map='<c-p>'
-" let g:ctrlp_dotfiles = 1
-let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
-    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
-\ }
-if executable('rg')
-  set grepprg=rg\ --color=never
-  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
-  let g:ctrlp_use_caching = 0
-endif
-nnoremap \ :CtrlPLine<cr>
-nnoremap <c-t> :CtrlPTag<cr>
+" Plug 'ctrlpvim/ctrlp.vim'
+" let g:ctrlp_line_prefix = ' '
+" let g:ctrlp_cmd = 'CtrlPMixed'
+" let g:ctrlp_map='<c-p>'
+" " let g:ctrlp_dotfiles = 1
+" let g:ctrlp_prompt_mappings = {
+    " \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
+    " \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
+" \ }
+" if executable('rg')
+  " set grepprg=rg\ --color=never
+  " let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+  " let g:ctrlp_use_caching = 0
+" endif
+" nnoremap \ :CtrlPLine<cr>
+" nnoremap <c-t> :CtrlPTag<cr>
 
-" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-" Plug 'junegunn/fzf.vim'
-" fun! s:fzf_root()
-  " let path = finddir(".git", expand("%:p:h").";")
-  " return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
-" endfun
-" nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
-" " will ignore content in .gitignore (global)
-" let g:fzf_layout = { 'down': '~40%' }
-" nnoremap \ :BLines<cr>
-" nnoremap <c-t> :Tags<cr>
-" nnoremap <leader>b :Buffers<cr>
-" let g:fzf_action = {
-  " \ 'ctrl-t': 'tab split',
-  " \ 'ctrl-i': 'split',
-  " \ 'ctrl-s': 'vsplit' }
-" let g:fzf_buffers_jump = 1
-" let g:fzf_colors = {
-      " \ 'fg':      ['fg', 'Normal'],
-      " \ 'bg':      ['bg', 'Normal'],
-      " \ 'hl':      ['fg', 'Comment'],
-      " \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      " \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      " \ 'hl+':     ['fg', 'Statement'],
-      " \ 'info':    ['fg', 'PreProc'],
-      " \ 'prompt':  ['fg', 'Conditional'],
-      " \ 'pointer': ['fg', 'Exception'],
-      " \ 'marker':  ['fg', 'Keyword'],
-      " \ 'spinner': ['fg', 'Label'],
-      " \ 'header':  ['fg', 'Comment'] }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+fun! s:fzf_root()
+  let path = finddir(".git", expand("%:p:h").";")
+  return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
+endfun
+nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
+" will ignore content in .gitignore (global)
+let g:fzf_layout = { 'down': '~40%' }
+nnoremap \ :BLines<cr>
+nnoremap <c-t> :Tags<cr>
+nnoremap <leader>b :Buffers<cr>
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-i': 'split',
+  \ 'ctrl-s': 'vsplit' }
+let g:fzf_buffers_jump = 1
+let g:fzf_colors = {
+      \ 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
 
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 " OHHH Sale mais marche au top
@@ -143,16 +143,26 @@ autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | exe '!tmux se
 
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
-let g:polyglot_disabled = ['javascript']
+let g:polyglot_disabled = ['javascript', 'python']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
       \ "sh", "html", "css", "vim", "python"]
+
+Plug 'hdima/python-syntax'
+let python_highlight_all = 1
+
+Plug 'othree/javascript-libraries-syntax.vim'
+
+Plug 'mxw/vim-prolog'
 
 " Plug 'posva/vim-vue'
 
 Plug 'othree/yajs.vim'
 Plug 'lepture/vim-jinja'
 Plug 'zsiciarz/caddy.vim'
+
+
+" end Syntax
 
 " A Vim plugin which shows a git diff in the numberline
 Plug 'airblade/vim-gitgutter'
@@ -176,10 +186,10 @@ xmap ai <Plug>(textobj-sandwich-auto-a)
 omap ii <Plug>(textobj-sandwich-auto-i)
 omap ai <Plug>(textobj-sandwich-auto-a)
 
-xmap im <Plug>(textobj-sandwich-literal-query-i)
-xmap am <Plug>(textobj-sandwich-literal-query-a)
-omap im <Plug>(textobj-sandwich-literal-query-i)
-omap am <Plug>(textobj-sandwich-literal-query-a)
+xmap in <Plug>(textobj-sandwich-literal-query-i)
+xmap an <Plug>(textobj-sandwich-literal-query-a)
+omap in <Plug>(textobj-sandwich-literal-query-i)
+omap an <Plug>(textobj-sandwich-literal-query-a)
 
 " https://languagetool.org/fr/
 Plug 'rhysd/vim-grammarous'
@@ -286,7 +296,8 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_loc_list_height=5
 
 " Use Python 3 when the shebang calls for it.
-autocmd BufRead *.py let b:syntastic_python_python_exec = syntastic#util#parseShebang()['exe']
+" autocmd BufRead *.py let b:syntastic_python_python_exec = syntastic#util#parseShebang()['exe']
+let g:syntastic_python_flake8_exec = 'python3'
 
 " THEME-SYNTAX
 "Plug 'altercation/vim-colors-solarized'
@@ -348,6 +359,9 @@ let g:rubycomplete_load_gemfile = 1
 Plug 'vim-ruby/vim-ruby'
 set completeopt-=preview
 
+Plug 'kana/vim-textobj-user'
+Plug 'bps/vim-textobj-python'
+
 Plug 'davidhalter/jedi-vim'
 let g:jedi#documentation_command = ""
 let g:jedi#usages_command = "<leader>N"
@@ -392,6 +406,12 @@ let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
 let g:simpledb_show_timing = 0
 Plug 'ivalkeen/vim-simpledb'
 Plug 'krisajenkins/vim-postgresql-syntax'
+
+Plug 'christoomey/vim-tmux-runner'
+autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
+
+" autocmd FileType prolog :map <cr>mavip:VtrSendCtrlD<cr>:VtrSendCommandToRunner <c-r>=expand('%:p')<cr> :VtrSendLinesToRunner<cr>`a
+" autocmd FileType prolog :map <cr>mavip:<Leader><space>:VtrSendLinesToRunner<cr>`a
 
 " ----------------------------- END -----------------------------
 call plug#end()
@@ -545,6 +565,13 @@ execute "vnoremap <Down> :m '>+1<CR>gv=gv"
 " Quicker navigation
 noremap H ^
 noremap L g_
+
+" to null register
+" nnoremap d "_d
+" nnoremap D "_D
+
+nnoremap c "_c
+nnoremap C "_C
 
 noremap <silent> J :call MatchitDOWN()<cr>
 function! MatchitDOWN()
@@ -761,7 +788,7 @@ function! ExpandWidth()
 endfunction
 " au BufEnter * :call ExpandWidth()
 
-hi! link Search SpellBad
+hi! link Search SpellRare
 au VimEnter * set isk-=.
 
 

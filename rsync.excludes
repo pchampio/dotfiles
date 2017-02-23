@@ -41,4 +41,7 @@ config.codekit
 **/node_modules/
 **/venv/
 
+**/vendor/
+**/__MACOSX/
+
 # vim:set ft=conf:
