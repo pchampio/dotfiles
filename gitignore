@@ -54,3 +54,4 @@ tags
 .codekit-config.json
 config.codekit
 redis/*
+doc/*

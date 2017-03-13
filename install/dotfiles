@@ -24,6 +24,11 @@ explain "Create symlink for files config"
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
+
+explain "Symlink nvim to vim"
+tell ln -s ~/.vim ~/.config/nvim
+tell ln -s ~/.vimrc ~/.config/nvim/init.vim
+
 # tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
 
 [ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1

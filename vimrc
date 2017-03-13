@@ -83,59 +83,60 @@ let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
 nnoremap <c-n> :cnf<cr>
 nnoremap <c-b> :cpf<cr>
+nmap <leader>E <Plug>(FerretAcks)
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
 
-
  " Ctrl-P FuzzyFinder
-" Plug 'ctrlpvim/ctrlp.vim'
-" let g:ctrlp_line_prefix = ' '
+
+Plug 'ctrlpvim/ctrlp.vim'
 " let g:ctrlp_cmd = 'CtrlPMixed'
-" let g:ctrlp_map='<c-p>'
-" " let g:ctrlp_dotfiles = 1
-" let g:ctrlp_prompt_mappings = {
-    " \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
-    " \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
-" \ }
-" if executable('rg')
-  " set grepprg=rg\ --color=never
-  " let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
-  " let g:ctrlp_use_caching = 0
-" endif
-" nnoremap \ :CtrlPLine<cr>
-" nnoremap <c-t> :CtrlPTag<cr>
+let g:ctrlp_map='<c-p>'
+" let g:ctrlp_dotfiles = 1
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
+    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
+\ }
+if executable('rg')
+  set grepprg=rg\ --color=never
+  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+  let g:ctrlp_use_caching = 0
+endif
+nnoremap \ :CtrlPLine<cr>
+nnoremap <c-t> :CtrlPTag<cr>
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-fun! s:fzf_root()
-  let path = finddir(".git", expand("%:p:h").";")
-  return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
-endfun
-nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
-" will ignore content in .gitignore (global)
-let g:fzf_layout = { 'down': '~40%' }
-nnoremap \ :BLines<cr>
-nnoremap <c-t> :Tags<cr>
-nnoremap <leader>b :Buffers<cr>
-let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-i': 'split',
-  \ 'ctrl-s': 'vsplit' }
-let g:fzf_buffers_jump = 1
-let g:fzf_colors = {
-      \ 'fg':      ['fg', 'Normal'],
-      \ 'bg':      ['bg', 'Normal'],
-      \ 'hl':      ['fg', 'Comment'],
-      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      \ 'hl+':     ['fg', 'Statement'],
-      \ 'info':    ['fg', 'PreProc'],
-      \ 'prompt':  ['fg', 'Conditional'],
-      \ 'pointer': ['fg', 'Exception'],
-      \ 'marker':  ['fg', 'Keyword'],
-      \ 'spinner': ['fg', 'Label'],
-      \ 'header':  ['fg', 'Comment'] }
+
+" Plug 'junegunn/fzf.vim'
+" fun! s:fzf_root()
+  " let path = finddir(".git", expand("%:p:h").";")
+  " return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
+" endfun
+" nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
+" " will ignore content in .gitignore (global)
+" let g:fzf_layout = { 'down': '~40%' }
+" nnoremap \ :BLines<cr>
+" nnoremap <c-t> :Tags<cr>
+" nnoremap <leader>b :Buffers<cr>
+" let g:fzf_action = {
+  " \ 'ctrl-t': 'tab split',
+  " \ 'ctrl-i': 'split',
+  " \ 'ctrl-s': 'vsplit' }
+" let g:fzf_buffers_jump = 1
+" let g:fzf_colors = {
+      " \ 'fg':      ['fg', 'Normal'],
+      " \ 'bg':      ['bg', 'Normal'],
+      " \ 'hl':      ['fg', 'Comment'],
+      " \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      " \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      " \ 'hl+':     ['fg', 'Statement'],
+      " \ 'info':    ['fg', 'PreProc'],
+      " \ 'prompt':  ['fg', 'Conditional'],
+      " \ 'pointer': ['fg', 'Exception'],
+      " \ 'marker':  ['fg', 'Keyword'],
+      " \ 'spinner': ['fg', 'Label'],
+      " \ 'header':  ['fg', 'Comment'] }
 
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 " OHHH Sale mais marche au top
@@ -158,7 +159,7 @@ Plug 'mxw/vim-prolog'
 " Plug 'posva/vim-vue'
 
 Plug 'othree/yajs.vim'
-Plug 'lepture/vim-jinja'
+" Plug 'lepture/vim-jinja'
 Plug 'zsiciarz/caddy.vim'
 
 
@@ -252,8 +253,8 @@ Plug 'AndrewRadev/splitjoin.vim'
 " move function arguments
 Plug 'AndrewRadev/sideways.vim'
 
-execute 'nnoremap'.Altmap('h').":SidewaysLeft<cr>"
-execute 'nnoremap'.Altmap('l').":SidewaysRight<cr>"
+execute 'nnoremap'.Altmap('.').":SidewaysRight<cr>"
+execute 'nnoremap'.Altmap(',').":SidewaysLeft<cr>"
 " nnoremap <c-h> :SidewaysLeft<cr>
 " nnoremap <c-l> :SidewaysRight<cr>
 
@@ -359,8 +360,10 @@ let g:rubycomplete_load_gemfile = 1
 Plug 'vim-ruby/vim-ruby'
 set completeopt-=preview
 
-Plug 'kana/vim-textobj-user'
-Plug 'bps/vim-textobj-python'
+Plug 'tweekmonster/braceless.vim'
+autocmd FileType python BracelessEnable +indent
+
+Plug 'tweekmonster/django-plus.vim'
 
 Plug 'davidhalter/jedi-vim'
 let g:jedi#documentation_command = ""
