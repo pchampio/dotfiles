@@ -88,12 +88,17 @@ nmap <leader>E <Plug>(FerretAcks)
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
 
+" Git Plug.vim (lazy)
+Plug 'lambdalisue/vim-gita', {'on': ['Gita']}
+
  " Ctrl-P FuzzyFinder
 
 Plug 'ctrlpvim/ctrlp.vim'
 " let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_line_prefix = ''
 let g:ctrlp_map='<c-p>'
 " let g:ctrlp_dotfiles = 1
+" let g:ctrlp_regexp = 1
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
     \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
@@ -155,6 +160,10 @@ let python_highlight_all = 1
 Plug 'othree/javascript-libraries-syntax.vim'
 
 Plug 'mxw/vim-prolog'
+autocmd FileType prolog :nnoremap <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
+      \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
+      \ :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
+let g:syntastic_prolog_checkers = ['swipl']
 
 " Plug 'posva/vim-vue'
 
@@ -275,12 +284,17 @@ noremap <leader>rt :GutentagsUpdate<cr>:redraw!<cr>
 Plug 'majutsushi/tagbar'
 nnoremap <leader>t :TagbarToggle<CR>
 
+Plug 'rhysd/clever-f.vim'
+let g:clever_f_chars_match_any_signs = ';'
+" let g:clever_f_mark_char_color = 'SpellRare'
+
 " Commanter
 Plug 'scrooloose/nerdcommenter'
 let NERDUsePlaceHolders=0
 let NERDSpaceDelims=1
 let g:NERDCustomDelimiters = {
     \ 'c': { 'left' : '//', 'leftAlt' : '/*', 'rightAlt': '*/' },
+    \ 'javascript.jsx': { 'left' : '//', 'leftAlt' : '/*', 'rightAlt': '*/' },
     \ 'caddy': { 'left' : '#' },
 \ }
 
@@ -413,8 +427,6 @@ Plug 'krisajenkins/vim-postgresql-syntax'
 Plug 'christoomey/vim-tmux-runner'
 autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
-" autocmd FileType prolog :map <cr>mavip:VtrSendCtrlD<cr>:VtrSendCommandToRunner <c-r>=expand('%:p')<cr> :VtrSendLinesToRunner<cr>`a
-" autocmd FileType prolog :map <cr>mavip:<Leader><space>:VtrSendLinesToRunner<cr>`a
 
 " ----------------------------- END -----------------------------
 call plug#end()
