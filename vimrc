@@ -89,7 +89,8 @@ nmap <leader>E <Plug>(FerretAcks)
 Plug 'wincent/terminus'
 
 " Git Plug.vim (lazy)
-Plug 'lambdalisue/vim-gita', {'on': ['Gita']}
+Plug 'lambdalisue/gina.vim', {'on': ['Gina']}
+nnoremap <leader>gs :Gina status
 
  " Ctrl-P FuzzyFinder
 

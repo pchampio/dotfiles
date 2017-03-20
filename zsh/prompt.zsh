@@ -51,22 +51,35 @@ git_arrows() {
   # check on remote depo the commit hash
   if  [[  ! ${right:-0} > 0 &&  $# -ne 0 ]]; then
 
-    local remote_commit=$(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+    # check if user use http and the repo is not private
+    local remote_url=$(git config --get remote.origin.url)
+    if [[ "$remote_url" =~ "http" ]]; then
+      STATUS=$(curl -s -o /dev/null -w '%{http_code}' "$remote_url")
+      if [ $STATUS -ne 200 ]; then
+        echo $arrows
+        return
+      fi
+    fi
+
+    # get remote_commit
+    local remote_commit=$(git ls-remote -q --exit-code $(git rev-parse --abbrev-ref @{u} | \
       sed 's/\// /g') 2> /dev/null || echo $arrows && return )
     local remote_commit=$(echo $remote_commit | cut -f1)
+
+    # get last local commit
     local local_commit=$(git rev-parse HEAD)
     if [[ "$remote_commit" = "$local_commit" ]]; then
       echo $arrows
       return
     fi
+
+    # remote_commit is ancestor ? local_commit
     $(git merge-base --is-ancestor $remote_commit $local_commit 2>/dev/null )
     # echo $ancestor $local_commit $remote_commit
     if [[ $? -ne 0 ]]; then
       arrows+="%F{011}⇣%f"
     fi
-
   fi
-
   echo $arrows
 }
 
