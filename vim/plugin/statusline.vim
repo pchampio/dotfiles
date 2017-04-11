@@ -23,6 +23,8 @@ if has('statusline')
   set statusline=%7*                         " Switch to User7 highlight group
   if !g:remoteSession
     set statusline+=%{statusline#gutterpadding(1)}
+  else
+    set statusline+=\                          " Space.
   endif
   set statusline+=%n                         " Buffer number.
   set statusline+=\                          " Space.
