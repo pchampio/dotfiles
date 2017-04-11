@@ -20,7 +20,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 stty start undef
 stty stop undef
 
-[[ "$SSH_CONNECTION" != ''  ]] && setxkbmap -option caps:escape
+[[ "$SSH_CONNECTION" == ''  ]] && setxkbmap -option caps:escape
 
 setopt extendedglob
 # rm -- ^file.txt
