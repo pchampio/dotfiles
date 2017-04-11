@@ -19,7 +19,8 @@ export MANPATH="/usr/local/man:$MANPATH"
 
 # add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
-source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
+# source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
+source $ZSH/custom/fast-syntax-highlighting.plugin.zsh
 source $ZSH/custom/plugins/zsh-completions/zsh-completions.plugin.zsh
 
 # Show contents of directory after cd-ing into it

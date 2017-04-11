@@ -21,3 +21,6 @@ stty start undef
 stty stop undef
 
 setxkbmap -option caps:escape
+
+setopt extendedglob
+# rm -- ^file.txt

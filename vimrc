@@ -32,41 +32,6 @@ nnoremap <leader>rr :RevealIt md<cr>
 
 " Plug 'gorodinskiy/vim-coloresque'
 
-Plug 'scrooloose/nerdtree'
-" NERDTress File highlighting
-function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
-  exec 'autocmd FileType nerdtree highlight ' . a:extension .' ctermbg='. a:bg .' ctermfg='. a:fg .' guibg='. a:guibg .' guifg='. a:guifg
-  exec 'autocmd FileType nerdtree syn match ' . a:extension .' #^\s\+.*'. a:extension .'$#'
-  exec 'autocmd FileType nerdtree :vertical resize 31'
-  exec 'autocmd FileType nerdtree :set winfixwidth'
-endfunction
-
-au VimEnter * call NERDTreeHighlightFile('html', 'green', 'none', 'green', '#151515')
-au VimEnter * call NERDTreeHighlightFile('less', '5', 'none', '#ff00ff', '#151515')
-au VimEnter * call NERDTreeHighlightFile('scss', '5', 'none', '#ff00ff', '#151515')
-au VimEnter * call NERDTreeHighlightFile('sass', '5', 'none', '#ff00ff', '#151515')
-au VimEnter * call NERDTreeHighlightFile('ini', 'yellow', 'none', 'yellow', '#151515')
-au VimEnter * call NERDTreeHighlightFile('md', 'blue', 'none', '#3366FF', '#151515')
-au VimEnter * call NERDTreeHighlightFile('yml', 'yellow', 'none', 'yellow', '#151515')
-au VimEnter * call NERDTreeHighlightFile('config', 'yellow', 'none', 'yellow', '#151515')
-au VimEnter * call NERDTreeHighlightFile('rc', 'yellow', 'none', 'yellow', '#151515')
-au VimEnter * call NERDTreeHighlightFile('conf', 'yellow', 'none', 'yellow', '#151515')
-au VimEnter * call NERDTreeHighlightFile('json', 'yellow', 'none', 'yellow', '#151515')
-au VimEnter * call NERDTreeHighlightFile('css', 'cyan', 'none', 'cyan', '#151515')
-au VimEnter * call NERDTreeHighlightFile('js', 'cyan', 'none', 'cyan', '#151515')
-au VimEnter * call NERDTreeHighlightFile('rb', 'Red', 'none', '#ffa500', '#151515')
-au VimEnter * call NERDTreeHighlightFile('php', 'Magenta', 'none', '#ff00ff', '#151515')
-
-let g:NERDTreeRespectWildIgnore = 1
-
-" Like vim-vinegar.
-nnoremap <silent> - :silent edit <C-R>=expand('%:p:h')<CR><CR>
-nnoremap <Leader>m :NERDTreeToggle<CR>
-nnoremap <Leader>k :NERDTreeFind<CR>
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-let g:NERDTreeWinSize=35
-let g:NERDTreeMinimalUI=1
-
 " searching
 Plug 'wincent/scalpel'
 Plug 'wincent/loupe'
@@ -91,6 +56,7 @@ Plug 'wincent/terminus'
 " Git Plug.vim (lazy)
 Plug 'lambdalisue/gina.vim', {'on': ['Gina']}
 nnoremap <leader>gs :Gina status
+set diffopt=vertical
 
  " Ctrl-P FuzzyFinder
 
@@ -114,39 +80,9 @@ nnoremap <c-t> :CtrlPTag<cr>
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
-" Plug 'junegunn/fzf.vim'
-" fun! s:fzf_root()
-  " let path = finddir(".git", expand("%:p:h").";")
-  " return fnamemodify(substitute(path, ".git", "", ""), ":p:h")
-" endfun
-" nnoremap <silent> <c-p> :exe 'Files ' . <SID>fzf_root()<CR>
-" " will ignore content in .gitignore (global)
-" let g:fzf_layout = { 'down': '~40%' }
-" nnoremap \ :BLines<cr>
-" nnoremap <c-t> :Tags<cr>
-" nnoremap <leader>b :Buffers<cr>
-" let g:fzf_action = {
-  " \ 'ctrl-t': 'tab split',
-  " \ 'ctrl-i': 'split',
-  " \ 'ctrl-s': 'vsplit' }
-" let g:fzf_buffers_jump = 1
-" let g:fzf_colors = {
-      " \ 'fg':      ['fg', 'Normal'],
-      " \ 'bg':      ['bg', 'Normal'],
-      " \ 'hl':      ['fg', 'Comment'],
-      " \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-      " \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-      " \ 'hl+':     ['fg', 'Statement'],
-      " \ 'info':    ['fg', 'PreProc'],
-      " \ 'prompt':  ['fg', 'Conditional'],
-      " \ 'pointer': ['fg', 'Exception'],
-      " \ 'marker':  ['fg', 'Keyword'],
-      " \ 'spinner': ['fg', 'Label'],
-      " \ 'header':  ['fg', 'Comment'] }
-
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 " OHHH Sale mais marche au top
-autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') | exe '!tmux send-keys -t $TMUX_PANE c-p' | endif
+autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') |  call feedkeys("\<c-p>") | endif
 
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
@@ -248,6 +184,11 @@ nnoremap <silent>        ++  vip++
 " Replace + motion
 Plug 'vim-scripts/ReplaceWithRegister'
 " gr replace motion
+nmap r  <Plug>ReplaceWithRegisterOperator
+nmap rr <Plug>ReplaceWithRegisterLine
+xmap r  <Plug>ReplaceWithRegisterVisual
+
+noremap R r
 
 " Aligning text
 Plug 'junegunn/vim-easy-align'
@@ -281,6 +222,9 @@ Plug 'ludovicchabant/vim-gutentags'
 let g:gutentags_cache_dir = '~/.vim/gutentags'
 let g:gutentags_project_root = ['.git', 'Makefile', 'makefile', 'Gemfile']
 noremap <leader>rt :GutentagsUpdate<cr>:redraw!<cr>
+
+" gem install ripper-tags
+ " let g:gutentags_ctags_executable_ruby = 'ripper-tags -R --exclude=vendor'
 
 Plug 'majutsushi/tagbar'
 nnoremap <leader>t :TagbarToggle<CR>
@@ -325,6 +269,9 @@ let g:gruvbox_sign_column="dark0"
 let g:gruvbox_color_column="dark0"
 let g:gruvbox_vert_split="dark0"
 
+" Plug 'Yggdroot/indentLine'
+" let g:indentLine_char = ''
+
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -357,22 +304,22 @@ if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
 let g:neocomplete#sources#omni#input_patterns = {
-      \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
+      \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
       \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
       \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
       \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
       \}
 
-
 set complete=i,.,b,w,u,U,]
 
+Plug 'vim-ruby/vim-ruby'
 " autocmd FileType ruby compiler ruby
 let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 " let g:rubycomplete_rails = 1
 let g:rubycomplete_load_gemfile = 1
 " let g:rubycomplete_gemfile_path = 'Gemfile.aux'
-Plug 'vim-ruby/vim-ruby'
+
 set completeopt-=preview
 
 Plug 'tweekmonster/braceless.vim'
@@ -451,7 +398,7 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 set wildignore+=.hg,.git,.svn                           " Version control
 set wildignore+=*.aux,*.out,*.toc                       " LaTeX intermediate files
-" set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
 set wildignore+=*.luac                                  " Lua byte code
 set wildignore+=*.o,*.lo,*.obj,*.exe,*.dll,*.manifest   " compiled object files
 set wildignore+=*.pyc                                   " Python byte code
@@ -579,7 +526,9 @@ execute "vnoremap <up> :m '<-2<CR>gv=gv"
 execute "vnoremap <Down> :m '>+1<CR>gv=gv"
 
 " Quicker navigation
-noremap H ^
+noremap H 0^
+xmap H ^
+omap H ^
 noremap L g_
 
 " to null register
@@ -697,8 +646,6 @@ cnoreabbrev W w
 cnoreabbrev Q q
 cnoreabbrev qq q
 
-cnoreabbrev push !cat\|push <c-r>=expand('%:t')<cr> > /tmp/up.tmp<cr>u:vs /tmp/up.tmp<cr> :set ft=help <cr>
-
 nnoremap ; :
 nnoremap : ;
 vnoremap ; :
@@ -758,21 +705,24 @@ function! RenameFile() abort
   if !empty(ext_file)
     let ext_file = ".".ext_file
   endif
-  let new_name = input('New file name: ', substitute(expand('%'), expand('%:t'), '', 'g'), 'file')
+  let x = 0
+  let feedkeys = ""
+  while x < len(ext_file)
+    let x+=1
+    let feedkeys .= "\<left>"
+  endwhile
+  let new_name = input('New file name: ', expand('%').feedkeys, 'file')
   if isdirectory(new_name)
     let new_name = substitute(new_name, "/$", '', 'g')
     let new_name .= '/' . expand('%:t')
     let ext_file = ""
   endif
   if new_name != '' && new_name != old_name
-    let ext_keep = matchstr(new_name, '.*\.')
-    if empty(ext_keep) && !empty(ext_file)
-      let new_name .= ext_file
-    endif
     exec ':saveas ' . new_name
     exec ':silent !rm ' . old_name
+    redraw!
+    echohl ModeMsg | echo "RenameFile: ".old_name. " -> " .new_name | echohl None
   endif
-  redraw!
 endfunction
 nnoremap <Leader>rn :call RenameFile()<cr>
 
@@ -780,7 +730,7 @@ function s:MkNonExDir(file, buf) abort
     if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
         let dir=fnamemodify(a:file, ':h')
         if !isdirectory(dir)
-            call mkdir(dir, 'p')
+          call mkdir(dir, 'p')
         endif
     endif
 endfunction
@@ -794,9 +744,6 @@ function! ExpandWidth()
   let maxWidth = max(map(getline(line("w0"),line('w$')), 'len(v:val)')) + 1
   if b:expandWidth_lastWidth > maxWidth
     return
-  endif
-  if &filetype == "nerdtree"
-    let maxWidth = 23
   endif
   let g:expandWidth#defaultMaxWidth = 200
   let widthResult = min([ ( maxWidth + 5 ), g:expandWidth#defaultMaxWidth ])

@@ -13,13 +13,16 @@ explain "Installation de oh-my-zsh"
   sudo chown $USER ~/.zsh-update
 
 explain "Installation de zsh-syntax-highlighting"
-  tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
+  # tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
+  tell wget https://raw.githubusercontent.com/zdharma/fast-syntax-highlighting/master/fast-syntax-highlighting.plugin.zsh -O ~/.oh-my-zsh/custom/fast-syntax-highlighting.plugin.zsh
+  tell wget https://raw.githubusercontent.com/zdharma/fast-syntax-highlighting/master/fast-highlight -O ~/.oh-my-zsh/custom/fast-highlight
+
 
 
 explain "Installation de zsh-completions"
   tell git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 
-sudo vi /etc/passwd
+sudo vim /etc/passwd
 success "Success"
 
 read -r -p "Install the Theme ? [y/N] " response

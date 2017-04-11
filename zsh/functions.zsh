@@ -213,3 +213,7 @@ net-list(){
   vared -p 'Enter the network and press [ENTER]: ' -c ip
   sudo nmap -sP $ip/24
 }
+
+docker-enter () {
+  docker exec -ti $1 sh
+}
