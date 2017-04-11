@@ -1,6 +1,9 @@
 set nocompatible
 runtime! macros/matchit.vim
 
+" ssh
+let g:remoteSession = ($SSH_CONNECTION != "")
+
 " ALT keys Mappings
 function! Altmap(char)
   if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
@@ -40,8 +43,16 @@ map <leader><space> <Plug>(LoupeClearHighlight)
 let g:LoupeCenterResults=0
 let g:LoupeHighlightGroup='IncSearch'
 nmap <Nop> <Plug>(LoupeStar)
-au VimEnter * unmap <Esc>[200~
-au VimEnter * nmap <silent> * *``zz
+
+if !has("gui_running")
+  augroup map_search
+      autocmd!
+      au VimEnter * nmap <silent> * *``zz
+      au VimEnter * hi! link Search SpellRare
+  augroup END
+end
+
+
 
 Plug 'wincent/ferret'
 let g:FerretMap=0
@@ -282,33 +293,35 @@ let g:mundo_width=70
 let g:mundo_playback_delay=40
 let g:mundo_verbose_graph=0
 
-" Plug 'ajh17/VimCompletesMe'
-" let g:vcm_direction = 'n'
-" let b:vcm_tab_complete = 'tags'
-
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w\<cr>"
 
-Plug 'Shougo/neocomplete.vim'
-" Plug 'wellle/tmux-complete.vim'
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#auto_completion_start_length = 2
-let g:neocomplete#enable_fuzzy_completion = 1
-" User must pause before completions are shown.
-" https://www.reddit.com/r/vim/comments/2xl33m
-let g:neocomplete#enable_cursor_hold_i = 1
-let g:neocomplete#cursor_hold_i_time = 500 " milliseconds
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
+if !g:remoteSession
+  Plug 'Shougo/neocomplete.vim'
+  " Plug 'wellle/tmux-complete.vim'
+  let g:neocomplete#enable_at_startup = 1
+  let g:neocomplete#enable_smart_case = 1
+  let g:neocomplete#auto_completion_start_length = 2
+  let g:neocomplete#enable_fuzzy_completion = 1
+  " User must pause before completions are shown.
+  " https://www.reddit.com/r/vim/comments/2xl33m
+  let g:neocomplete#enable_cursor_hold_i = 1
+  let g:neocomplete#cursor_hold_i_time = 500 " milliseconds
+  if !exists('g:neocomplete#force_omni_input_patterns')
+    let g:neocomplete#force_omni_input_patterns = {}
+  endif
+  let g:neocomplete#sources#omni#input_patterns = {
+        \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
+        \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
+        \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
+        \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
+        \}
+else
+  Plug 'ajh17/VimCompletesMe'
+  let g:vcm_direction = 'n'
+  let b:vcm_tab_complete = 'tags'
 endif
-let g:neocomplete#sources#omni#input_patterns = {
-      \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
-      \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
-      \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
-      \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
-      \}
 
 set complete=i,.,b,w,u,U,]
 
@@ -751,7 +764,6 @@ function! ExpandWidth()
 endfunction
 " au BufEnter * :call ExpandWidth()
 
-hi! link Search SpellRare
 au VimEnter * set isk-=.
 
 
