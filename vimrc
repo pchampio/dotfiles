@@ -26,12 +26,13 @@ map y <Plug>(highlightedyank)
 hi! link HighlightedyankRegion SpellRare
 
 " slide
-" Plug 'blindFS/vim-reveal'
-
+if g:remoteSession
+Plug 'blindFS/vim-reveal'
 " cd the path
+let g:reveal_config = {'path': '/home/ubuntu/APP/data/www/slide/'}
 " git cline https://github.com/hakimel/reveal.js/ --depth=1
-" let g:reveal_config = {'path': '/home/ubuntu/APP/data/www/slide/'}
 nnoremap <leader>rr :RevealIt md<cr>
+endif
 
 " Plug 'gorodinskiy/vim-coloresque'
 
