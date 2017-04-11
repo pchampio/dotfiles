@@ -2,6 +2,9 @@ scriptencoding utf-8
 
 " cf the default statusline: %<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 
+" ssh
+let g:remoteSession = ($SSH_CONNECTION != "")
+
 hi statusLine ctermfg=248 ctermbg=237 cterm=none
 hi statusLineNC ctermfg=248 ctermbg=237 cterm=italic
 hi User1 ctermfg=248 ctermbg=237 cterm=italic
@@ -18,7 +21,9 @@ let &t_ZR="\e[23m"
 if has('statusline')
 
   set statusline=%7*                         " Switch to User7 highlight group
-  set statusline+=%{statusline#gutterpadding(1)}
+  if !g:remoteSession
+    set statusline+=%{statusline#gutterpadding(1)}
+  endif
   set statusline+=%n                         " Buffer number.
   set statusline+=\                          " Space.
   set statusline+=%*                         " Reset highlight group.
@@ -48,7 +53,9 @@ if has('statusline')
   set statusline+=%=   " Split point for left and right groups.
 
   set statusline+=%{WordCount()}
-  set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}]%)
+  if !g:remoteSession
+    set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}]%)
+  endif
   set statusline+=%6*  " Switch to User4 highlight group (Powerline arrow).
   set statusline+=\    " Space.
   set statusline+=    " Powerline arrow.
