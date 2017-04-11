@@ -27,11 +27,11 @@ hi! link HighlightedyankRegion SpellRare
 
 " slide
 if g:remoteSession
-Plug 'blindFS/vim-reveal'
-" cd the path
-let g:reveal_config = {'path': '/home/ubuntu/APP/data/www/slide/'}
-" git cline https://github.com/hakimel/reveal.js/ --depth=1
-nnoremap <leader>rr :RevealIt md<cr>
+  Plug 'blindFS/vim-reveal'
+  " cd the path
+  let g:reveal_config = {'path': '/home/drakirus/APP/data/www/slide/'}
+  " git cline https://github.com/hakimel/reveal.js/ --depth=1
+  nnoremap <leader>rr :RevealIt md<cr>
 endif
 
 " Plug 'gorodinskiy/vim-coloresque'
@@ -82,6 +82,11 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
     \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
 \ }
+if executable('ag')
+  set grepprg=ag\ --nogroup\ --nocolor
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  let g:ctrlp_use_caching = 0
+endif
 if executable('rg')
   set grepprg=rg\ --color=never
   let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
@@ -227,13 +232,15 @@ xmap aa <Plug>SidewaysArgumentTextobjA
 omap ia <Plug>SidewaysArgumentTextobjI
 xmap ia <Plug>SidewaysArgumentTextobjI
 
-Plug 'ludovicchabant/vim-gutentags'
-" Exclude css, html, js files from generating tag files
-" let g:gutentags_exclude = ['*.css', '*.html', '*.js']
-" Where to store tag files
-let g:gutentags_cache_dir = '~/.vim/gutentags'
-let g:gutentags_project_root = ['.git', 'Makefile', 'makefile', 'Gemfile']
-noremap <leader>rt :GutentagsUpdate<cr>:redraw!<cr>
+if !g:remoteSession
+  Plug 'ludovicchabant/vim-gutentags'
+  " Exclude css, html, js files from generating tag files
+  " let g:gutentags_exclude = ['*.css', '*.html', '*.js']
+  " Where to store tag files
+  let g:gutentags_cache_dir = '~/.vim/gutentags'
+  let g:gutentags_project_root = ['.git', 'Makefile', 'makefile', 'Gemfile']
+  noremap <leader>rt :GutentagsUpdate<cr>:redraw!<cr>
+endif
 
 " gem install ripper-tags
  " let g:gutentags_ctags_executable_ruby = 'ripper-tags -R --exclude=vendor'

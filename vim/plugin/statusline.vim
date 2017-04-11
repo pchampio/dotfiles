@@ -18,7 +18,9 @@ let &t_ZR="\e[23m"
 if has('statusline')
 
   set statusline=%7*                         " Switch to User7 highlight group
-  set statusline+=%{statusline#gutterpadding(1)}
+  if g:remoteSession
+    set statusline+=%{statusline#gutterpadding(1)}
+  endif
   set statusline+=%n                         " Buffer number.
   set statusline+=\                          " Space.
   set statusline+=%*                         " Reset highlight group.
