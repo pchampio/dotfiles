@@ -3,7 +3,5 @@
 map <c-o> goBack
 map <c-i> goForward
 
-map t previousTab
-
 map d removeTab
 map u restoreTab

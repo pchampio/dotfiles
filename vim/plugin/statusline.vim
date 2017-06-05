@@ -56,7 +56,7 @@ if has('statusline')
 
   set statusline+=%{WordCount()}
   if !g:remoteSession
-    set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}]%)
+    set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}%{statusline#jobs()}]%)
   endif
   set statusline+=%6*  " Switch to User4 highlight group (Powerline arrow).
   set statusline+=\    " Space.

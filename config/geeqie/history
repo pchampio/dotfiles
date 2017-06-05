@@ -1,0 +1,38 @@
+#History lists
+
+[path_list]
+"/home/drakirus/Images/stage_escalade_ombleze/day_one/tri/darktable_exported"
+"/home/drakirus/Images/stage_escalade_ombleze/topo"
+"/home/drakirus/Images/stage_escalade_ombleze/day_3-4"
+"/home/drakirus/Images/stage_escalade_ombleze/day_1"
+"/home/drakirus/Images/stage_escalade_ombleze/day_1/tri"
+"/home/drakirus/Images/stage_escalade_ombleze/day_1/tri/darktable_exported"
+"/home/drakirus/Images/stage_escalade_ombleze/day_2/tri/darktable_exported"
+"/home/drakirus/Images/stage_escalade_ombleze/day_3-4/tri/darktable_exported"
+"/home/drakirus/Images"
+"/home/drakirus/Images/stage_escalade_ombleze/day_3-4/tri"
+"/run/mount/NAS/Pictures/2017/fleur_slackline"
+"/run/mount/NAS/Pictures/2017/stage_escalade_ombleze/jpg"
+"/run/mount/NAS/Pictures/2017/stage_escalade_ombleze/Theo_photos"
+"/home/drakirus/Images/stage_escalade_ombleze/jpg"
+"/home/drakirus/Images/stage_escalade_ombleze/Theo_photos"
+"/home/drakirus/Images/wallpaper"
+
+[sort_manager]
+".[path]/home/drakirus/Images/asup"
+"Rép. perso[path]/home/drakirus"
+"Bureau[path]/home/drakirus/Desktop"
+"Collections[path]/home/drakirus/.local/share/geeqie/collections"
+
+[pan_view_options]
+"use_exif_date[INT]:0"
+"info_image_size[INT]:1"
+"info_includes_exif[INT]:1"
+
+[bookmarks]
+".[path]/home/drakirus/Images/stage_escalade_ombleze/day_1/tri/darktable_exported"
+"Rép. perso[path]/home/drakirus"
+"Bureau[path]/home/drakirus/Desktop"
+"Collections[path]/home/drakirus/.local/share/geeqie/collections"
+
+#end

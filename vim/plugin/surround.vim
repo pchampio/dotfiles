@@ -6,6 +6,7 @@ nmap ys <Plug>(operator-sandwich-add)
 nmap S <Plug>(operator-sandwich-add)
 onoremap <SID>line :normal! ^vg_<CR>
 nmap <silent> yss <Plug>(operator-sandwich-add)<SID>line
+nmap <silent> SS <Plug>(operator-sandwich-add)<SID>line
 onoremap <SID>gul g_
 nmap yS ys<SID>gul
 

@@ -2,6 +2,8 @@ augroup FUCUS
   autocmd!
   autocmd BufEnter,FocusGained,VimEnter,WinEnter * call Focus_statusline()
   autocmd FocusLost,WinLeave * call Blur_statusline()
+  autocmd User FerretAsyncStart call statusline#setjobs()
+  autocmd User FerretAsyncFinish call statusline#unsetjobs()
 augroup end
 
 function! statusline#gutterpadding(subtractBufferNumber) abort
@@ -33,16 +35,29 @@ function! statusline#ft() abort
   endif
 endfunction
 
+let g:async = 0
+
+function! statusline#setjobs()
+  let g:async = 1
+endfunction
+
+function! statusline#unsetjobs()
+  let g:async = 0
+endfunction
+
+function! statusline#jobs() abort
+  if g:async == 1
+    return 'async'
+  end
+  return ''
+endfunction
+
 function! statusline#fenc() abort
   if strlen(&fenc) && &fenc !=# 'utf-8'
     return ',' . &fenc
   else
     return ''
   endif
-endfunction
-
-function! StatuslineLeft() abort
-
 endfunction
 
 function! Blur_statusline() abort
@@ -136,8 +151,3 @@ fu! CtrlP_progress_status(...)
   let dir = ' %=%<%#LineNr# '.getcwd().' %*'
   retu len.dir
 endf
-
-let g:ctrlp_status_func = {
-  \ 'main': 'CtrlP_main_status',
-  \ 'prog': 'CtrlP_progress_status'
-  \}

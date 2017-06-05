@@ -4,6 +4,8 @@ runtime! macros/matchit.vim
 " ssh
 let g:remoteSession = ($SSH_CONNECTION != "")
 
+autocmd StdinReadPre * let g:isReadingFromStdin = 1
+
 " ALT keys Mappings
 function! Altmap(char)
   if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
@@ -54,7 +56,6 @@ if !has("gui_running")
 end
 
 
-
 Plug 'wincent/ferret'
 let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
@@ -76,13 +77,15 @@ Plug 'ctrlpvim/ctrlp.vim'
 " let g:ctrlp_cmd = 'CtrlPMixed'
 let g:ctrlp_line_prefix = ''
 let g:ctrlp_map='<c-p>'
+" let g:ctrlp_lazy_update = 1
 " let g:ctrlp_dotfiles = 1
-" let g:ctrlp_regexp = 1
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
     \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
+    \ 'PrtCurStart()':        ['<space>', '<c-a>'],
 \ }
 if executable('ag')
+"sudo apt-get install silversearcher-ag
   set grepprg=ag\ --nogroup\ --nocolor
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
   let g:ctrlp_use_caching = 0
@@ -95,11 +98,32 @@ endif
 nnoremap \ :CtrlPLine<cr>
 nnoremap <c-t> :CtrlPTag<cr>
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+let g:ctrlp_abbrev = {
+    \ 'gmode': 't',
+    \ 'abbrevs': [
+        \ {
+        \ 'pattern': ';',
+        \ 'expanded': ':',
+        \ 'mode': 'pfrz',
+        \ },
+        \ ]
+    \ }
 
-autocmd StdinReadPre * let g:isReadingFromStdin = 1
-" OHHH Sale mais marche au top
-autocmd VimEnter * if !argc() && !exists('g:isReadingFromStdin') |  call feedkeys("\<c-p>") | endif
+" let g:ctrlp_buffer_func = { 'exit':  'CtrlpExit', }
+" function CtrlpExit()
+  " set cursorline
+" endfunction
+
+let g:ctrlp_default_input = 1
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+
+" define in autoload
+let g:ctrlp_status_func = {
+  \ 'main': 'CtrlP_main_status',
+  \ 'prog': 'CtrlP_progress_status'
+  \}
+
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
@@ -110,6 +134,24 @@ let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
 
 Plug 'hdima/python-syntax'
 let python_highlight_all = 1
+
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+autocmd FileType go nnoremap <Leader>g :GoDef<cr>
+autocmd FileType go nnoremap <Leader>G :vsp <cr> :GoDef<cr>
+
+" use goimports for formatting
+let g:go_fmt_command = "goimports"
+
+" turn highlighting on
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_types = 1
+let g:go_highlight_extra_types = 1
+
+let g:syntastic_go_checkers = ['go']
 
 Plug 'othree/javascript-libraries-syntax.vim'
 
@@ -130,8 +172,8 @@ Plug 'zsiciarz/caddy.vim'
 
 " A Vim plugin which shows a git diff in the numberline
 Plug 'airblade/vim-gitgutter'
-nnoremap [g :GitGutterNextHunk<cr>
-nnoremap ]g :GitGutterPrevHunk<cr>
+nnoremap g[ :GitGutterNextHunk<cr>
+nnoremap g] :GitGutterPrevHunk<cr>
 let g:gitgutter_map_keys = 0
 
 " Insert or delete brackets
@@ -279,7 +321,6 @@ let g:syntastic_loc_list_height=5
 let g:syntastic_python_flake8_exec = 'python3'
 
 " THEME-SYNTAX
-"Plug 'altercation/vim-colors-solarized'
 Plug 'morhetz/gruvbox'
 let g:gruvbox_contrast_dark="medium"
 let g:gruvbox_contrast_light="medium"
@@ -389,10 +430,6 @@ let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets', 'snips', 'UltiSni
 let g:UltiSnipsExpandTrigger="<leader><tab>"
 let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
 
-let g:simpledb_show_timing = 0
-Plug 'ivalkeen/vim-simpledb'
-Plug 'krisajenkins/vim-postgresql-syntax'
-
 Plug 'christoomey/vim-tmux-runner'
 autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
@@ -419,7 +456,7 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 set wildignore+=.hg,.git,.svn                           " Version control
 set wildignore+=*.aux,*.out,*.toc                       " LaTeX intermediate files
-set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
+" set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
 set wildignore+=*.luac                                  " Lua byte code
 set wildignore+=*.o,*.lo,*.obj,*.exe,*.dll,*.manifest   " compiled object files
 set wildignore+=*.pyc                                   " Python byte code
@@ -442,9 +479,17 @@ set virtualedit=block
 set laststatus=2 " Always display the statusline in all windows
 
 " highlight vertical column of cursor
-au WinLeave * set nocursorline
-au WinEnter,FocusGained  * set cursorline
-set cursorline
+augroup highlight_follows_focus
+    autocmd!
+    autocmd WinEnter * set cursorline
+    autocmd WinLeave * set nocursorline
+augroup END
+
+augroup highligh_follows_vim
+    autocmd!
+    autocmd FocusGained * set cursorline
+    autocmd FocusLost * set nocursorline
+augroup END
 
 " relativ number
 set numberwidth=4
@@ -645,7 +690,6 @@ hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en tw=80
 autocmd FileType gitcommit setlocal spell spelllang=fr,en
-set spellcapcheck=
 
 " no more ex Mode
 nnoremap Q <nop>
@@ -691,15 +735,18 @@ autocmd FileType gitcommit startinsert
 
 " Remove trailing whitespace on save ignore markdown files
 function! s:RemoveTrailingWhitespaces()
-  "Save last cursor position
-  let l = line(".")
-  let c = col(".")
-  %s/\s\+$//ge
-  call cursor(l,c)
+  let blacklist = ['md', 'markdown', 'mrd', 'markdown.pandoc']
+  if index(blacklist, &ft) < 0
+    " Save cursor position
+    let l:save = winsaveview()
+    " Remove trailing whitespace
+    execute('%s/\s\+$//e')
+    " Move cursor to original position
+    call winrestview(l:save)
+  endif
 endfunction
 
-let blacklist = ['md', 'markdown', 'mrd', 'markdown.pandoc']
-au BufWritePre * if index(blacklist, &ft) < 0 | :call <SID>RemoveTrailingWhitespaces()
+au BufWritePre * call <SID>RemoveTrailingWhitespaces()
 
 " This allows you to visually select a section and then hit @ to run a macro on all lines.
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
@@ -747,7 +794,7 @@ function! RenameFile() abort
 endfunction
 nnoremap <Leader>rn :call RenameFile()<cr>
 
-function s:MkNonExDir(file, buf) abort
+function! s:MkNonExDir(file, buf) abort
     if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
         let dir=fnamemodify(a:file, ':h')
         if !isdirectory(dir)
@@ -771,6 +818,54 @@ function! ExpandWidth()
   execute 'vertical resize ' . widthResult
 endfunction
 " au BufEnter * :call ExpandWidth()
+
+" stolen from wincent
+hi Blank term=bold,reverse ctermfg=248 ctermbg=235
+function! Should_colorcolumn() abort
+  return index(['diff', 'undotree', 'nerdtree', 'qf'], &filetype) == -1
+endfunction
+function! Blur_window() abort
+  if Should_colorcolumn()
+    if !exists('w:wincent_matches')
+      " Instead of unconditionally resetting, append to existing array.
+      " This allows us to gracefully handle duplicate autocmds.
+      let w:wincent_matches=[]
+    endif
+    let l:height=&lines
+    let l:slop=l:height / 2
+    let l:start=max([1, line('w0') - l:slop])
+    let l:end=min([line('$'), line('w$') + l:slop])
+    while l:start <= l:end
+      let l:next=l:start + 8
+      let l:id=matchaddpos(
+            \   'Blank',
+            \   range(l:start, min([l:end, l:next])),
+            \   1000
+            \ )
+      call add(w:wincent_matches, l:id)
+      let l:start=l:next
+    endwhile
+  endif
+endfunction
+
+function! Focus_window() abort
+  if Should_colorcolumn()
+    if exists('w:wincent_matches')
+      for l:match in w:wincent_matches
+        try
+          call matchdelete(l:match)
+        catch /.*/
+          " In testing, not getting any error here, but being ultra-cautious.
+        endtry
+      endfor
+      let w:wincent_matches=[]
+    endif
+  endif
+endfunction
+if exists('*matchaddpos')
+  autocmd BufEnter,FocusGained,VimEnter,WinEnter * call Focus_window()
+  autocmd FocusLost,WinLeave * call Blur_window()
+endif
 
 au VimEnter * set isk-=.
 

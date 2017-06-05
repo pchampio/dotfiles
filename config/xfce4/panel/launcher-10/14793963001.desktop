@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=PulseAudio Volume Control
+Name[fr]=Contrôle du volume PulseAudio
+GenericName=Volume Control
+GenericName[fr]=Contrôle du volume
+Comment=Adjust the volume level
+Comment[fr]=Régler le niveau du volume
+Exec=pavucontrol
+Icon=multimedia-volume-control
+StartupNotify=true
+Type=Application
+Categories=AudioVideo;Audio;Mixer;GTK;
+X-XFCE-Source=file:///usr/share/applications/pavucontrol.desktop

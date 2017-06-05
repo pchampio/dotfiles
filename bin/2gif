@@ -9,7 +9,6 @@ fi
 
 # default values
 FPS=12
-RESOLUTION=850
 
 # read the options
 TEMP=`getopt -o c:r:f:t:s:d:hl:: --long resolution:,fps:,start:,to:,duration:,help,loop:: -n $0 -- "$@"`
@@ -72,10 +71,23 @@ while true ; do
   esac
 done
 
-if [[ "$#" -ne 2  ]]; then
+if [[ "$#" -ne 2 && "$#" -ne 1  ]]; then
   echo -e "Usage: $0 [options] <input video file> <output gif name>\n"
-  echo -e "Illegal number of parameters for more informations:\n $0 --help "
+  echo -e "Illegal number of parameters or parameters.\nFor more informations:\n $0 --help "
   exit 1
+fi
+
+OUTPUT="$2"
+
+if [[ "$#" -eq 1  ]]; then
+  filename=$(basename "$1")
+  filename="${filename%.*}.gif"
+  OUTPUT=$filename
+fi
+
+if [[ "$RESOLUTION" -eq ""  ]]; then
+  eval $(ffprobe -v error -of flat=s=_ -select_streams v:0 -show_entries stream=width "$1")
+  RESOLUTION=${streams_stream_0_width}
 fi
 
 palette=$(mktemp /tmp/palette_XXXX.png)
@@ -90,6 +102,6 @@ filters="fps=$FPS,scale=$RESOLUTION:-1:flags=lanczos"
 ffmpeg -v warning $START $TO $DURATION -i "$1" -vf "$filters,palettegen" -y "$palette"
 
 # create GIF
-ffmpeg -v warning $START $TO $DURATION -i "$1" -i "$palette" -lavfi "$filters [x]; [x][1:v] paletteuse" -y "$2"
+ffmpeg -v warning $START $TO $DURATION -i "$1" -i "$palette" -lavfi "$filters [x]; [x][1:v] paletteuse" -y "$OUTPUT"
 
 rm $palette

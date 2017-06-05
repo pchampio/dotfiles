@@ -3,7 +3,7 @@
 [color]
   ui = auto
 [core]
-	excludesfile = ~/.gitignore
+	excludesfile = /home/drakirus/.gitignore
   autocrlf = input
 	pager = less -F -X
 [commit]

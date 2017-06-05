@@ -13,15 +13,15 @@ export EDITOR='vim'
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:$GOPATH/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
 # add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
-# source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
-source $ZSH/custom/fast-syntax-highlighting.plugin.zsh
-source $ZSH/custom/plugins/zsh-completions/zsh-completions.plugin.zsh
+source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
+# source $ZSH/custom/fast-syntax-highlighting.plugin.zsh
+# source $ZSH/custom/plugins/zsh-completions/zsh-completions.plugin.zsh
 
 # Show contents of directory after cd-ing into it
 chpwd() {
@@ -30,6 +30,11 @@ chpwd() {
     source ./venv/bin/activate
   fi
 }
+
+# GO config
+# mkdir -p ~/lab/go/{pkg,src,bin}
+export GOPATH=$HOME/lab/go
+PATH=$PATH:$GOPATH/bin
 
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH

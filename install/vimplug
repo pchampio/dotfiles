@@ -39,7 +39,7 @@ if [ ! -e $HOME/.vim/spell ]; then
 fi
 
 explain "Vim plugins"
-vim +PlugUpgrade +qa
+# vim +PlugUpgrade +qa
 vim +PlugInstall +qa
 vim +PlugUpdate +qa
 vim +PlugClean +qa

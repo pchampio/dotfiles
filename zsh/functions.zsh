@@ -217,3 +217,34 @@ net-list(){
 docker-enter () {
   docker exec -ti $1 sh
 }
+
+
+ff() { find . -name "*$1*" -ls; }
+ffig() { find . -name "*$1*" -ls| grep -vFf skip_files; }
+
+nhh () {
+  old=$(xfconf-query -c xfce4-notifyd -p /do-not-disturb)
+  if [[ $old == "true" ]]; then
+    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
+    notify-send  --expire-time=10 -i "notification-alert-symbolic" 'Notification' 'Ne pas déranger est désactivée'
+  else
+    notify-send --expire-time=10 -i "/usr/share/icons/Adwaita/24x24/status/audio-volume-muted-symbolic.symbolic.png" 'Notification' 'Ne pas déranger est activée'
+    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
+  fi
+}
+
+function mm() {
+    mpv --ytdl --no-video  "$@"
+}
+
+function yt-dl (){
+  youtube-dl --extract-audio --prefer-ffmpeg  --audio-format mp3  "$1"
+}
+
+function rand-music (){
+  cat /dev/urandom | hexdump -v -e '/1 "%u\n"' | awk '{ split("0,2,4,5,7,9,11,12",a,","); for (i = 0; i < 1; i+= 0.0001) printf("%08X\n", 100*sin(1382*exp((a[$1 % 8]/12)*log(2))*i)) }' | xxd -r -p | aplay -c 2 -f S32_LE -r 16000;
+}
+
+function jpgg(){
+  cp -as `ls -d -1 $PWD/**/tri/**/* | grep jpg` ./jpg
+}

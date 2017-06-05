@@ -3,7 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-ignoreRC="termite_config|README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|iTerm.png|background.png|.notags|vimium|package.list"
+ignoreRC="termite_config|README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|iTerm.png|background.png|.notags|vimium|package.list|logouser.txt"
 dir=~/dotfiles
 
 explain "Create symlink for dotfiles"
@@ -26,8 +26,14 @@ tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
 
 explain "Symlink nvim to vim"
-tell ln -s ~/.vim ~/.config/nvim
-tell ln -s ~/.vimrc ~/.config/nvim/init.vim
+tell ln -sf ~/.vim ~/.config/nvim
+tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
+
+explain "Git config"
+git config github.user Drakirus
+git config --global core.excludesfile ~/.gitignore
+git config --global commit.template ~/.gitmessage
+
 
 # tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
 
