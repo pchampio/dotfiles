@@ -75,7 +75,6 @@ set diffopt=vertical
 
 Plug 'ctrlpvim/ctrlp.vim'
 " let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_line_prefix = ''
 let g:ctrlp_map='<c-p>'
 " let g:ctrlp_lazy_update = 1
 " let g:ctrlp_dotfiles = 1
@@ -360,8 +359,10 @@ if !g:remoteSession
   if !exists('g:neocomplete#force_omni_input_patterns')
     let g:neocomplete#force_omni_input_patterns = {}
   endif
+
+        " \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
   let g:neocomplete#sources#omni#input_patterns = {
-        \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
+        \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
         \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
         \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
         \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
@@ -372,8 +373,11 @@ else
   let b:vcm_tab_complete = 'tags'
 endif
 
+" Plug 'roxma/nvim-completion-manager'
+
 set complete=i,.,b,w,u,U,]
 
+Plug 'osyo-manga/vim-monster'
 Plug 'vim-ruby/vim-ruby'
 " autocmd FileType ruby compiler ruby
 let g:rubycomplete_buffer_loading = 1

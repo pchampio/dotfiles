@@ -1,15 +1,12 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/stage_escalade_ombleze/day_one/tri/darktable_exported"
-"/home/drakirus/Images/stage_escalade_ombleze/topo"
 "/home/drakirus/Images/stage_escalade_ombleze/day_3-4"
 "/home/drakirus/Images/stage_escalade_ombleze/day_1"
 "/home/drakirus/Images/stage_escalade_ombleze/day_1/tri"
 "/home/drakirus/Images/stage_escalade_ombleze/day_1/tri/darktable_exported"
 "/home/drakirus/Images/stage_escalade_ombleze/day_2/tri/darktable_exported"
 "/home/drakirus/Images/stage_escalade_ombleze/day_3-4/tri/darktable_exported"
-"/home/drakirus/Images"
 "/home/drakirus/Images/stage_escalade_ombleze/day_3-4/tri"
 "/run/mount/NAS/Pictures/2017/fleur_slackline"
 "/run/mount/NAS/Pictures/2017/stage_escalade_ombleze/jpg"
@@ -17,6 +14,9 @@
 "/home/drakirus/Images/stage_escalade_ombleze/jpg"
 "/home/drakirus/Images/stage_escalade_ombleze/Theo_photos"
 "/home/drakirus/Images/wallpaper"
+"/tmp"
+"/home/drakirus/Images"
+"/home/drakirus/Téléchargements"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"

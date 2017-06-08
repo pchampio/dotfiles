@@ -4,7 +4,22 @@ augroup FUCUS
   autocmd FocusLost,WinLeave * call Blur_statusline()
   autocmd User FerretAsyncStart call statusline#setjobs()
   autocmd User FerretAsyncFinish call statusline#unsetjobs()
+
+  if exists('#TextChangedI')
+    autocmd BufWinEnter,BufWritePost,FileWritePost,TextChanged,TextChangedI,WinEnter * call statusline#check_modified()
+  else
+    autocmd BufWinEnter,BufWritePost,FileWritePost,WinEnter * call statusline#check_modified()
+  endif
+
 augroup end
+
+function! statusline#check_modified() abort
+  if &modified
+    execute 'hi User3 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836'
+  else
+    execute 'hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836'
+  endif
+endfunction
 
 function! statusline#gutterpadding(subtractBufferNumber) abort
   let l:gutterWidth=max([strlen(line('$')) + 1, &numberwidth])
@@ -61,13 +76,22 @@ function! statusline#fenc() abort
 endfunction
 
 function! Blur_statusline() abort
+  if &modified
+    " modified User Color
+    let l:color = 8
+  else
+    " not modified User Color
+    let l:color = 9
+  endif
   " Default blurred statusline (buffer number: filename).
   let l:blurred='%{statusline#gutterpadding(0)}'
   let l:blurred.='\ ' " space
   let l:blurred.='\ ' " space
   let l:blurred.='\ ' " space
   let l:blurred.='%<' " truncation point
-  let l:blurred.='%f' " filename
+  let l:blurred.='%{statusline#fileprefix()}' " Switch to User3 highlight group (bold).
+  let l:blurred.='%'.l:color.'*' " Switch to User$(modif or not) highlight group (bold).
+  let l:blurred.='%t' " Filename.
   let l:blurred.='%=' " split left/right halves (makes background cover whole)
   call s:update_statusline(l:blurred, 'blur')
 endfunction

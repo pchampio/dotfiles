@@ -5,15 +5,21 @@ scriptencoding utf-8
 " ssh
 let g:remoteSession = ($SSH_CONNECTION != "")
 
-hi statusLine ctermfg=248 ctermbg=237 cterm=none
-hi statusLineNC ctermfg=248 ctermbg=237 cterm=italic
-hi User1 ctermfg=248 ctermbg=237 cterm=italic
-hi User3 ctermfg=229 ctermbg=237 cterm=bold
-hi User4 ctermfg=124 ctermbg=237
-hi User5 ctermfg=236 ctermbg=246
-hi User2 ctermfg=236 ctermbg=246 cterm=bold
-hi User6 ctermfg=246 ctermbg=237
-hi User7 ctermfg=229 ctermbg=124 cterm=bold
+hi statusLine ctermfg=248 ctermbg=237 cterm=none gui=none guifg=#bdae93 guibg=#3c3836
+hi statusLineNC ctermfg=248 ctermbg=237 cterm=italic gui=italic guifg=#bdae93 guibg=#3c3836
+
+hi User1 ctermfg=248 ctermbg=237 cterm=italic guifg=#bdae93 guibg=#3c3836
+hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836
+hi User4 ctermfg=124 ctermbg=237 guifg=#cc241d guibg=#3c3836
+hi User5 ctermfg=236 ctermbg=246 guifg=#32302f guibg=#a89984
+hi User2 ctermfg=236 ctermbg=246 cterm=bold gui=bold guifg=#32302f guibg=#a89984
+hi User6 ctermfg=246 ctermbg=237 guifg=#a89984 guibg=#3c3836
+hi User7 ctermfg=229 ctermbg=124 cterm=bold gui=bold guifg=#fbf1c7 guibg=#cc241d
+
+" modified
+hi User8 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836
+" not modified
+hi User9 ctermfg=248 ctermbg=237 guifg=#bdae93 guibg=#3c3836
 
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m"
@@ -58,7 +64,7 @@ if has('statusline')
   if !g:remoteSession
     set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}%{statusline#jobs()}]%)
   endif
-  set statusline+=%6*  " Switch to User4 highlight group (Powerline arrow).
+  set statusline+=%6*  " Switch to User6 highlight group (Powerline arrow).
   set statusline+=\    " Space.
   set statusline+=    " Powerline arrow.
   set statusline+=%5*  " Switch to User5 highlight group.

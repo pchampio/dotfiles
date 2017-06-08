@@ -126,6 +126,12 @@ terminus.vim
 
 ```
 
+clock.xfce.panel
+
+```
+<span  font='8.'>%d-%m-%Y%n</span><span  font_weight='ultrabold'>%R</span>
+```
+
 
 These are a modified version of Thoughtbot's dotfiles.  
 More detailed instructions are available here:  
