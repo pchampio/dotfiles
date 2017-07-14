@@ -18,7 +18,7 @@ alias STFU="pulseaudio -k && sudo alsa force-reload"
 alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
 alias backup="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/lab /run/mount/NAS/xps13-Backup/"
 alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.16.134:/volume1/Share /run/mount/NAS/"
-alias unas="sudo umount /run/mount/NAS"
+alias unas="sudo umount -l /run/mount/NAS"
 # alias cp="rsync -ah --partial --inplace --info=progress2"
 alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
@@ -32,6 +32,12 @@ alias cp="cp -aiv"
 alias py="python"
 alias py2="python2"
 alias docker_alpine="docker run -it --rm alpine /bin/ash"
-alias music="mpv  --loop-file . --shuffle"
+alias music="mpv . --shuffle"
 alias df="df --type=ext4 -h"
-alias prettyjson='python -m json.tool'
+alias ptjson='python -m json.tool'
+alias mip="curl --silent ifconfig.co/json | prettyjson"
+alias de="adb devices"
+alias co="cordova"
+alias rm='trash'
+
+alias lowwifi='sudo iwconfig wlan0 txpower 15'

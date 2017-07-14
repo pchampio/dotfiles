@@ -76,13 +76,6 @@ function! statusline#fenc() abort
 endfunction
 
 function! Blur_statusline() abort
-  if &modified
-    " modified User Color
-    let l:color = 8
-  else
-    " not modified User Color
-    let l:color = 9
-  endif
   " Default blurred statusline (buffer number: filename).
   let l:blurred='%{statusline#gutterpadding(0)}'
   let l:blurred.='\ ' " space
@@ -90,7 +83,10 @@ function! Blur_statusline() abort
   let l:blurred.='\ ' " space
   let l:blurred.='%<' " truncation point
   let l:blurred.='%{statusline#fileprefix()}' " Switch to User3 highlight group (bold).
-  let l:blurred.='%'.l:color.'*' " Switch to User$(modif or not) highlight group (bold).
+  if &modified
+    " modified User Color
+    let l:blurred.='%8*' " Switch to User$(modif or not) highlight group (bold).
+  end
   let l:blurred.='%t' " Filename.
   let l:blurred.='%=' " split left/right halves (makes background cover whole)
   call s:update_statusline(l:blurred, 'blur')

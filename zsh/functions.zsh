@@ -171,6 +171,15 @@ v() {
   fi
 }
 
+zoomInVim() {
+  VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
+    | grep -i 'vim' | cut --d=" " --f=1`
+ome -new command
+tmux send-keys -t $VIM_PANE Escape
+  tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
+  tmux send-keys -t $VIM_PANE Enter
+}
+
 thunarCmd(){
   WINTITLE="Gestionnaire de fichiers" # Main 'app' window has this in titlebar
   PROGNAME="thunar" # This is the name of the binary for 'app'
@@ -247,4 +256,34 @@ function rand-music (){
 
 function jpgg(){
   cp -as `ls -d -1 $PWD/**/tri/**/* | grep jpg` ./jpg
+}
+
+function kkey(){
+  delay=$(xfconf-query -c keyboards -p /Default/KeyRepeat/Delay)
+  xfconf-query -c keyboards -p /Default/KeyRepeat/Delay -s $(($delay+1))
+}
+
+function adb-wifi(){
+
+  sudo adb kill-server
+  sudo adb usb
+  sudo adb devices
+  echo -n '\n Allow debug on the devices'
+  read inputs
+  sudo adb tcpip 5556
+  sudo adb connect 192.168.240.42:5556
+  sudo adb devices
+  sudo adb kill-server
+  echo -n '\n Pls unplug'
+  read inputs
+  sudo adb connect 192.168.240.42:5556
+}
+
+function dialog() {
+  mkdir -p ~/smb/users
+  sudo mount -t cifs //hoth/Users /home/drakirus/smb/users -o user=p.champion,uid=1000,gid=100
+}
+
+function udialog() {
+  sudo umount -a -t cifs -l ~/smb/users
 }

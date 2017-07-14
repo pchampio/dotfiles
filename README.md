@@ -19,13 +19,16 @@ Section "InputClass"
         Identifier "touchpad catchall"
         Driver "synaptics"
         MatchIsTouchpad "on"
-                Option "PalmDetect" "1"
-                Option "PalmMinWidth" "8"
-                Option "PalmMinZ" "100"
-                Option "AreaLeftEdge" "100"
+                # Option "PalmDetect" "1"
+                Option "MaxSpeed" "1"
+                Option "AreaLeftEdge" "50"
                 Option "AreaRightEdge" "850"
-                Option "AreaTopEdge" "70"
+                Option "AreaTopEdge" "50"
+                Option "HorizTwoFingerScroll" "on"
+                Option "VertScrollDelta" "40"
+                Option "HorizScrollDelta" "120"
 EndSection
+
 ```
 
 ## Installation

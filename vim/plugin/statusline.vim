@@ -18,8 +18,6 @@ hi User7 ctermfg=229 ctermbg=124 cterm=bold gui=bold guifg=#fbf1c7 guibg=#cc241d
 
 " modified
 hi User8 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836
-" not modified
-hi User9 ctermfg=248 ctermbg=237 guifg=#bdae93 guibg=#3c3836
 
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m"

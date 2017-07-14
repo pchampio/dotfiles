@@ -71,6 +71,11 @@ Plug 'lambdalisue/gina.vim', {'on': ['Gina']}
 nnoremap <leader>gs :Gina status
 set diffopt=vertical
 
+Plug 'pseewald/vim-anyfold'
+nnoremap <space> za
+let anyfold_activate=1
+set foldlevel=0
+
  " Ctrl-P FuzzyFinder
 
 Plug 'ctrlpvim/ctrlp.vim'
@@ -83,6 +88,7 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
     \ 'PrtCurStart()':        ['<space>', '<c-a>'],
 \ }
+
 if executable('ag')
 "sudo apt-get install silversearcher-ag
   set grepprg=ag\ --nogroup\ --nocolor
@@ -150,7 +156,6 @@ let g:go_highlight_build_constraints = 1
 let g:go_highlight_types = 1
 let g:go_highlight_extra_types = 1
 
-let g:syntastic_go_checkers = ['go']
 
 Plug 'othree/javascript-libraries-syntax.vim'
 
@@ -158,7 +163,6 @@ Plug 'mxw/vim-prolog'
 autocmd FileType prolog :nnoremap <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
       \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
       \ :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
-let g:syntastic_prolog_checkers = ['swipl']
 
 " Plug 'posva/vim-vue'
 
@@ -304,20 +308,17 @@ let g:NERDCustomDelimiters = {
 \ }
 
 " syntastic
-Plug 'scrooloose/syntastic'
+Plug 'w0rp/ale'
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_list_window_size = 5
+let g:ale_python_flake8_executable = "python3"
 
-let g:syntastic_javascript_checkers = ['eslint']
+let g:ale_set_loclist = 1
+let g:ale_lint_on_enter = 0
+let g:ale_open_list = 1
 
-" configure syntastic syntax checking to check on save
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-let g:syntastic_loc_list_height=5
-
-" Use Python 3 when the shebang calls for it.
-" autocmd BufRead *.py let b:syntastic_python_python_exec = syntastic#util#parseShebang()['exe']
-let g:syntastic_python_flake8_exec = 'python3'
+hi! link ALEErrorSign SpellBad
+hi! link ALEWarningSign SpellRare
 
 " THEME-SYNTAX
 Plug 'morhetz/gruvbox'
@@ -385,6 +386,15 @@ let g:rubycomplete_classes_in_global = 1
 " let g:rubycomplete_rails = 1
 let g:rubycomplete_load_gemfile = 1
 " let g:rubycomplete_gemfile_path = 'Gemfile.aux'
+Plug 'tpope/vim-rails'
+augroup Project
+  autocmd!
+
+  " Snippets
+  autocmd FileType ruby  set filetype=rails.ruby
+  autocmd FileType erb   set filetype=rails.erb
+  autocmd FileType rspec set filetype=rails.rspec.ruby
+augroup END
 
 set completeopt-=preview
 
@@ -519,7 +529,6 @@ set hlsearch     " highlight matches
 set autowrite    " Automatically :write before running commands
 set showmatch    "  Highlight matching brace
 set autoindent   " maintain indent of current line
-" set foldmethod=indent
 set hidden
 
 " Softtabs, 2 spaces tabs
@@ -682,6 +691,8 @@ nnoremap <silent> <leader>all <Esc>:silent setlocal spell! spelllang=fr,en<CR>
 nnoremap <silent> <leader>a <Esc>zg
 nnoremap <silent> <leader>d <Esc>zug
 inoremap <leader>a à
+inoremap <leader>u ù
+inoremap <c-u> ȗ
 inoremap <leader>e é
 inoremap <c-e> è
 hi clear SpellBad
@@ -697,9 +708,6 @@ autocmd FileType gitcommit setlocal spell spelllang=fr,en
 
 " no more ex Mode
 nnoremap Q <nop>
-
-" use space for moving to the newt word
-noremap <space> 2w
 
 " remapping
 cnoreabbrev qwa wqa
@@ -866,13 +874,23 @@ function! Focus_window() abort
     endif
   endif
 endfunction
-if exists('*matchaddpos')
-  autocmd BufEnter,FocusGained,VimEnter,WinEnter * call Focus_window()
-  autocmd FocusLost,WinLeave * call Blur_window()
-endif
+" if exists('*matchaddpos')
+  " autocmd BufEnter,FocusGained,VimEnter,WinEnter * call Focus_window()
+  " autocmd FocusLost,WinLeave * call Blur_window()
+" endif
+
+au BufEnter * call MyLastWindow()
+function! MyLastWindow()
+  " if the window is quickfix go on
+  if &buftype=="quickfix"
+    " if this window is last on screen quit without warning
+    if winbufnr(2) == -1
+      quit!
+    endif
+  endif
+endfunction
 
 au VimEnter * set isk-=.
-
 
 function! Slow()
   set nocursorcolumn
@@ -881,3 +899,16 @@ function! Slow()
   syntax sync minlines=256
 endfunction
 command Slow call Slow()
+
+let g:zoomEnter = 0
+function! TmuxZoom()
+  if g:zoomEnter
+    execute("!tmux resize-pane -Z")
+  endif
+endfunction
+function! SetZoomTmux()
+  let g:zoomEnter = !g:zoomEnter
+endfunction
+autocmd FocusGained * call TmuxZoom()
+command Zoom call SetZoomTmux()
+

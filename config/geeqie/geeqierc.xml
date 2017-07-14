@@ -259,7 +259,7 @@
         show_thumbnails = "true" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/drakirus/Téléchargements" 
+        last_path = "/home/drakirus/Images/DCIM/100PENTX/tri/darktable_exported" 
         startup_path = "0" 
         exit_on_close = "false" 
 
@@ -268,8 +268,8 @@
         main_window.w = "958" 
         main_window.h = "1019" 
         main_window.maximized = "true" 
-        main_window.hdivider_pos = "434" 
-        main_window.vdivider_pos = "142" 
+        main_window.hdivider_pos = "329" 
+        main_window.vdivider_pos = "16" 
 
         float_window.x = "152" 
         float_window.y = "0" 
@@ -289,7 +289,7 @@
         image_overlay.histogram_channel = "4" 
         image_overlay.histogram_mode = "1" >
         <bar_sort enabled = "false" mode = "0" action = "0" selection = "0" filter_key = "" />
-        <bar enabled = "true" width = "294" >
+        <bar enabled = "true" width = "199" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "false" key = "Xmp.dc.title" height = "40" />

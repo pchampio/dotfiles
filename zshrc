@@ -3,6 +3,8 @@ export ZSH=~/.oh-my-zsh
 
 setopt prompt_subst # enable command substition in prompt
 
+plugins=(encode64 docker sudo)
+
 export DOTFILES=$HOME/dotfiles
 # source all .zsh files inside of the zsh/ directory
 for config ($DOTFILES/**/*.zsh) source $config
@@ -20,8 +22,7 @@ export MANPATH="/usr/local/man:$MANPATH"
 # add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
 source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
-# source $ZSH/custom/fast-syntax-highlighting.plugin.zsh
-# source $ZSH/custom/plugins/zsh-completions/zsh-completions.plugin.zsh
+source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Show contents of directory after cd-ing into it
 chpwd() {
@@ -56,9 +57,11 @@ export RPROMPT='' # set asynchronously and dynamically
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 # export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
-# Android studio
-export ANDROID_HOME=~/Android/Sdk
-export PATH=${PATH}:${ANDROID_HOME}/tools
+
+# Android - sdk
+export PATH=${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
+export JAVA_HOME=/usr/lib/jvm/java-8-jdk
+export ANDROID_HOME=/opt/android-sdk
 
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing

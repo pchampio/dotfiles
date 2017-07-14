@@ -24,3 +24,6 @@ stty stop undef
 
 setopt extendedglob
 # rm -- ^file.txt
+
+bindkey 'K' up-line-or-beginning-search
+bindkey 'J' down-line-or-beginning-search
