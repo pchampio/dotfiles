@@ -193,7 +193,7 @@ thunarCmd(){
     sleep 0.3
     xdotool key ctrl+t
     xdotool key ctrl+l
-    xdotool type `pwd`
+    xdotool type "$(pwd)"
     xdotool key KP_Enter
   else
     thunar > /dev/null 2>&1 &  # Otherwise, just launch 'app'
@@ -242,8 +242,12 @@ nhh () {
   fi
 }
 
+function mmpl() {
+  mpv -no-video --shuffle --loop "$@"
+}
+
 function mm() {
-    mpv --ytdl --no-video  "$@"
+    mpv --ytdl --no-video "$@"
 }
 
 function yt-dl (){
@@ -270,20 +274,44 @@ function adb-wifi(){
   sudo adb devices
   echo -n '\n Allow debug on the devices'
   read inputs
-  sudo adb tcpip 5556
-  sudo adb connect 192.168.240.42:5556
+  sudo adb -d tcpip 5556
+  sudo adb connect 192.168.240."$1":5556
   sudo adb devices
   sudo adb kill-server
   echo -n '\n Pls unplug'
   read inputs
-  sudo adb connect 192.168.240.42:5556
+  sudo adb connect 192.168.240."$1":5556
 }
 
 function dialog() {
+
+  unset password
+  echo "Password for p.champion:"
+  read -s password
+
   mkdir -p ~/smb/users
-  sudo mount -t cifs //hoth/Users /home/drakirus/smb/users -o user=p.champion,uid=1000,gid=100
+  mkdir -p ~/smb/tmp
+  mkdir -p ~/smb/dev02
+  mkdir -p ~/smb/ithor/wwwroot
+  mkdir -p ~/smb/ithor/Memberz
+  sudo mount -t cifs //hoth/Users /home/drakirus/smb/users -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/tmp -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //DEV02/wwwroot /home/drakirus/smb/dev02 -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ithor/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ithor/Memberz -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 }
 
 function udialog() {
   sudo umount -a -t cifs -l ~/smb/users
+  sudo umount -a -t cifs -l ~/smb/dev02
+  sudo umount -a -t cifs -l ~/smb/ithor/Memberz
+  sudo umount -a -t cifs -l ~/smb/ithor/wwwroot
+}
+function dsave(){
+  rsync -avPh --delete ~/lab/java/android/DSDperso ~/smb/users/p.champion/save
+  rsync -avPh --delete ~/lab/java/android/SunmiService ~/smb/users/p.champion/save
+}
+
+function sound(){
+  echo 0 | sudo tee /sys/module/snd_hda_intel/parameters/power_save
 }

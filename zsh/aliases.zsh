@@ -34,10 +34,16 @@ alias py2="python2"
 alias docker_alpine="docker run -it --rm alpine /bin/ash"
 alias music="mpv . --shuffle"
 alias df="df --type=ext4 -h"
-alias ptjson='python -m json.tool'
 alias mip="curl --silent ifconfig.co/json | prettyjson"
 alias de="adb devices"
 alias co="cordova"
 alias rm='trash'
+alias loc='tokei'
 
-alias lowwifi='sudo iwconfig wlan0 txpower 15'
+alias lowwifi='sudo iwconfig wlp58s0 txpower 15'
+
+
+# CVS
+alias sg="svn status"
+alias sc="svn commit"
+alias sl="svn update"

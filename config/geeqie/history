@@ -1,22 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/24h_Le_Mans/14"
-"/home/drakirus/Images/24h_Le_Mans/14/tri"
-"/home/drakirus/Images"
-"/run/media/drakirus/EC08-E119/DCIM/100PENTX"
-"/home/drakirus/Images/24h_Le_Mans/15"
-"/home/drakirus/Images/24h_Le_Mans/Course/tri"
-"/home/drakirus/Images/24h_Le_Mans/Course"
-"/home/drakirus/Images/24h_Le_Mans/Course/tri/darktable_exported"
-"/home/drakirus/Images/24h_Le_Mans/14/tri/darktable_exported"
-"/tmp"
-"/home/drakirus/lab/cordova/cordova-alert-plugin/sunmi_exemple/app/src/main/assets/custom_img"
-"/home/drakirus/lab/cordova/Android_share/www/images"
-"/run/mount/NAS/Pictures/2016/08/04"
+"/home/drakirus/Téléchargements/race/imgs"
 "/home/drakirus/Téléchargements"
+"/home/drakirus/Images/Webcam"
+"/home/drakirus/.cache/.fr-lPVcWY"
+"/home/drakirus/Téléchargements/ReLIFE Report 051.5 [Whiteout Scans]"
+"/tmp"
+"/home/drakirus/.cache/.fr-6uLSl8"
+"/home/drakirus/Images"
 "/home/drakirus/Images/DCIM/100PENTX"
-"/home/drakirus/Images/DCIM/100PENTX/tri/darktable_exported"
+"/home/drakirus/.purple/icons"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -31,6 +25,12 @@
 
 [bookmarks]
 ".[path]/home/drakirus/Images/stage_escalade_ombleze/day_1/tri/darktable_exported"
+"Rép. perso[path]/home/drakirus"
+"Bureau[path]/home/drakirus/Desktop"
+"Collections[path]/home/drakirus/.local/share/geeqie/collections"
+
+[shortcuts]
+".[path]/home/drakirus/Images/DCIM/100PENTX/tri/darktable_exported"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"

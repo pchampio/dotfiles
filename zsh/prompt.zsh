@@ -6,7 +6,7 @@
 
 # needed to get things like current git branch
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' enable git # You can add hg too if needed: `git hg`
+zstyle ':vcs_info:*' enable git svn # You can add hg too if needed: `git hg`
 zstyle ':vcs_info:git*' use-simple true
 zstyle ':vcs_info:git*' max-exports 2
 zstyle ':vcs_info:git*' formats ' %b' 'x%R'
@@ -25,6 +25,18 @@ git_dirty() {
   else
     echo "%F{green}✔%f"
   fi
+}
+
+svn_dirty() {
+  # check if we're in a svn repo
+ command svn info &>/dev/null || return
+
+ result=`svn status -q`
+ if [[ -z "$result" ]];then
+   echo "%F{green}✔%f"
+ else
+   echo "%F{red}✗%f"
+ fi
 }
 
 # get the status of the current branch and it's remote
@@ -122,12 +134,12 @@ suspended_jobs() {
 
 # Right-hand prompt
 function RightPromptFunc() {
-  echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
+  echo `git_dirty``svn_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
 }
 
 # Right-hand prompt
 function RightPromptFuncArrowsPull() {
-  echo `git_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows 1``suspended_jobs`
+  echo `git_dirty``svn_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows 1``suspended_jobs`
 }
 
 ASYNC_PROC=0

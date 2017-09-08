@@ -14,11 +14,19 @@ augroup FUCUS
 augroup end
 
 function! statusline#check_modified() abort
+
+  " if &modified
+    " execute 'hi User3 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836'
+  " else
+    " execute 'hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836'
+  " endif
+
   if &modified
-    execute 'hi User3 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836'
+    execute 'hi User3 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836'
   else
-    execute 'hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836'
+    execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836'
   endif
+
 endfunction
 
 function! statusline#gutterpadding(subtractBufferNumber) abort
@@ -77,7 +85,8 @@ endfunction
 
 function! Blur_statusline() abort
   " Default blurred statusline (buffer number: filename).
-  let l:blurred='%{statusline#gutterpadding(0)}'
+  let l:blurred=''
+  " let l:blurred.='%{statusline#gutterpadding(0)}'
   let l:blurred.='\ ' " space
   let l:blurred.='\ ' " space
   let l:blurred.='\ ' " space

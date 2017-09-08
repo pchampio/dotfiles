@@ -116,7 +116,7 @@ setxkbmap -option caps:escape &
 
 
 ```
-for x in $(cat package_list.txt); do pacman -S $x; done
+for x in $(cat package.list); do pacman -S $x; done
 ```
 
 https://www.archlinux.org/packages/community/x86_64/termite/  

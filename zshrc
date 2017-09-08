@@ -5,10 +5,6 @@ setopt prompt_subst # enable command substition in prompt
 
 plugins=(encode64 docker sudo)
 
-export DOTFILES=$HOME/dotfiles
-# source all .zsh files inside of the zsh/ directory
-for config ($DOTFILES/**/*.zsh) source $config
-
 export EDITOR='vim'
 
 # faster startup
@@ -59,8 +55,9 @@ export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
 
 # Android - sdk
-export PATH=${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
+export PATH=${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin:/opt/android-studio/gradle/gradle-3.2/bin
 export JAVA_HOME=/usr/lib/jvm/java-8-jdk
+export JDK_HOME=/usr/lib/jvm/java-8-jdk
 export ANDROID_HOME=/opt/android-sdk
 
 if ! pgrep -u $USER ssh-agent > /dev/null; then
@@ -75,3 +72,7 @@ if [[ "$SSH_CONNECTION" == ''  ]]; then
     tm && exit
   fi
 fi
+
+export DOTFILES=$HOME/dotfiles
+# source all .zsh files inside of the zsh/ directory
+for config ($DOTFILES/**/*.zsh) source $config

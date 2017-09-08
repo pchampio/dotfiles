@@ -27,15 +27,6 @@ Plug 'machakann/vim-highlightedyank'
 map y <Plug>(highlightedyank)
 hi! link HighlightedyankRegion SpellRare
 
-" slide
-if g:remoteSession
-  Plug 'blindFS/vim-reveal'
-  " cd the path
-  let g:reveal_config = {'path': '/home/drakirus/APP/data/www/slide/'}
-  " git cline https://github.com/hakimel/reveal.js/ --depth=1
-  nnoremap <leader>rr :RevealIt md<cr>
-endif
-
 " Plug 'gorodinskiy/vim-coloresque'
 
 " searching
@@ -74,7 +65,7 @@ set diffopt=vertical
 Plug 'pseewald/vim-anyfold'
 nnoremap <space> za
 let anyfold_activate=1
-set foldlevel=0
+set foldlevel=20
 
  " Ctrl-P FuzzyFinder
 
@@ -135,7 +126,7 @@ Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['javascript', 'python']
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
-      \ "sh", "html", "css", "vim", "python"]
+      \ "sh", "html", "css", "vim", "python", "javascript"]
 
 Plug 'hdima/python-syntax'
 let python_highlight_all = 1
@@ -174,10 +165,10 @@ Plug 'zsiciarz/caddy.vim'
 " end Syntax
 
 " A Vim plugin which shows a git diff in the numberline
-Plug 'airblade/vim-gitgutter'
-nnoremap g[ :GitGutterNextHunk<cr>
-nnoremap g] :GitGutterPrevHunk<cr>
-let g:gitgutter_map_keys = 0
+Plug 'mhinz/vim-signify'
+let g:signify_sign_change = '~'
+nmap <leader>gj <plug>(signify-next-hunk)
+nmap <leader>gk <plug>(signify-prev-hunk)
 
 " Insert or delete brackets
 Plug 'cohama/lexima.vim'
@@ -317,17 +308,22 @@ let g:ale_set_loclist = 1
 let g:ale_lint_on_enter = 0
 let g:ale_open_list = 1
 
+nnoremap <leader>dd :ALEDisable<CR>
+
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
 
 " THEME-SYNTAX
 Plug 'morhetz/gruvbox'
+Plug 'lifepillar/vim-solarized8'
 let g:gruvbox_contrast_dark="medium"
-let g:gruvbox_contrast_light="medium"
+let g:gruvbox_contrast_light="soft"
 
-let g:gruvbox_sign_column="dark0"
-let g:gruvbox_color_column="dark0"
-let g:gruvbox_vert_split="dark0"
+" let g:gruvbox_sign_column="dark0"
+" let g:gruvbox_vert_split="dark0"
+
+Plug 'kristijanhusak/vim-hybrid-material'
+let g:enable_bold_font = 1
 
 " Plug 'Yggdroot/indentLine'
 " let g:indentLine_char = ''
@@ -347,27 +343,38 @@ inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 inoremap <expr><leader><leader>  pumvisible() ? "\<C-y>" : "\<esc>:w\<cr>"
 
 if !g:remoteSession
-  Plug 'Shougo/neocomplete.vim'
-  " Plug 'wellle/tmux-complete.vim'
-  let g:neocomplete#enable_at_startup = 1
-  let g:neocomplete#enable_smart_case = 1
-  let g:neocomplete#auto_completion_start_length = 2
-  let g:neocomplete#enable_fuzzy_completion = 1
-  " User must pause before completions are shown.
-  " https://www.reddit.com/r/vim/comments/2xl33m
-  let g:neocomplete#enable_cursor_hold_i = 1
-  let g:neocomplete#cursor_hold_i_time = 500 " milliseconds
-  if !exists('g:neocomplete#force_omni_input_patterns')
-    let g:neocomplete#force_omni_input_patterns = {}
-  endif
+  if !has('nvim')
+    Plug 'Shougo/neocomplete.vim'
+    " Plug 'wellle/tmux-complete.vim'
+    let g:neocomplete#enable_at_startup = 1
+    let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#auto_completion_start_length = 2
+    let g:neocomplete#enable_fuzzy_completion = 1
+    " User must pause before completions are shown.
+    " https://www.reddit.com/r/vim/comments/2xl33m
+    let g:neocomplete#enable_cursor_hold_i = 1
+    let g:neocomplete#cursor_hold_i_time = 500 " milliseconds
+    if !exists('g:neocomplete#force_omni_input_patterns')
+      let g:neocomplete#force_omni_input_patterns = {}
+    endif
 
-        " \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
-  let g:neocomplete#sources#omni#input_patterns = {
-        \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
-        \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
-        \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
-        \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
-        \}
+          " \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
+    let g:neocomplete#sources#omni#input_patterns = {
+          \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
+          \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
+          \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
+          \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
+          \}
+  else
+    " Use deoplete.
+    Plug 'Shougo/deoplete.nvim'
+    let g:deoplete#enable_at_startup = 1
+
+    Plug 'zchee/deoplete-jedi'
+
+    Plug 'Shougo/deoplete-rct'
+
+  endif
 else
   Plug 'ajh17/VimCompletesMe'
   let g:vcm_direction = 'n'
@@ -440,6 +447,7 @@ Plug 'honza/vim-snippets'
 " let g:UltiSnipsSnippetsDir="~/.vim/bundle/vim-snippets/"
 let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets', 'snips', 'UltiSnips']
 
+
 " 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
 let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
@@ -460,7 +468,9 @@ autocmd FileChangedShell * echohl WarningMsg | echo "File changed shell." | echo
 
 " Theme
 colorscheme gruvbox
+" colorscheme hybrid_material
 set background=dark
+set background=light
 
 "  256 colors
 set t_Co=256
@@ -744,6 +754,7 @@ autocmd BufReadPost *
     \ endif
 
 autocmd FileType gitcommit startinsert
+autocmd FileType svn startinsert
 
 " Remove trailing whitespace on save ignore markdown files
 function! s:RemoveTrailingWhitespaces()

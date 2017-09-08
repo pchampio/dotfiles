@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+for app in $(pacmd list-sink-inputs | sed -n -e 's/index:[[:space:]]\([[:digit:]]\)/\1/p');do; pacmd move-sink-input $app alsa_output.usb-Generic_USB_Audio_200901010001-00.analog-stereo; done

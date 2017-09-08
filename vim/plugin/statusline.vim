@@ -5,19 +5,31 @@ scriptencoding utf-8
 " ssh
 let g:remoteSession = ($SSH_CONNECTION != "")
 
-hi statusLine ctermfg=248 ctermbg=237 cterm=none gui=none guifg=#bdae93 guibg=#3c3836
-hi statusLineNC ctermfg=248 ctermbg=237 cterm=italic gui=italic guifg=#bdae93 guibg=#3c3836
+" hi statusLine ctermfg=248 ctermbg=237 cterm=none gui=none guifg=#bdae93 guibg=#3c3836
+" hi statusLineNC ctermfg=248 ctermbg=237 cterm=italic gui=italic guifg=#bdae93 guibg=#3c3836
 
-hi User1 ctermfg=248 ctermbg=237 cterm=italic guifg=#bdae93 guibg=#3c3836
-hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836
-hi User4 ctermfg=124 ctermbg=237 guifg=#cc241d guibg=#3c3836
-hi User5 ctermfg=236 ctermbg=246 guifg=#32302f guibg=#a89984
-hi User2 ctermfg=236 ctermbg=246 cterm=bold gui=bold guifg=#32302f guibg=#a89984
-hi User6 ctermfg=246 ctermbg=237 guifg=#a89984 guibg=#3c3836
-hi User7 ctermfg=229 ctermbg=124 cterm=bold gui=bold guifg=#fbf1c7 guibg=#cc241d
+" hi User1 ctermfg=248 ctermbg=237 cterm=italic guifg=#bdae93 guibg=#3c3836
+" hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836
+" hi User4 ctermfg=124 ctermbg=237 guifg=#cc241d guibg=#3c3836
+" hi User5 ctermfg=236 ctermbg=246 guifg=#32302f guibg=#a89984
+" hi User2 ctermfg=236 ctermbg=246 cterm=bold gui=bold guifg=#32302f guibg=#a89984
+" hi User6 ctermfg=246 ctermbg=237 guifg=#a89984 guibg=#3c3836
+" hi User7 ctermfg=229 ctermbg=124 cterm=bold gui=bold guifg=#fbf1c7 guibg=#cc241d
 
-" modified
-hi User8 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836
+" hi User8 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836
+
+hi statusLine ctermfg=237 ctermbg=248 cterm=none
+hi statusLineNC ctermfg=237 ctermbg=248 cterm=italic
+
+hi User1 ctermfg=237 ctermbg=248 cterm=italic
+hi User3 ctermfg=237 ctermbg=248 cterm=bold
+hi User4 ctermfg=124 ctermbg=248
+hi User5 ctermfg=246 ctermbg=236
+hi User2 ctermfg=246 ctermbg=236 cterm=bold
+hi User6 ctermfg=237 ctermbg=248
+hi User7 ctermfg=229 ctermbg=124 cterm=bold
+
+hi User8 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836
 
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m"
@@ -26,7 +38,8 @@ if has('statusline')
 
   set statusline=%7*                         " Switch to User7 highlight group
   if !g:remoteSession
-    set statusline+=%{statusline#gutterpadding(1)}
+    " set statusline+=%{statusline#gutterpadding(1)}
+    set statusline+=\                          " Space.
   else
     set statusline+=\                          " Space.
   endif
@@ -35,6 +48,7 @@ if has('statusline')
   set statusline+=%*                         " Reset highlight group.
   set statusline+=%4*                        " Switch to User4 highlight group (Powerline arrow).
   set statusline+=                          " Powerline arrow.
+
   set statusline+=%*                         " Reset highlight group.
   set statusline+=\                          " Space.
   set statusline+=%<                         " Truncation point, if not enough width available.
