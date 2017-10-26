@@ -24,6 +24,7 @@ explain "Create symlink for files config"
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
+tell cp -f --recursive --symbolic-link $dir/jupyter/* ~/.jupyter/
 
 explain "Symlink nvim to vim"
 tell ln -sf ~/.vim ~/.config/nvim

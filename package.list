@@ -44,6 +44,9 @@ ripgrep
 blueman
 trash-cli
 rsync
+elixir
+xbindkeys
+xautomation
 
 
 nodejs-http-server

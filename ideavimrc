@@ -1,0 +1,131 @@
+" Leader Mappings
+let mapleader = ","
+
+set number
+set incsearch hlsearch
+set ignorecase smartcase
+set clipboard=unnamed
+set scrolloff=5
+set showmode
+set autoread           " Automatically reload changes if detected
+set surround
+
+" Insert New line
+nmap U o<Esc>
+
+inoremap <c-l> <esc>A
+
+" key bindings for quickly moving between windows
+" h left, l right, k up, j down
+nmap <c-h> <c-w>h
+nmap <c-l> <c-w>l
+nmap <c-k> <c-w>k
+nmap <c-j> <c-w>j
+
+" tabs navigation
+nnoremap <a-h> gT
+nnoremap <a-l> gt
+
+" Won't work in visual mode (with vmap) for some reason.
+" Use default map of <c-/> for that.
+nmap <Leader>c<Space> :action CommentByLineComment<cr>
+
+" Quicker navigation
+map H ^
+map L $
+
+nnoremap c "_c
+nnoremap C "_C
+
+" resizing a window split
+nnoremap <Left> <C-w>10<
+nnoremap <Down> <C-W>5-
+nnoremap <Up> <C-W>5+
+nnoremap <Right> <C-w>10>
+
+" nnoremap / :action Find<CR>
+nnoremap g/ :action FindInPath<cr>
+nnoremap n :action FindNext<CR>
+nnoremap N :action FindPrevious<CR>
+
+nmap <Leader>m :action ProjectViewChangeView<cr>
+
+" join / split lines
+nmap gJ :action EditorJoinLines<cr>
+nmap gS :action EditorSplitLine<cr>
+
+" Reload .ideavimrc
+nnoremap <Space>vs :source ~/.ideavimrc<CR>
+
+nnoremap <Leader>g <c-]>
+nnoremap <Leader>h :action GotoRelated<cr>
+nmap <leader>o :action Back<cr>
+nmap <leader>i :action Forward<cr>
+
+" move line up / down
+nnoremap <a-j> :action MoveLineDown<cr>:action VimAutoIndentLines<cr>
+nnoremap <a-k> :action MoveLineUp<cr>:action VimAutoIndentLines<cr>
+
+noremap <Leader>G :vsp <cr> <c-]>
+nnoremap <leader><leader> :w!<cr>
+
+nnoremap ; :
+
+" rename current file
+nnoremap <Leader>rn :action RenameFile<cr>
+
+nmap <c-p> :action GotoFile<cr>
+
+nmap <leader>F :action GotoSymbol<cr>
+
+" long jump method
+nmap J :action MethodDown<cr>
+nmap K :action MethodUp<cr>
+
+nmap <Leader>e :action RenameElement<cr>
+
+nmap * <esc>:action HighlightUsagesInFile<cr>
+
+" nmap u <esc>:action VimUndo<cr>
+
+nnoremap [g :action VcsShowPrevChangeMarker<cr>
+nnoremap ]g :action VcsShowNextChangeMarker<cr>
+
+nnoremap ]e :action GotoNextError<cr>
+nnoremap [e :action GotoPreviousError<cr>
+
+" don't overwrite register when pasting over selection
+vnoremap p pgvy
+
+nnoremap <Leader>a :action VimChangeNumberInc<cr>
+nnoremap <Leader>x :action VimChangeNumberDec<cr>
+nnoremap <Leader>q :action HideActiveWindow<cr>
+
+" nmap yL yg_
+nmap cL cg_<Esc>x
+" nmap dL dg_
+
+" nnoremap yH y^
+nnoremap cJ C
+nnoremap cH c^
+" nnoremap dH d^
+
+" replace register
+nnoremap rL vg_pgvy
+nnoremap riw viwpgvy
+nnoremap riW viWpgvy
+nnoremap ri" vi"pgvy
+nnoremap ri' vi'pgvy
+nnoremap ri{ vi{pgvy
+nnoremap ri[ vi[pgvy
+nnoremap ri} vi}pgvy
+nnoremap ri] vi]pgvy
+nnoremap rl vpgvy
+nnoremap rr Vpgvy
+
+" change font size
+nmap <c-=> :action EditorIncreaseFontSize<CR>
+nmap <c--> :action EditorDecreaseFontSize<CR>
+nmap <c-0> :action EditorResetFontSize<CR>
+
+nmap <Leader>t :action SurroundWith<cr>

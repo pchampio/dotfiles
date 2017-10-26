@@ -6,6 +6,8 @@ let g:remoteSession = ($SSH_CONNECTION != "")
 
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 
+let $SHELL='/bin/zsh'
+
 " ALT keys Mappings
 function! Altmap(char)
   if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
@@ -131,6 +133,24 @@ let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
 Plug 'hdima/python-syntax'
 let python_highlight_all = 1
 
+Plug 'slashmili/alchemist.vim'
+" https://asciinema.org/a/f32bc29pky7s9eqkyjmb33gia
+let g:alchemist#elixir_erlang_src = "/usr/local/share/src/"
+let g:alchemist_tag_map = '<Leader>g'
+
+" scala
+Plug 'ensime/ensime-vim'
+
+autocmd FileType scala,java
+      \ nnoremap <buffer> <silent> <leader>t :EnType<CR> |
+      \ xnoremap <buffer> <silent> <leader>t :EnType selection<CR> |
+      \ nnoremap <buffer> <silent> <leader>T :EnTypeCheck<CR> |
+      \ nnoremap <buffer> <silent> <C-]>  :EnDeclaration<CR> |
+      \ nnoremap <buffer> <silent> <leader>g  :EnDeclaration<CR> |
+      \ nnoremap <buffer> <silent> <leader>G :EnDeclarationSplit v<CR> |
+      \ nnoremap <buffer> <silent> <leader>I :EnSuggestImport<CR>
+
+
 Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 autocmd FileType go nnoremap <Leader>g :GoDef<cr>
 autocmd FileType go nnoremap <Leader>G :vsp <cr> :GoDef<cr>
@@ -147,13 +167,14 @@ let g:go_highlight_build_constraints = 1
 let g:go_highlight_types = 1
 let g:go_highlight_extra_types = 1
 
-
 Plug 'othree/javascript-libraries-syntax.vim'
 
-Plug 'mxw/vim-prolog'
-autocmd FileType prolog :nnoremap <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
+Plug 'adimit/prolog.vim'
+autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
+      \ :VtrOpenRunner {'orientation': 'h', 'percentage': 30, 'cmd': 'swipl'}<cr>
+      \ :VtrSendCommand! abort. %; swipl<cr>
       \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
-      \ :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
+      \ :undo<cr>
 
 " Plug 'posva/vim-vue'
 
@@ -281,9 +302,6 @@ endif
 " gem install ripper-tags
  " let g:gutentags_ctags_executable_ruby = 'ripper-tags -R --exclude=vendor'
 
-Plug 'majutsushi/tagbar'
-nnoremap <leader>t :TagbarToggle<CR>
-
 Plug 'rhysd/clever-f.vim'
 let g:clever_f_chars_match_any_signs = ';'
 " let g:clever_f_mark_char_color = 'SpellRare'
@@ -302,9 +320,7 @@ let g:NERDCustomDelimiters = {
 Plug 'w0rp/ale'
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_list_window_size = 5
-let g:ale_python_flake8_executable = "python3"
 
-let g:ale_set_loclist = 1
 let g:ale_lint_on_enter = 0
 let g:ale_open_list = 1
 
@@ -360,19 +376,23 @@ if !g:remoteSession
 
           " \ "ruby" : '([^:][^:][^:][^:][^:][^:][^:][^:][^:][^:][^:])([^. *\t:])\.\w*',
     let g:neocomplete#sources#omni#input_patterns = {
+          \ "scala" : '\k\.\k*',
           \ "ruby" : '[^. *\t]\.\w*\|\h\w*::',
           \ "c" : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?',
           \ "cpp" : '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*',
           \ "python" : '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*',
           \}
   else
+    Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+
+    " Required for operations modifying multiple buffers like rename.
+    set hidden
+
     " Use deoplete.
     Plug 'Shougo/deoplete.nvim'
     let g:deoplete#enable_at_startup = 1
 
     Plug 'zchee/deoplete-jedi'
-
-    Plug 'Shougo/deoplete-rct'
 
   endif
 else
@@ -385,7 +405,6 @@ endif
 
 set complete=i,.,b,w,u,U,]
 
-Plug 'osyo-manga/vim-monster'
 Plug 'vim-ruby/vim-ruby'
 " autocmd FileType ruby compiler ruby
 let g:rubycomplete_buffer_loading = 1
@@ -427,6 +446,7 @@ let g:clang_auto = 0
 " default 'longest' can not work with neocomplete
 let g:clang_c_completeopt = 'menuone'
 let g:clang_cpp_completeopt = 'menuone'
+
 
 " Enable omni completion.
 augroup COMPLETE
@@ -503,17 +523,7 @@ set virtualedit=block
 set laststatus=2 " Always display the statusline in all windows
 
 " highlight vertical column of cursor
-augroup highlight_follows_focus
-    autocmd!
-    autocmd WinEnter * set cursorline
-    autocmd WinLeave * set nocursorline
-augroup END
-
-augroup highligh_follows_vim
-    autocmd!
-    autocmd FocusGained * set cursorline
-    autocmd FocusLost * set nocursorline
-augroup END
+set cursorline
 
 " relativ number
 set numberwidth=4
@@ -808,7 +818,7 @@ function! RenameFile() abort
     let new_name .= '/' . expand('%:t')
     let ext_file = ""
   endif
-  if new_name != '' && new_name != old_name
+  if new_name != '' && new_name !=# old_name
     exec ':saveas ' . new_name
     exec ':silent !rm ' . old_name
     redraw!

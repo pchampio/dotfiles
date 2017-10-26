@@ -274,13 +274,13 @@ function adb-wifi(){
   sudo adb devices
   echo -n '\n Allow debug on the devices'
   read inputs
-  sudo adb -d tcpip 5556
-  sudo adb connect 192.168.240."$1":5556
+  sudo adb -d tcpip 5555
+  sudo adb connect 192.168.240."$1":5555
   sudo adb devices
   sudo adb kill-server
   echo -n '\n Pls unplug'
   read inputs
-  sudo adb connect 192.168.240."$1":5556
+  sudo adb connect 192.168.240."$1":5555
 }
 
 function dialog() {
@@ -290,14 +290,21 @@ function dialog() {
   read -s password
 
   mkdir -p ~/smb/users
-  mkdir -p ~/smb/tmp
-  mkdir -p ~/smb/dev02
-  mkdir -p ~/smb/ithor/wwwroot
-  mkdir -p ~/smb/ithor/Memberz
   sudo mount -t cifs //hoth/Users /home/drakirus/smb/users -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
+  mkdir -p ~/smb/Gabarits
+  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/Gabarits -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
+  mkdir -p ~/smb/tmp
   sudo mount -t cifs //hoth/Temp /home/drakirus/smb/tmp -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
+  mkdir -p ~/smb/dev02
   sudo mount -t cifs //DEV02/wwwroot /home/drakirus/smb/dev02 -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
+  mkdir -p ~/smb/ithor/wwwroot
   sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ithor/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
+  mkdir -p ~/smb/ithor/Memberz
   sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ithor/Memberz -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 }
 

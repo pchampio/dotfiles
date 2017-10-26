@@ -17,3 +17,11 @@ XF86AudioStop
 # prtScr
 "xfce4-screenshooter -fm"
 Impr
+
+# M560 logitech
+
+"xte 'keydown Alt_L' 'key Left' 'keyup Alt_L'"
+b:11
+
+"xte 'keydown Control_L' 'key w' 'keyup Control_L'"
+b:10
