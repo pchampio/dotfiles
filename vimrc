@@ -725,6 +725,7 @@ hi SpellLocal cterm=underline ctermfg=11 ctermbg=0 gui=undercurl
 
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en tw=80
 autocmd FileType gitcommit setlocal spell spelllang=fr,en
+autocmd FileType svn setlocal spell spelllang=fr,en
 
 " no more ex Mode
 nnoremap Q <nop>
@@ -759,7 +760,7 @@ nnoremap gf :view <cfile><cr>
 " Go to the last known cursor position in a file
 autocmd BufReadPost *
     \ if !(bufname("%") =~ '\(COMMIT_EDITMSG\)') &&
-    \   line("'\"") > 1 && line("'\"") < line("$") |
+    \   line("'\"") > 1 && line("'\"") < line("$") && &filetype != "svn" |
     \   exe "normal! g`\"" |
     \ endif
 
