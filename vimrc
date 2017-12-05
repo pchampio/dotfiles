@@ -48,6 +48,8 @@ if !has("gui_running")
   augroup END
 end
 
+nnoremap g/ :Ack<space>
+
 
 Plug 'wincent/ferret'
 let g:FerretMap=0
@@ -176,7 +178,18 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
       \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
       \ :undo<cr>
 
-" Plug 'posva/vim-vue'
+autocmd FileType jess :nnoremap <buffer> <silent> <cr>
+      \ :VtrOpenRunner {'orientation': 'h', 'percentage': 30, 'cmd': 'clips'}<cr>
+      \ :VtrSendCommand! (clear) ; clips<cr>
+      \ :VtrSendCommand! (load <c-r>=expand('%:t')<cr>)<cr>
+      \ :VtrSendCommand! (reset)<cr>
+      \ :VtrSendCommand! (run)<cr>
+
+autocmd FileType jess :nnoremap <buffer> <silent> <Leader>e
+      \ :VtrSendCommand! (exit)<cr>
+
+autocmd FileType jess :nnoremap <buffer> <silent> <Leader>f
+      \ :VtrSendCommand! (facts)<cr>
 
 Plug 'othree/yajs.vim'
 " Plug 'lepture/vim-jinja'
@@ -539,6 +552,7 @@ set undofile
 " set a directory to store the undo history
 set undodir=~/.vimundo/
 
+
 set backspace=2  " Backspace deletes like most programs in insert mode
 set nobackup     " No *.ext~
 set nowritebackup
@@ -675,6 +689,8 @@ endfunction
 noremap <leader>g <c-]>
 noremap <Leader>G :vsp <cr> <c-]>
 nnoremap <leader><leader> :w!<cr>
+
+nnoremap <Leader>D yyp
 
 vnoremap J }
 vnoremap K {

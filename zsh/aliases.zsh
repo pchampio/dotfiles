@@ -42,9 +42,8 @@ alias loc='tokei'
 
 alias lowwifi='sudo iwconfig wlp58s0 txpower 15'
 
-
 # CVS svn
-alias sg="svn status"
-alias sc="svn commit"
-alias sl="svn update"
+alias sg="colorsvn status"
+alias sc="colorsvn commit"
+alias sl="scolorvn update"
 

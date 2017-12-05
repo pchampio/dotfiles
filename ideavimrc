@@ -15,12 +15,16 @@ nmap U o<Esc>
 
 inoremap <c-l> <esc>A
 
+inoremap <c-j> <esc>:action Generate<cr>
+
 " key bindings for quickly moving between windows
 " h left, l right, k up, j down
 nmap <c-h> <c-w>h
 nmap <c-l> <c-w>l
 nmap <c-k> <c-w>k
 nmap <c-j> <c-w>j
+
+nnoremap <Leader>D yyp
 
 " tabs navigation
 nnoremap <a-h> gT
@@ -38,10 +42,10 @@ nnoremap c "_c
 nnoremap C "_C
 
 " resizing a window split
-nnoremap <Left> <C-w>10<
-nnoremap <Down> <C-W>5-
-nnoremap <Up> <C-W>5+
-nnoremap <Right> <C-w>10>
+nnoremap <left> <C-w>10<
+nnoremap <down> <C-W>5-
+nnoremap <up> <C-W>5+
+nnoremap <right> <C-w>10>
 
 " nnoremap / :action Find<CR>
 nnoremap g/ :action FindInPath<cr>
@@ -84,7 +88,7 @@ nmap K :action MethodUp<cr>
 
 nmap <Leader>e :action RenameElement<cr>
 
-nmap * <esc>:action HighlightUsagesInFile<cr>
+nmap * <esc>:noh<cr><esc>:action HighlightUsagesInFile<cr>
 
 " nmap u <esc>:action VimUndo<cr>
 

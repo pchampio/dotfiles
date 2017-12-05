@@ -277,15 +277,15 @@
         show_thumbnails = "true" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/tmp" 
+        last_path = "/home/drakirus/resource/dialog/IMAGES" 
         startup_path = "0" 
         exit_on_close = "false" 
 
-        main_window.x = "682" 
+        main_window.x = "615" 
         main_window.y = "30" 
         main_window.w = "1303" 
         main_window.h = "1019" 
-        main_window.maximized = "false" 
+        main_window.maximized = "true" 
         main_window.hdivider_pos = "329" 
         main_window.vdivider_pos = "142" 
 
@@ -314,7 +314,7 @@
         log_window.h = "400" 
 
         animate = "false" >
-        <bar enabled = "true" width = "216" >
+        <bar enabled = "true" width = "285" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "false" key = "Xmp.dc.title" height = "40" />

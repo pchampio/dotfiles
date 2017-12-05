@@ -1,7 +1,6 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Téléchargements/ReLIFE Report 051.5 [Whiteout Scans]"
 "/home/drakirus/.cache/.fr-6uLSl8"
 "/home/drakirus/Images"
 "/home/drakirus/Images/DCIM/100PENTX"
@@ -11,6 +10,7 @@
 "/home/drakirus/smb/ithor/wwwroot/Memberz Web Server/ressources"
 "/home/drakirus/Téléchargements"
 "/tmp"
+"/home/drakirus/resource/dialog/IMAGES"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"

@@ -289,36 +289,46 @@ function dialog() {
   echo "Password for p.champion:"
   read -s password
 
-  mkdir -p ~/smb/users
-  sudo mount -t cifs //hoth/Users /home/drakirus/smb/users -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  mkdir -p ~/smb/HOTH/users
+  sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 
-  mkdir -p ~/smb/Gabarits
-  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/Gabarits -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  mkdir -p ~/smb/HOTH/Gabarits
+  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 
-  mkdir -p ~/smb/tmp
-  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/tmp -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  mkdir -p ~/smb/HOTH/Temp
+  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 
-  mkdir -p ~/smb/dev02
-  sudo mount -t cifs //DEV02/wwwroot /home/drakirus/smb/dev02 -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  mkdir -p ~/smb/HOTH/Customers
+  sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 
-  mkdir -p ~/smb/ithor/wwwroot
-  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ithor/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  mkdir -p ~/smb/dev02/wwwroot
+  sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
 
-  mkdir -p ~/smb/ithor/Memberz
-  sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ithor/Memberz -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  mkdir -p ~/smb/ITHOR/wwwroot
+  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
+  mkdir -p ~/smb/ITHOR/Memberz
+  sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+
 }
 
 function udialog() {
-  sudo umount -a -t cifs -l ~/smb/users
-  sudo umount -a -t cifs -l ~/smb/dev02
-  sudo umount -a -t cifs -l ~/smb/ithor/Memberz
-  sudo umount -a -t cifs -l ~/smb/ithor/wwwroot
-}
-function dsave(){
-  rsync -avPh --delete ~/lab/java/android/DSDperso ~/smb/users/p.champion/save
-  rsync -avPh --delete ~/lab/java/android/SunmiService ~/smb/users/p.champion/save
+  sudo umount -a -t cifs -l ~/smb/
 }
 
 function sound(){
   echo 0 | sudo tee /sys/module/snd_hda_intel/parameters/power_save
+}
+
+function svn() {
+  colorsvn "$@"
+}
+
+function sdelete(){
+  svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' )
+}
+
+
+function ads(){
+  android-studio "$(pwd)"
 }
