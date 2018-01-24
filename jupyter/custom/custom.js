@@ -52,6 +52,8 @@ require([
     // Indicate the key combination to run the commands
     km.edit_shortcuts.add_shortcut('ctrl-s', 'jupyter-notebook:save-notebook', true);
 
+    km.edit_shortcuts.add_shortcut('ctrl-k', 'jupyter-notebook:restart-kernel-and-run-all-cells', true);
+
     // Update Help
     km.edit_shortcuts.events.trigger('rebuild.QuickHelp');
   });

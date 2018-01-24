@@ -32,7 +32,7 @@ alias cp="cp -aiv"
 alias py="python"
 alias py2="python2"
 alias docker_alpine="docker run -it --rm alpine /bin/ash"
-alias music="mpv . --shuffle"
+alias music="mpv ./* --shuffle"
 alias df="df --type=ext4 -h"
 alias mip="curl --silent ifconfig.co/json | prettyjson"
 alias de="adb devices"
@@ -45,5 +45,10 @@ alias lowwifi='sudo iwconfig wlp58s0 txpower 15'
 # CVS svn
 alias sg="colorsvn status"
 alias sc="colorsvn commit"
-alias sl="scolorvn update"
+alias sl="colorsvn update"
 
+alias ju="jupyter notebook"
+
+alias goo="google-chrome"
+
+alias t="cd /tmp"

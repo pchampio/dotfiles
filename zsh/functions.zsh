@@ -290,25 +290,25 @@ function dialog() {
   read -s password
 
   mkdir -p ~/smb/HOTH/users
-  sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/HOTH/Gabarits
-  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/HOTH/Temp
-  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/HOTH/Customers
-  sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/dev02/wwwroot
-  sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/ITHOR/wwwroot
-  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/ITHOR/Memberz
-  sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},iocharset=utf8,gid=100,uid=1000,nounix,file_mode=0777,dir_mode=0777,rsize=130048
+  sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
 }
 
@@ -320,15 +320,6 @@ function sound(){
   echo 0 | sudo tee /sys/module/snd_hda_intel/parameters/power_save
 }
 
-function svn() {
-  colorsvn "$@"
-}
-
 function sdelete(){
   svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' )
-}
-
-
-function ads(){
-  android-studio "$(pwd)"
 }

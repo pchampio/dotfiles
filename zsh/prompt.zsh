@@ -134,12 +134,16 @@ suspended_jobs() {
 
 # Right-hand prompt
 function RightPromptFunc() {
-  echo `git_dirty``svn_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows``suspended_jobs`
+
+  vcsInfo=$( printf "%s\n" "$vcs_info_msg_0_" | sed 's/%20/ /g' | awk 'length > 25{$0=substr($0,0,22)"..."}1')
+  echo `git_dirty``svn_dirty`%F{241}$vcsInfo%f `git_arrows``suspended_jobs`
 }
 
 # Right-hand prompt
 function RightPromptFuncArrowsPull() {
-  echo `git_dirty``svn_dirty`%F{241}$vcs_info_msg_0_%f `git_arrows 1``suspended_jobs`
+
+  vcsInfo=$( printf "%s\n" "$vcs_info_msg_0_" | sed 's/%20/ /g' | awk 'length > 25{$0=substr($0,0,22)"..."}1' )
+  echo `git_dirty``svn_dirty`%F{241}$vcsInfo%f `git_arrows 1``suspended_jobs`
 }
 
 ASYNC_PROC=0

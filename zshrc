@@ -45,6 +45,15 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
     -c 'map <SPACE> <C-D>' -c 'map b <C-U>' \
     -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
 
+
+# if [[ -n "$TMUX" ]]; then
+  # local LVL=$(($SHLVL - 3))
+# else
+  # local LVL=1
+# fi
+
+# local SUFFIX=$(printf '❯%.0s' {1..$LVL})
+
 # PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '
 export RPROMPT='' # set asynchronously and dynamically
@@ -54,11 +63,17 @@ export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 # export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
 
+
+# JAVA_HOME
+export JAVA_HOME=/usr/lib/jvm/jdk-9.0.1
+# export JAVA_HOME=/usr/lib/jvm/java-8-jdk
+
 # Android - sdk
-export PATH=${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin:/opt/android-studio/gradle/gradle-3.2/bin
-export JAVA_HOME=/usr/lib/jvm/java-8-jdk
-export JDK_HOME=/usr/lib/jvm/java-8-jdk
 export ANDROID_HOME=/opt/android-sdk
+
+
+export PATH=${JAVA_HOME}/bin:${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
+
 
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
@@ -77,3 +92,7 @@ fi
 export DOTFILES=$HOME/dotfiles
 # source all .zsh files inside of the zsh/ directory
 for config ($DOTFILES/**/*.zsh) source $config
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/home/drakirus/.sdkman"
+[[ -s "/home/drakirus/.sdkman/bin/sdkman-init.sh" ]] && source "/home/drakirus/.sdkman/bin/sdkman-init.sh"

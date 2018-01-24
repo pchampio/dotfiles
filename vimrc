@@ -344,15 +344,14 @@ hi! link ALEWarningSign SpellRare
 
 " THEME-SYNTAX
 Plug 'morhetz/gruvbox'
-Plug 'lifepillar/vim-solarized8'
 let g:gruvbox_contrast_dark="medium"
 let g:gruvbox_contrast_light="soft"
 
 " let g:gruvbox_sign_column="dark0"
 " let g:gruvbox_vert_split="dark0"
 
-Plug 'kristijanhusak/vim-hybrid-material'
-let g:enable_bold_font = 1
+Plug 'lifepillar/vim-solarized8'
+
 
 " Plug 'Yggdroot/indentLine'
 " let g:indentLine_char = ''
@@ -486,7 +485,7 @@ let g:UltiSnipsExpandTrigger="<leader><tab>"
 let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
 
 Plug 'christoomey/vim-tmux-runner'
-autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
+" autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 
 " ----------------------------- END -----------------------------
@@ -502,7 +501,6 @@ autocmd FileChangedShell * echohl WarningMsg | echo "File changed shell." | echo
 " Theme
 colorscheme gruvbox
 " colorscheme hybrid_material
-set background=dark
 set background=light
 
 "  256 colors
@@ -929,6 +927,7 @@ function! MyLastWindow()
 endfunction
 
 au VimEnter * set isk-=.
+au VimEnter * set expandtab!
 
 function! Slow()
   set nocursorcolumn

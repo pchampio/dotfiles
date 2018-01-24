@@ -2,5 +2,8 @@
   "load_extensions": {
     "vim_binding/vim_binding": true,
     "jupyter-js-widgets/extension": true
+  },
+  "Notebook": {
+    "Toolbar": false
   }
 }
