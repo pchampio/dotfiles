@@ -16,9 +16,15 @@ alias doc="/bin/d"
 alias sshuttle="sshuttle --dns -vvr drakirus@drakirus.xyz 0/0"
 alias STFU="pulseaudio -k && sudo alsa force-reload"
 alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
-alias backup="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/lab /run/mount/NAS/xps13-Backup/"
-alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.16.134:/volume1/Share /run/mount/NAS/"
+
+# NAS
+alias backup-lab="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/lab /run/mount/NAS/xps13-Backup/"
+alias backup-music="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Musique /run/mount/NAS/xps13-Backup/" --delete
+alias backup-image="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Images /run/mount/NAS/xps13-Backup/" --delete
+alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/resource /run/mount/NAS/xps13-Backup/" --delete
+alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.16.146:/volume1/Share /run/mount/NAS/"
 alias unas="sudo umount -l /run/mount/NAS"
+
 # alias cp="rsync -ah --partial --inplace --info=progress2"
 alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"

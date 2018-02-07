@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/tmp/cours-scala/presentation"
-"/home/drakirus/smb/ithor/wwwroot/Memberz Web Server/ressources"
+"/home/drakirus/Images/DCIM/100PENTX"
+"/run/mount/NAS/Pictures/2017"
 "/home/drakirus/resource/dialog/IMAGES"
-"/tmp"
-"/home/drakirus/Vidéos/silentcast"
-"/home/drakirus/Téléchargements"
-"/tmp/reset_usb"
 "/home/drakirus/lab/evolis/SDK/SDK 2.5_1701/Evolis_Firmware_Commands_Guide_rev1701/img"
-"/home/drakirus/lab/python/24h-2018"
-"/home/drakirus/lab/javascript/GestionProjet-Apprendre-en-m-amusant/img"
+"/home/drakirus/lab/evolis/SDK/SDK 2.5_1701/SDK 2.5/Comm_via_Iomem/010/src/bmp2prn"
+"/home/drakirus/lab/evolis/SDK/SDK 2.5_1701/SDK 2.5/Comm_via_Iomem/001/snapshots"
+"/home/drakirus/lab/evolis/SDK/SDK 2.5_1701/SDK 2.5/Comm_via_Iomem/002/002-001/snapshots"
+"/home/drakirus/lab/evolis/SDK/Premium_SDK_rev165_1728/Evolis Command Guide_rev1728/Badgy100 Badgy200 Apteo Access/img"
+"/home/drakirus/Téléchargements"
+"/tmp"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
