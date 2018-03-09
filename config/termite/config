@@ -6,7 +6,8 @@
 [options]
   # Font
   # font = Meslo 10.7
-  font = Hack 10.7
+	font = Hack 10.7
+  # font = Monofur 10.7
 
   geometry = 1920x1080
   icon_name = terminal

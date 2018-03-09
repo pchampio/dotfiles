@@ -187,7 +187,7 @@ precmd() {
 
 function TRAPUSR1() {
   # read from temp file
-  RPROMPT="$(<${HOME}/.zsh_tmp_prompt)"
+	RPROMPT="$(<${HOME}/.zsh_tmp_prompt)"
 
   # reset proc number
   ASYNC_PROC=0

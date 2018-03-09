@@ -11,7 +11,7 @@ export EDITOR='vim'
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:$GOPATH/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:$GOPATH/bin:/home/drakirus/.gem/ruby/2.5.0/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -56,7 +56,7 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
 
 # PROMPT THEME
 export PROMPT='%(?.%F{green}.%F{red})❯%f '
-export RPROMPT='' # set asynchronously and dynamically
+# export RPROMPT='' # set asynchronously and dynamically
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
@@ -96,3 +96,6 @@ for config ($DOTFILES/**/*.zsh) source $config
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/drakirus/.sdkman"
 [[ -s "/home/drakirus/.sdkman/bin/sdkman-init.sh" ]] && source "/home/drakirus/.sdkman/bin/sdkman-init.sh"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
