@@ -9,6 +9,7 @@ set scrolloff=5
 set showmode
 set autoread           " Automatically reload changes if detected
 set surround
+set relativenumber
 
 " Insert New line
 nmap U o<Esc>
@@ -78,7 +79,7 @@ nnoremap ; :
 " rename current file
 nnoremap <Leader>rn :action RenameFile<cr>
 
-nmap <c-p> :action GotoFile<cr>
+nmap <c-p> :action SearchEverywhere<cr>
 
 nmap <leader>F :action GotoSymbol<cr>
 
@@ -114,18 +115,25 @@ nnoremap cJ C
 nnoremap cH c^
 " nnoremap dH d^
 
+nnoremap r <NOP>
+
 " replace register
-nnoremap rL vg_pgvy
-nnoremap riw viwpgvy
-nnoremap riW viWpgvy
-nnoremap ri" vi"pgvy
-nnoremap ri' vi'pgvy
-nnoremap ri{ vi{pgvy
-nnoremap ri[ vi[pgvy
-nnoremap ri} vi}pgvy
-nnoremap ri] vi]pgvy
-nnoremap rl vpgvy
-nnoremap rr Vpgvy
+nnoremap rL vg_"_dp
+
+nnoremap riw viw"_c<esc>p
+
+nnoremap riW viW"_dp
+
+nnoremap ri" vi""_dP
+nnoremap ri' vi'"_dP
+
+nnoremap ri( vi("_dP
+nnoremap ri{ vi{"_dP
+nnoremap ri[ vi["_dP
+
+nnoremap rl v"_dp
+nnoremap rr V"_dP
+
 
 " change font size
 nmap <c-=> :action EditorIncreaseFontSize<CR>
