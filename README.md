@@ -3,6 +3,10 @@ My . Files
 ![Fullscreen](https://raw.githubusercontent.com/Drakirus/dotfiles/master/screenshot.png)  
 (Here's what my setup looks like)
 
+## ShutdownHook 
+
+Add `shutdown` to the hooks in `/etc/mkinitcpio.conf` and regenerating (`mkinitcpio -p linux`)
+
 ## Mouse
 
 ```sh
