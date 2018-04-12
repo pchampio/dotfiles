@@ -1,0 +1,4 @@
+#! /usr/bin/zsh
+
+export FROM_IDEA='true'
+/usr/bin/zsh "$@"

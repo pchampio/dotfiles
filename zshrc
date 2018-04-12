@@ -68,6 +68,8 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 export JAVA_HOME=/usr/lib/jvm/jdk-9.0.1
 # export JAVA_HOME=/usr/lib/jvm/java-8-jdk
 
+export AS_JAVA=/usr/lib/jvm/java-8-jdk
+
 # Android - sdk
 export ANDROID_HOME=/opt/android-sdk
 
@@ -82,7 +84,7 @@ if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing)
 fi
 
-if [[ "$SSH_CONNECTION" == ''  ]]; then
+if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
   SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
   if [ $SessionNb -eq 0 ]; then
     tm && exit

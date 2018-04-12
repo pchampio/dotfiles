@@ -74,6 +74,9 @@ nnoremap <a-k> :action MoveLineUp<cr>:action VimAutoIndentLines<cr>
 noremap <Leader>G :vsp <cr> <c-]>
 nnoremap <leader><leader> :w!<cr>
 
+noremap <Leader>S :action VimWindowSplitVertical<cr>
+noremap <Leader>I :action VimWindowSplitHorizontal<cr>
+
 nnoremap ; :
 
 " rename current file
@@ -104,7 +107,11 @@ vnoremap p pgvy
 
 nnoremap <Leader>a :action VimChangeNumberInc<cr>
 nnoremap <Leader>x :action VimChangeNumberDec<cr>
-nnoremap <Leader>q :action HideActiveWindow<cr>
+nnoremap <Leader>q :action HideAllWindows<cr>
+
+nnoremap <Leader>b :action ShowColorPicker<cr>
+nnoremap <Leader>f :action ShowFilePath<cr>
+
 
 " nmap yL yg_
 nmap cL cg_<Esc>x
