@@ -6,7 +6,7 @@ GenericName[fr]=Navigateur Web
 Comment=Access the Internet
 Comment[fr]=Accéder à Internet
 StartupWMClass=Google-chrome
-Exec=/usr/bin/google-chrome-stable %U
+Exec=/usr/bin/google-chrome-stable --profile-directory=Default
 Terminal=false
 Icon=google-chrome
 Type=Application
@@ -15,6 +15,9 @@ MimeType=text/html;text/xml;application/xhtml_xml;image/webp;x-scheme-handler/ht
 X-Ayatana-Desktop-Shortcuts=NewWindow;NewIncognito
 Actions=new-window;new-private-window;
 X-XFCE-Source=file:///usr/share/applications/google-chrome.desktop
+
+Path=
+StartupNotify=false
 
 [Desktop Action new-window]
 Name=New Window

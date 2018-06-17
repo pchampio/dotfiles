@@ -1,5 +1,5 @@
 favorites=exo-terminal-emulator.desktop,exo-file-manager.desktop,exo-web-browser.desktop,pavucontrol.desktop
-recent=pixeluvo.desktop,geeqie.desktop,Discord.desktop,xfce-keyboard-settings.desktop,gnome-calculator.desktop,darktable.desktop,pinta.desktop,Crypt_of_the_necrodancer.desktop,Sudoku.desktop,xfce-mouse-settings.desktop
+recent=pixeluvo.desktop,geeqie.desktop,xfce-keyboard-settings.desktop,darktable.desktop,pinta.desktop,Crypt_of_the_necrodancer.desktop,Sudoku.desktop,xfce-mouse-settings.desktop
 button-title=Applications
 button-icon=view-app-grid-symbolic.symbolic
 button-single-row=false
@@ -19,8 +19,8 @@ display-recent-default=false
 position-search-alternate=false
 position-commands-alternate=false
 position-categories-alternate=false
-menu-width=783
-menu-height=510
+menu-width=579
+menu-height=504
 menu-opacity=100
 command-settings=xfce4-settings-manager
 show-command-settings=true

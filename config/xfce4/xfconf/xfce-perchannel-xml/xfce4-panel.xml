@@ -12,21 +12,18 @@
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="13"/>
+        <value type="int" value="23"/>
         <value type="int" value="8"/>
-        <value type="int" value="12"/>
-        <value type="int" value="18"/>
         <value type="int" value="11"/>
         <value type="int" value="10"/>
-        <value type="int" value="21"/>
         <value type="int" value="20"/>
         <value type="int" value="14"/>
-        <value type="int" value="19"/>
         <value type="int" value="9"/>
-        <value type="int" value="15"/>
-        <value type="int" value="3"/>
+        <value type="int" value="19"/>
+        <value type="int" value="24"/>
+        <value type="int" value="4"/>
         <value type="int" value="7"/>
         <value type="int" value="28"/>
-        <value type="int" value="4"/>
         <value type="int" value="6"/>
         <value type="int" value="16"/>
         <value type="int" value="5"/>
@@ -43,19 +40,18 @@
     </property>
   </property>
   <property name="plugins" type="empty">
-    <property name="plugin-15" type="string" value="separator">
-      <property name="expand" type="bool" value="true"/>
-      <property name="style" type="uint" value="0"/>
-    </property>
     <property name="plugin-5" type="string" value="clock">
       <property name="mode" type="uint" value="2"/>
-      <property name="digital-format" type="string" value="%d-%m-%Y %n%kh%M"/>
+      <property name="digital-format" type="string" value="&lt;span  font=&apos;8.&apos;&gt;%d-%m-%Y%n&lt;/span&gt;&lt;span  font_weight=&apos;ultrabold&apos;&gt;%R&lt;/span&gt;"/>
     </property>
     <property name="plugin-6" type="string" value="systray">
       <property name="names-visible" type="array">
         <value type="string" value="thunar"/>
+        <value type="string" value="toolbox"/>
         <value type="string" value="kazam"/>
+        <value type="string" value="redshift-gtk"/>
         <value type="string" value="google-chrome"/>
+        <value type="string" value="remmina"/>
         <value type="string" value="discord"/>
         <value type="string" value="simplescreenrecorder"/>
         <value type="string" value="steam"/>
@@ -67,10 +63,12 @@
         <value type="string" value="fluxapp.py"/>
         <value type="string" value="lecture de musique pragha"/>
         <value type="string" value="yad"/>
+        <value type="string" value="teamviewer"/>
         <value type="string" value="javaembeddedframe"/>
         <value type="string" value="slack"/>
         <value type="string" value="parole"/>
         <value type="string" value="statusicon.rb"/>
+        <value type="string" value="albert"/>
       </property>
       <property name="names-hidden" type="array">
       </property>
@@ -78,7 +76,6 @@
       <property name="size-max" type="uint" value="22"/>
     </property>
     <property name="plugin-1" type="string" value="whiskermenu"/>
-    <property name="plugin-7" type="string" value="power-manager-plugin"/>
     <property name="plugin-2" type="string" value="actions">
       <property name="appearance" type="uint" value="0"/>
       <property name="items" type="array">
@@ -107,19 +104,14 @@
     </property>
     <property name="plugin-10" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="14793963001.desktop"/>
+        <value type="string" value="15248641153.desktop"/>
       </property>
       <property name="disable-tooltips" type="bool" value="false"/>
       <property name="show-label" type="bool" value="false"/>
     </property>
     <property name="plugin-11" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="14793964376.desktop"/>
-      </property>
-    </property>
-    <property name="plugin-12" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="14793964527.desktop"/>
+        <value type="string" value="15248641324.desktop"/>
       </property>
     </property>
     <property name="plugin-13" type="string" value="launcher">
@@ -131,40 +123,36 @@
       <property name="style" type="uint" value="0"/>
       <property name="expand" type="bool" value="true"/>
     </property>
-    <property name="plugin-3" type="string" value="xfce4-netspeed-plugin"/>
-    <property name="plugin-4" type="string" value="separator">
-      <property name="style" type="uint" value="1"/>
-    </property>
     <property name="plugin-16" type="string" value="separator">
-      <property name="style" type="uint" value="1"/>
+      <property name="style" type="uint" value="3"/>
     </property>
     <property name="plugin-17" type="string" value="separator">
-      <property name="style" type="uint" value="1"/>
-    </property>
-    <property name="plugin-18" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="14795601702.desktop"/>
-      </property>
+      <property name="style" type="uint" value="3"/>
     </property>
     <property name="plugin-19" type="string" value="separator">
       <property name="style" type="uint" value="1"/>
-      <property name="expand" type="bool" value="false"/>
+      <property name="expand" type="bool" value="true"/>
     </property>
     <property name="plugin-20" type="string" value="separator">
       <property name="style" type="uint" value="3"/>
     </property>
     <property name="plugin-8" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="14842222941.desktop"/>
+        <value type="string" value="15076644521.desktop"/>
       </property>
     </property>
     <property name="plugin-28" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
     </property>
-    <property name="plugin-21" type="string" value="launcher">
+    <property name="plugin-23" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="14929541911.desktop"/>
+        <value type="string" value="15072331261.desktop"/>
       </property>
+    </property>
+    <property name="plugin-7" type="string" value="power-manager-plugin"/>
+    <property name="plugin-24" type="string" value="netload"/>
+    <property name="plugin-4" type="string" value="separator">
+      <property name="style" type="uint" value="3"/>
     </property>
   </property>
 </channel>

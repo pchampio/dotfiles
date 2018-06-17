@@ -19,9 +19,9 @@ alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
 
 # NAS
 alias backup-lab="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/lab /run/mount/NAS/xps13-Backup/"
-alias backup-music="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Musique /run/mount/NAS/xps13-Backup/" --delete
-alias backup-image="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Images /run/mount/NAS/xps13-Backup/" --delete
-alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/resource /run/mount/NAS/xps13-Backup/" --delete
+alias backup-music="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Musique /run/mount/NAS/xps13-Backup/"
+alias backup-image="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Images /run/mount/NAS/xps13-Backup/"
+alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/resource /run/mount/NAS/xps13-Backup/"
 alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.16.146:/volume1/Share /run/mount/NAS/"
 alias unas="sudo umount -l /run/mount/NAS"
 
@@ -42,6 +42,9 @@ alias music="mpv ./* --shuffle"
 alias df="df --type=ext4 -h"
 alias mip="curl --silent ifconfig.co/json | prettyjson"
 alias de="adb devices"
+alias de-screen="adb exec-out screencap -p > screen.png"
+alias de-screen1="adb exec-out screencap -p > screen1.png"
+alias de-screen2="adb exec-out screencap -p > screen2.png"
 alias co="cordova"
 alias rm='trash'
 alias loc='tokei'

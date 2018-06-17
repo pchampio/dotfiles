@@ -7,7 +7,7 @@
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/drakirus/Images/wallpaper/1920x1080(hd).jpg"/>
+          <property name="last-image" type="string" value="/home/drakirus/Images/wallpaper/lake.png"/>
           <property name="backdrop-cycle-enable" type="bool" value="true"/>
           <property name="backdrop-cycle-random-order" type="bool" value="true"/>
         </property>
@@ -34,7 +34,7 @@
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/drakirus/Images/wallpaper/DpvywNN.jpg"/>
+          <property name="last-image" type="string" value="/home/drakirus/Images/wallpaper/lake.png"/>
           <property name="backdrop-cycle-enable" type="bool" value="true"/>
           <property name="backdrop-cycle-random-order" type="bool" value="true"/>
         </property>
@@ -64,8 +64,8 @@
     </property>
   </property>
   <property name="last" type="empty">
-    <property name="window-width" type="int" value="790"/>
-    <property name="window-height" type="int" value="504"/>
+    <property name="window-width" type="int" value="802"/>
+    <property name="window-height" type="int" value="518"/>
   </property>
   <property name="desktop-icons" type="empty">
     <property name="style" type="int" value="2"/>

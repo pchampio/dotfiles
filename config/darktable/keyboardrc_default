@@ -330,6 +330,7 @@
 ; (gtk_accel_path "<Darktable>/image operations/lowpass/brightness/edit" "")
 ; (gtk_accel_path "<Darktable>/modules/tagging/tag" "<Primary>t")
 ; (gtk_accel_path "<Darktable>/image operations/bilat/fusion/decrease" "")
+; (gtk_accel_path "<Darktable>/modules/location/show preset menu" "")
 ; (gtk_accel_path "<Darktable>/image operations/lowlight/pr\303\251-r\303\251glage/int\303\251rieur sombre" "")
 ; (gtk_accel_path "<Darktable>/image operations/colorcorrection/enable module" "")
 ; (gtk_accel_path "<Darktable>/image operations/colorreconstruct/range extent/increase" "")

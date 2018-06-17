@@ -227,8 +227,14 @@ docker-enter () {
   docker exec -ti $1 sh
 }
 
+svn-clean () {
+  svn st | grep ! | cut -d! -f2| sed 's/^ *//' | sed 's/^/"/g' | sed 's/$/"/g' | xargs svn rm
+}
+
 
 ff() { find . -name "*$1*" -ls; }
+ffrm() { find . -name "*$1*" -exec rm {} +; }
+
 ffig() { find . -name "*$1*" -ls| grep -vFf skip_files; }
 
 nhh () {
@@ -247,7 +253,7 @@ function mmpl() {
 }
 
 function mm() {
-    mpv --ytdl --no-video "$@"
+    mpv --ytdl --loop --no-video "$@"
 }
 
 function yt-dl (){
@@ -304,6 +310,9 @@ function dialog() {
   mkdir -p ~/smb/dev02/wwwroot
   sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
+  mkdir -p ~/smb/dev02/shibboleth-sp
+  sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+
   mkdir -p ~/smb/ITHOR/wwwroot
   sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
@@ -323,3 +332,6 @@ function sound(){
 function sdelete(){
   svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' )
 }
+
+transfer() { if [ $# -eq 0 ]; then echo -e "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi
+tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); curl --progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; }

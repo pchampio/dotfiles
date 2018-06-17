@@ -73,8 +73,10 @@ export AS_JAVA=/usr/lib/jvm/java-8-jdk
 # Android - sdk
 export ANDROID_HOME=/opt/android-sdk
 
+export FLUTTER=/opt/flutter/bin
 
-export PATH=${JAVA_HOME}/bin:${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
+
+export PATH=${FLUTTER}:${JAVA_HOME}/bin:${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
 
 
 if ! pgrep -u $USER ssh-agent > /dev/null; then

@@ -9,7 +9,7 @@ set scrolloff=5
 set showmode
 set autoread           " Automatically reload changes if detected
 set surround
-set relativenumber
+" set relativenumber
 
 " Insert New line
 nmap U o<Esc>

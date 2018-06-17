@@ -27,7 +27,12 @@ call plug#begin('~/.vim/bundle/')
 
 Plug 'machakann/vim-highlightedyank'
 map y <Plug>(highlightedyank)
-hi! link HighlightedyankRegion SpellRare
+if exists('g:gui_oni')
+    hi! link HighlightedyankRegion SpellBad
+else
+    hi! link HighlightedyankRegion SpellRare
+endif
+let g:highlightedyank_highlight_duration = 300
 
 " Plug 'gorodinskiy/vim-coloresque'
 
@@ -279,8 +284,8 @@ noremap R r
 
 " Aligning text
 Plug 'junegunn/vim-easy-align'
-nmap ga <Plug>(EasyAlign)
-xmap ga <Plug>(EasyAlign)
+nmap <leader>ga <Plug>(EasyAlign)
+xmap <leader>ga <Plug>(EasyAlign)
 
 " Always highlight enclosing tags HTML XML
 Plug 'Valloric/MatchTagAlways'
@@ -485,7 +490,7 @@ let g:UltiSnipsExpandTrigger="<leader><tab>"
 let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
 
 Plug 'christoomey/vim-tmux-runner'
-" autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
+autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 
 " ----------------------------- END -----------------------------
@@ -499,9 +504,11 @@ set synmaxcol=190         " limit syntax Highlighting
 autocmd FileChangedShell * echohl WarningMsg | echo "File changed shell." | echohl None
 
 " Theme
-colorscheme gruvbox
+if !exists('g:gui_oni')
+    colorscheme gruvbox
+    set background=light
+endif
 " colorscheme hybrid_material
-set background=light
 
 "  256 colors
 set t_Co=256
@@ -593,9 +600,11 @@ highlight SpecialKey ctermbg=none cterm=none
 
 set spellfile=~/dotfiles/spell/ownSpellFile.utf-8.add
 
-set ttyfast    " u got a fast terminal
-set lazyredraw
-set fillchars=vert:\|
+if !exists('g:gui_oni')
+  set ttyfast    " u got a fast terminal
+  set lazyredraw
+  set fillchars=vert:\|
+endif
 
 nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
 set sidescrolloff=4
@@ -927,7 +936,7 @@ function! MyLastWindow()
 endfunction
 
 au VimEnter * set isk-=.
-au VimEnter * set expandtab!
+" au VimEnter * set expandtab!
 
 function! Slow()
   set nocursorcolumn
