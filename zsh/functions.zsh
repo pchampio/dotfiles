@@ -190,7 +190,7 @@ thunarCmd(){
   if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
   then
     wmctrl -a "$WINTITLE" # If it exists, bring 'app' window to front
-    sleep 0.3
+    sleep 0.2
     xdotool key ctrl+t
     xdotool key ctrl+l
     xdotool type "$(pwd)"

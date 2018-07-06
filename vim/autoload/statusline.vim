@@ -13,18 +13,32 @@ augroup FUCUS
 
 augroup end
 
+augroup THEME
+  autocmd!
+  autocmd ColorScheme * call statusline#setup()
+augroup end
+
+let g:initStatusline = 0
+function! statusline#setup() abort
+  execute 'hi statusLine ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#658b63 guibg=#EEE8D5'
+  execute 'hi statusLineNC ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5 gui=italic guifg=#658b63'
+
+  execute 'hi User1 ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5'
+  execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#658b63 guibg=#EEE8D5'
+  execute 'hi User4 ctermfg=124 ctermbg=248 guibg=#eee8d5 guifg=#DC322F'
+  execute 'hi User5 ctermfg=246 ctermbg=236 guibg=#586E75 guifg=#F9E4CC'
+  execute 'hi User2 ctermfg=246 ctermbg=236 cterm=bold ctermbg=236 guibg=#586E75 guifg=#F9E4CC'
+  execute 'hi User6 ctermfg=237 ctermbg=248 guibg=#eee8d5 guifg=#586E75'
+  execute 'hi User7 ctermfg=229 ctermbg=124 cterm=bold guifg=#F2F0EB guibg=#DC322F'
+  execute 'hi User8 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#fabd2f guibg=#eee8d5'
+endfunction
+
+
 function! statusline#check_modified() abort
-
-  " if &modified
-    " execute 'hi User3 ctermfg=214 ctermbg=237 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836'
-  " else
-    " execute 'hi User3 ctermfg=229 ctermbg=237 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836'
-  " endif
-
   if &modified
-    execute 'hi User3 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#fabd2f guibg=#3c3836'
+    execute 'hi User3 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#D75F00 guibg=#EEE8D5'
   else
-    execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#fbf1c7 guibg=#3c3836'
+    execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#658b63 guibg=#EEE8D5'
   endif
 
 endfunction

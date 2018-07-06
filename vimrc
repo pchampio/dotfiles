@@ -10,7 +10,7 @@ let $SHELL='/bin/zsh'
 
 " ALT keys Mappings
 function! Altmap(char)
-  if has('gui_running') | return ' <A-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
+  if exists('g:gui_oni') | return ' <a-'.a:char.'> ' | else | return ' <Esc>'.a:char.' '|endif
 endfunction
 
 filetype plugin indent on
@@ -32,7 +32,7 @@ if exists('g:gui_oni')
 else
     hi! link HighlightedyankRegion SpellRare
 endif
-let g:highlightedyank_highlight_duration = 300
+let g:highlightedyank_highlight_duration = 500
 
 " Plug 'gorodinskiy/vim-coloresque'
 
@@ -120,7 +120,11 @@ let g:ctrlp_abbrev = {
 " endfunction
 
 let g:ctrlp_default_input = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+" if !exists('g:gui_oni')
+    autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+" else
+    " autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' call OniCommand("quickOpen.show")' | endif
+" endif
 
 " define in autoload
 let g:ctrlp_status_func = {
@@ -139,6 +143,8 @@ let g:markdown_fenced_languages = ["ruby", "C=c", "c", "bash=sh",
 
 Plug 'hdima/python-syntax'
 let python_highlight_all = 1
+
+Plug 'kelwin/vim-smali'
 
 Plug 'slashmili/alchemist.vim'
 " https://asciinema.org/a/f32bc29pky7s9eqkyjmb33gia
