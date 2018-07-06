@@ -1,0 +1,31 @@
+{
+    "type": "phrase",
+    "description": "aient",
+    "modes": [
+        1
+    ],
+    "usageCount": 36,
+    "prompt": false,
+    "omitTrigger": false,
+    "matchCase": false,
+    "showInTrayMenu": false,
+    "abbreviation": {
+        "abbreviations": [
+            ",e"
+        ],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": true,
+        "triggerInside": true,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": [],
+        "hotKey": "r"
+    },
+    "filter": {
+        "regex": "^((?!.*IntelliJ IDEA).)*$",
+        "isRecursive": false
+    },
+    "sendMode": "<ctrl>+<shift>+v"
+}
