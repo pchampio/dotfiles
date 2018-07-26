@@ -272,30 +272,30 @@
         style = "0" 
         order = "123" 
         dir_view_type = "0" 
-        file_view_type = "1" 
-        show_marks = "true" 
-        show_thumbnails = "true" 
+        file_view_type = "0" 
+        show_marks = "false" 
+        show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/drakirus/Téléchargements/Floating Widget/app/src/main" 
+        last_path = "/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-hdpi-v4" 
         startup_path = "0" 
         exit_on_close = "false" 
 
-        main_window.x = "765" 
-        main_window.y = "122" 
-        main_window.w = "1153" 
-        main_window.h = "850" 
+        main_window.x = "258" 
+        main_window.y = "1183" 
+        main_window.w = "836" 
+        main_window.h = "540" 
         main_window.maximized = "false" 
-        main_window.hdivider_pos = "329" 
-        main_window.vdivider_pos = "142" 
+        main_window.hdivider_pos = "359" 
+        main_window.vdivider_pos = "200" 
 
         folder_window.vdivider_pos = "100" 
 
-        float_window.x = "152" 
+        float_window.x = "0" 
         float_window.y = "0" 
-        float_window.w = "1346" 
-        float_window.h = "848" 
-        float_window.vdivider_pos = "143" 
+        float_window.w = "260" 
+        float_window.h = "450" 
+        float_window.vdivider_pos = "-1" 
 
         properties_window.w = "0" 
         properties_window.h = "0" 
@@ -303,8 +303,8 @@
         tools_float = "false" 
         tools_hidden = "false" 
 
-        toolbar_hidden = "true" 
-        show_info_pixel = "true" 
+        toolbar_hidden = "false" 
+        show_info_pixel = "false" 
         image_overlay.state = "0" 
         image_overlay.histogram_channel = "4" 
         image_overlay.histogram_mode = "1" 
@@ -314,26 +314,31 @@
         log_window.h = "400" 
 
         animate = "false" >
-        <bar enabled = "true" width = "285" >
+        <bar enabled = "true" width = "310" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
-            <pane_comment id = "title" title = "Titre" expanded = "false" key = "Xmp.dc.title" height = "40" />
-            <pane_keywords id = "keywords" title = "Mots-clés" expanded = "false" key = "Xmp.dc.subject" height = "200" >
+            <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />
+            <pane_keywords id = "keywords" title = "Mots-clés" expanded = "true" key = "Xmp.dc.subject" height = "200" >
             </pane_keywords>
-            <pane_comment id = "comment" title = "Commentaire" expanded = "false" key = "Xmp.dc.description" height = "150" />
+            <pane_comment id = "comment" title = "Commentaire" expanded = "true" key = "Xmp.dc.description" height = "150" />
+            <pane_comment id = "rating" title = "Rating" expanded = "true" key = "Xmp.xmp.Rating" height = "10" />
             <pane_exif id = "exif" title = "Exif" expanded = "true" >
                 <entry key = "formatted.Camera" if_set = "true" editable = "false" />
                 <entry key = "formatted.DateTime" if_set = "true" editable = "false" />
-                <entry key = "formatted.FocalLength" if_set = "true" editable = "false" />
-                <entry key = "Exif.Photo.ExposureProgram" if_set = "true" editable = "false" />
+                <entry key = "formatted.ShutterSpeed" if_set = "true" editable = "false" />
+                <entry key = "formatted.Aperture" if_set = "true" editable = "false" />
                 <entry key = "formatted.ExposureBias" if_set = "true" editable = "false" />
+                <entry key = "formatted.ISOSpeedRating" if_set = "true" editable = "false" />
+                <entry key = "formatted.FocalLength" if_set = "true" editable = "false" />
+                <entry key = "formatted.FocalLength35mmFilm" if_set = "true" editable = "false" />
+                <entry key = "formatted.Flash" if_set = "true" editable = "false" />
+                <entry key = "Exif.Photo.ExposureProgram" if_set = "true" editable = "false" />
+                <entry key = "Exif.Photo.MeteringMode" if_set = "true" editable = "false" />
                 <entry key = "Exif.Photo.LightSource" if_set = "true" editable = "false" />
                 <entry key = "formatted.ColorProfile" if_set = "true" editable = "false" />
                 <entry key = "formatted.SubjectDistance" if_set = "true" editable = "false" />
-                <entry key = "formatted.ShutterSpeed" if_set = "true" editable = "false" />
-                <entry key = "formatted.Aperture" if_set = "true" editable = "false" />
-                <entry key = "formatted.ISOSpeedRating" if_set = "true" editable = "false" />
-                <entry key = "Xmp.xmp.Rating" title = "Note" if_set = "false" editable = "false" />
+                <entry key = "formatted.Resolution" if_set = "true" editable = "false" />
+                <entry key = "Xmp.tiff.Orientation" if_set = "true" editable = "false" />
             </pane_exif>
         </bar>
     </layout>

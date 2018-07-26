@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Vidéos"
-"/home/drakirus/Images"
-"/home/drakirus/lab/java/android/middleware_SUNMI/main_screen"
-"/tmp"
-"/home/drakirus/Téléchargements"
-"/home/drakirus/Téléchargements/Floating Widget/app/src/main/res/mipmap-xxhdpi"
-"/home/drakirus/Téléchargements/Floating Widget/app/src/main/res/mipmap-xxxhdpi"
-"/home/drakirus/Téléchargements/Floating Widget/app/src/main/res/mipmap-hdpi"
-"/home/drakirus/Téléchargements/Floating Widget/app/src/main/res/drawable-nodpi"
-"/home/drakirus/Téléchargements/Floating Widget/app/src/main"
+"/home/drakirus/Images/trip_semi-semi-croustillant/day_8/clement"
+"/home/drakirus/Images/trip_semi-semi-croustillant/day_8"
+"/home/drakirus/Images/trip_semi-semi-croustillant/day_9/pierre"
+"/home/drakirus/Images/trip_semi-semi-croustillant/day_10/maxime/photo"
+"/home/drakirus/Images/trip_semi-semi-croustillant/day_10/clement"
+"/home/drakirus/Images/trip_semi-semi-croustillant/day_3/pierre/pentax/tri/darktable_exported"
+"/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-xhdpi-v4"
+"/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-xxxhdpi-v4"
+"/home/drakirus/Téléchargements/ic_launcher/android/mipmap-hdpi"
+"/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-hdpi-v4"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/home/drakirus/Images/stage_escalade_ombleze/day_1/tri/darktable_exported"
+".[path]/home/drakirus/Images/trip_semi-semi-croustillant/day_6/pierre"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"

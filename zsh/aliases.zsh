@@ -61,5 +61,6 @@ alias ju="jupyter notebook"
 alias goo="google-chrome"
 
 alias t="cd /tmp"
+alias tl="cd ~/Téléchargements"
 
 alias ms="LC_ALL=en_US.UTF-8 minishift"

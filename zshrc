@@ -36,6 +36,9 @@ PATH=$PATH:$GOPATH/bin
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
 
+# ADD perl path
+export PATH=/usr/bin/vendor_perl:$PATH
+
 # 10ms for key sequences
 export KEYTIMEOUT=1
 
