@@ -4,14 +4,14 @@
     "modes": [
         1
     ],
-    "usageCount": 36,
+    "usageCount": 41,
     "prompt": false,
     "omitTrigger": false,
     "matchCase": false,
     "showInTrayMenu": false,
     "abbreviation": {
         "abbreviations": [
-            ",e"
+            ",,e"
         ],
         "backspace": true,
         "ignoreCase": false,
@@ -24,7 +24,7 @@
         "hotKey": "r"
     },
     "filter": {
-        "regex": "^((?!.*IntelliJ IDEA).)*$",
+        "regex": null,
         "isRecursive": false
     },
     "sendMode": "<ctrl>+<shift>+v"

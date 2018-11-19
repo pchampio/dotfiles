@@ -1,0 +1,8 @@
+{
+  "NotebookApp": {
+    "password": "sha1:423c716eeac4:be736dedbb70812eb04f4a68506d4bd1ecb31908",
+    "nbserver_extensions": {
+      "jupyter_nbextensions_configurator": true
+    }
+  }
+}

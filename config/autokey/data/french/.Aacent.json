@@ -4,14 +4,14 @@
     "modes": [
         1
     ],
-    "usageCount": 11,
+    "usageCount": 15,
     "prompt": false,
     "omitTrigger": false,
     "matchCase": false,
     "showInTrayMenu": false,
     "abbreviation": {
         "abbreviations": [
-            ",a"
+            ",,a"
         ],
         "backspace": true,
         "ignoreCase": false,

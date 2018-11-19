@@ -44,4 +44,12 @@ config.codekit
 **/vendor/
 **/__MACOSX/
 
+# Vbox
+*.vdi
+
+
+## TMP ##
+
+*.MTS
+
 # vim:set ft=conf:

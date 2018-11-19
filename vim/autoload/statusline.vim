@@ -20,12 +20,12 @@ augroup end
 
 let g:initStatusline = 0
 function! statusline#setup() abort
-  execute 'hi statusLine ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#658b63 guibg=#EEE8D5'
-  execute 'hi statusLineNC ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5 gui=italic guifg=#658b63'
+  execute 'hi statusLine ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#848484 guibg=#EEE8D5'
+  execute 'hi statusLineNC ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5 gui=italic guifg=#848484'
 
   execute 'hi User1 ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5'
-  execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#658b63 guibg=#EEE8D5'
-  execute 'hi User4 ctermfg=124 ctermbg=248 guibg=#eee8d5 guifg=#DC322F'
+  execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#848484 guibg=#EEE8D5'
+  execute 'hi User4 ctermfg=124 ctermbg=248 guibg=#eee8d5 guifg=#AF0000'
   execute 'hi User5 ctermfg=246 ctermbg=236 guibg=#586E75 guifg=#F9E4CC'
   execute 'hi User2 ctermfg=246 ctermbg=236 cterm=bold ctermbg=236 guibg=#586E75 guifg=#F9E4CC'
   execute 'hi User6 ctermfg=237 ctermbg=248 guibg=#eee8d5 guifg=#586E75'
@@ -38,20 +38,9 @@ function! statusline#check_modified() abort
   if &modified
     execute 'hi User3 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#D75F00 guibg=#EEE8D5'
   else
-    execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#658b63 guibg=#EEE8D5'
+    execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#4f4f4f guibg=#EEE8D5'
   endif
 
-endfunction
-
-function! statusline#gutterpadding(subtractBufferNumber) abort
-  let l:gutterWidth=max([strlen(line('$')) + 1, &numberwidth])
-  let l:bufferNumberWidth=a:subtractBufferNumber ? strlen(winbufnr(0)) : 0
-  let l:padding=repeat(' ', l:gutterWidth - l:bufferNumberWidth)
-  let l:gitGutter=gitgutter#hunk#hunks()
-  if len(l:gitGutter) != 0
-    let l:padding .= ' '
-  endif
-  return l:padding
 endfunction
 
 function! statusline#fileprefix() abort

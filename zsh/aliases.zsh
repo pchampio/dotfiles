@@ -10,7 +10,7 @@ alias dc="docker-compose"
 alias wifi="killall nm-applet; nm-applet > /dev/null 2>&1 &; disown"
 alias stfu="amixer -c 0 cset 'numid=10' 1"
 alias zup3x="~/lab/python/zup3x/zup3x.py -kl 'qwerty' -u CHAMPI16 -p 80948"
-alias size="du -h . --max-depth=1"
+alias size="du -h --max-depth=1 . | sort -h"
 alias http_serv="python2 -m SimpleHTTPServer "
 alias doc="/bin/d"
 alias sshuttle="sshuttle --dns -vvr drakirus@drakirus.xyz 0/0"
@@ -29,7 +29,7 @@ alias unas="sudo umount -l /run/mount/NAS"
 alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
 alias neof="neofetch --memory_display barinfo"
-alias grip="grip --pass afab9ab158c3a52283f9bf2adfc2b6a3fe6286b2"
+alias grip="grip --pass afab9ab158c3a52283f9bf2adfc2b6a3fe6286b2 -b"
 alias weeb_send="rsync -vPh ~/Weeb/* drakirus@drakirus.xyz:APP/data/www/gif"
 alias resume_send="test -f ~/Téléchargements/resume.pdf && mv ~/Téléchargements/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@drakirus.xyz:APP/data/www/resume"
 alias drak="ssh drakirus@drakirus.xyz"
@@ -56,7 +56,7 @@ alias sg="colorsvn status"
 alias sc="colorsvn commit"
 alias sl="colorsvn update"
 
-alias ju="jupyter notebook"
+alias ju="LC_ALL=en_US.UTF-8 jupyter notebook"
 
 alias goo="google-chrome"
 
@@ -64,3 +64,15 @@ alias t="cd /tmp"
 alias tl="cd ~/Téléchargements"
 
 alias ms="LC_ALL=en_US.UTF-8 minishift"
+
+alias tb="netcat termbin.com 9999 | xclip -selection c"
+
+alias vim="nvim"
+alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -rr -x --exclude .git --exclude node_modules"
+alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
+
+alias atal="ssh s142293@transit.univ-lemans.fr"
+
+
+# alias cat="bat --theme=GitHub"
+alias ping='prettyping --nolegend'

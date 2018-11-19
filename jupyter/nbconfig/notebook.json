@@ -1,7 +1,16 @@
 {
   "load_extensions": {
     "vim_binding/vim_binding": true,
-    "jupyter-js-widgets/extension": true
+    "jupyter-js-widgets/extension": true,
+    "nbextensions_configurator/config_menu/main": true,
+    "contrib_nbextensions_help_item/main": true,
+    "code_prettify/autopep8": true,
+    "move_selected_cells/main": true,
+    "hinterland/hinterland": true,
+    "hide_input/main": true,
+    "spellchecker/main": true,
+    "comment-uncomment/main": true,
+    "export_embedded/main": true
   },
   "Notebook": {
     "Toolbar": false

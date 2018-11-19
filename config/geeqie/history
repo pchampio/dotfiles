@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/trip_semi-semi-croustillant/day_8/clement"
-"/home/drakirus/Images/trip_semi-semi-croustillant/day_8"
-"/home/drakirus/Images/trip_semi-semi-croustillant/day_9/pierre"
-"/home/drakirus/Images/trip_semi-semi-croustillant/day_10/maxime/photo"
-"/home/drakirus/Images/trip_semi-semi-croustillant/day_10/clement"
-"/home/drakirus/Images/trip_semi-semi-croustillant/day_3/pierre/pentax/tri/darktable_exported"
-"/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-xhdpi-v4"
-"/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-xxxhdpi-v4"
-"/home/drakirus/Téléchargements/ic_launcher/android/mipmap-hdpi"
-"/home/drakirus/resource/apks/mobilock/Mobilock/res/drawable-hdpi-v4"
+"/home/drakirus/Images/slackline_cold/tri/darktable_exported"
+"/run/mount/NAS/Pictures/2018/mont-dore-2018/pentax/tri/darktable_exported"
+"/home/drakirus/lab/python/M2/fouille_text/EGC_2020/cluster_images/num_topics=10_no_above=07"
+"/home/drakirus/lab/python/M2/traitement_parole"
+"/tmp"
+"/home/drakirus/.cache/.fr-YFjn8h/Pictures"
+"/home/drakirus/.cache/.fr-Uwofxk/Pictures"
+"/home/drakirus/Téléchargements"
+"/home/drakirus/Weeb"
+"/home/drakirus/lab/data-science-platform/data-science-stack-cookiecutter"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/home/drakirus/Images/trip_semi-semi-croustillant/day_6/pierre"
+".[path]/run/media/drakirus/EC08-E119/DCIM/100PENTX"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"
@@ -34,5 +34,8 @@
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"
+
+[move_copy]
+"/home/drakirus"
 
 #end

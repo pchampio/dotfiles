@@ -11,7 +11,7 @@ fi
 SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
 if [ $SessionNb -eq 0 ]; then
   # read -p "Enter new session name: " SESSION_NAME
-  TERM=screen-256color-bce tmux new -s "Start" #"$SESSION_NAME"
+  tmux new -s "Start" #"$SESSION_NAME"
 else
   # present menu for user to choose which workspace to open
   PS3="Please choose your session: "
@@ -24,7 +24,7 @@ else
     case $opt in
       "New Session")
         read -p "Enter new session name: " SESSION_NAME
-        TERM=screen-256color-bce tmux new -s "$SESSION_NAME"
+        tmux new -s "$SESSION_NAME"
         break
         ;;
 
@@ -35,12 +35,12 @@ else
         echo "------------------"
         select optATT in "${optionsATTACH[@]}"
         do
-          TERM=screen-256color-bce tmux new -s "Agent_infiltré" -t $optATT
+          tmux new -s "Agent_infiltré" -t $optATT
           exit 0
         done
         ;;
       *)
-        TERM=screen-256color-bce tmux attach-session -t $opt
+        tmux attach-session -t $opt
         break
         ;;
     esac

@@ -1,0 +1,6 @@
+{
+  "initializationOptions": {
+    "gocodeCompletionEnabled": true,
+    "funcSnippetEnabled": true
+  }
+}

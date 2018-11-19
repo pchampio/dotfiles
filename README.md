@@ -112,6 +112,13 @@ You'll need to use a custom font for statusline to look nice. (Seeing weird symb
 
 ---
 
+### Jupyter notebook
+```
+pip install https://github.com/ipython-contrib/jupyter_contrib_nbextensions/tarball/master --user
+pip install jupyter_nbextensions_configurator --user
+pip install autopep8 --user
+```
+
 ### Terminal emulator
 
 ```

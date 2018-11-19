@@ -5,7 +5,7 @@ setopt prompt_subst # enable command substition in prompt
 
 plugins=(encode64 docker sudo)
 
-export EDITOR='vim'
+export EDITOR='nvim'
 
 # faster startup
 DISABLE_AUTO_UPDATE="true"
@@ -32,6 +32,9 @@ chpwd() {
 # mkdir -p ~/lab/go/{pkg,src,bin}
 export GOPATH=$HOME/lab/go
 PATH=$PATH:$GOPATH/bin
+
+# pip path
+PATH=$PATH:$HOME/.local/bin
 
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
@@ -96,13 +99,21 @@ if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
   fi
 fi
 
+m() {
+  if [ -z "$1" ]
+  then
+    emacsclient -e "(find-file-in-project \"`pwd`\")"
+  else
+    emacsclient -n "$@"
+  fi
+}
+
+
 export DOTFILES=$HOME/dotfiles
 # source all .zsh files inside of the zsh/ directory
 for config ($DOTFILES/**/*.zsh) source $config
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/drakirus/.sdkman"
-[[ -s "/home/drakirus/.sdkman/bin/sdkman-init.sh" ]] && source "/home/drakirus/.sdkman/bin/sdkman-init.sh"
-
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=white"

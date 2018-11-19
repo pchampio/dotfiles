@@ -6,9 +6,7 @@ SAVEHIST=20000000
 # Disable % eof
 unsetopt prompt_cr prompt_sp
 
-[ -d ~/.vim/bundle/gruvbox ] && source ~/.vim/bundle/gruvbox/gruvbox_256palette.sh
-# eval `dircolors ~/dotfiles/dircolors/gruvbox.dir_colors`
-eval `dircolors ~/dotfiles/dircolors/gruvbox_light.dir_colors`
+eval `dircolors ~/dotfiles/dircolors/solarized.dir_colors`
 
 # colored completion - use my LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}

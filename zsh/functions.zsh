@@ -141,7 +141,7 @@ share() {
   fi
 
   # Share
-  ssh -NR 2280:0.0.0.0:2280 drakirus@drakirus.xyz 2>&1 &
+  ssh -NR 2280:0.0.0.0:2280 drakirus@drakirus.com 2>&1 &
   PID=$!
 
   # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
@@ -319,6 +319,9 @@ function dialog() {
   mkdir -p ~/smb/ITHOR/Memberz
   sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
+  mkdir -p ~/smb/HOTH/Docs
+  sudo mount -t cifs //hoth/Docs /home/drakirus/smb/HOTH/Docs -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+
 }
 
 function udialog() {
@@ -335,3 +338,8 @@ function sdelete(){
 
 transfer() { if [ $# -eq 0 ]; then echo -e "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi
 tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); curl --progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; }
+
+function xbox() {
+  sudo systemctl start bluetooth.service
+  echo -e "power on" | bluetoothctl
+}

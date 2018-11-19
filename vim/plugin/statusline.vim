@@ -15,21 +15,13 @@ scriptencoding utf-8
   hi User7 ctermfg=229 ctermbg=124 cterm=bold guifg=#F2F0EB guibg=#AF0000
   hi User8 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#fabd2f guibg=#eee8d5
 
-" ssh
-let g:remoteSession = ($SSH_CONNECTION != "")
-
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m"
 
 if has('statusline')
 
   set statusline=%7*                         " Switch to User7 highlight group
-  if !g:remoteSession
-    " set statusline+=%{statusline#gutterpadding(1)}
-    set statusline+=\                          " Space.
-  else
-    set statusline+=\                          " Space.
-  endif
+  set statusline+=\                          " Space.
   set statusline+=%n                         " Buffer number.
   set statusline+=\                          " Space.
   set statusline+=%*                         " Reset highlight group.
@@ -60,9 +52,7 @@ if has('statusline')
   set statusline+=%=   " Split point for left and right groups.
 
   set statusline+=%{WordCount()}
-  if !g:remoteSession
-    set statusline+=%([%{gutentags#statusline('Tags..')}%{&spell?&spelllang:''}%{statusline#jobs()}]%)
-  endif
+  set statusline+=%([%{&spell?&spelllang:''}%{statusline#jobs()}]%)
   set statusline+=%6*  " Switch to User6 highlight group (Powerline arrow).
   set statusline+=\    " Space.
   set statusline+=    " Powerline arrow.
