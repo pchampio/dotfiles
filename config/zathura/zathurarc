@@ -1,0 +1,42 @@
+# zoom and scroll step size
+set zoom-step 20
+set scroll-step 80
+
+# copy selection to system clipboard
+set selection-clipboard clipboard
+
+# enable incremental search
+set incremental-search true
+
+set window-height 1024
+set window-width 1068
+set adjust-open width
+
+set window-title-basename true
+set first-page-column 1:1
+
+set recolor-keephue
+
+# colors
+set recolor-darkcolor  "#FFFFFF"
+set recolor-lightcolor "#333333"
+set statusbar-fg "#000000"
+set statusbar-bg "#C2BFA5"
+set inputbar-fg "#FFFFFF"
+set inputbar-bg "#333333"
+set completion-highlight-fg "#F0E68C"
+set completion-highlight-bg "#6B8E23"
+# set highlight-color "#CD853F"
+# set highlight-active-color "#F0E68C"
+set notification-fg "#FFFFFF"
+set notification-bg "#333333"
+
+map [fullscreen] W adjust_window width
+map [normal] W adjust_window width
+map [fullscreen] E adjust_window best-fit
+map [normal] E adjust_window best-fit
+
+map [normal] f toggle_fullscreen
+map [fullscreen] f toggle_fullscreen
+
+map [fullscreen] F follow
