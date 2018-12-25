@@ -4,7 +4,7 @@
     "modes": [
         1
     ],
-    "usageCount": 41,
+    "usageCount": 43,
     "prompt": false,
     "omitTrigger": false,
     "matchCase": false,
@@ -27,5 +27,5 @@
         "regex": null,
         "isRecursive": false
     },
-    "sendMode": "<ctrl>+<shift>+v"
+    "sendMode": "kb"
 }

@@ -30,9 +30,8 @@ alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
 alias neof="neofetch --memory_display barinfo"
 alias grip="grip --pass afab9ab158c3a52283f9bf2adfc2b6a3fe6286b2 -b"
-alias weeb_send="rsync -vPh ~/Weeb/* drakirus@drakirus.xyz:APP/data/www/gif"
-alias resume_send="test -f ~/Téléchargements/resume.pdf && mv ~/Téléchargements/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@drakirus.xyz:APP/data/www/resume"
-alias drak="ssh drakirus@drakirus.xyz"
+alias weeb_send="rsync -vPh ~/Weeb/* drakirus@drakirus.xyz:APP/data/www/gif --rsh='ssh -p2242' "
+alias resume_send="test -f ~/Téléchargements/resume.pdf && mv ~/Téléchargements/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@drakirus.xyz:APP/data/www/resume --rsh='ssh -p2242'"
 alias mv="mv -iv"
 alias cp="cp -aiv"
 alias py="python"
@@ -72,7 +71,11 @@ alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -rr -x --exclude .
 alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 
 alias atal="ssh s142293@transit.univ-lemans.fr"
+alias webai="ssh dialog@172.16.250.7"
+alias drak="ssh drakirus@drakirus.com -p 2242"
 
+alias pdf="zathura"
 
 # alias cat="bat --theme=GitHub"
 alias ping='prettyping --nolegend'
+alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'

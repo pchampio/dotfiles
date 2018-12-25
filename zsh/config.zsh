@@ -19,7 +19,15 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 stty start undef
 stty stop undef
 
-[[ "$SSH_CONNECTION" == ''  ]] && setxkbmap -option caps:escape
+if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
+
+  # escape remap
+  setxkbmap -option caps:escape
+
+  # startup app to hide form taskbar
+  wmctrl -x -r MineTime -b add,skip_taskbar
+
+fi
 
 setopt extendedglob
 # rm -- ^file.txt

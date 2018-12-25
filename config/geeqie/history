@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/slackline_cold/tri/darktable_exported"
-"/run/mount/NAS/Pictures/2018/mont-dore-2018/pentax/tri/darktable_exported"
-"/home/drakirus/lab/python/M2/fouille_text/EGC_2020/cluster_images/num_topics=10_no_above=07"
-"/home/drakirus/lab/python/M2/traitement_parole"
+"/home/drakirus/lab/python/M2/fouille_text/EGC_2020/summary_files"
+"/home/drakirus/lab/open_fst/M1_graph/TP1"
+"/home/drakirus/lab/open_fst/M2_RECO_MULTI/svg"
 "/tmp"
-"/home/drakirus/.cache/.fr-YFjn8h/Pictures"
-"/home/drakirus/.cache/.fr-Uwofxk/Pictures"
+"/home/drakirus/.cache/.fr-Yalb6g/data_png_trainingJunk"
+"/home/drakirus/.cache/.fr-bGUARM/data_png_trainingJunk"
+"/home/drakirus/.cache/.fr-I67jPs/data_png_trainingJunk"
+"/home/drakirus/lab/python/M2/reco_multimodale/reco_text/Master-MathProject/code"
+"/home/drakirus/Téléchargements/test"
 "/home/drakirus/Téléchargements"
-"/home/drakirus/Weeb"
-"/home/drakirus/lab/data-science-platform/data-science-stack-cookiecutter"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"

@@ -43,3 +43,5 @@ XTerm*color14: #8ec07c
 ! LightGrey + White
 XTerm*color7:  #a89984
 XTerm*color15: #ebdbb2
+
+Xcursor.size: 16

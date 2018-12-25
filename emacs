@@ -791,7 +791,8 @@
 
   (setq org-agenda-files (file-expand-wildcards "~/resource/my-plain-text-life/org/*.org"))
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.8))
-  (evil-org-agenda-set-keys))
+  (evil-org-agenda-set-keys)
+  )
 
 
 (evil-define-key 'normal org-mode-map (kbd "L") 'org-forward-element)

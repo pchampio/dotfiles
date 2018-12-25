@@ -141,7 +141,7 @@ share() {
   fi
 
   # Share
-  ssh -NR 2280:0.0.0.0:2280 drakirus@drakirus.com 2>&1 &
+  ssh -p 2242 -NR 2280:0.0.0.0:2280 drakirus@drakirus.com 2>&1 &
   PID=$!
 
   # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
@@ -316,6 +316,9 @@ function dialog() {
   mkdir -p ~/smb/ITHOR/wwwroot
   sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
+  # mkdir -p ~/smb/ROGUE/wwwroot
+  # sudo mount -t cifs //10.18.0.11/wwwroot /home/drakirus/smb/ROGUE/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+
   mkdir -p ~/smb/ITHOR/Memberz
   sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
@@ -326,6 +329,7 @@ function dialog() {
 
 function udialog() {
   sudo umount -a -t cifs -l ~/smb/
+  tree ~/smb/
 }
 
 function sound(){
@@ -342,4 +346,16 @@ tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | s
 function xbox() {
   sudo systemctl start bluetooth.service
   echo -e "power on" | bluetoothctl
+}
+
+function swagger() {
+    swagger-codegen generate -i $1 -l html -o out
+}
+
+function juv() {
+  UUID=$(echo $(uuidgen) | cut -d"-" -f1)
+  BASE=$(basename $1)
+
+  jupyter nbconvert --to python "$1" --output "/tmp/$UUID-$BASE"
+  nvim "/tmp/$UUID-$BASE.py"
 }

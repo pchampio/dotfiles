@@ -94,6 +94,7 @@ nnoremap <leader>dd :ALEDisable<CR>
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
 
+
 " A Vim plugin which shows a git diff in the numberline
 Plug 'mhinz/vim-signify'
 let g:signify_sign_change = '~'
@@ -223,6 +224,7 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
       \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
 \ :undo<cr>
 
+autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 
 call plug#end()

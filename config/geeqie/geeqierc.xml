@@ -186,6 +186,7 @@
             <file_type key = "erf" enabled = "true" extensions = ".erf" description = "Epson raw format" file_class = "2" writable = "false" allow_sidecar = "true" />
             <file_type key = "srw" enabled = "true" extensions = ".srw" description = "Samsung raw format" file_class = "2" writable = "false" allow_sidecar = "true" />
             <file_type key = "rw2" enabled = "true" extensions = ".rw2" description = "Panasonic raw format" file_class = "2" writable = "false" allow_sidecar = "true" />
+            <file_type key = "wmf" enabled = "true" extensions = ".wmf;.apm" description = "Windows Metafile" file_class = "1" writable = "true" allow_sidecar = "false" />
         </filter>
 
         <keyword_tree>
@@ -277,16 +278,16 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/drakirus/lab/data-science-platform/data-science-stack-cookiecutter" 
+        last_path = "/home/drakirus/Téléchargements" 
         startup_path = "0" 
         exit_on_close = "false" 
 
-        main_window.x = "0" 
-        main_window.y = "30" 
-        main_window.w = "1623" 
-        main_window.h = "967" 
-        main_window.maximized = "false" 
-        main_window.hdivider_pos = "359" 
+        main_window.x = "316" 
+        main_window.y = "92" 
+        main_window.w = "1538" 
+        main_window.h = "770" 
+        main_window.maximized = "true" 
+        main_window.hdivider_pos = "497" 
         main_window.vdivider_pos = "200" 
 
         folder_window.vdivider_pos = "100" 
@@ -314,7 +315,7 @@
         log_window.h = "400" 
 
         animate = "false" >
-        <bar enabled = "true" width = "310" >
+        <bar enabled = "true" width = "545" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />
@@ -322,7 +323,7 @@
             </pane_keywords>
             <pane_comment id = "comment" title = "Commentaire" expanded = "true" key = "Xmp.dc.description" height = "150" />
             <pane_comment id = "rating" title = "Rating" expanded = "true" key = "Xmp.xmp.Rating" height = "10" />
-            <pane_exif id = "exif" title = "Exif" expanded = "true" >
+            <pane_exif id = "exif" title = "Exif" expanded = "false" >
                 <entry key = "formatted.Camera" if_set = "true" editable = "false" />
                 <entry key = "formatted.DateTime" if_set = "true" editable = "false" />
                 <entry key = "formatted.ShutterSpeed" if_set = "true" editable = "false" />

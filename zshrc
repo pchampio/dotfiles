@@ -11,7 +11,7 @@ export EDITOR='nvim'
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:$GOPATH/bin:/home/drakirus/.gem/ruby/2.5.0/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:$GOPATH/bin:/home/drakirus/.gem/ruby/2.5.0/bin:/opt/miniconda3/bin/"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -47,7 +47,7 @@ export KEYTIMEOUT=1
 
 # vim as a man-page viewer
 export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
-    vim -R -c 'set ft=man nomod nolist' -c 'map q :q<CR>' \
+    nvim -R -c 'set ft=man nomod nolist' -c 'map q :q<CR>' \
     -c 'map <SPACE> <C-D>' -c 'map b <C-U>' \
     -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
 
