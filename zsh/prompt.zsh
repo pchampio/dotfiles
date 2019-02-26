@@ -180,8 +180,8 @@ precmd() {
   fi
 
   # start background computation
-  async &!
-  ASYNC_PROC=$!
+  # async &!
+  # ASYNC_PROC=$!
 
 }
 

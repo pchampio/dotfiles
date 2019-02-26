@@ -73,7 +73,8 @@ let g:ctrlp_abbrev = {
         \ ]
     \ }
 let g:ctrlp_default_input = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) | execute' CtrlP' | endif
+autocmd StdinReadPre * let g:isReadingFromStdin = 1
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
 
 " Another Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -93,6 +94,8 @@ let g:ale_open_list = 1
 nnoremap <leader>dd :ALEDisable<CR>
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
+
+let g:ale_cpp_clang_options = '-std=c++14 -I/usr/local/include -I/usr/include -I/usr/include/GLFW'
 
 
 " A Vim plugin which shows a git diff in the numberline
@@ -200,14 +203,22 @@ Plug 'autozimu/LanguageClient-neovim', {
 
 
 nnoremap <leader>ll :call LanguageClient_contextMenu()<CR>
-nnoremap <silent> <leader>g :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <leader>g :call LanguageClient_textDocument_definition()<CR>
 
 let g:LanguageClient_serverCommands = {
     \ 'go': ['go-langserver'],
+    \ 'python': ['/home/drakirus/.local/bin/pyls'],
+    \ 'javascript': ['/usr/bin/javascript-typescript-stdio'],
+    \ 'typescript': ['/usr/bin/javascript-typescript-stdio'],
+    \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
     \ }
 let g:LanguageClient_loggingFile = '/tmp/lc.log'
 let g:LanguageClient_loggingLevel = 'DEBUG'
 let g:LanguageClient_settingsPath = '/home/drakirus/dotfiles/LSP_settings.json'
+let g:LanguageClient_diagnosticsEnable = 0
+
+
+nnoremap <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
 
 
 Plug 'christoomey/vim-tmux-runner'
@@ -312,10 +323,10 @@ nnoremap <Up> <C-W>5+
 nnoremap <Right> <C-w>10>
 
 "Moving lines
-nnoremap <A-k> :m .-2<CR>=="
-nnoremap <A-j> :m .+1<CR>=="
-vnoremap <up>  :m '<-2<CR>gv=gv"
-vnoremap <Down> :m '>+1<CR>gv=gv"
+nnoremap <A-k> :m .-2<CR>==
+nnoremap <A-j> :m .+1<CR>==
+vnoremap <up>  :m '<-2<CR>gv=gv
+vnoremap <Down> :m '>+1<CR>gv=gv
 
 " Quicker navigation
 noremap H 0^
@@ -332,7 +343,7 @@ nnoremap <leader><leader> :w!<cr>
 vnoremap <silent><expr>  ++  VMATH_YankAndAnalyse()
 nnoremap <silent> ++ vip++
 
-noremap <leader>g <c-]>
+" noremap <leader>g <c-]>
 noremap <Leader>G :vsp <cr> <c-]>
 
 inoremap <c-l> <esc>A
@@ -371,6 +382,16 @@ inoremap <leader>u ù
 inoremap <c-u> ȗ
 inoremap <leader>e é
 inoremap <c-e> è
+autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en tw=80
+
+" nnoremap <A-s> w[sei<C-x>s
+inoremap <expr> <A-s>  pumvisible() ?  "\<C-n>" : "\<C-x>s"
+nnoremap <expr> <A-s> pumvisible() ?  "i\<C-n>" : "w[sei\<C-x>s"
+
+hi SpellBad   cterm=underline ctermfg=1 gui=underline guifg=#dc322f
+hi SpellCap   cterm=underline ctermfg=5 gui=undercurl guifg=#6c71c4
+hi SpellRare   cterm=underline ctermfg=5 gui=undercurl guifg=#6c71c4
+hi SpellLocal cterm=underline ctermfg=10 gui=undercurl guifg=#eee8d5
 
 " no more ex Mode
 nnoremap Q <nop>

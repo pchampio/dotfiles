@@ -19,6 +19,8 @@ set smooth-scroll true
 
 set first-page-column 1:1
 
+set guioptions hv
+
 map [fullscreen] W adjust_window width
 map [normal] W adjust_window width
 map [fullscreen] E adjust_window best-fit
@@ -41,7 +43,9 @@ map [normal] <S-Return> toggle_statusbar
 map [fullscreen] <S-Return> toggle_statusbar
 map [normal] i recolor
 map [fullscreen] i recolor
-map ; focus_inputbar :
+
+map [normal] ; focus_inputbar :
+map [fullscreen] ; focus_inputbar :
 
 map [normal] <A-f> focus_inputbar ":! firefox %"
 map [fullscreen] <A-f> focus_inputbar ":! firefox %"
@@ -56,12 +60,12 @@ set window-icon acroread
 set window-title-basename true
 set window-title-page true
 
-set statusbar-h-padding 2
-set statusbar-v-padding 2
+set statusbar-h-padding 1
+set statusbar-v-padding 1
 
 set font "hack 10"
 # set guioptions ""
-set statusbar-basename true
+# set statusbar-basename true
 
 # colors
 

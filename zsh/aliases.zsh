@@ -74,7 +74,7 @@ alias atal="ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
 alias drak="ssh drakirus@drakirus.com -p 2242"
 
-alias pdf="zathura"
+alias pdf="zathura --fork"
 
 # alias cat="bat --theme=GitHub"
 alias ping='prettyping --nolegend'
