@@ -30,6 +30,16 @@ explain "Symlink nvim to vim"
 tell ln -sf ~/.vim ~/.config/nvim
 tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
 
+explain "Tmux italics"
+cat <<EOF|tic -x -
+tmux|tmux terminal multiplexer,
+  ritm=\E[23m, rmso=\E[27m, sitm=\E[3m, smso=\E[7m, Ms@,
+  use=xterm+tmux, use=screen,
+
+tmux-256color|tmux with 256 colors,
+  use=xterm+256setaf, use=tmux,
+EOF
+
 explain "Git config"
 git config github.user Drakirus
 git config --global core.excludesfile ~/.gitignore

@@ -1,3 +1,47 @@
+function vim(){
+  if [[ "$#" == 0 ]]; then
+    /usr/sbin/nvim;
+  else
+    OWNER=$(stat -c '%U' $1)
+    if [[ "$OWNER" == "root" ]]; then
+      echo -e "\e[3m\033[1;31mMust be root to edit the file! \033[0m \e[23m"
+      sleep 0.3
+      sudoedit $*;
+    else
+      /usr/sbin/nvim $*;
+    fi
+  fi
+}
+
+
+function gdstst(){
+  awk -vOFS='' '
+    NR==FNR {
+        all[i++] = $0;
+        difffiles[$1] = $0;
+        next;
+    }
+    ! ($2 in difffiles) {
+        print; next;
+    }
+    {
+        gsub($2, difffiles[$2]);
+        print;
+    }
+    END {
+        if (NR != FNR) {
+            # Had diff output
+            exit;
+        }
+        # Had no diff output, just print lines from git status -sb
+        for (i in all) {
+            print all[i];
+        }
+    }
+  ' \
+    <(git diff --color --stat HEAD | sed '$d; s/^ //')\
+    <(git -c color.status=always status -sb)
+  }
 
 # AUTHOR:  Sorin Ionescu (sorin.ionescu@gmail.com)
 function extract() {
@@ -37,54 +81,54 @@ function extract() {
       (*.tar.xz|*.txz) tar --xz --help &> /dev/null \
         && tar --xz -xvf "$1" \
         || xzcat "$1" | tar xvf - ;;
-      (*.tar.zma|*.tlz) tar --lzma --help &> /dev/null \
-        && tar --lzma -xvf "$1" \
-        || lzcat "$1" | tar xvf - ;;
-      (*.tar) tar xvf "$1" ;;
-      (*.gz) [ -z $commands[pigz] ] && gunzip "$1" || pigz -d "$1" ;;
-      (*.bz2) bunzip2 "$1" ;;
-      (*.xz) unxz "$1" ;;
-      (*.lzma) unlzma "$1" ;;
-      (*.Z) uncompress "$1" ;;
-      (*.zip|*.war|*.jar|*.sublime-package|*.ipsw|*.xpi|*.apk) unzip "$1" -d $extract_dir ;;
-      (*.rar) unrar x -ad "$1" ;;
-      (*.7z) 7za x "$1" ;;
-      (*.deb)
-        mkdir -p "$extract_dir/control"
-        mkdir -p "$extract_dir/data"
-        cd "$extract_dir"; ar vx "../${1}" > /dev/null
-        cd control; tar xzvf ../control.tar.gz
-        cd ../data; tar xzvf ../data.tar.gz
-        cd ..; rm *.tar.gz debian-binary
-        cd ..
-      ;;
-      (*)
-        echo "extract: '$1' cannot be extracted" 1>&2
-        success=1
-      ;;
-    esac
+            (*.tar.zma|*.tlz) tar --lzma --help &> /dev/null \
+              && tar --lzma -xvf "$1" \
+              || lzcat "$1" | tar xvf - ;;
+                        (*.tar) tar xvf "$1" ;;
+                        (*.gz) [ -z $commands[pigz] ] && gunzip "$1" || pigz -d "$1" ;;
+                        (*.bz2) bunzip2 "$1" ;;
+                        (*.xz) unxz "$1" ;;
+                        (*.lzma) unlzma "$1" ;;
+                        (*.Z) uncompress "$1" ;;
+                        (*.zip|*.war|*.jar|*.sublime-package|*.ipsw|*.xpi|*.apk) unzip "$1" -d $extract_dir ;;
+                        (*.rar) unrar x -ad "$1" ;;
+                        (*.7z) 7za x "$1" ;;
+                        (*.deb)
+                          mkdir -p "$extract_dir/control"
+                          mkdir -p "$extract_dir/data"
+                          cd "$extract_dir"; ar vx "../${1}" > /dev/null
+                          cd control; tar xzvf ../control.tar.gz
+                          cd ../data; tar xzvf ../data.tar.gz
+                          cd ..; rm *.tar.gz debian-binary
+                          cd ..
+                          ;;
+                        (*)
+                          echo "extract: '$1' cannot be extracted" 1>&2
+                          success=1
+                          ;;
+                      esac
 
-    (( success = $success > 0 ? $success : $? ))
-    (( $success == 0 )) && (( $remove_archive == 1 )) && rm "$1"
-    shift
-  done
-}
+                      (( success = $success > 0 ? $success : $? ))
+                      (( $success == 0 )) && (( $remove_archive == 1 )) && rm "$1"
+                      shift
+                    done
+                  }
 
-typeset -Ag FX FG BG
+                typeset -Ag FX FG BG
 
-FX=(
-    reset     "%{[00m%}"
-    bold      "%{[01m%}" no-bold      "%{[22m%}"
-    italic    "%{[03m%}" no-italic    "%{[23m%}"
-    underline "%{[04m%}" no-underline "%{[24m%}"
-    blink     "%{[05m%}" no-blink     "%{[25m%}"
-    reverse   "%{[07m%}" no-reverse   "%{[27m%}"
-)
+                FX=(
+                reset     "%{[00m%}"
+                bold      "%{[01m%}" no-bold      "%{[22m%}"
+                italic    "%{[03m%}" no-italic    "%{[23m%}"
+                underline "%{[04m%}" no-underline "%{[24m%}"
+                blink     "%{[05m%}" no-blink     "%{[25m%}"
+                reverse   "%{[07m%}" no-reverse   "%{[27m%}"
+                )
 
-for color in {000..255}; do
-    FG[$color]="%{[38;5;${color}m%}"
-    BG[$color]="%{[48;5;${color}m%}"
-done
+                for color in {000..255}; do
+                  FG[$color]="%{[38;5;${color}m%}"
+                  BG[$color]="%{[48;5;${color}m%}"
+                done
 
 # Show all 256 colors with color number
 function spectrum_ls() {
@@ -128,17 +172,17 @@ share() {
   # echo -n '\nEnables TLS/SSL [default no] : '
   # read inputs
   # if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
-  # then
-    # args+=" -t"
-    # if [[ ! -f ~/.gotty.key ]]; then
-      # echo -n "\nNeed ->  openssl req -x509 -nodes -days 9999 -newkey rsa:2048 -keyout ~/.gotty.key -out ~/.gotty.crt\n"
-      # exit
-    # fi
-  # fi
+    # then
+      # args+=" -t"
+      # if [[ ! -f ~/.gotty.key ]]; then
+        # echo -n "\nNeed ->  openssl req -x509 -nodes -days 9999 -newkey rsa:2048 -keyout ~/.gotty.key -out ~/.gotty.crt\n"
+        # exit
+        # fi
+        # fi
 
-  if [[ $# -eq 1 ]]; then
-    cmd=$1
-  fi
+        if [[ $# -eq 1 ]]; then
+          cmd=$1
+        fi
 
   # Share
   ssh -p 2242 -NR 2280:0.0.0.0:2280 drakirus@drakirus.com 2>&1 &
@@ -159,51 +203,51 @@ v() {
 
   VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
     | grep -i 'vim' | cut --d=" " --f=1`
-  if [ -z $VIM_PANE ]; then
-    vim $@
-  else
-    for file in $@; do
-      tmux send-keys -t $VIM_PANE Escape
-      tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
-      tmux send-keys -t $VIM_PANE Enter
-      shift
-    done
-  fi
-}
+      if [ -z $VIM_PANE ]; then
+        vim $@
+      else
+        for file in $@; do
+          tmux send-keys -t $VIM_PANE Escape
+          tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
+          tmux send-keys -t $VIM_PANE Enter
+          shift
+        done
+      fi
+    }
 
-zoomInVim() {
-  VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
-    | grep -i 'vim' | cut --d=" " --f=1`
-ome -new command
-tmux send-keys -t $VIM_PANE Escape
-  tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
-  tmux send-keys -t $VIM_PANE Enter
-}
+  zoomInVim() {
+    VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
+      | grep -i 'vim' | cut --d=" " --f=1`
+          ome -new command
+          tmux send-keys -t $VIM_PANE Escape
+          tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
+          tmux send-keys -t $VIM_PANE Enter
+        }
 
-thunarCmd(){
-  WINTITLE="Gestionnaire de fichiers" # Main 'app' window has this in titlebar
-  PROGNAME="thunar" # This is the name of the binary for 'app'
+      thunarCmd(){
+        WINTITLE="Gestionnaire de fichiers" # Main 'app' window has this in titlebar
+        PROGNAME="thunar" # This is the name of the binary for 'app'
 
   # Use wmctrl to list all windows, count how many contain WINTITLE,
   # and test if that count is non-zero:
 
-  if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
-  then
-    wmctrl -a "$WINTITLE" # If it exists, bring 'app' window to front
-    sleep 0.2
-    xdotool key ctrl+t
-    xdotool key ctrl+l
-    xdotool type "$(pwd)"
-    xdotool key KP_Enter
-  else
-    thunar > /dev/null 2>&1 &  # Otherwise, just launch 'app'
-  fi
-}
+    if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
+    then
+      wmctrl -a "$WINTITLE" # If it exists, bring 'app' window to front
+        sleep 0.2
+        xdotool key ctrl+t
+        xdotool key ctrl+l
+        xdotool type "$(pwd)"
+        xdotool key KP_Enter
+      else
+        thunar > /dev/null 2>&1 &  # Otherwise, just launch 'app'
+      fi
+    }
 
-clpset(){
-  read -d"" text
-  print `curl --silent --data "clp=$text" http://drakirus.xyz:8808`
-}
+  clpset(){
+    read -d"" text
+    print `curl --silent --data "clp=$text" http://drakirus.xyz:8808`
+  }
 
 clpget(){
   A=`curl --silent http://drakirus.xyz:8808`
@@ -213,7 +257,7 @@ clpget(){
 }
 
 net-list(){
-  echo "Please, select a network interface:"
+echo "Please, select a network interface:"
   select interface in `ls /sys/class/net/ | cut -d/ -f4`; do
     echo $interface selected
     ip=`ifconfig $interface | grep 'inet ' | sed 's/  */ /g' | cut -d" " -f 3`
@@ -224,11 +268,11 @@ net-list(){
 }
 
 docker-enter () {
-  docker exec -ti $1 sh
+docker exec -ti $1 sh
 }
 
 svn-clean () {
-  svn st | grep ! | cut -d! -f2| sed 's/^ *//' | sed 's/^/"/g' | sed 's/$/"/g' | xargs svn rm
+svn st | grep ! | cut -d! -f2| sed 's/^ *//' | sed 's/^/"/g' | sed 's/$/"/g' | xargs svn rm
 }
 
 
@@ -239,22 +283,22 @@ ffig() { find . -name "*$1*" -ls| grep -vFf skip_files; }
 
 nhh () {
   old=$(xfconf-query -c xfce4-notifyd -p /do-not-disturb)
-  if [[ $old == "true" ]]; then
-    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
-    notify-send  --expire-time=10 -i "notification-alert-symbolic" 'Notification' 'Ne pas déranger est désactivée'
-  else
-    notify-send --expire-time=10 -i "/usr/share/icons/Adwaita/24x24/status/audio-volume-muted-symbolic.symbolic.png" 'Notification' 'Ne pas déranger est activée'
-    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
-  fi
-}
+    if [[ $old == "true" ]]; then
+      xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
+        notify-send  --expire-time=10 -i "notification-alert-symbolic" 'Notification' 'Ne pas déranger est désactivée'
+      else
+        notify-send --expire-time=10 -i "/usr/share/icons/Adwaita/24x24/status/audio-volume-muted-symbolic.symbolic.png" 'Notification' 'Ne pas déranger est activée'
+        xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
+        fi
+      }
 
-function mmpl() {
-  mpv -no-video --shuffle --loop "$@"
-}
+    function mmpl() {
+      mpv -no-video --shuffle --loop "$@"
+    }
 
-function mm() {
+  function mm() {
     mpv --ytdl --loop --no-video "$@"
-}
+  }
 
 function yt-dl (){
   youtube-dl --extract-audio --prefer-ffmpeg  --audio-format mp3  "$1"
@@ -262,7 +306,7 @@ function yt-dl (){
 
 function rand-music (){
   cat /dev/urandom | hexdump -v -e '/1 "%u\n"' | awk '{ split("0,2,4,5,7,9,11,12",a,","); for (i = 0; i < 1; i+= 0.0001) printf("%08X\n", 100*sin(1382*exp((a[$1 % 8]/12)*log(2))*i)) }' | xxd -r -p | aplay -c 2 -f S32_LE -r 16000;
-}
+  }
 
 function jpgg(){
   cp -as `ls -d -1 $PWD/**/tri/**/* | grep jpg` ./jpg
@@ -293,28 +337,28 @@ function dialog() {
 
   unset password
   echo "Password for p.champion:"
-  read -s password
+    read -s password
 
-  mkdir -p ~/smb/HOTH/users
-  sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/HOTH/users
+    sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Gabarits
-  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/HOTH/Gabarits
+    sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Temp
-  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/HOTH/Temp
+    sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Customers
-  sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/HOTH/Customers
+    sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/dev02/wwwroot
-  sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/dev02/wwwroot
+    sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/dev02/shibboleth-sp
-  sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/dev02/shibboleth-sp
+    sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/ITHOR/wwwroot
-  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+    mkdir -p ~/smb/ITHOR/wwwroot
+    sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   # mkdir -p ~/smb/ROGUE/wwwroot
   # sudo mount -t cifs //10.18.0.11/wwwroot /home/drakirus/smb/ROGUE/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
@@ -324,6 +368,8 @@ function dialog() {
 
   mkdir -p ~/smb/HOTH/Docs
   sudo mount -t cifs //hoth/Docs /home/drakirus/smb/HOTH/Docs -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+
+  tree ~/smb/ -L 2
 
 }
 
@@ -343,13 +389,13 @@ function sdelete(){
 transfer() { if [ $# -eq 0 ]; then echo -e "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi
 tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); curl --progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; }
 
-function xbox() {
-  sudo systemctl start bluetooth.service
-  echo -e "power on" | bluetoothctl
-}
+  function xbox() {
+    sudo systemctl start bluetooth.service
+    echo -e "power on" | bluetoothctl
+  }
 
 function swagger() {
-    swagger-codegen generate -i $1 -l html -o out
+  swagger-codegen generate -i $1 -l html -o out
 }
 
 function juv() {

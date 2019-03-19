@@ -4,48 +4,30 @@ let mapleader = ","
 " Add bundles
 call plug#begin('~/.vim/bundle/')
 
-" highlight yank
-Plug 'machakann/vim-highlightedyank'
-hi! link HighlightedyankRegion GitGutterChange
-let g:highlightedyank_highlight_duration = 500
-
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
 
-" key bindings for quickly moving between windows
-" h left, l right, k up, j down
-nnoremap <c-h> <c-w>h
-nnoremap <c-l> <c-w>l
-nnoremap <c-k> <c-w>k
-nnoremap <c-j> <c-w>j
-
 " searching
-Plug 'wincent/scalpel'
 Plug 'wincent/loupe'
-let g:LoupeHighlightGroup='IncSearch'
 map <leader><space> <Plug>(LoupeClearHighlight)
-let g:LoupeCenterResults=0
-let g:LoupeHighlightGroup='IncSearch'
-nmap <Nop> <Plug>(LoupeStar)
 
 " searching multiple files
 Plug 'wincent/ferret'
+" prevent any default mapping from being configured
 let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
-nnoremap <c-n> :cnf<cr>
-nnoremap <c-b> :cpf<cr>
+" nnoremap <c-n> :cnf<cr>
+" nnoremap <c-p> :cpf<cr>
 nmap <leader>E <Plug>(FerretAcks)
 nnoremap g/ :Ack<space>
-
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
 
 " Fuzzy finder
 Plug 'ctrlpvim/ctrlp.vim'
-" let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_map='<c-p>'
-" let g:ctrlp_lazy_update = 1
+" Checkout yoink mapping
+let g:ctrlp_map=''
 " let g:ctrlp_dotfiles = 1
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
@@ -76,11 +58,10 @@ let g:ctrlp_default_input = 1
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
 
-" Another Fuzzy finder
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-
+" Syntax highlight
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
+Plug 'adimit/prolog.vim'
 
 " Theme
 Plug 'chriskempson/base16-vim'
@@ -91,12 +72,22 @@ let g:ale_lint_on_text_changed = 'never'
 let g:ale_list_window_size = 5
 let g:ale_lint_on_enter = 0
 let g:ale_open_list = 1
-nnoremap <leader>dd :ALEDisable<CR>
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
+" Close vim if the quickfix window is the only window visible
+autocmd WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&buftype") == "quickfix"|q|endif
+" navigate between errors
+nmap <silent> [e <Plug>(ale_next_wrap)
+nmap <silent> ]e <Plug>(ale_previous_wrap)
 
-let g:ale_cpp_clang_options = '-std=c++14 -I/usr/local/include -I/usr/include -I/usr/include/GLFW'
-
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'markdown': ['remove_trailing_lines'],
+\   'python': ['autopep8'],
+\   'go': ['gofmt'],
+\}
+let g:ale_fix_on_save = 1
+let g:ale_python_autopep8_options = '--max-line-length 115'
 
 " A Vim plugin which shows a git diff in the numberline
 Plug 'mhinz/vim-signify'
@@ -106,45 +97,87 @@ nmap ]g <plug>(signify-prev-hunk)
 
 " surround
 Plug 'machakann/vim-sandwich'
-xmap is <Plug>(textobj-sandwich-query-i)
-xmap as <Plug>(textobj-sandwich-query-a)
-omap is <Plug>(textobj-sandwich-query-i)
-omap as <Plug>(textobj-sandwich-query-a)
+" More conf in vim/plugin/surround.vim
 
-xmap ii <Plug>(textobj-sandwich-auto-i)
-xmap ai <Plug>(textobj-sandwich-auto-a)
-omap ii <Plug>(textobj-sandwich-auto-i)
-omap ai <Plug>(textobj-sandwich-auto-a)
+" highlight yank
+Plug 'machakann/vim-highlightedyank'
+autocmd ColorScheme * hi HighlightedyankRegion guifg=#d33682 gui=underline,bold
 
-xmap in <Plug>(textobj-sandwich-literal-query-i)
-xmap an <Plug>(textobj-sandwich-literal-query-a)
-omap in <Plug>(textobj-sandwich-literal-query-i)
-omap an <Plug>(textobj-sandwich-literal-query-a)
-
-" Replace + motion
-Plug 'vim-scripts/ReplaceWithRegister'
-nmap r  <Plug>ReplaceWithRegisterOperator
-nmap rr <Plug>ReplaceWithRegisterLine
-xmap r  <Plug>ReplaceWithRegisterVisual
-noremap R r
+let g:highlightedyank_highlight_duration = 500
 
 " Aligning text
 Plug 'junegunn/vim-easy-align'
 nmap <leader>ga <Plug>(EasyAlign)
 xmap <leader>ga <Plug>(EasyAlign)
 
+" simplifies the transition between multiline and single-line code
+Plug 'AndrewRadev/splitjoin.vim'
+
 " move function arguments
 Plug 'AndrewRadev/sideways.vim'
-nnoremap <A-.> :SidewaysRight<cr>
-nnoremap <A-,> :SidewaysLeft<cr>
+nnoremap <silent> <A-.> :SidewaysRight<cr>
+nnoremap <silent> <A-,> :SidewaysLeft<cr>
 "argument text object.
 omap aa <Plug>SidewaysArgumentTextobjA
 xmap aa <Plug>SidewaysArgumentTextobjA
 omap ia <Plug>SidewaysArgumentTextobjI
 xmap ia <Plug>SidewaysArgumentTextobjI
 
-Plug 'rhysd/clever-f.vim'
-let g:clever_f_chars_match_any_signs = ';'
+Plug 'haya14busa/vim-edgemotion'
+map J <Plug>(edgemotion-j)
+map K <Plug>(edgemotion-k)
+
+
+" The missing motion for Vim
+Plug 'justinmk/vim-sneak'
+let g:sneak#prompt = 'Sneak >>> '
+let g:sneak#label = 1 " EasyMotion like
+let g:sneak#use_ic_scs = 1 " Case sensitivity
+" S is for sandwich
+nmap t <Plug>Sneak_s
+nmap T <Plug>Sneak_S
+" Clever-f mappings
+let g:sneak#s_next = 1
+map f <Plug>Sneak_f
+map F <Plug>Sneak_F
+map : <Plug>Sneak_;
+" map t <Plug>Sneak_t
+" Clever-f highlight <3
+autocmd ColorScheme * hi Sneak guifg=red guibg=NONE gui=bold,underline
+autocmd ColorScheme * hi SneakLabel guifg=red guibg=#eee8d5 gui=bold,underline
+
+Plug 'svermeulen/vim-yoink'
+nmap <c-n> <plug>(YoinkPostPasteSwapBack)
+nmap p <plug>(YoinkPaste_p)
+nmap P <plug>(YoinkPaste_P)
+let g:yoinkSyncSystemClipboardOnFocus = 1
+let g:yoinkMaxItems = 5
+let g:yoinkMoveCursorToEndOfPaste = 1
+let g:yoinkSwapClampAtEnds = 0
+" Ctrlp fuzzy finder w/ yoink
+nmap <expr> <c-p> yoink#isSwapping() ? '<plug>(YoinkPostPasteSwapForward)' : '<Plug>(ctrlp)'
+" nmap <c-p> <Plug>(ctrlp)
+nmap [y <plug>(YoinkRotateBack)
+nmap ]y <plug>(YoinkRotateForward)
+nmap y <plug>(YoinkYankPreserveCursorPosition)
+xmap y <plug>(YoinkYankPreserveCursorPosition)
+
+Plug 'svermeulen/vim-subversive'
+nmap r <plug>(SubversiveSubstitute)
+nmap rr <plug>(SubversiveSubstituteLine)
+xmap r <plug>(SubversiveSubstitute)
+xmap p <plug>(SubversiveSubstitute)
+xmap P <plug>(SubversiveSubstitute)
+" cursor will not move when substitutions are applied
+let g:subversivePreserveCursorPosition = 1
+noremap R r
+
+" ie = inner entire buffer
+onoremap ie :exec "normal! ggVG"<cr>
+
+nmap <leader>e <plug>(SubversiveSubstituteWordRange)ie
+nmap <leader>ee <plug>(SubversiveSubstituteRange)
+xmap <leader>e <plug>(SubversiveSubstituteRange)ie
 
 " Commanter
 Plug 'scrooloose/nerdcommenter'
@@ -166,34 +199,31 @@ let g:mundo_verbose_graph=0
 " Insert or delete brackets
 Plug 'cohama/lexima.vim'
 
+" stop repeating the basic movement keys
+Plug 'takac/vim-hardtime'
+let g:hardtime_default_on = 1
+let g:hardtime_showmsg = 1
+let g:hardtime_ignore_quickfix = 1
+let g:hardtime_maxcount = 3
+
 "  Snippets
 Plug 'SirVer/ultisnips'
-" Snippets are separated from the engine.
-Plug 'honza/vim-snippets'
-" let g:UltiSnipsSnippetsDir="~/.vim/bundle/vim-snippets/"
-let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets', 'snips', 'UltiSnips']
-" 'SirVer/ultisnips' options.
 let g:UltiSnipsExpandTrigger="<leader><tab>"
 let g:UltiSnipsJumpForwardTrigger  = "<leader><leader>"
+" Snippets are separated from the engine.
+Plug 'honza/vim-snippets'
+let g:UltiSnipsSnippetDirectories=[$HOME.'/dotfiles/snippets', 'snips', 'UltiSnips']
 
-" COMPLETION
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
+" Dark powered asynchronous
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" let g:deoplete#enable_at_startup = 1 " Use Idleboot (faster boot-time)
+" pip3 install --user --upgrade pynvim
 
-" NOTE: you need to install completion sources to get completions.
-Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-bufword'
-Plug 'wellle/tmux-complete.vim'
-Plug 'ncm2/ncm2-ultisnips'
+" Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
 inoremap <expr> <Tab> pumvisible() ? "\<c-y>" : "\<Tab>"
 
-" enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
-
-" IMPORTANTE: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
-
 
 " LSP
 Plug 'autozimu/LanguageClient-neovim', {
@@ -201,49 +231,78 @@ Plug 'autozimu/LanguageClient-neovim', {
       \ 'do': 'bash install.sh',
       \ }
 
-
-nnoremap <leader>ll :call LanguageClient_contextMenu()<CR>
-nnoremap <silent> <leader>g :call LanguageClient_textDocument_definition()<CR>
+let g:LanguageClient_loggingFile = '/tmp/lc.log'
+let g:LanguageClient_loggingLevel = 'WARN'
+let g:LanguageClient_settingsPath = '/home/drakirus/dotfiles/LSP_settings.json'
+" let g:LanguageClient_diagnosticsEnable = 0
 
 let g:LanguageClient_serverCommands = {
-    \ 'go': ['go-langserver'],
+    \ 'go': ['/bin/go-langserver'],
+    \ 'java': ['/bin/jdtls'],
     \ 'python': ['/home/drakirus/.local/bin/pyls'],
     \ 'javascript': ['/usr/bin/javascript-typescript-stdio'],
     \ 'typescript': ['/usr/bin/javascript-typescript-stdio'],
     \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
     \ }
-let g:LanguageClient_loggingFile = '/tmp/lc.log'
-let g:LanguageClient_loggingLevel = 'DEBUG'
-let g:LanguageClient_settingsPath = '/home/drakirus/dotfiles/LSP_settings.json'
-let g:LanguageClient_diagnosticsEnable = 0
+
+function LC_maps()
+  if has_key(g:LanguageClient_serverCommands, &filetype)
+    nnoremap <buffer> <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
+    nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
+    nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
+    nnoremap <silent> <leader>g :call LanguageClient_textDocument_definition()<CR>
+    let b:ale_enabled = 0
+  else
+    noremap <leader>g <c-]>
+  endif
+endfunction
+
+autocmd FileType * call LC_maps()
 
 
-nnoremap <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
+" LANGUAGE SPECIFIC
+" Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+" use goimports for formatting
+" let g:go_fmt_command = "goimports"
 
 
 Plug 'christoomey/vim-tmux-runner'
 
-" LANGUAGE SPECIFIC
-Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-" use goimports for formatting
-let g:go_fmt_command = "goimports"
-
-Plug 'adimit/prolog.vim'
 autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
       \ :VtrOpenRunner {'orientation': 'h', 'percentage': 30, 'cmd': 'swipl'}<cr>
       \ :VtrSendCommand! abort. %; swipl<cr>
       \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
 \ :undo<cr>
 
-autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
-
+" autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 call plug#end()
+
+" Wait until idle to run additional "boot" commands.
+augroup Idleboot
+  autocmd!
+  if has('vim_starting')
+    set updatetime=2000
+    autocmd CursorHold,CursorHoldI * call s:idleboot()
+  endif
+augroup END
+
+function! s:idleboot() abort
+  " Make sure we automatically call s:idleboot() only once.
+  augroup Idleboot
+    autocmd!
+  augroup END
+  " Make sure we run deferred tasks exactly once.
+  call deoplete#enable()
+endfunction
 
 " Theme
 set termguicolors
 colorscheme base16-solarized-light
 set background=light
+
+" Make comments italic
+highlight Comment gui=italic
 
 " Ignore
 set wildignore+=.hg,.git,.svn                           " Version control
@@ -260,6 +319,13 @@ set wildignore+=*.sqlite3
 " Required for operations modifying multiple buffers like rename.
 set hidden
 
+" above and below the cursor when scrolling
+set scrolloff=3
+set sidescrolloff=7
+
+nnoremap <c-e> 5<c-e>
+nnoremap <c-y> 5<c-y>
+
 " Clipboard
 if has('unnamedplus')
   set clipboard=unnamed,unnamedplus
@@ -269,7 +335,6 @@ endif
 set cursorline
 
 " relativ number
-set numberwidth=4
 set relativenumber
 set number
 
@@ -277,6 +342,10 @@ set number
 set undofile
 " set a directory to store the undo history
 set undodir=~/.vimundo/
+set noswapfile   " No *.swp
+
+" store commands
+set shada=!,'100,<50,s10,
 
 " Softtabs, 2 spaces tabs
 set tabstop=2
@@ -284,20 +353,15 @@ set softtabstop=2
 set shiftwidth=2
 set expandtab
 
-set noswapfile   " No *.swp
+set inccommand=split
 
-" Case
-set smartcase
-set ignorecase
 
 " 80 columns
 set colorcolumn=80      " highlight the 80 column
-set fillchars=vert:\|
 
+set nowrap
 
 " Display extra whitespace
-set sidescroll=1
-set nowrap
 set list listchars=tab:▸\ ,trail:·,extends:›,precedes:‹
 " set list listchars=tab:\ \ ,trail:·,extends:›,precedes:‹
 highlight SpecialKey ctermbg=none cterm=none
@@ -310,9 +374,7 @@ set fileencoding=utf-8
 set fileencodings=utf-8
 set fileformat=unix
 
-" Open vim help on the left of the screen
-autocmd FileType help wincmd L
-" To make vsplit put the new buffer on the right/below of the current buffer:
+" To make vsplit put the new buffer on the right/below of the current buffer
 set splitbelow
 set splitright
 
@@ -328,55 +390,43 @@ nnoremap <A-j> :m .+1<CR>==
 vnoremap <up>  :m '<-2<CR>gv=gv
 vnoremap <Down> :m '>+1<CR>gv=gv
 
-" Quicker navigation
+" Quicker navigation start - end of line
 noremap H 0^
 xmap H ^
 omap H ^
 noremap L g_
 
+" overrides the change operations don't affect the current yank
 nnoremap c "_c
 nnoremap C "_C
 
-" Mapping
 nnoremap <leader><leader> :w!<cr>
 
-vnoremap <silent><expr>  ++  VMATH_YankAndAnalyse()
-nnoremap <silent> ++ vip++
+vnoremap <silent><expr> ++ VMATH_YankAndAnalyse()
 
-" noremap <leader>g <c-]>
 noremap <Leader>G :vsp <cr> <c-]>
 
 inoremap <c-l> <esc>A
 
-vnoremap J }
-vnoremap K {
 noremap j gj
 noremap k gk
 
-nnoremap <Leader>D yyp
-
 noremap <leader>cd :lcd <c-r>=expand("%:p:h")<cr>
 
-" Sudo save
-cnoreabbrev <silent> w!! call SudoSave()
-function! SudoSave()
-  cnoreabbrev q q!
-  cabbrev <silent> w call SudoSave()
-  cabbrev <silent> wq w call SudoSave()
-  execute ":w !sudo tee > /dev/null %"
-endfunction
+" no more ex Mode
+nnoremap Q <nop>
 
 " Insert New line
-noremap U :call append(line('.'), '')<CR>j
+noremap <silent> U :call append(line('.'), '')<CR>j
 
 " Spell-Checking
 " zg add word to the spelling dictionary
 " zw remove it
-nnoremap <silent> <leader>en <Esc>:silent setlocal spell! spelllang=en<CR>
-nnoremap <silent> <leader>fr <Esc>:silent setlocal spell! spelllang=fr<CR>
-nnoremap <silent> <leader>all <Esc>:silent setlocal spell! spelllang=fr,en<CR>
-nnoremap <silent> <leader>a <Esc>zg
-nnoremap <silent> <leader>d <Esc>zug
+nnoremap <silent> <leader>sen <Esc>:silent setlocal spell! spelllang=en<CR>
+nnoremap <silent> <leader>sfr <Esc>:silent setlocal spell! spelllang=fr<CR>
+nnoremap <silent> <leader>sall <Esc>:silent setlocal spell! spelllang=fr,en<CR>
+nnoremap <silent> <leader>sa <Esc>zg
+nnoremap <silent> <leader>sd <Esc>zug
 inoremap <leader>a à
 inoremap <leader>u ù
 inoremap <c-u> ȗ
@@ -388,13 +438,10 @@ autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en tw=80
 inoremap <expr> <A-s>  pumvisible() ?  "\<C-n>" : "\<C-x>s"
 nnoremap <expr> <A-s> pumvisible() ?  "i\<C-n>" : "w[sei\<C-x>s"
 
-hi SpellBad   cterm=underline ctermfg=1 gui=underline guifg=#dc322f
-hi SpellCap   cterm=underline ctermfg=5 gui=undercurl guifg=#6c71c4
-hi SpellRare   cterm=underline ctermfg=5 gui=undercurl guifg=#6c71c4
-hi SpellLocal cterm=underline ctermfg=10 gui=undercurl guifg=#eee8d5
-
-" no more ex Mode
-nnoremap Q <nop>
+hi SpellBad  gui=underline guifg=#dc322f
+hi SpellCap  gui=undercurl guifg=#6c71c4
+hi SpellRare gui=undercurl guifg=#6c71c4
+hi SpellLocal gui=undercurl guifg=#eee8d5
 
 " remapping
 cnoreabbrev qwa wqa
@@ -411,17 +458,15 @@ cnoreabbrev Q q
 cnoreabbrev qq q
 
 nnoremap ; :
-nnoremap : ;
 vnoremap ; :
-vnoremap : ;
 cnoreabbrev ; :
-cnoreabbrev : ;
 
 vnoremap . :norm.<CR>
 
 " --------------------------
 " function
 " --------------------------
+
 " Go to the last known cursor position in a file
 autocmd BufReadPost *
       \ if !(bufname("%") =~ '\(COMMIT_EDITMSG\)') &&
@@ -431,21 +476,6 @@ autocmd BufReadPost *
 
 autocmd FileType gitcommit startinsert
 autocmd FileType svn startinsert
-
-" Remove trailing whitespace on save ignore markdown files
-function! s:RemoveTrailingWhitespaces()
-  let blacklist = ['md', 'markdown', 'mrd', 'markdown.pandoc']
-  if index(blacklist, &ft) < 0
-    " Save cursor position
-    let l:save = winsaveview()
-    " Remove trailing whitespace
-    execute('%s/\s\+$//e')
-    " Move cursor to original position
-    call winrestview(l:save)
-  endif
-endfunction
-
-au BufWritePre * call <SID>RemoveTrailingWhitespaces()
 
 " Visual search mappings
 function! s:VSetSearch()
@@ -460,9 +490,7 @@ vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
 function! RenameFile() abort
   let old_name = expand('%')
   let ext_file = expand('%:e')
-  if !empty(ext_file)
-    let ext_file = ".".ext_file
-  endif
+  if !empty(ext_file) | let ext_file = ".".ext_file | endif
   let x = 0
   let feedkeys = ""
   while x < len(ext_file)
@@ -487,9 +515,7 @@ nnoremap <Leader>rn :call RenameFile()<cr>
 function! s:MkNonExDir(file, buf) abort
   if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
     let dir=fnamemodify(a:file, ':h')
-    if !isdirectory(dir)
-      call mkdir(dir, 'p')
-    endif
+    if !isdirectory(dir) | call mkdir(dir, 'p') | endif
   endif
 endfunction
 augroup BWCCreateDir

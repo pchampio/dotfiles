@@ -1,5 +1,5 @@
 alias cls="clear && ls"
-alias gs="git status"
+alias gs="gdstst"
 alias gau="git add -u"
 # alias e="thunar &> /dev/null &"
 alias e="thunarCmd > /dev/null 2>&1"
@@ -66,7 +66,6 @@ alias ms="LC_ALL=en_US.UTF-8 minishift"
 
 alias tb="netcat termbin.com 9999 | xclip -selection c"
 
-alias vim="nvim"
 alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -rr -x --exclude .git --exclude node_modules"
 alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 

@@ -96,9 +96,9 @@ export ANDROID_HOME=/opt/android-sdk
 
 export FLUTTER=/opt/flutter/bin
 
-
 export PATH=${FLUTTER}:${JAVA_HOME}/bin:${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
 
+export PATH="$PATH":"$HOME/.pub-cache/bin"
 
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing

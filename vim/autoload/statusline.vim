@@ -1,7 +1,7 @@
 augroup FUCUS
   autocmd!
-  autocmd BufEnter,FocusGained,VimEnter,WinEnter * call Focus_statusline()
-  autocmd FocusLost,WinLeave * call Blur_statusline()
+  autocmd BufEnter,FocusGained,VimEnter,WinEnter * call statusline#focus()
+  autocmd FocusLost,WinLeave * call statusline#blur()
   autocmd User FerretAsyncStart call statusline#setjobs()
   autocmd User FerretAsyncFinish call statusline#unsetjobs()
 
@@ -13,32 +13,25 @@ augroup FUCUS
 
 augroup end
 
-augroup THEME
-  autocmd!
-  autocmd ColorScheme * call statusline#setup()
-augroup end
-
-let g:initStatusline = 0
-function! statusline#setup() abort
-  execute 'hi statusLine ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#848484 guibg=#EEE8D5'
-  execute 'hi statusLineNC ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5 gui=italic guifg=#848484'
-
-  execute 'hi User1 ctermfg=237 ctermbg=248 cterm=italic guibg=#eee8d5'
-  execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#848484 guibg=#EEE8D5'
-  execute 'hi User4 ctermfg=124 ctermbg=248 guibg=#eee8d5 guifg=#AF0000'
-  execute 'hi User5 ctermfg=246 ctermbg=236 guibg=#586E75 guifg=#F9E4CC'
-  execute 'hi User2 ctermfg=246 ctermbg=236 cterm=bold ctermbg=236 guibg=#586E75 guifg=#F9E4CC'
-  execute 'hi User6 ctermfg=237 ctermbg=248 guibg=#eee8d5 guifg=#586E75'
-  execute 'hi User7 ctermfg=229 ctermbg=124 cterm=bold guifg=#F2F0EB guibg=#DC322F'
-  execute 'hi User8 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#fabd2f guibg=#eee8d5'
+function! statusline#sneaking() abort
+  if sneak#is_sneaking()
+    return 'Jump'
+  endif
+  return ' '
 endfunction
-
 
 function! statusline#check_modified() abort
   if &modified
-    execute 'hi User3 ctermfg=166 ctermbg=248 cterm=bold gui=bold guifg=#D75F00 guibg=#EEE8D5'
+    " execute 'hi! link User3 User8' " with bold
+    exec 'hi User3 gui=bold' .
+          \' guibg=' . synIDattr(synIDtrans(hlID('User8')), 'bg', 'gui')
+          \' guifg=' . synIDattr(synIDtrans(hlID('User8')), 'fg', 'gui')
   else
-    execute 'hi User3 ctermfg=237 ctermbg=248 cterm=bold gui=bold guifg=#4f4f4f guibg=#EEE8D5'
+    " hi! link User3 User1 " with bold
+    exec 'hi User3 gui=bold' .
+          \' guibg=' . synIDattr(synIDtrans(hlID('User1')), 'bg', 'gui')
+          \' guifg=' . synIDattr(synIDtrans(hlID('User1')), 'fg', 'gui')
+
   endif
 
 endfunction
@@ -86,10 +79,9 @@ function! statusline#fenc() abort
   endif
 endfunction
 
-function! Blur_statusline() abort
+function! statusline#blur() abort
   " Default blurred statusline (buffer number: filename).
   let l:blurred=''
-  " let l:blurred.='%{statusline#gutterpadding(0)}'
   let l:blurred.='\ ' " space
   let l:blurred.='\ ' " space
   let l:blurred.='\ ' " space
@@ -104,7 +96,7 @@ function! Blur_statusline() abort
   call s:update_statusline(l:blurred, 'blur')
 endfunction
 
-function! Focus_statusline() abort
+function! statusline#focus() abort
   " `setlocal statusline=` will revert to global 'statusline' setting.
   call s:update_statusline('', 'focus')
 endfunction
@@ -152,7 +144,7 @@ function! s:get_custom_statusline(action) abort
   return 1 " Use default.
 endfunction
 
-function! WordCount()
+function! statusline#wc()
   if &spell
     let lnum = 1
     let n = 0
