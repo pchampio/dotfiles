@@ -1,4 +1,4 @@
-function nvim(){
+function nvim() {
   if [[ "$#" == 0 ]]; then
     /usr/sbin/nvim;
   else
@@ -11,6 +11,14 @@ function nvim(){
       /usr/sbin/nvim $*;
     fi
   fi
+}
+
+function nvimux-vim() {
+  if [[ "$#" == 0 ]]; then
+    nvr --remote-wait-silent +'set bufhidden=delete' -c "CtrlP `pwd`"
+    return
+  fi
+  nvr $*
 }
 
 

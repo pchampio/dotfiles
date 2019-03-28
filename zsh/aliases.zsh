@@ -85,7 +85,8 @@ alias cb='ruby ~/lab/ruby/credit_mutuel/credit_mutuel_monitor.rb'
 #  Editor  #
 ############
 
+export EDITOR='nvim'
 alias vim="nvim"
 if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
-
+  alias vim="nvimux-vim"
 fi

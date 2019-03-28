@@ -5,8 +5,6 @@ setopt prompt_subst # enable command substition in prompt
 
 plugins=(encode64 docker sudo)
 
-export EDITOR='nvim'
-
 # faster startup
 DISABLE_AUTO_UPDATE="true"
 

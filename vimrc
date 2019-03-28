@@ -18,8 +18,8 @@ if !exists('$TMUX')
   " use neovim-remote (pip3 install neovim-remote) allows
   " opening a new split inside neovim instead of nesting
   " neovim processes for git commit
-  let $GIT_EDITOR  = 'nvr -cc split --remote-wait +"setlocal bufhidden=delete"'
-  let $EDITOR      = 'nvr -l'
+  let $GIT_EDITOR  = 'nvr -cc split --remote-wait'
+  let $EDITOR      = 'nvr'
 
   " abstraction on top of neovim terminal
   Plug 'kassio/neoterm'
@@ -52,7 +52,7 @@ EOF
   nnoremap <silent> <A-n> :NvimuxNewTab<cr>
 
   " easily escape terminal
-  tnoremap <leader><esc> <C-\><C-n><esc>
+  tnoremap <leader><esc> <C-\><C-n>
   " start insert mode terminal
   autocmd BufWinEnter,WinEnter term://* startinsert
 
@@ -65,8 +65,15 @@ EOF
   " Tab movement
   nnoremap <silent> <M-l> :tabnext<cr>
   nnoremap <silent> <M-h> :tabprevious<cr>
-  tnoremap <silent> <M-l> <C-\><C-N>:tabnext<cr>
-  tnoremap <silent> <M-h> <C-\><C-N>:tabprevious<cr>
+  tnoremap <silent> <M-l> <C-\><C-n>:tabnext<cr>
+  tnoremap <silent> <M-h> <C-\><C-n>:tabprevious<cr>
+
+  " resizing a window split
+  tnoremap <C-Right> <C-\><C-n><C-w>10<I
+  tnoremap <C-Down> <C-\><C-n><C-W>5-I
+  tnoremap <C-Up> <C-\><C-n><C-W>5+I
+  tnoremap <C-Left> <C-\><C-n><C-w>10>I
+
 
   let g:neoterm_autoinsert=1
 
