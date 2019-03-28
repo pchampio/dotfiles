@@ -1,4 +1,4 @@
-function vim(){
+function nvim(){
   if [[ "$#" == 0 ]]; then
     /usr/sbin/nvim;
   else
@@ -168,21 +168,9 @@ share() {
     fi
   fi
 
-  # When you send secret information through GoTTY, we strongly recommend you use the -t option
-  # echo -n '\nEnables TLS/SSL [default no] : '
-  # read inputs
-  # if [[ $inputs =~ ^([yY][eE][sS]|[yY])$ ]]
-    # then
-      # args+=" -t"
-      # if [[ ! -f ~/.gotty.key ]]; then
-        # echo -n "\nNeed ->  openssl req -x509 -nodes -days 9999 -newkey rsa:2048 -keyout ~/.gotty.key -out ~/.gotty.crt\n"
-        # exit
-        # fi
-        # fi
-
-        if [[ $# -eq 1 ]]; then
-          cmd=$1
-        fi
+  if [[ $# -eq 1 ]]; then
+    cmd=$1
+  fi
 
   # Share
   ssh -p 2242 -NR 2280:0.0.0.0:2280 drakirus@drakirus.com 2>&1 &
@@ -194,85 +182,45 @@ share() {
   kill -9 $PID
 }
 
-v() {
 
-  if [ -z ${TMUX+x} ]; then
-    vim $@
-    return
-  fi
 
-  VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
-    | grep -i 'vim' | cut --d=" " --f=1`
-      if [ -z $VIM_PANE ]; then
-        vim $@
-      else
-        for file in $@; do
-          tmux send-keys -t $VIM_PANE Escape
-          tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
-          tmux send-keys -t $VIM_PANE Enter
-          shift
-        done
-      fi
-    }
-
-  zoomInVim() {
-    VIM_PANE=`tmux list-panes -F '#{pane_id} #{pane_current_command}'\
-      | grep -i 'vim' | cut --d=" " --f=1`
-          ome -new command
-          tmux send-keys -t $VIM_PANE Escape
-          tmux send-keys -t $VIM_PANE \;vsplit\ `realpath $file`
-          tmux send-keys -t $VIM_PANE Enter
-        }
-
-      thunarCmd(){
-        WINTITLE="Gestionnaire de fichiers" # Main 'app' window has this in titlebar
-        PROGNAME="thunar" # This is the name of the binary for 'app'
+thunarCmd(){
+  WINTITLE="Gestionnaire de fichiers" # Main 'app' window has this in titlebar
+  PROGNAME="thunar" # This is the name of the binary for 'app'
 
   # Use wmctrl to list all windows, count how many contain WINTITLE,
   # and test if that count is non-zero:
 
-    if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
-    then
-      wmctrl -a "$WINTITLE" # If it exists, bring 'app' window to front
-        sleep 0.2
-        xdotool key ctrl+t
-        xdotool key ctrl+l
-        xdotool type "$(pwd)"
-        xdotool key KP_Enter
-      else
-        thunar > /dev/null 2>&1 &  # Otherwise, just launch 'app'
-      fi
-    }
-
-  clpset(){
-    read -d"" text
-    print `curl --silent --data "clp=$text" http://drakirus.xyz:8808`
-  }
-
-clpget(){
-  A=`curl --silent http://drakirus.xyz:8808`
-  print $A
-  echo $A > /tmp/clp.tmp
-  xclip -in -selection clipboard /tmp/clp.tmp
+  if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
+  then
+    wmctrl -a "$WINTITLE" # If it exists, bring 'app' window to front
+    sleep 0.2
+    xdotool key ctrl+t
+    xdotool key ctrl+l
+    xdotool type "$(pwd)"
+    xdotool key KP_Enter
+  else
+    thunar > /dev/null 2>&1 &  # Otherwise, just launch 'app'
+  fi
 }
 
 net-list(){
-echo "Please, select a network interface:"
+  echo "Please, select a network interface:"
   select interface in `ls /sys/class/net/ | cut -d/ -f4`; do
-    echo $interface selected
-    ip=`ifconfig $interface | grep 'inet ' | sed 's/  */ /g' | cut -d" " -f 3`
-    break
+  echo $interface selected
+  ip=`ifconfig $interface | grep 'inet ' | sed 's/  */ /g' | cut -d" " -f 3`
+  break
   done
   vared -p 'Enter the network and press [ENTER]: ' -c ip
   sudo nmap -sP $ip/24
 }
 
 docker-enter () {
-docker exec -ti $1 sh
+  docker exec -ti $1 sh
 }
 
 svn-clean () {
-svn st | grep ! | cut -d! -f2| sed 's/^ *//' | sed 's/^/"/g' | sed 's/$/"/g' | xargs svn rm
+  svn st | grep ! | cut -d! -f2| sed 's/^ *//' | sed 's/^/"/g' | sed 's/$/"/g' | xargs svn rm
 }
 
 
@@ -283,22 +231,22 @@ ffig() { find . -name "*$1*" -ls| grep -vFf skip_files; }
 
 nhh () {
   old=$(xfconf-query -c xfce4-notifyd -p /do-not-disturb)
-    if [[ $old == "true" ]]; then
-      xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
-        notify-send  --expire-time=10 -i "notification-alert-symbolic" 'Notification' 'Ne pas déranger est désactivée'
-      else
-        notify-send --expire-time=10 -i "/usr/share/icons/Adwaita/24x24/status/audio-volume-muted-symbolic.symbolic.png" 'Notification' 'Ne pas déranger est activée'
-        xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
-        fi
-      }
+  if [[ $old == "true" ]]; then
+    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
+    notify-send  --expire-time=10 -i "notification-alert-symbolic" 'Notification' 'Ne pas déranger est désactivée'
+  else
+    notify-send --expire-time=10 -i "/usr/share/icons/Adwaita/24x24/status/audio-volume-muted-symbolic.symbolic.png" 'Notification' 'Ne pas déranger est activée'
+    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
+  fi
+}
 
-    function mmpl() {
-      mpv -no-video --shuffle --loop "$@"
-    }
+function mmpl() {
+  mpv -no-video --shuffle --loop "$@"
+}
 
-  function mm() {
-    mpv --ytdl --loop --no-video "$@"
-  }
+function mm() {
+  mpv --ytdl --loop --no-video "$@"
+}
 
 function yt-dl (){
   youtube-dl --extract-audio --prefer-ffmpeg  --audio-format mp3  "$1"
@@ -337,28 +285,31 @@ function dialog() {
 
   unset password
   echo "Password for p.champion:"
-    read -s password
+  read -s password
 
-    mkdir -p ~/smb/HOTH/users
-    sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/HOTH/users
+  sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-    mkdir -p ~/smb/HOTH/Gabarits
-    sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/HOTH/Gabarits
+  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-    mkdir -p ~/smb/HOTH/Temp
-    sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/HOTH/Temp
+  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-    mkdir -p ~/smb/HOTH/Customers
-    sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/HOTH/Customers
+  sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-    mkdir -p ~/smb/dev02/wwwroot
-    sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/HOTH/packages
+  sudo mount -t cifs //hoth/packages /home/drakirus/smb/HOTH/packages -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-    mkdir -p ~/smb/dev02/shibboleth-sp
-    sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/dev02/wwwroot
+  sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-    mkdir -p ~/smb/ITHOR/wwwroot
-    sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  mkdir -p ~/smb/dev02/shibboleth-sp
+  sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+
+  mkdir -p ~/smb/ITHOR/wwwroot
+  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   # mkdir -p ~/smb/ROGUE/wwwroot
   # sudo mount -t cifs //10.18.0.11/wwwroot /home/drakirus/smb/ROGUE/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
@@ -389,10 +340,10 @@ function sdelete(){
 transfer() { if [ $# -eq 0 ]; then echo -e "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi
 tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); curl --progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; }
 
-  function xbox() {
-    sudo systemctl start bluetooth.service
-    echo -e "power on" | bluetoothctl
-  }
+function xbox() {
+  sudo systemctl start bluetooth.service
+  echo -e "power on" | bluetoothctl
+}
 
 function swagger() {
   swagger-codegen generate -i $1 -l html -o out

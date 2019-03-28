@@ -37,6 +37,9 @@ function! statusline#check_modified() abort
 endfunction
 
 function! statusline#fileprefix() abort
+  if exists('b:term_title')
+    return ''
+  endif
   let l:basename=expand('%:h')
   if l:basename == '' || l:basename == '.'
     return ''

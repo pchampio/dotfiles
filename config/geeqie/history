@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/tmp/mozilla_drakirus0"
 "/home/drakirus/lab/server/backup/data/www/roadtrip/images/italie-trip"
 "/home/drakirus/lab/server/backup/data/www/roadtrip/images/italie-trip/stop11"
 "/home/drakirus/lab/server/backup/data/www/roadtrip/images/italie-trip/stop24"
-"/home/drakirus/Téléchargements"
 "/home/drakirus/lab/server/droppy/eduroam"
 "/home/drakirus/lab/server/droppy/Tony"
 "/home/drakirus/lab/server/droppy/slackline/salome"
 "/home/drakirus/lab/server/droppy/slackline/philippe"
 "/home/drakirus/lab/server/droppy/slackline/pierre"
+"/home/drakirus/lab/hugo/prr/themes/even/static"
+"/home/drakirus/Téléchargements"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"

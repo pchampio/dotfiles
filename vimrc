@@ -4,8 +4,87 @@ let mapleader = ","
 " Add bundles
 call plug#begin('~/.vim/bundle/')
 
+" Breakdown Vim's --startuptime output
+" Plug 'tweekmonster/startuptime.vim'
+
+if exists('veonim')
+  set guifont=Monaco:h20
+  set guicursor=n:block-CursorNormal,i:hor10-CursorInsert,v:block-CursorVisual
+  set linespace=10
+endif
+
+if !exists('$TMUX')
+
+  " use neovim-remote (pip3 install neovim-remote) allows
+  " opening a new split inside neovim instead of nesting
+  " neovim processes for git commit
+  let $GIT_EDITOR  = 'nvr -cc split --remote-wait +"setlocal bufhidden=delete"'
+  let $EDITOR      = 'nvr -l'
+
+  " abstraction on top of neovim terminal
+  Plug 'kassio/neoterm'
+
+  " send stuff to REPL using NeoTerm
+  nnoremap <silent> <c-s>l :TREPLSendLine<CR>
+  vnoremap <silent> <c-s>l :TREPLSendSelection<CR>
+
+  " simulate tmux shortcuts in neovim
+  Plug 'Vigemus/nvimux', {'do': 'cp -r ./lua $HOME/.config/nvim/'}
+
+lua << EOF
+local nvimux = require('nvimux')
+-- Nvimux configuration
+nvimux.config.set_all{
+  prefix = '<C-Space>',
+  new_window = 'enew | Tnew',
+  open_term_by_default = true,
+  new_window_buffer = 'single',
+}
+-- Nvimux custom bindings
+nvimux.bindings.bind_all{
+  {'i', ':NvimuxHorizontalSplit', {'n', 'v', 'i', 't'}},
+  {'s', ':NvimuxVerticalSplit', {'n', 'v', 'i', 't'}},
+}
+-- Required so nvimux sets the mappings correctly
+nvimux.bootstrap()
+EOF
+
+  nnoremap <silent> <A-n> :NvimuxNewTab<cr>
+
+  " easily escape terminal
+  tnoremap <leader><esc> <C-\><C-n><esc>
+  " start insert mode terminal
+  autocmd BufWinEnter,WinEnter term://* startinsert
+
+  " Move around
+  tnoremap <c-h> <C-\><C-N><C-w>h
+  tnoremap <c-j> <C-\><C-N><C-w>j
+  tnoremap <c-k> <C-\><C-N><C-w>k
+  tnoremap <c-l> <C-\><C-N><C-w>l
+
+  " Tab movement
+  nnoremap <silent> <M-l> :tabnext<cr>
+  nnoremap <silent> <M-h> :tabprevious<cr>
+  tnoremap <silent> <M-l> <C-\><C-N>:tabnext<cr>
+  tnoremap <silent> <M-h> <C-\><C-N>:tabprevious<cr>
+
+  let g:neoterm_autoinsert=1
+
+  Plug 'szw/vim-maximizer'
+  nnoremap <C-Space><Space> :MaximizerToggle!<CR>
+  tnoremap <C-Space><Space> <C-\><C-N>:MaximizerToggle!<CR>
+
+  Plug 'kh3phr3n/tabline'
+
+endif
+
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
+
+" Indent lines (visual indication)
+Plug 'Yggdroot/indentLine'
+let g:indentLine_color_gui = '#eee8d5'
+let g:indentLine_char = '│'
 
 " searching
 Plug 'wincent/loupe'
@@ -63,6 +142,9 @@ autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('
 Plug 'sheerun/vim-polyglot'
 Plug 'adimit/prolog.vim'
 
+" Text outlining and task management
+Plug 'jceb/vim-orgmode'
+
 " Theme
 Plug 'chriskempson/base16-vim'
 
@@ -112,6 +194,7 @@ xmap <leader>ga <Plug>(EasyAlign)
 
 " simplifies the transition between multiline and single-line code
 Plug 'AndrewRadev/splitjoin.vim'
+let g:splitjoin_trailing_comma = 1
 
 " move function arguments
 Plug 'AndrewRadev/sideways.vim'
@@ -150,7 +233,7 @@ Plug 'svermeulen/vim-yoink'
 nmap <c-n> <plug>(YoinkPostPasteSwapBack)
 nmap p <plug>(YoinkPaste_p)
 nmap P <plug>(YoinkPaste_P)
-let g:yoinkSyncSystemClipboardOnFocus = 1
+let g:yoinkSyncSystemClipboardOnFocus = 0
 let g:yoinkMaxItems = 5
 let g:yoinkMoveCursorToEndOfPaste = 1
 let g:yoinkSwapClampAtEnds = 0
@@ -175,9 +258,9 @@ noremap R r
 " ie = inner entire buffer
 onoremap ie :exec "normal! ggVG"<cr>
 
-nmap <leader>e <plug>(SubversiveSubstituteWordRange)ie
-nmap <leader>ee <plug>(SubversiveSubstituteRange)
-xmap <leader>e <plug>(SubversiveSubstituteRange)ie
+nmap <silent> <leader>e <plug>(SubversiveSubstituteWordRange)ie
+nmap <silent> <leader>ee ;call sneak#cancel()<cr><plug>(SubversiveSubstituteRange)
+xmap <silent> <leader>e <plug>(SubversiveSubstituteRange)ie
 
 " Commanter
 Plug 'scrooloose/nerdcommenter'
@@ -199,12 +282,23 @@ let g:mundo_verbose_graph=0
 " Insert or delete brackets
 Plug 'cohama/lexima.vim'
 
+" Text objects and motions for Python
+Plug 'jeetsukumaran/vim-pythonsense'
+
+" User Text objects
+Plug 'kana/vim-textobj-user'
+" Funcions
+Plug 'kana/vim-textobj-function'
+" heuristic function
+Plug 'haya14busa/vim-textobj-function-syntax'
+
 " stop repeating the basic movement keys
 Plug 'takac/vim-hardtime'
 let g:hardtime_default_on = 1
 let g:hardtime_showmsg = 1
 let g:hardtime_ignore_quickfix = 1
 let g:hardtime_maxcount = 3
+let g:list_of_normal_keys = ["h", "j", "k", "l", "-", "+"]
 
 "  Snippets
 Plug 'SirVer/ultisnips'
@@ -229,7 +323,7 @@ set completeopt=noinsert,menuone,noselect
 Plug 'autozimu/LanguageClient-neovim', {
       \ 'branch': 'next',
       \ 'do': 'bash install.sh',
-      \ }
+      \ 'for': ['go', 'java', 'python', 'javascript', 'typescript', 'cpp']}
 
 let g:LanguageClient_loggingFile = '/tmp/lc.log'
 let g:LanguageClient_loggingLevel = 'WARN'
@@ -245,7 +339,7 @@ let g:LanguageClient_serverCommands = {
     \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
     \ }
 
-function LC_maps()
+function! LC_maps()
   if has_key(g:LanguageClient_serverCommands, &filetype)
     nnoremap <buffer> <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
     nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
@@ -292,9 +386,11 @@ function! s:idleboot() abort
   augroup Idleboot
     autocmd!
   augroup END
-  " Make sure we run deferred tasks exactly once.
+
+  echohl ModeMsg | echon '-- Deoplete enabled --' | echohl None
   call deoplete#enable()
 endfunction
+
 
 " Theme
 set termguicolors
@@ -354,6 +450,7 @@ set shiftwidth=2
 set expandtab
 
 set inccommand=split
+" set wildoptions=pum
 
 
 " 80 columns
@@ -374,6 +471,8 @@ set fileencoding=utf-8
 set fileencodings=utf-8
 set fileformat=unix
 
+" Open vim help on the left of the screen
+autocmd FileType help wincmd L
 " To make vsplit put the new buffer on the right/below of the current buffer
 set splitbelow
 set splitright

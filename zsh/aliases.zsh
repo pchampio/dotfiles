@@ -78,3 +78,14 @@ alias pdf="zathura --fork"
 # alias cat="bat --theme=GitHub"
 alias ping='prettyping --nolegend'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
+
+alias cb='ruby ~/lab/ruby/credit_mutuel/credit_mutuel_monitor.rb'
+
+############
+#  Editor  #
+############
+
+alias vim="nvim"
+if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
+
+fi

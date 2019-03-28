@@ -37,15 +37,27 @@ let g:sandwich#recipes += [
   \     'buns': ['(', ')'],
   \     'cursor': 'head',
   \     'command': ['startinsert'],
-  \     'kind': ['add', 'replace'],
+  \     'kind': ['all'],
   \     'action': ['add'],
   \     'input': ['f']
   \   },
   \
   \   {
-  \     'buns': ['\h\k*\.\h\k*(', ')'],
+  \     'buns': ['sandwich#magicchar#f#fname()', '")"'],
+  \     'kind': ['add', 'replace'],
+  \     'action': ['add'],
+  \     'expr': 1,
+  \     'input': ['g']
+  \   },
+  \
+  \   {
+  \     'buns': ['\h\k*\.\h\k*(', ')\s*$'],
   \     'regex': 1,
-  \     'kind': ['delete', 'replace', 'query'],
+  \     'kind': ['all'],
   \     'input': ['F']
   \   }
   \ ]
+
+autocmd FileType python call sandwich#util#addlocal([
+  \   {'buns': ['"""', '"""'], 'nesting': 0, 'input': ['3"']},
+\ ])

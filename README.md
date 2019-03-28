@@ -154,3 +154,10 @@ These are a modified version of Thoughtbot's dotfiles.
 More detailed instructions are available here:  
 https://github.com/mscoutermarsh/dotfiles /
 http://github.com/thoughtbot/dotfiles
+
+
+
+wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
+chmod +x nvim
+sudo chown root:root nvim
+sudo mv nvim /usr/bin

@@ -2,6 +2,7 @@
 
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
+dir=~/dotfiles
 
 
 curl --version 2>&1 > /dev/null
@@ -15,6 +16,22 @@ if [ $? -ne 0 ]; then
   echo "Could not find wget"
   exit 1
 fi
+
+
+explain "Download latest nvim app"
+cd /tmp
+wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
+# wget http://gitreleases.dev/gh/neovim/neovim/v0.3.4/nvim.appimage --output-document nvim
+chmod +x nvim
+read -p "move nvim in /usr/bin [y/n]: " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  sudo rm /usr/bin/nvim
+  sudo chown root:root nvim
+  sudo mv nvim /usr/bin
+fi
+cd -
 
 if [ ! -e $HOME/.vim/autoload ]; then
   explain "Download Vim-plug (Vim plugins manager)"
@@ -38,12 +55,13 @@ if [ ! -e $HOME/.vim/spell ]; then
 fi
 
 explain "Vim plugins"
-# vim +PlugUpgrade +qa
 nvim +PlugInstall +qa
-nvim +PlugUpdate +qa
-nvim +PlugClean +qa
 
+tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
+tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
+
+explain "Symlink nvim to vim"
+tell ln -sf ~/.vim ~/.config/nvim
 tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
 
 mkdir -p ~/.vimundo
-
