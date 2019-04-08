@@ -1,4 +1,4 @@
-#!/bin/sh
+!#/bin/sh
 
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions

@@ -108,7 +108,7 @@ fi
 if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
   SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
   if [ $SessionNb -eq 0 ]; then
-    tm && exit
+    # tm && exit
   fi
 fi
 

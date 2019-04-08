@@ -8,9 +8,9 @@ call plug#begin('~/.vim/bundle/')
 " Plug 'tweekmonster/startuptime.vim'
 
 if exists('veonim')
-  set guifont=Monaco:h20
+  set guifont=Hack
   set guicursor=n:block-CursorNormal,i:hor10-CursorInsert,v:block-CursorVisual
-  set linespace=10
+  set linespace=15
 endif
 
 if !exists('$TMUX')
@@ -18,7 +18,7 @@ if !exists('$TMUX')
   " use neovim-remote (pip3 install neovim-remote) allows
   " opening a new split inside neovim instead of nesting
   " neovim processes for git commit
-  let $GIT_EDITOR  = 'nvr -cc split --remote-wait'
+  let $GIT_EDITOR  = 'nvr -cc split --remote-wait +"setlocal bufhidden=delete"'
   let $EDITOR      = 'nvr'
 
   " abstraction on top of neovim terminal
@@ -55,6 +55,7 @@ EOF
   tnoremap <leader><esc> <C-\><C-n>
   " start insert mode terminal
   autocmd BufWinEnter,WinEnter term://* startinsert
+  autocmd BufWinEnter,WinEnter term://* redraw!
 
   " Move around
   tnoremap <c-h> <C-\><C-N><C-w>h
@@ -85,13 +86,14 @@ EOF
 
 endif
 
+" Git
+set diffopt+=vertical
+let g:twiggy_close_on_fugitive_command = 1
+Plug 'tpope/vim-fugitive' " Git wrapper
+Plug 'sodapopcan/vim-twiggy' " Git branch management
+
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
-
-" Indent lines (visual indication)
-Plug 'Yggdroot/indentLine'
-let g:indentLine_color_gui = '#eee8d5'
-let g:indentLine_char = '│'
 
 " searching
 Plug 'wincent/loupe'
@@ -163,8 +165,6 @@ let g:ale_lint_on_enter = 0
 let g:ale_open_list = 1
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
-" Close vim if the quickfix window is the only window visible
-autocmd WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&buftype") == "quickfix"|q|endif
 " navigate between errors
 nmap <silent> [e <Plug>(ale_next_wrap)
 nmap <silent> ]e <Plug>(ale_previous_wrap)
@@ -181,8 +181,8 @@ let g:ale_python_autopep8_options = '--max-line-length 115'
 " A Vim plugin which shows a git diff in the numberline
 Plug 'mhinz/vim-signify'
 let g:signify_sign_change = '~'
-nmap [g <plug>(signify-next-hunk)
-nmap ]g <plug>(signify-prev-hunk)
+nmap ]g <plug>(signify-next-hunk)
+nmap [g <plug>(signify-prev-hunk)
 
 " surround
 Plug 'machakann/vim-sandwich'
@@ -241,7 +241,7 @@ nmap <c-n> <plug>(YoinkPostPasteSwapBack)
 nmap p <plug>(YoinkPaste_p)
 nmap P <plug>(YoinkPaste_P)
 let g:yoinkSyncSystemClipboardOnFocus = 0
-let g:yoinkMaxItems = 5
+let g:yoinkMaxItems = 8
 let g:yoinkMoveCursorToEndOfPaste = 1
 let g:yoinkSwapClampAtEnds = 0
 " Ctrlp fuzzy finder w/ yoink
@@ -286,18 +286,32 @@ let g:mundo_width=70
 let g:mundo_playback_delay=40
 let g:mundo_verbose_graph=0
 
-" Insert or delete brackets
+" insert or delete brackets
 Plug 'cohama/lexima.vim'
 
-" Text objects and motions for Python
+" text objects and motions for Python
 Plug 'jeetsukumaran/vim-pythonsense'
 
-" User Text objects
+" user Text objects
 Plug 'kana/vim-textobj-user'
-" Funcions
+
+" funcions Text-object
 Plug 'kana/vim-textobj-function'
-" heuristic function
+" heuristic function Text-object
 Plug 'haya14busa/vim-textobj-function-syntax'
+
+" comment Text-object.
+Plug 'glts/vim-textobj-comment'
+let g:textobj_comment_no_default_key_mappings = 1
+omap agc <Plug>(textobj-comment-a)
+omap igc <Plug>(textobj-comment-i)
+omap agC <Plug>(textobj-comment-big-a)
+xmap agc <Plug>(textobj-comment-a)
+xmap igc <Plug>(textobj-comment-i)
+xmap agC <Plug>(textobj-comment-big-a)
+
+" word-based columns Text-object
+Plug 'idbrii/textobj-word-column.vim'
 
 " stop repeating the basic movement keys
 Plug 'takac/vim-hardtime'
@@ -305,7 +319,8 @@ let g:hardtime_default_on = 1
 let g:hardtime_showmsg = 1
 let g:hardtime_ignore_quickfix = 1
 let g:hardtime_maxcount = 3
-let g:list_of_normal_keys = ["h", "j", "k", "l", "-", "+"]
+let g:list_of_normal_keys = ["h", "j", "k", "l"]
+let g:hardtime_ignore_buffer_patterns = [ "fugitive.*", "\.git.*"]
 
 "  Snippets
 Plug 'SirVer/ultisnips'
@@ -592,6 +607,19 @@ function! s:VSetSearch()
 endfunction
 vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR>
 vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR>
+
+" Close vim if the quickfix window or other listed window
+" is the only window visible
+autocmd WinEnter * call s:CloseOnlyWindow()
+
+function! s:CloseOnlyWindow() abort
+  if winnr('$') == 1
+    let s:buftype =  getbufvar(winbufnr(winnr()), "&buftype")
+    if s:buftype == "quickfix" || &filetype == 'twiggy'
+      q
+    endif
+  endif
+endfunction
 
 function! RenameFile() abort
   let old_name = expand('%')

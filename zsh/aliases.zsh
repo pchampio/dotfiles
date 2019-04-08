@@ -30,7 +30,7 @@ alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
 alias neof="neofetch --memory_display barinfo"
 alias grip="grip --pass afab9ab158c3a52283f9bf2adfc2b6a3fe6286b2 -b"
-alias weeb_send="rsync -vPh ~/Weeb/* drakirus@drakirus.xyz:APP/data/www/gif --rsh='ssh -p2242' "
+alias weeb_send="rsync -avPh ~/Weeb/ drakirus@drakirus.xyz:APP/data/www/gif --rsh='ssh -p2242' "
 alias resume_send="test -f ~/Téléchargements/resume.pdf && mv ~/Téléchargements/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@drakirus.xyz:APP/data/www/resume --rsh='ssh -p2242'"
 alias mv="mv -iv"
 alias cp="cp -aiv"
@@ -89,4 +89,5 @@ export EDITOR='nvim'
 alias vim="nvim"
 if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
   alias vim="nvimux-vim"
+  export EDITOR='nvr'
 fi

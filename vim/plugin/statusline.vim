@@ -51,6 +51,7 @@ if has('statusline')
 
   set statusline+=%{statusline#wc()}
   set statusline+=%([%{&spell?&spelllang:''}%{statusline#jobs()}]%)
+  set statusline+=%{FugitiveStatusline()}
   set statusline+=%6*  " Switch to User6 highlight group (Powerline arrow).
   set statusline+=\    " Space.
   set statusline+=    " Powerline arrow.

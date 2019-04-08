@@ -15,7 +15,7 @@ function nvim() {
 
 function nvimux-vim() {
   if [[ "$#" == 0 ]]; then
-    nvr --remote-wait-silent +'set bufhidden=delete' -c "CtrlP `pwd`"
+    nvr -c "CtrlP `pwd`"
     return
   fi
   nvr $*

@@ -137,6 +137,8 @@ function! s:get_custom_statusline(action) abort
     return 'Gundo'
   elseif fname == '__Mundo_Preview__'
     return 'Gundo\ Diff'
+  elseif &ft == 'twiggy'
+    return 'Twiggy'
   elseif &ft == 'qf'
     if a:action == 'blur'
       return '\ Quickfix'
