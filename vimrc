@@ -174,6 +174,7 @@ nmap <silent> ]e <Plug>(ale_previous_wrap)
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'markdown': ['remove_trailing_lines'],
+\   'liquid': ['remove_trailing_lines'],
 \   'python': ['autopep8'],
 \   'go': ['gofmt'],
 \}
