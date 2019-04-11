@@ -181,7 +181,8 @@ share() {
   fi
 
   # Share
-  ssh -p 2242 -NR 2280:0.0.0.0:2280 drakirus@drakirus.com 2>&1 &
+  echo "https://2280.proxme.drakirus.com/"
+  ssh -NR 2280:localhost:2280 share@drakirus.com 2>&1 &
   PID=$!
 
   # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
