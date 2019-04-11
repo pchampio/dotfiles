@@ -87,12 +87,14 @@ EOF
 endif
 
 " Git
-set diffopt+=vertical
-let g:twiggy_close_on_fugitive_command = 1
-nnoremap <silent> - :Gstatus<cr>:10wincmd_<cr>
 Plug 'tpope/vim-fugitive' " Git wrapper
-nnoremap _ :Twiggy<cr>
+nnoremap <silent> - :Gstatus<cr>:10wincmd_<cr>
+au FileType gitrebase nnoremap <buffer> <silent> <c-s><c-s> :s/^#\?\w\+/squash/<cr>:noh<cr>
+set diffopt+=vertical
+
 Plug 'sodapopcan/vim-twiggy' " Git branch management
+let g:twiggy_close_on_fugitive_command = 1
+nnoremap _ :Twiggy<cr>
 
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
@@ -412,7 +414,10 @@ function! s:idleboot() abort
     autocmd!
   augroup END
 
+  " message info
   echohl ModeMsg | echon '-- Deoplete enabled --' | echohl None
+  call timer_start(2000, function('execute', ['echo ""'])) " cleanup
+
   call deoplete#enable()
 endfunction
 
