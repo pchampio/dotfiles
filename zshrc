@@ -84,8 +84,8 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.g
 
 
 # JAVA_HOME
-export JAVA_HOME=/usr/lib/jvm/jdk-9.0.1
-# export JAVA_HOME=/usr/lib/jvm/java-8-jdk
+# export JAVA_HOME=/usr/lib/jvm/jdk-9.0.1
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
 
 export AS_JAVA=/usr/lib/jvm/java-8-jdk
 
