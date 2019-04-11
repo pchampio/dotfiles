@@ -89,7 +89,9 @@ endif
 " Git
 set diffopt+=vertical
 let g:twiggy_close_on_fugitive_command = 1
+nnoremap <silent> - :Gstatus<cr>:10wincmd_<cr>
 Plug 'tpope/vim-fugitive' " Git wrapper
+nnoremap _ :Twiggy<cr>
 Plug 'sodapopcan/vim-twiggy' " Git branch management
 
 " tmux-navigator configuration
