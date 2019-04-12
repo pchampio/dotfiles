@@ -96,6 +96,8 @@ Plug 'sodapopcan/vim-twiggy' " Git branch management
 let g:twiggy_close_on_fugitive_command = 1
 nnoremap _ :Twiggy<cr>
 
+Plug 'junegunn/gv.vim'
+
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -222,7 +224,6 @@ Plug 'haya14busa/vim-edgemotion'
 map J <Plug>(edgemotion-j)
 map K <Plug>(edgemotion-k)
 
-
 " The missing motion for Vim
 Plug 'justinmk/vim-sneak'
 let g:sneak#prompt = 'Sneak >>> '
@@ -257,6 +258,7 @@ nmap ]y <plug>(YoinkRotateForward)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
 
+" replace with register
 Plug 'svermeulen/vim-subversive'
 nmap r <plug>(SubversiveSubstitute)
 nmap rr <plug>(SubversiveSubstituteLine)
@@ -266,6 +268,9 @@ xmap P <plug>(SubversiveSubstitute)
 " cursor will not move when substitutions are applied
 let g:subversivePreserveCursorPosition = 1
 noremap R r
+
+" Vim Exchange
+Plug 'tommcdo/vim-exchange'
 
 " ie = inner entire buffer
 onoremap ie :exec "normal! ggVG"<cr>
