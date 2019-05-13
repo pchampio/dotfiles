@@ -205,8 +205,13 @@ Plug 'machakann/vim-sandwich'
 " highlight yank
 Plug 'machakann/vim-highlightedyank'
 autocmd ColorScheme * hi HighlightedyankRegion guifg=#d33682 gui=underline,bold
-
 let g:highlightedyank_highlight_duration = 500
+
+
+" Indent Guides
+Plug 'nathanaelkane/vim-indent-guides'
+let g:indent_guides_color_change_percent = 3
+let g:indent_guides_enable_on_vim_startup = 1
 
 " Aligning text
 Plug 'junegunn/vim-easy-align'
@@ -216,6 +221,14 @@ xmap <leader>ga <Plug>(EasyAlign)
 " simplifies the transition between multiline and single-line code
 Plug 'AndrewRadev/splitjoin.vim'
 let g:splitjoin_trailing_comma = 1
+
+Plug 'AndrewRadev/switch.vim'
+
+autocmd FileType markdown let b:switch_custom_definitions =
+    \ [
+    \ { '\[\s*\]': '[x]', '\[x\]': '[ ]', },
+    \ { '\(\s*-\s*\)':'\1TODO', 'TODO': 'DONE', 'DONE': ''},
+    \ ]
 
 " move function arguments
 Plug 'AndrewRadev/sideways.vim'
