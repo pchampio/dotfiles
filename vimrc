@@ -240,7 +240,7 @@ xmap aa <Plug>SidewaysArgumentTextobjA
 omap ia <Plug>SidewaysArgumentTextobjI
 xmap ia <Plug>SidewaysArgumentTextobjI
 
-Plug 'haya14busa/vim-edgemotion'
+Plug 'Drakirus/vim-edgemotion'
 map J <Plug>(edgemotion-j)
 map K <Plug>(edgemotion-k)
 
