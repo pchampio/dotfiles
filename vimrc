@@ -352,6 +352,9 @@ let g:hardtime_maxcount = 3
 let g:list_of_normal_keys = ["h", "j", "k", "l"]
 let g:hardtime_ignore_buffer_patterns = [ "fugitive.*", "\.git.*"]
 
+" Copy text over SSH
+" Plug 'haya14busa/vim-poweryank'
+
 "  Snippets
 Plug 'SirVer/ultisnips'
 let g:UltiSnipsExpandTrigger="<leader><tab>"
