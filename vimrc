@@ -588,7 +588,7 @@ inoremap <leader>a à
 inoremap <leader>u ù
 inoremap <c-u> ȗ
 inoremap <leader>e é
-inoremap <c-e> è
+inoremap <leader>.e è
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en tw=80
 
 " nnoremap <A-s> w[sei<C-x>s
