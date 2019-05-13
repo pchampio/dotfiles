@@ -160,10 +160,6 @@ autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('
 Plug 'sheerun/vim-polyglot'
 Plug 'adimit/prolog.vim'
 
-" Text outlining and task management
-Plug 'jceb/vim-orgmode'
-
-" Theme
 Plug 'chriskempson/base16-vim'
 
 " syntastic
