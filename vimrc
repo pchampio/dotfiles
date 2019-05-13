@@ -91,6 +91,9 @@ Plug 'tpope/vim-fugitive' " Git wrapper
 nnoremap <silent> - :Gstatus<cr>:10wincmd_<cr>
 au FileType gitrebase nnoremap <buffer> <silent> <c-s><c-s> :s/^#\?\w\+/squash/<cr>:noh<cr>
 set diffopt+=vertical
+set diffopt+=iwhiteall
+
+Plug 'whiteinge/diffconflicts'
 
 Plug 'sodapopcan/vim-twiggy' " Git branch management
 let g:twiggy_close_on_fugitive_command = 1
