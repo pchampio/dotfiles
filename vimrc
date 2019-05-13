@@ -179,8 +179,8 @@ let g:ale_open_list = 1
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
 " navigate between errors
-nmap <silent> [e <Plug>(ale_next_wrap)
-nmap <silent> ]e <Plug>(ale_previous_wrap)
+nmap <silent> ]e <Plug>(ale_next_wrap)
+nmap <silent> [e <Plug>(ale_previous_wrap)
 
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
