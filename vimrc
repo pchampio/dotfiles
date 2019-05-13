@@ -13,6 +13,12 @@ if exists('veonim')
   set linespace=15
 endif
 
+" simulate tmux shortcuts in neovim
+Plug 'Vigemus/nvimux', {'do': 'cp -r ./lua $HOME/.config/nvim/'}
+
+" abstraction on top of neovim terminal
+Plug 'kassio/neoterm'
+
 if !exists('$TMUX')
 
   " use neovim-remote (pip3 install neovim-remote) allows
@@ -21,15 +27,9 @@ if !exists('$TMUX')
   let $GIT_EDITOR  = 'nvr -cc split --remote-wait +"setlocal bufhidden=delete"'
   let $EDITOR      = 'nvr'
 
-  " abstraction on top of neovim terminal
-  Plug 'kassio/neoterm'
-
   " send stuff to REPL using NeoTerm
-  nnoremap <silent> <c-s>l :TREPLSendLine<CR>
-  vnoremap <silent> <c-s>l :TREPLSendSelection<CR>
-
-  " simulate tmux shortcuts in neovim
-  Plug 'Vigemus/nvimux', {'do': 'cp -r ./lua $HOME/.config/nvim/'}
+  nnoremap <silent> <c-Space>l :TREPLSendLine<CR>
+  vnoremap <silent> <c-Space>l :TREPLSendSelection<CR>
 
 lua << EOF
 local nvimux = require('nvimux')
