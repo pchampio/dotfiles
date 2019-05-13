@@ -153,7 +153,15 @@ let g:ctrlp_abbrev = {
     \ }
 let g:ctrlp_default_input = 1
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && isdirectory(".git") && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+
+" sudo apt install cmake python-dev libboost-all-dev
+Plug 'nixprime/cpsm', { 'do': 'env PY3=ON ./install.sh' }
+let g:ctrlp_match_func = { 'match': 'cpsm#CtrlPMatch' }
+
+Plug 'tacahiroy/ctrlp-funky'
+nnoremap <Leader>f :CtrlPFunky<Cr>
+let g:ctrlp_funky_syntax_highlight = 1
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
