@@ -49,9 +49,7 @@ if has('statusline')
   set statusline+=%*   " Reset highlight group.
   set statusline+=%=   " Split point for left and right groups.
 
-  set statusline+=%{statusline#wc()}
-  set statusline+=%([%{&spell?&spelllang:''}%{statusline#jobs()}]%)
-  set statusline+=%{FugitiveStatusline()}
+  set statusline+=[%{statusline#left()}]
   set statusline+=%6*  " Switch to User6 highlight group (Powerline arrow).
   set statusline+=\    " Space.
   set statusline+=    " Powerline arrow.

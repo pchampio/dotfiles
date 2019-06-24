@@ -5,19 +5,24 @@
 [core]
 	excludesfile = /home/drakirus/.gitignore
   autocrlf = input
-	pager = less -F -X
+	pager = less -FRSX
 [commit]
 	template = /home/drakirus/.gitmessage
 [user]
 	name = Drakirus
-  email = pierrescalade@gmail.com
+  email = prr.champion@gmail.com
 [github]
 	user = Drakirus
 [pager]
   diff = diff-so-fancy | less --tabs=1,5 -RFX
   show = diff-so-fancy | less --tabs=1,5 -RFX
 [merge]
-    tool = meld
+	tool = diffconflicts
 [mergetool "meld"]
     # Choose one of these 2 lines (not both!) explained below.
     cmd = meld "$LOCAL" "$MERGED" "$REMOTE" --output "$MERGED"
+[mergetool "diffconflicts"]
+	cmd = nvim -c DiffConflicts \"$MERGED\" \"$BASE\" \"$LOCAL\" \"$REMOTE\"
+	trustExitCode = true
+[mergetool]
+	keepBackup = false

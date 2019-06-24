@@ -278,17 +278,17 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/drakirus/Images/Camera_s4" 
+        last_path = "/home/drakirus/Images" 
         startup_path = "0" 
         exit_on_close = "false" 
 
-        main_window.x = "131" 
-        main_window.y = "115" 
-        main_window.w = "1785" 
-        main_window.h = "850" 
+        main_window.x = "348" 
+        main_window.y = "30" 
+        main_window.w = "1568" 
+        main_window.h = "1020" 
         main_window.maximized = "false" 
         main_window.hdivider_pos = "497" 
-        main_window.vdivider_pos = "200" 
+        main_window.vdivider_pos = "383" 
 
         folder_window.vdivider_pos = "100" 
 
@@ -302,7 +302,7 @@
         properties_window.h = "0" 
 
         tools_float = "false" 
-        tools_hidden = "false" 
+        tools_hidden = "true" 
 
         toolbar_hidden = "false" 
         show_info_pixel = "false" 
@@ -314,8 +314,8 @@
         log_window.w = "520" 
         log_window.h = "400" 
 
-        animate = "false" >
-        <bar enabled = "true" width = "545" >
+        animate = "true" >
+        <bar enabled = "false" width = "250" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />

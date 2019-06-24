@@ -1,5 +1,5 @@
 {
-    "version": "0.95.4",
+    "version": "0.95.7",
     "userCodeDir": null,
     "settings": {
         "isFirstRun": true,
@@ -7,7 +7,7 @@
         "menuTakesFocus": false,
         "showTrayIcon": false,
         "sortByUsageCount": true,
-        "promptToSave": true,
+        "promptToSave": false,
         "enableQT4Workaround": false,
         "interfaceType": "XRecord",
         "undoUsingBackspace": false,
@@ -15,7 +15,7 @@
             1064,
             656
         ],
-        "hPanePosition": 265,
+        "hPanePosition": 309,
         "columnWidths": [
             150,
             50,

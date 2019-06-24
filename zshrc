@@ -73,10 +73,6 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
 
 # local SUFFIX=$(printf '❯%.0s' {1..$LVL})
 
-# PROMPT THEME
-export PROMPT='%(?.%F{green}.%F{red})❯%f '
-# export RPROMPT='' # set asynchronously and dynamically
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 # export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'

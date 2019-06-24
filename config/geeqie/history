@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/lab/server/backup/data/www/roadtrip/images/italie-trip"
-"/home/drakirus/lab/server/backup/data/www/roadtrip/images/italie-trip/stop11"
-"/home/drakirus/lab/server/backup/data/www/roadtrip/images/italie-trip/stop24"
-"/home/drakirus/lab/server/droppy/eduroam"
-"/home/drakirus/lab/server/droppy/Tony"
-"/home/drakirus/lab/server/droppy/slackline/salome"
-"/home/drakirus/lab/server/droppy/slackline/philippe"
-"/home/drakirus/lab/server/droppy/slackline/pierre"
-"/home/drakirus/lab/hugo/prr/themes/even/static"
-"/home/drakirus/Téléchargements"
+"/home/drakirus/Images/buda_2019/day_3"
+"/home/drakirus/Images/fougere"
+"/home/drakirus/smb/ITHOR/wwwroot"
+"/home/drakirus/Images/Camera_s4"
+"/home/drakirus/Images/Camera_MI"
+"/home/drakirus/smb/HOTH/packages/MEMBERZ/OTR YEPS/Elts graphiques/screenshots/6.5 inch (iPhone Xs Max)"
+"/home/drakirus/Weeb"
+"/home/drakirus/Images/louviers_les_grimpeurs_alcoolos"
+"/tmp"
+"/home/drakirus/Images"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -37,5 +37,6 @@
 
 [move_copy]
 "/home/drakirus"
+"/home/drakirus/Images"
 
 #end

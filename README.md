@@ -156,8 +156,19 @@ https://github.com/mscoutermarsh/dotfiles /
 http://github.com/thoughtbot/dotfiles
 
 
+## Nvim
 
+```
 wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
 chmod +x nvim
 sudo chown root:root nvim
 sudo mv nvim /usr/bin
+```
+
+
+
+## Firefox
+
+Alt key map
+
+[about:config?filter=ui.key.menuAccessKeyFocuses](about:config?filter=ui.key.menuAccessKeyFocuses) -> to false

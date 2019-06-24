@@ -88,18 +88,37 @@ endif
 
 " Git
 Plug 'tpope/vim-fugitive' " Git wrapper
-nnoremap <silent> - :Gstatus<cr>:10wincmd_<cr>
+nnoremap <silent> - :Gstatus<cr>:13wincmd_<cr>:call search('\v<' . expand('#:t') . '>')<cr>
 au FileType gitrebase nnoremap <buffer> <silent> <c-s><c-s> :s/^#\?\w\+/squash/<cr>:noh<cr>
 set diffopt+=vertical
 set diffopt+=iwhiteall
+autocmd FileType gitcommit startinsert
+autocmd FileType gitcommit setlocal spell! spelllang=en
 
 Plug 'whiteinge/diffconflicts'
 
 Plug 'sodapopcan/vim-twiggy' " Git branch management
 let g:twiggy_close_on_fugitive_command = 1
 nnoremap _ :Twiggy<cr>
+Plug 'junegunn/gv.vim' " Git commit history (integrates into twiggy)
 
-Plug 'junegunn/gv.vim'
+" A Vim plugin which shows a git diff in the numberline
+" Plug 'mhinz/vim-signify'
+let g:signify_sign_change = '~'
+nmap ]g <plug>(signify-next-hunk)
+nmap [g <plug>(signify-prev-hunk)
+
+Plug 'airblade/vim-gitgutter'
+let g:gitgutter_map_keys = 0
+nmap ]h <Plug>GitGutterNextHunk
+nmap [h <Plug>GitGutterPrevHunk
+nmap <Leader>ha <Plug>GitGutterStageHunk
+nmap <Leader>hu <Plug>GitGutterUndoHunk
+nmap <Leader>hs <Plug>GitGutterPreviewHunk
+nnoremap <Leader>hS :GitGutterLineHighlightsToggle<CR>
+
+Plug 'wincent/vcs-jump'
+nmap <Leader>h <Plug>(VcsJump)
 
 " tmux-navigator configuration
 Plug 'christoomey/vim-tmux-navigator'
@@ -113,8 +132,6 @@ Plug 'wincent/ferret'
 " prevent any default mapping from being configured
 let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
-" nnoremap <c-n> :cnf<cr>
-" nnoremap <c-p> :cpf<cr>
 nmap <leader>E <Plug>(FerretAcks)
 nnoremap g/ :Ack<space>
 
@@ -173,30 +190,44 @@ Plug 'chriskempson/base16-vim'
 " syntastic
 Plug 'w0rp/ale'
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_list_window_size = 5
+let g:ale_virtualtext_cursor = 1
 let g:ale_lint_on_enter = 0
-let g:ale_open_list = 1
+let g:ale_list_window_size = 5
+let g:ale_open_list = 0
+let g:ale_set_loclist = 1
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
 " navigate between errors
 nmap <silent> ]e <Plug>(ale_next_wrap)
 nmap <silent> [e <Plug>(ale_previous_wrap)
 
+nmap <silent> <leader>dt <Plug>(ale_toggle_buffer)
+nnoremap <silent> <leader>d<Space> :call ALEListToggle()<cr>
+
+function! ALEListToggle()
+  if g:ale_open_list
+    let g:ale_open_list = 0
+    lclose
+  else
+    let g:ale_open_list = 1
+  endif
+  ALELint
+endfunction
+
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'markdown': ['remove_trailing_lines'],
 \   'liquid': ['remove_trailing_lines'],
 \   'python': ['autopep8'],
-\   'go': ['gofmt'],
+\   'go': ['goimports'],
+\   'dart': ['dartfmt'],
 \}
-let g:ale_fix_on_save = 1
-let g:ale_python_autopep8_options = '--max-line-length 115'
 
-" A Vim plugin which shows a git diff in the numberline
-Plug 'mhinz/vim-signify'
-let g:signify_sign_change = '~'
-nmap ]g <plug>(signify-next-hunk)
-nmap [g <plug>(signify-prev-hunk)
+autocmd BufEnter * if @% =~? '^fugitive.*' | let b:ale_fix_on_save = 0 | endif
+
+let g:ale_fix_on_save = 1
+let g:ale_python_flake8_options = '--max-line-length=110 --ignore=' "E221,E241'
+let g:ale_python_autopep8_options = ' --aggressive  --max-line-length 90'
 
 " surround
 Plug 'machakann/vim-sandwich'
@@ -319,16 +350,13 @@ let g:mundo_verbose_graph=0
 " insert or delete brackets
 Plug 'cohama/lexima.vim'
 
-" text objects and motions for Python
-Plug 'jeetsukumaran/vim-pythonsense'
-
 " user Text objects
 Plug 'kana/vim-textobj-user'
+" https://github.com/kana/vim-textobj-user/wiki
+Plug 'kana/vim-textobj-function' " funcions Text-object
+Plug 'haya14busa/vim-textobj-function-syntax' " heuristic function Text-object
 
-" funcions Text-object
-Plug 'kana/vim-textobj-function'
-" heuristic function Text-object
-Plug 'haya14busa/vim-textobj-function-syntax'
+Plug 'jeetsukumaran/vim-pythonsense' "Python
 
 " comment Text-object.
 Plug 'glts/vim-textobj-comment'
@@ -368,31 +396,42 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " let g:deoplete#enable_at_startup = 1 " Use Idleboot (faster boot-time)
 " pip3 install --user --upgrade pynvim
 
+Plug 'davidhalter/jedi-vim', {'for': 'python'}
+let g:jedi#use_splits_not_buffers = "right"
+let g:jedi#completions_enabled = 0
+let g:jedi#show_call_signatures = 0
+
+Plug 'deoplete-plugins/deoplete-jedi'
+let g:deoplete#sources#jedi#statement_length = 30
+Plug 'Shougo/echodoc.vim', {'for': 'python'}
+let g:echodoc#enable_at_startup = 1
+let g:echodoc#type = 'floating'
+Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
+
 " Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
 inoremap <expr> <Tab> pumvisible() ? "\<c-y>" : "\<Tab>"
 
-set completeopt=noinsert,menuone,noselect
+set completeopt=noinsert,menu,noselect
+
+let g:LanguageClient_serverCommands = {
+    \ 'java': ['/bin/jdtls'],
+    \ 'javascript': ['/usr/bin/javascript-typescript-stdio'],
+    \ 'typescript': ['/usr/bin/javascript-typescript-stdio'],
+    \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
+    \ }
+    " \ 'python': ['/home/drakirus/.local/bin/pyls'],
 
 " LSP
 Plug 'autozimu/LanguageClient-neovim', {
       \ 'branch': 'next',
       \ 'do': 'bash install.sh',
-      \ 'for': ['go', 'java', 'python', 'javascript', 'typescript', 'cpp']}
+      \ 'for': keys(g:LanguageClient_serverCommands)}
 
 let g:LanguageClient_loggingFile = '/tmp/lc.log'
 let g:LanguageClient_loggingLevel = 'WARN'
 let g:LanguageClient_settingsPath = '/home/drakirus/dotfiles/LSP_settings.json'
 " let g:LanguageClient_diagnosticsEnable = 0
-
-let g:LanguageClient_serverCommands = {
-    \ 'go': ['/bin/go-langserver'],
-    \ 'java': ['/bin/jdtls'],
-    \ 'python': ['/home/drakirus/.local/bin/pyls'],
-    \ 'javascript': ['/usr/bin/javascript-typescript-stdio'],
-    \ 'typescript': ['/usr/bin/javascript-typescript-stdio'],
-    \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
-    \ }
 
 function! LC_maps()
   if has_key(g:LanguageClient_serverCommands, &filetype)
@@ -401,6 +440,12 @@ function! LC_maps()
     nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
     nnoremap <silent> <leader>g :call LanguageClient_textDocument_definition()<CR>
     let b:ale_enabled = 0
+  elseif &ft == 'python'
+    let g:jedi#goto_command = "<leader>g"
+    let g:jedi#goto_assignments_command = "<leader>d"
+    let g:jedi#documentation_command = "<leader>K"
+    let g:jedi#usages_command = "<leader>n"
+    let g:jedi#rename_command = "<leader>e"
   else
     noremap <leader>g <c-]>
   endif
@@ -431,7 +476,7 @@ call plug#end()
 augroup Idleboot
   autocmd!
   if has('vim_starting')
-    set updatetime=2000
+    set updatetime=700
     autocmd CursorHold,CursorHoldI * call s:idleboot()
   endif
 augroup END
@@ -536,10 +581,16 @@ set splitbelow
 set splitright
 
 " resizing a window split
-nnoremap <Left> <C-w>10<
-nnoremap <Down> <C-W>5-
-nnoremap <Up> <C-W>5+
-nnoremap <Right> <C-w>10>
+nnoremap <S-Left> <C-w>10<
+nnoremap <S-Down> <C-W>5-
+nnoremap <S-Up> <C-W>5+
+nnoremap <S-Right> <C-w>10>
+
+" faster quicklist
+nnoremap <silent> <Up> :cprevious<CR>
+nnoremap <silent> <Down> :cnext<CR>
+nnoremap <silent> <Left> :cpfile<CR>
+nnoremap <silent> <Right> :cnfile<CR>
 
 "Moving lines
 nnoremap <A-k> :m .-2<CR>==
@@ -630,9 +681,6 @@ autocmd BufReadPost *
       \   line("'\"") > 1 && line("'\"") < line("$") && &filetype != "svn" |
       \   exe "normal! g`\"" |
       \ endif
-
-autocmd FileType gitcommit startinsert
-autocmd FileType svn startinsert
 
 " Visual search mappings
 function! s:VSetSearch()

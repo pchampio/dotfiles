@@ -1,0 +1,13 @@
+{
+  "pyls": {
+    "plugins": {
+      "pycodestyle": {
+        "enabled": true,
+        "ignore": [
+          "E501",
+          "E114"
+        ]
+      }
+    }
+  }
+}

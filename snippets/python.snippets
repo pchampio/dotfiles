@@ -2,5 +2,32 @@ snippet log "logger.ingo()"
 logger.info($0)
 endsnippet
 
+snippet groupby "groupby list" b
+$2 = {k: [v for v in logs if v['$1'] == k] for k, val in
+     itertools.groupby(logs, lambda x: x['$1'])}
+endsnippet
+
+snippet noqal "Hide error: Line too long"
+# noqa E501
+endsnippet
+
+snippet ld "lambda" iw
+lambda ${1:x}: ${0:${VISUAL:action}}
+endsnippet
+
+snippet iter "iterator"
+#  self.index = 0  # to set in __init__
+
+def __iter__(self):
+    return self
+
+def __next__(self):
+    try:
+        result = self.$1[self.index]
+      except IndexError:
+        raise StopIteration
+      self.index += 1
+      return result
+endsnippet
 
 # vim:set foldmethod=manual:

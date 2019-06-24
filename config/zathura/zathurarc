@@ -21,6 +21,9 @@ set first-page-column 1:1
 
 set guioptions hv
 
+map <C-e> scroll half-down
+map <C-y> scroll half-up
+
 map [fullscreen] W adjust_window width
 map [normal] W adjust_window width
 map [fullscreen] E adjust_window best-fit

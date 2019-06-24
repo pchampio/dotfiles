@@ -1,0 +1,31 @@
+{
+    "type": "phrase",
+    "description": "uacent",
+    "modes": [
+        1
+    ],
+    "usageCount": 19,
+    "prompt": false,
+    "omitTrigger": false,
+    "matchCase": false,
+    "showInTrayMenu": false,
+    "abbreviation": {
+        "abbreviations": [
+            ",,u"
+        ],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": true,
+        "triggerInside": true,
+        "wordChars": "[\\w]"
+    },
+    "hotkey": {
+        "modifiers": [],
+        "hotKey": null
+    },
+    "filter": {
+        "regex": "Navigator.Firefox",
+        "isRecursive": false
+    },
+    "sendMode": "kb"
+}

@@ -1,9 +1,11 @@
-augroup FUCUS
+augroup FOCUS
   autocmd!
   autocmd BufEnter,FocusGained,VimEnter,WinEnter * call statusline#focus()
   autocmd FocusLost,WinLeave * call statusline#blur()
   autocmd User FerretAsyncStart call statusline#setjobs()
   autocmd User FerretAsyncFinish call statusline#unsetjobs()
+  autocmd User ALELintPre call statusline#setjobs()
+  autocmd User ALELintPost call statusline#unsetjobs()
 
   if exists('#TextChangedI')
     autocmd BufWinEnter,BufWritePost,FileWritePost,TextChanged,TextChangedI,WinEnter * call statusline#check_modified()
@@ -67,11 +69,12 @@ function! statusline#unsetjobs()
   let g:async = 0
 endfunction
 
-function! statusline#jobs() abort
-  if g:async == 1
-    return 'async'
-  end
-  return ''
+function! statusline#left() abort
+  let wc = statusline#wc()
+  let spelllang = &spell?'('.&spelllang.')':''
+  let async = g:async==1?'async':''
+  let fugitive = substitute(FugitiveStatusline(), '[Git(\(.*\))\]', '𝑔 \1', '')
+  return join(filter([wc, spelllang, fugitive, async], 'v:val != ""'), ', ')
 endfunction
 
 function! statusline#fenc() abort
@@ -137,14 +140,13 @@ function! s:get_custom_statusline(action) abort
     return 'Gundo'
   elseif fname == '__Mundo_Preview__'
     return 'Gundo\ Diff'
+  elseif bufname('%') =~? '^fugitive.*'
+    let b:ale_fix_on_save = 0
+    return '\ Fugitive%<\ %3*%t%*'
   elseif &ft == 'twiggy'
     return 'Twiggy'
   elseif &ft == 'qf'
-    if a:action == 'blur'
-      return '\ Quickfix'
-    else
-      return '\ Quickfix%<\ %=\ ℓ\ %l/%L\ @\ %c%V\ %1*%p%%%*'
-    endif
+      return '\ Quickfix%<\ %=\ ℓ\ %l/%L\ %*'
   endif
   return 1 " Use default.
 endfunction
@@ -157,7 +159,7 @@ function! statusline#wc()
       let n = n + len(split(getline(lnum)))
       let lnum = lnum + 1
     endwhile
-    return "Words:" . n . " "
+    return '𝓌  ' . n " (Literal, \u1d4cc 'MATHEMATICAL SCRIPT SMALL W').
   endif
   return ""
 endfunction
