@@ -139,47 +139,34 @@ nnoremap g/ :Ack<space>
 Plug 'wincent/terminus'
 
 " Fuzzy finder
-Plug 'ctrlpvim/ctrlp.vim'
-" Checkout yoink mapping
-let g:ctrlp_map=''
-" let g:ctrlp_dotfiles = 1
-let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
-    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
-    \ 'PrtCurStart()':        ['<space>', '<c-a>'],
-\ }
-if executable('rg')
-  set grepprg=rg\ --color=never
-  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
-  let g:ctrlp_use_caching = 0
-endif
-" Ctrlp Style defined in autoload
-let g:ctrlp_status_func = {
-  \ 'main': 'CtrlP_main_status',
-  \ 'prog': 'CtrlP_progress_status'
-  \}
-let g:ctrlp_abbrev = {
-    \ 'gmode': 't',
-    \ 'abbrevs': [
-        \ {
-        \ 'pattern': ';',
-        \ 'expanded': ':',
-        \ 'mode': 'pfrz',
-        \ },
-        \ ]
-    \ }
-let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt']
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+let g:fzf_layout = { 'window': '10new' }
+let g:fzf_action = {
+  \ 'ctrl-i': 'split',
+  \ 'ctrl-s': 'vsplit' }
+let g:fzf_colors =
+      \ {'fg':     ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'PreProc'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'Normal'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'Comment'],
+      \ 'prompt':  ['fg', 'Statement'],
+      \ 'pointer': ['fg', 'Comment'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Comment'],
+      \ 'header':  ['fg', 'Comment'] }
+imap <c-x><c-f> <plug>(fzf-complete-path)
+
+autocmd! FileType fzf
+autocmd  FileType fzf set laststatus=0 noshowmode noruler norelativenumber nonumber | echo ""
+  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler relativenumber number
+
 " let g:ctrlp_default_input = 1
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git") || filereadable(".gitignore")) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
-
-" sudo apt install cmake python-dev libboost-all-dev
-Plug 'nixprime/cpsm', { 'do': 'env PY3=ON ./install.sh' }
-let g:ctrlp_match_func = { 'match': 'cpsm#CtrlPMatch' }
-
-Plug 'tacahiroy/ctrlp-funky'
-nnoremap <Leader>f :CtrlPFunky<Cr>
-let g:ctrlp_funky_syntax_highlight = 1
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git") || filereadable(".gitignore")) && !exists('g:isReadingFromStdin') | execute' FZF' | endif
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
@@ -293,7 +280,7 @@ let g:yoinkMaxItems = 8
 let g:yoinkMoveCursorToEndOfPaste = 1
 let g:yoinkSwapClampAtEnds = 0
 " Ctrlp fuzzy finder w/ yoink
-nmap <expr> <c-p> yoink#isSwapping() ? '<plug>(YoinkPostPasteSwapForward)' : '<Plug>(ctrlp)'
+nmap <expr> <c-p> yoink#isSwapping() ? '<plug>(YoinkPostPasteSwapForward)' : ';<c-u>FZF<CR>'
 " nmap <c-p> <Plug>(ctrlp)
 nmap [y <plug>(YoinkRotateBack)
 nmap ]y <plug>(YoinkRotateForward)

@@ -82,10 +82,9 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
 # local SUFFIX=$(printf '❯%.0s' {1..$LVL})
 
 zstyle :prompt:pure:prompt:success color green
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
-# export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 
 
 # JAVA_HOME
