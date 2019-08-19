@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/buda_2019/day_3"
-"/home/drakirus/Images/fougere"
-"/home/drakirus/smb/ITHOR/wwwroot"
-"/home/drakirus/Images/Camera_s4"
 "/home/drakirus/Images/Camera_MI"
 "/home/drakirus/smb/HOTH/packages/MEMBERZ/OTR YEPS/Elts graphiques/screenshots/6.5 inch (iPhone Xs Max)"
 "/home/drakirus/Weeb"
 "/home/drakirus/Images/louviers_les_grimpeurs_alcoolos"
-"/tmp"
 "/home/drakirus/Images"
+"/home/drakirus/dotfiles/mutt-wizard"
+"/home/drakirus/Téléchargements/tmp"
+"/tmp/drakirus-mutt-tmp"
+"/home/drakirus"
+"/tmp"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/run/media/drakirus/EC08-E119/DCIM/100PENTX"
+".[path]/tmp"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"

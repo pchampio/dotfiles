@@ -3,8 +3,9 @@ logger.info($0)
 endsnippet
 
 snippet groupby "groupby list" b
-$2 = {k: [v for v in logs if v['$1'] == k] for k, val in
-     itertools.groupby(logs, lambda x: x['$1'])}
+# import itertools
+$2 = {k: [v for v in $3 if v['$1'] == k] for k, val in
+     itertools.groupby($3, lambda x: x['$1'])}
 endsnippet
 
 snippet noqal "Hide error: Line too long"

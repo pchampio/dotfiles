@@ -18,6 +18,8 @@ source $ZSH/oh-my-zsh.sh
 source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
 source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+export BROWSER=/bin/firefox
+
 # Show contents of directory after cd-ing into it
 chpwd() {
   ls
@@ -25,6 +27,12 @@ chpwd() {
     source ./venv/bin/activate
   fi
 }
+
+# mw
+PATH=$PATH:$HOME/dotfiles/mutt-wizard/bin
+
+# perl
+PATH=$PATH:/usr/bin/core_perl/
 
 # GO config
 # mkdir -p ~/lab/go/{pkg,src,bin}
@@ -73,6 +81,7 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
 
 # local SUFFIX=$(printf '❯%.0s' {1..$LVL})
 
+zstyle :prompt:pure:prompt:success color green
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 # export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'

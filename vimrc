@@ -168,9 +168,10 @@ let g:ctrlp_abbrev = {
         \ },
         \ ]
     \ }
-let g:ctrlp_default_input = 1
+let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt']
+" let g:ctrlp_default_input = 1
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && isdirectory(".git") && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git") || filereadable(".gitignore")) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
 
 " sudo apt install cmake python-dev libboost-all-dev
 Plug 'nixprime/cpsm', { 'do': 'env PY3=ON ./install.sh' }
@@ -202,6 +203,7 @@ nmap <silent> ]e <Plug>(ale_next_wrap)
 nmap <silent> [e <Plug>(ale_previous_wrap)
 
 nmap <silent> <leader>dt <Plug>(ale_toggle_buffer)
+nnoremap <leader>df :let g:ale_fix_on_save = 0
 nnoremap <silent> <leader>d<Space> :call ALEListToggle()<cr>
 
 function! ALEListToggle()
@@ -221,6 +223,8 @@ let g:ale_fixers = {
 \   'python': ['autopep8'],
 \   'go': ['goimports'],
 \   'dart': ['dartfmt'],
+\   'c': ['clang-format'],
+\   'cpp': ['clang-format'],
 \}
 
 autocmd BufEnter * if @% =~? '^fugitive.*' | let b:ale_fix_on_save = 0 | endif
@@ -244,22 +248,9 @@ Plug 'nathanaelkane/vim-indent-guides'
 let g:indent_guides_color_change_percent = 3
 let g:indent_guides_enable_on_vim_startup = 1
 
-" Aligning text
-Plug 'junegunn/vim-easy-align'
-nmap <leader>ga <Plug>(EasyAlign)
-xmap <leader>ga <Plug>(EasyAlign)
-
 " simplifies the transition between multiline and single-line code
 Plug 'AndrewRadev/splitjoin.vim'
 let g:splitjoin_trailing_comma = 1
-
-Plug 'AndrewRadev/switch.vim'
-
-autocmd FileType markdown let b:switch_custom_definitions =
-    \ [
-    \ { '\[\s*\]': '[x]', '\[x\]': '[ ]', },
-    \ { '\(\s*-\s*\)':'\1TODO', 'TODO': 'DONE', 'DONE': ''},
-    \ ]
 
 " move function arguments
 Plug 'AndrewRadev/sideways.vim'
@@ -335,6 +326,7 @@ Plug 'scrooloose/nerdcommenter'
 let NERDUsePlaceHolders=0
 let NERDSpaceDelims=1 " add space after the comment symbol
 let g:NERDCustomDelimiters = {
+    \ 'gomod': { 'left' : '//'},
     \ 'c': { 'left' : '//', 'leftAlt' : '/*', 'rightAlt': '*/' },
     \ 'javascript.jsx': { 'left' : '//', 'leftAlt' : '/*', 'rightAlt': '*/' },
     \ 'caddy': { 'left' : '#' },
@@ -348,7 +340,11 @@ let g:mundo_playback_delay=40
 let g:mundo_verbose_graph=0
 
 " insert or delete brackets
-Plug 'cohama/lexima.vim'
+Plug 'tmsvg/pear-tree'
+" Smart pairs:
+let g:pear_tree_smart_openers = 1
+let g:pear_tree_smart_closers = 1
+let g:pear_tree_smart_backspace = 1
 
 " user Text objects
 Plug 'kana/vim-textobj-user'
@@ -376,7 +372,7 @@ Plug 'takac/vim-hardtime'
 let g:hardtime_default_on = 1
 let g:hardtime_showmsg = 1
 let g:hardtime_ignore_quickfix = 1
-let g:hardtime_maxcount = 3
+let g:hardtime_maxcount = 4
 let g:list_of_normal_keys = ["h", "j", "k", "l"]
 let g:hardtime_ignore_buffer_patterns = [ "fugitive.*", "\.git.*"]
 
@@ -403,34 +399,63 @@ let g:jedi#show_call_signatures = 0
 
 Plug 'deoplete-plugins/deoplete-jedi'
 let g:deoplete#sources#jedi#statement_length = 30
-Plug 'Shougo/echodoc.vim', {'for': 'python'}
+Plug 'Shougo/echodoc.vim', {'for':['python', 'go', 'dart']}
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'floating'
-Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
 
 " Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
-inoremap <expr> <Tab> pumvisible() ? "\<c-y>" : "\<Tab>"
-
 set completeopt=noinsert,menu,noselect
+
+" LSP
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'thomasfaingnaert/vim-lsp-snippets'
+Plug 'thomasfaingnaert/vim-lsp-ultisnips'
+
+" autocmd FileType * let b:ale_enabled = 0
+
+nnoremap <silent> <Leader>g :<C-u>LspDefinition<CR>
+nnoremap <silent> <Leader>G :vsplit \| :LspDefinition <CR>
+nnoremap <silent> <Leader>r :<C-u>LspReferences<CR>
+nnoremap <silent> <Leader>K :<C-u>LspHover<CR>
+nnoremap <silent> <Leader>e :<C-u>LspRename<CR>
+nnoremap <silent> ]e :<C-u>LspNextError<CR>
+nnoremap <silent> [e :<C-u>LspPreviousError<CR>
+
+let g:lsp_signs_enabled = 1         " enable signs
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+
+if executable('dart_language_server')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'dart_language_server',
+        \ 'cmd': {server_info->['dart_language_server']},
+        \ 'whitelist': ['dart'],
+        \ })
+endif
+
+" LSP
+" Plug 'autozimu/LanguageClient-neovim', {
+      " \ 'branch': 'next',
+      " \ 'do': 'bash install.sh',
+      " \ 'for': keys(g:LanguageClient_serverCommands)}
 
 let g:LanguageClient_serverCommands = {
     \ 'java': ['/bin/jdtls'],
     \ 'javascript': ['/usr/bin/javascript-typescript-stdio'],
     \ 'typescript': ['/usr/bin/javascript-typescript-stdio'],
     \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
+    \ 'dart': ['dart_language_server'],
     \ }
     " \ 'python': ['/home/drakirus/.local/bin/pyls'],
-
-" LSP
-Plug 'autozimu/LanguageClient-neovim', {
-      \ 'branch': 'next',
-      \ 'do': 'bash install.sh',
-      \ 'for': keys(g:LanguageClient_serverCommands)}
 
 let g:LanguageClient_loggingFile = '/tmp/lc.log'
 let g:LanguageClient_loggingLevel = 'WARN'
 let g:LanguageClient_settingsPath = '/home/drakirus/dotfiles/LSP_settings.json'
+let g:LanguageClient_diagnosticsList = 'Location'
+let g:LanguageClient_changeThrottle = 0.8
+let g:LanguageClient_hasSnippetSupport = 0
+
 " let g:LanguageClient_diagnosticsEnable = 0
 
 function! LC_maps()
@@ -438,7 +463,8 @@ function! LC_maps()
     nnoremap <buffer> <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
     nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
     nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
-    nnoremap <silent> <leader>g :call LanguageClient_textDocument_definition()<CR>
+    nnoremap <silent> <leader>g :call LanguageClient#textDocument_definition()<CR>
+    nnoremap <silent> <leader>e :call LanguageClient#textDocument_rename()<CR>
     let b:ale_enabled = 0
   elseif &ft == 'python'
     let g:jedi#goto_command = "<leader>g"
@@ -451,13 +477,7 @@ function! LC_maps()
   endif
 endfunction
 
-autocmd FileType * call LC_maps()
-
-
-" LANGUAGE SPECIFIC
-" Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-" use goimports for formatting
-" let g:go_fmt_command = "goimports"
+" autocmd FileType * call LC_maps()
 
 
 Plug 'christoomey/vim-tmux-runner'
@@ -514,6 +534,8 @@ set wildignore+=*.spl                                   " compiled spelling word
 set wildignore+=*.sw?                                   " Vim swap files set wildignore+=*~,*.swp,*.tmp
 set wildignore+=*.DS_Store?                             " OSX bullshit
 set wildignore+=*.sqlite3
+set wildignore+=*.so
+set wildignore+=*.jar
 
 " Required for operations modifying multiple buffers like rename.
 set hidden

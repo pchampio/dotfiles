@@ -38,18 +38,19 @@ function! statusline#check_modified() abort
 
 endfunction
 
+let g:statusline_max_path = 30
 function! statusline#fileprefix() abort
-  if exists('b:term_title')
+  let p = expand('%:h') "relative to current path, and head path only
+  if l:p == '' || l:p == '.'
     return ''
   endif
-  let l:basename=expand('%:h')
-  if l:basename == '' || l:basename == '.'
-    return ''
-  else
-    " Make sure we show $HOME as ~.
-    return substitute(l:basename . '/', '\C^' . $HOME, '~', '')
+  let p = substitute(p . '/', '^\V' . $HOME, '~', '')
+  if len(p) > g:statusline_max_path
+    let p = simplify(p)
+    let p = pathshorten(p)
   endif
-endfunction
+  return p
+endfunction "}}}
 
 function! statusline#ft() abort
   if strlen(&ft)
@@ -142,7 +143,7 @@ function! s:get_custom_statusline(action) abort
     return 'Gundo\ Diff'
   elseif bufname('%') =~? '^fugitive.*'
     let b:ale_fix_on_save = 0
-    return '\ Fugitive%<\ %3*%t%*'
+    return FugitiveStatusline() . '\ %3*%t%*'
   elseif &ft == 'twiggy'
     return 'Twiggy'
   elseif &ft == 'qf'
