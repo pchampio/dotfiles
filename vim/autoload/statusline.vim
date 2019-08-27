@@ -144,6 +144,8 @@ function! s:get_custom_statusline(action) abort
   elseif bufname('%') =~? '^fugitive.*'
     let b:ale_fix_on_save = 0
     return FugitiveStatusline() . '\ %3*%t%*'
+  elseif &ft == 'fzf'
+    return '%7*\ FZF\ %*%4*'
   elseif &ft == 'twiggy'
     return 'Twiggy'
   elseif &ft == 'qf'

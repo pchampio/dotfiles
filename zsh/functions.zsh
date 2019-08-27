@@ -296,35 +296,35 @@ function dialog() {
   echo "Password for p.champion:"
   read -s password
 
-  mkdir -p ~/smb/HOTH/users
-  sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/HOTH/users
+  # sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Gabarits
-  sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/HOTH/Gabarits
+  # sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/HOTH/Temp
   sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Customers
-  sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/HOTH/Customers
+  # sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/packages
-  sudo mount -t cifs //hoth/packages /home/drakirus/smb/HOTH/packages -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/HOTH/packages
+  # sudo mount -t cifs //hoth/packages /home/drakirus/smb/HOTH/packages -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/dev02/wwwroot
   sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/dev02/shibboleth-sp
-  sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/dev02/shibboleth-sp
+  # sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/ITHOR/wwwroot
-  sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/ITHOR/wwwroot
+  # sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   # mkdir -p ~/smb/ROGUE/wwwroot
   # sudo mount -t cifs //10.18.0.11/wwwroot /home/drakirus/smb/ROGUE/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/ITHOR/Memberz
-  sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/ITHOR/Memberz
+  # sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   mkdir -p ~/smb/HOTH/Docs
   sudo mount -t cifs //hoth/Docs /home/drakirus/smb/HOTH/Docs -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
@@ -334,7 +334,9 @@ function dialog() {
 }
 
 function udialog() {
-  sudo umount -a -t cifs -l ~/smb/
+  sudo umount ~/smb/HOTH/*
+  sudo umount ~/smb/dev02/*
+  # sudo umount -a -t cifs -l ~/smb/
   tree ~/smb/
 }
 

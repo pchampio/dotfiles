@@ -9,4 +9,41 @@ class $1 extends StatelessWidget {
 }
 endsnippet
 
+
+snippet wrap "Wrap with new widget"
+$1(
+	child: ${0:${VISUAL: widget...}}
+),
+endsnippet
+
+snippet wColumn "Wrap with new Column"
+Column(
+	children: <Widget>[
+		${0:${VISUAL: widgets...}}
+	],
+),
+endsnippet
+
+snippet wRow "Wrap with new Row"
+Row(
+	children: <Widget>[
+		${0:${VISUAL: widgets...}}
+	],
+),
+endsnippet
+
+snippet wPad "Add Padding"
+Padding(
+	padding: const EdgeInsets.only,
+	child: ${0:${VISUAL: widgets...}}
+),
+endsnippet
+
+snippet wCent "Center widget"
+Center(
+	child: ${0:${VISUAL: widgets...}}
+),
+endsnippet
+
+
 # vim:set foldmethod=manual:

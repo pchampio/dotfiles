@@ -1,0 +1,89 @@
+#!/bin/bash
+
+PASS=$(cat <<END
+-----BEGIN PGP MESSAGE-----
+Comment: https://keybase.io/download
+Version: Keybase Go 2.11.0 (linux)
+
+wcFMA9oe1H3MlzFnARAALl+NrA3Nahepn3Mv3AR4Welh47lJ83L4onwGhdiJ/9M3
+oT13yOAZLhuqWW3Tx04Y3GAegBfI4b2fupd5GYQwIz4OOK12KYZrFwCJk5OqWoJA
+DXrtixr9mPzbwV1enwUKhHKg1H6leFblJDyUOciv7yxay+xHaiCl5WzBhiLUyt2q
+rsITGoby1x9jHFdV9xoogOIRkq/MtKBk8fdJ5xVDKxnGWcu6kbAIbQ6d03rWeTlt
+abCLO4mi2c/WecO1O6YtEVfXrCMHOLksQd8YXeVC7WaKRIOyJfdbNel15s0ypmUp
+T5GZjwGoDnnABQ7LyTWK1ByOrrKfz25siaXazUJnhahGYMzhaGuy9lgj4+xjhZ50
+6wodFdr+LwNDxc4j4AMxgbMTF52YUfnMO0lDwFt4EDcBITpIeWMCIunDPalg/tND
+QQwRiVv6Fqt03Hz7FZNXvMtzqg+taDa/umJ6KhcbNBYMjLfeibWhMrYohUaUf5tG
++EH500PPybl58pk0qm7FEECGfZ4CEqm1iNY/BFc55N3QPn+Fz2mTxprxcy7L+4nc
+FyGmlOdwDY4o2whBc0C2b9ouR47P3Ht+gAY27GFU3Fc8FLhItOLLXwoYxL2via21
+Au/jR3NdEylrtInMZ10grKJmS/WVx6vl6z/y6k2V2xPkXNWm+NISf6+AoUsMu2rS
+4AHkw2QXp/AChcVXWcFqAmpM9uGDE+D84AbhvU/gMeJj18qZ4Ifkx1tGfqy+PfkC
+bA8SQxhKAuDX48NjBR3kz1ly4OTib6CPxuA75Pzg/L2Csvxa2Sk1hMESk4TidlxJ
+T+GZFQA=
+=bj71
+-----END PGP MESSAGE-----
+END
+)
+
+CO=$(cat <<END
+WEB01 Administrateur EDIALOG 172.16.250.30
+WEB02 Administrateur EDIALOG 172.16.250.32
+WEB03 Administrateur EDIALOG 172.16.250.33
+WEB04 Administrateur EDIALOG 172.16.250.34
+WEB05 Administrateur EDIALOG 172.16.250.35
+WEB06 Administrateur EDIALOG 172.16.250.36
+WEB07 Administrateur EDIALOG 172.16.250.37
+WEB08 Administrateur EDIALOG 172.16.250.38
+WEB09 Administrateur EDIALOG 172.16.250.39
+WEB10 Administrateur EDIALOG 172.16.250.40
+WEB11 Administrateur EDIALOG 172.16.250.41
+WEB12 Administrateur EDIALOG 172.16.250.42
+WEB13 Administrateur EDIALOG 172.16.250.43
+WEB14 Administrateur EDIALOG 172.16.250.44
+WEB15 Administrateur EDIALOG 172.16.250.45
+WEB16 Administrateur EDIALOG 172.16.250.46
+WEB17 Administrateur EDIALOG 172.16.250.47
+WEB18 Administrateur EDIALOG 172.16.250.48
+WEB19 Administrateur EDIALOG 172.16.250.49
+WEB20 Administrateur EDIALOG 172.16.250.50
+WEB21 Administrateur EDIALOG 172.16.250.51
+WEB22 Administrateur EDIALOG 172.16.250.52
+WEB23 Administrateur EDIALOG 172.16.250.53
+WEB24 Administrateur EDIALOG 172.16.250.54
+WEB25 Administrateur EDIALOG 172.16.250.55
+WEB26 Administrateur EDIALOG 172.16.250.56
+WEB27 Administrateur EDIALOG 172.16.250.57
+WEB28 Administrateur EDIALOG 172.16.250.58
+WEB29 Administrateur EDIALOG 172.16.250.59
+WEBFARM01 Administrateur EDIALOG 172.16.250.10
+3CX administrateur DIALOG 192.168.240.9
+Exchange administrateur DIALOG 192.168.240.5
+DZAMA02 administrateur EDIALOG 172.16.250.111
+END
+)
+
+
+DE_KEY=$(echo "$PASS" | keybase pgp decrypt)
+DE_KEY=$(printf "%q\n" "$DE_KEY")
+
+PRE_CMD="xfreerdp +compression /drive:TL,/home/drakirus/Téléchargements /cert-tofu +clipboard +fonts /dynamic-resolution /size:1380x820 /bpp:8 /kbd:US"
+
+declare -A arr
+
+while read LINE; do
+  KEY=$(echo $LINE | cut -d" " -f1)
+  U=$(echo $LINE | cut -d" " -f2)
+  D=$(echo $LINE | cut -d" " -f3)
+  V=$(echo $LINE | cut -d" " -f4)
+  arr["$KEY"]="$PRE_CMD /v:$V /u:$U /d:$D"
+done <<< $CO
+
+echo "Choose a server to connect:"
+SERV=$(echo "${!arr[@]}" | tr "[[:space:]]" "\n" | fzf --height 50% --reverse)
+if [[ -z "$SERV" ]]; then
+  exit -1
+fi
+echo "Server: $SERV"
+echo "Choose a password:"
+US_PASS=$(echo "$DE_KEY" | tr "_" "\n" | fzf --height 20% --reverse)
+# eval nohup "${arr[$SERV]} /p:$US_PASS" &> /tmp/rdp_nohup.out &
+eval "${arr[$SERV]} /p:$US_PASS"

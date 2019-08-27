@@ -84,7 +84,8 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
 zstyle :prompt:pure:prompt:success color green
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
+export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
+export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 
 
 # JAVA_HOME

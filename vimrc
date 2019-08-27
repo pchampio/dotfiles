@@ -161,10 +161,9 @@ let g:fzf_colors =
 imap <c-x><c-f> <plug>(fzf-complete-path)
 
 autocmd! FileType fzf
-autocmd  FileType fzf set laststatus=0 noshowmode noruler norelativenumber nonumber | echo ""
-  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler relativenumber number
-
-" let g:ctrlp_default_input = 1
+autocmd  FileType fzf set  noshowmode noruler norelativenumber nonumber | echo ""
+  \| autocmd BufLeave <buffer> set  showmode ruler relativenumber number
+autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
 autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git") || filereadable(".gitignore")) && !exists('g:isReadingFromStdin') | execute' FZF' | endif
 
@@ -327,11 +326,7 @@ let g:mundo_playback_delay=40
 let g:mundo_verbose_graph=0
 
 " insert or delete brackets
-Plug 'tmsvg/pear-tree'
-" Smart pairs:
-let g:pear_tree_smart_openers = 1
-let g:pear_tree_smart_closers = 1
-let g:pear_tree_smart_backspace = 1
+Plug 'cohama/lexima.vim'
 
 " user Text objects
 Plug 'kana/vim-textobj-user'
@@ -362,6 +357,16 @@ let g:hardtime_ignore_quickfix = 1
 let g:hardtime_maxcount = 4
 let g:list_of_normal_keys = ["h", "j", "k", "l"]
 let g:hardtime_ignore_buffer_patterns = [ "fugitive.*", "\.git.*"]
+
+Plug 'christoomey/vim-tmux-runner'
+
+autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
+      \ :VtrOpenRunner {'orientation': 'h', 'percentage': 30, 'cmd': 'swipl'}<cr>
+      \ :VtrSendCommand! abort. %; swipl<cr>
+      \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
+\ :undo<cr>
+
+" autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 " Copy text over SSH
 " Plug 'haya14busa/vim-poweryank'
@@ -400,24 +405,31 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'thomasfaingnaert/vim-lsp-snippets'
 Plug 'thomasfaingnaert/vim-lsp-ultisnips'
 
-" autocmd FileType * let b:ale_enabled = 0
 
-nnoremap <silent> <Leader>g :<C-u>LspDefinition<CR>
-nnoremap <silent> <Leader>G :vsplit \| :LspDefinition <CR>
-nnoremap <silent> <Leader>r :<C-u>LspReferences<CR>
-nnoremap <silent> <Leader>K :<C-u>LspHover<CR>
-nnoremap <silent> <Leader>e :<C-u>LspRename<CR>
-nnoremap <silent> ]e :<C-u>LspNextError<CR>
-nnoremap <silent> [e :<C-u>LspPreviousError<CR>
-
-let g:lsp_signs_enabled = 1         " enable signs
+let g:lsp_signs_enabled = 1           " enable signs
 let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
 
-if executable('dart_language_server')
+if executable('dart')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'dart_language_server',
         \ 'cmd': {server_info->['dart_language_server']},
         \ 'whitelist': ['dart'],
+        \ })
+endif
+
+if executable('gopls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'golang',
+        \ 'cmd': {server_info->['gopls']},
+        \ 'whitelist': ['go'],
+        \ })
+endif
+
+if executable('clangd')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd']},
+        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
         \ })
 endif
 
@@ -443,17 +455,38 @@ let g:LanguageClient_diagnosticsList = 'Location'
 let g:LanguageClient_changeThrottle = 0.8
 let g:LanguageClient_hasSnippetSupport = 0
 
-" let g:LanguageClient_diagnosticsEnable = 0
+function! s:lsp_mapping()
+      echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
 
-function! LC_maps()
-  if has_key(g:LanguageClient_serverCommands, &filetype)
-    nnoremap <buffer> <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
-    nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
-    nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
-    nnoremap <silent> <leader>g :call LanguageClient#textDocument_definition()<CR>
-    nnoremap <silent> <leader>e :call LanguageClient#textDocument_rename()<CR>
-    let b:ale_enabled = 0
-  elseif &ft == 'python'
+  for server_name in lsp#get_server_names()
+    if index(['starting', 'running'], lsp#get_server_status(server_name)) != -1
+
+      " Lsp mapping
+      nnoremap <silent> <Leader>g :<C-u>LspDefinition<CR>
+      nnoremap <silent> <Leader>G :vsplit \| :LspDefinition <CR>
+      nnoremap <silent> <Leader>r :<C-u>LspReferences<CR>
+      nnoremap <silent> <Leader>K :<C-u>LspHover<CR>
+      nnoremap <silent> <Leader>e :<C-u>LspRename<CR>
+      nnoremap <silent> ]e :<C-u>LspNextError<CR>
+      nnoremap <silent> [e :<C-u>LspPreviousError<CR>
+      let g:ale_enabled = 0
+
+      " message info
+      echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
+      call timer_start(2000, function('execute', ['echo ""'])) " cleanup
+
+      return
+    endif
+  endfor
+  " endif
+  " if has_key(g:LanguageClient_serverCommands, &filetype)
+    " nnoremap <buffer> <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
+    " nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
+    " nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
+    " nnoremap <silent> <leader>g :call LanguageClient#textDocument_definition()<CR>
+    " nnoremap <silent> <leader>e :call LanguageClient#textDocument_rename()<CR>
+    " let b:ale_enabled = 0
+  if &ft == 'python'
     let g:jedi#goto_command = "<leader>g"
     let g:jedi#goto_assignments_command = "<leader>d"
     let g:jedi#documentation_command = "<leader>K"
@@ -463,19 +496,6 @@ function! LC_maps()
     noremap <leader>g <c-]>
   endif
 endfunction
-
-" autocmd FileType * call LC_maps()
-
-
-Plug 'christoomey/vim-tmux-runner'
-
-autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<Plug>NERDCommenterToggle"<cr>
-      \ :VtrOpenRunner {'orientation': 'h', 'percentage': 30, 'cmd': 'swipl'}<cr>
-      \ :VtrSendCommand! abort. %; swipl<cr>
-      \ :VtrSendCommand! [<c-r>=expand('%:r')<cr>].<cr> vip:VtrSendLinesToRunner<cr>
-\ :undo<cr>
-
-" autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 call plug#end()
 
@@ -494,11 +514,13 @@ function! s:idleboot() abort
     autocmd!
   augroup END
 
+  call deoplete#enable()
   " message info
   echohl ModeMsg | echon '-- Deoplete enabled --' | echohl None
   call timer_start(2000, function('execute', ['echo ""'])) " cleanup
 
-  call deoplete#enable()
+  call s:lsp_mapping()
+
 endfunction
 
 
@@ -511,6 +533,7 @@ set background=light
 highlight Comment gui=italic
 
 " Ignore
+set wildignore+=*.pie
 set wildignore+=.hg,.git,.svn                           " Version control
 set wildignore+=*.aux,*.out,*.toc                       " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
