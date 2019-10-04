@@ -82,7 +82,7 @@ EOF
   nnoremap <C-Space><Space> :MaximizerToggle!<CR>
   tnoremap <C-Space><Space> <C-\><C-N>:MaximizerToggle!<CR>
 
-  Plug 'kh3phr3n/tabline'
+  " Plug 'kh3phr3n/tabline'
 
 endif
 
@@ -102,19 +102,14 @@ let g:twiggy_close_on_fugitive_command = 1
 nnoremap _ :Twiggy<cr>
 Plug 'junegunn/gv.vim' " Git commit history (integrates into twiggy)
 
-" A Vim plugin which shows a git diff in the numberline
-" Plug 'mhinz/vim-signify'
-let g:signify_sign_change = '~'
-nmap ]g <plug>(signify-next-hunk)
-nmap [g <plug>(signify-prev-hunk)
-
 Plug 'airblade/vim-gitgutter'
+let g:gitgutter_preview_win_floating = 0
 let g:gitgutter_map_keys = 0
-nmap ]h <Plug>GitGutterNextHunk
-nmap [h <Plug>GitGutterPrevHunk
-nmap <Leader>ha <Plug>GitGutterStageHunk
-nmap <Leader>hu <Plug>GitGutterUndoHunk
-nmap <Leader>hs <Plug>GitGutterPreviewHunk
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
+nmap <Leader>ha <Plug>(GitGutterStageHunk)
+nmap <Leader>hu <Plug>(GitGutterUndoHunk)
+nmap <Leader>hs <Plug>(GitGutterPreviewHunk)
 nnoremap <Leader>hS :GitGutterLineHighlightsToggle<CR>
 
 Plug 'wincent/vcs-jump'
@@ -134,6 +129,9 @@ let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
 nmap <leader>E <Plug>(FerretAcks)
 nnoremap g/ :Ack<space>
+let g:FerretExecutableArguments = {
+      \   'rg': '--vimgrep --no-heading --max-columns 4096'
+      \ }
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
@@ -164,8 +162,30 @@ autocmd! FileType fzf
 autocmd  FileType fzf set  noshowmode noruler norelativenumber nonumber | echo ""
   \| autocmd BufLeave <buffer> set  showmode ruler relativenumber number
 autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
+
+" In love w/ nixprime/cpsm matcher
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'nixprime/cpsm', { 'do': 'env PY3=ON ./install.sh' }
+let g:ctrlp_match_func = { 'match': 'cpsm#CtrlPMatch' }
 autocmd StdinReadPre * let g:isReadingFromStdin = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git") || filereadable(".gitignore")) && !exists('g:isReadingFromStdin') | execute' FZF' | endif
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git")) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+let g:ctrlp_root_markers = ['pubspec.yaml', 'requirements.txt']
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("v")': ['<c-s>'],
+    \ 'AcceptSelection("h")': ['<c-i>'],
+    \ 'PrtCurStart()':        ['<space>', '<c-a>'],
+\ }
+if executable('rg')
+  set grepprg=rg\ --color=never
+  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+  let g:ctrlp_use_caching = 0
+endif
+let g:ctrlp_abbrev = { 'gmode': 't', 'abbrevs': [ { 'pattern': ';', 'expanded': ':', 'mode': 'pfrz', }, ] }
+" Ctrlp Style defined in autoload
+let g:ctrlp_status_func = {
+  \ 'main': 'CtrlP_main_status',
+  \ 'prog': 'CtrlP_progress_status'
+  \}
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
@@ -175,13 +195,16 @@ Plug 'adimit/prolog.vim'
 Plug 'chriskempson/base16-vim'
 
 " syntastic
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
+let g:ale_completion_enabled=0
+let g:ale_disable_lsp = 1
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_virtualtext_cursor = 1
 let g:ale_lint_on_enter = 0
 let g:ale_list_window_size = 5
 let g:ale_open_list = 0
 let g:ale_set_loclist = 1
+let g:ale_fix_on_save = 1
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
 " navigate between errors
@@ -189,13 +212,14 @@ nmap <silent> ]e <Plug>(ale_next_wrap)
 nmap <silent> [e <Plug>(ale_previous_wrap)
 
 nmap <silent> <leader>dt <Plug>(ale_toggle_buffer)
-nnoremap <leader>df :let g:ale_fix_on_save = 0
 nnoremap <silent> <leader>d<Space> :call ALEListToggle()<cr>
 
 function! ALEListToggle()
+let b:ale_fix_on_save = 0
   if g:ale_open_list
     let g:ale_open_list = 0
     lclose
+    return
   else
     let g:ale_open_list = 1
   endif
@@ -214,8 +238,6 @@ let g:ale_fixers = {
 \}
 
 autocmd BufEnter * if @% =~? '^fugitive.*' | let b:ale_fix_on_save = 0 | endif
-
-let g:ale_fix_on_save = 1
 let g:ale_python_flake8_options = '--max-line-length=110 --ignore=' "E221,E241'
 let g:ale_python_autopep8_options = ' --aggressive  --max-line-length 90'
 
@@ -227,7 +249,6 @@ Plug 'machakann/vim-sandwich'
 Plug 'machakann/vim-highlightedyank'
 autocmd ColorScheme * hi HighlightedyankRegion guifg=#d33682 gui=underline,bold
 let g:highlightedyank_highlight_duration = 500
-
 
 " Indent Guides
 Plug 'nathanaelkane/vim-indent-guides'
@@ -249,6 +270,8 @@ omap ia <Plug>SidewaysArgumentTextobjI
 xmap ia <Plug>SidewaysArgumentTextobjI
 
 Plug 'Drakirus/vim-edgemotion'
+" enable line number overwrite
+" let g:edgemotion#line_numbers_overwrite = 1
 map J <Plug>(edgemotion-j)
 map K <Plug>(edgemotion-k)
 
@@ -265,22 +288,18 @@ let g:sneak#s_next = 1
 map f <Plug>Sneak_f
 map F <Plug>Sneak_F
 map : <Plug>Sneak_;
+onoremap <silent> f :call sneak#wrap(v:operator, 1, 0, 1, 1)<CR>
+onoremap <silent> F :call sneak#wrap(v:operator, 1, 1, 1, 1)<CR>
+onoremap <silent> t :call sneak#wrap(v:operator, 1, 0, 0, 1)<CR>
+onoremap <silent> T :call sneak#wrap(v:operator, 1, 1, 0, 1)<CR>
 " map t <Plug>Sneak_t
 " Clever-f highlight <3
 autocmd ColorScheme * hi Sneak guifg=red guibg=NONE gui=bold,underline
 autocmd ColorScheme * hi SneakLabel guifg=red guibg=#eee8d5 gui=bold,underline
 
 Plug 'svermeulen/vim-yoink'
-nmap <c-n> <plug>(YoinkPostPasteSwapBack)
-nmap p <plug>(YoinkPaste_p)
-nmap P <plug>(YoinkPaste_P)
-let g:yoinkSyncSystemClipboardOnFocus = 0
-let g:yoinkMaxItems = 8
 let g:yoinkMoveCursorToEndOfPaste = 1
 let g:yoinkSwapClampAtEnds = 0
-" Ctrlp fuzzy finder w/ yoink
-nmap <expr> <c-p> yoink#isSwapping() ? '<plug>(YoinkPostPasteSwapForward)' : ';<c-u>FZF<CR>'
-" nmap <c-p> <Plug>(ctrlp)
 nmap [y <plug>(YoinkRotateBack)
 nmap ]y <plug>(YoinkRotateForward)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
@@ -301,11 +320,11 @@ noremap R r
 Plug 'tommcdo/vim-exchange'
 
 " ie = inner entire buffer
-onoremap ie :exec "normal! ggVG"<cr>
+onoremap iE :exec "normal! ggVG"<cr>
 
-nmap <silent> <leader>e <plug>(SubversiveSubstituteWordRange)ie
+nmap <silent> <leader>e <plug>(SubversiveSubstituteWordRange)iE
 nmap <silent> <leader>ee ;call sneak#cancel()<cr><plug>(SubversiveSubstituteRange)
-xmap <silent> <leader>e <plug>(SubversiveSubstituteRange)ie
+xmap <silent> <leader>e <plug>(SubversiveSubstituteRange)iE
 
 " Commanter
 Plug 'scrooloose/nerdcommenter'
@@ -350,13 +369,13 @@ xmap agC <Plug>(textobj-comment-big-a)
 Plug 'idbrii/textobj-word-column.vim'
 
 " stop repeating the basic movement keys
-Plug 'takac/vim-hardtime'
-let g:hardtime_default_on = 1
-let g:hardtime_showmsg = 1
-let g:hardtime_ignore_quickfix = 1
-let g:hardtime_maxcount = 4
-let g:list_of_normal_keys = ["h", "j", "k", "l"]
-let g:hardtime_ignore_buffer_patterns = [ "fugitive.*", "\.git.*"]
+" Plug 'takac/vim-hardtime'
+" let g:hardtime_default_on = 1
+" let g:hardtime_showmsg = 1
+" let g:hardtime_ignore_quickfix = 1
+" let g:hardtime_maxcount = 4
+" let g:list_of_normal_keys = ["h", "j", "k", "l"]
+" let g:hardtime_ignore_buffer_patterns = [ "fugitive.*", "\.git.*"]
 
 Plug 'christoomey/vim-tmux-runner'
 
@@ -370,6 +389,10 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
 
 " Copy text over SSH
 " Plug 'haya14busa/vim-poweryank'
+
+Plug 'lervag/vimtex'
+let g:tex_flavor = 'latex'
+let g:vimtex_view_method = 'zathura'
 
 "  Snippets
 Plug 'SirVer/ultisnips'
@@ -388,6 +411,13 @@ Plug 'davidhalter/jedi-vim', {'for': 'python'}
 let g:jedi#use_splits_not_buffers = "right"
 let g:jedi#completions_enabled = 0
 let g:jedi#show_call_signatures = 0
+let g:jedi#smart_auto_mappings = 1
+let g:jedi#goto_command = "<leader>g"
+let g:jedi#goto_assignments_command = "<leader>gd"
+let g:jedi#documentation_command = "<leader>K"
+let g:jedi#usages_command = "<leader>r"
+let g:jedi#rename_command = "<leader>e"
+
 
 Plug 'deoplete-plugins/deoplete-jedi'
 let g:deoplete#sources#jedi#statement_length = 30
@@ -395,16 +425,13 @@ Plug 'Shougo/echodoc.vim', {'for':['python', 'go', 'dart']}
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'floating'
 
-" Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 set completeopt=noinsert,menu,noselect
 
 " LSP
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
-Plug 'thomasfaingnaert/vim-lsp-snippets'
-Plug 'thomasfaingnaert/vim-lsp-ultisnips'
-
 
 let g:lsp_signs_enabled = 1           " enable signs
 let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
@@ -412,18 +439,18 @@ let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal 
 if executable('dart')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'dart_language_server',
-        \ 'cmd': {server_info->['dart_language_server']},
+        \ 'cmd': {server_info->['dart', '/opt/dart-sdk/bin/snapshots/analysis_server.dart.snapshot', '--lsp']},
         \ 'whitelist': ['dart'],
         \ })
 endif
 
-if executable('gopls')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'golang',
-        \ 'cmd': {server_info->['gopls']},
-        \ 'whitelist': ['go'],
-        \ })
-endif
+" if executable('gopls')
+    " au User lsp_setup call lsp#register_server({
+        " \ 'name': 'golang',
+        " \ 'cmd': {server_info->['gopls']},
+        " \ 'whitelist': ['go'],
+        " \ })
+" endif
 
 if executable('clangd')
     au User lsp_setup call lsp#register_server({
@@ -433,32 +460,10 @@ if executable('clangd')
         \ })
 endif
 
-" LSP
-" Plug 'autozimu/LanguageClient-neovim', {
-      " \ 'branch': 'next',
-      " \ 'do': 'bash install.sh',
-      " \ 'for': keys(g:LanguageClient_serverCommands)}
-
-let g:LanguageClient_serverCommands = {
-    \ 'java': ['/bin/jdtls'],
-    \ 'javascript': ['/usr/bin/javascript-typescript-stdio'],
-    \ 'typescript': ['/usr/bin/javascript-typescript-stdio'],
-    \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
-    \ 'dart': ['dart_language_server'],
-    \ }
-    " \ 'python': ['/home/drakirus/.local/bin/pyls'],
-
-let g:LanguageClient_loggingFile = '/tmp/lc.log'
-let g:LanguageClient_loggingLevel = 'WARN'
-let g:LanguageClient_settingsPath = '/home/drakirus/dotfiles/LSP_settings.json'
-let g:LanguageClient_diagnosticsList = 'Location'
-let g:LanguageClient_changeThrottle = 0.8
-let g:LanguageClient_hasSnippetSupport = 0
-
 function! s:lsp_mapping()
-      echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
 
   for server_name in lsp#get_server_names()
+    echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
     if index(['starting', 'running'], lsp#get_server_status(server_name)) != -1
 
       " Lsp mapping
@@ -478,23 +483,6 @@ function! s:lsp_mapping()
       return
     endif
   endfor
-  " endif
-  " if has_key(g:LanguageClient_serverCommands, &filetype)
-    " nnoremap <buffer> <silent> <leader>== :call LanguageClient_textDocument_formatting()<CR>
-    " nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
-    " nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
-    " nnoremap <silent> <leader>g :call LanguageClient#textDocument_definition()<CR>
-    " nnoremap <silent> <leader>e :call LanguageClient#textDocument_rename()<CR>
-    " let b:ale_enabled = 0
-  if &ft == 'python'
-    let g:jedi#goto_command = "<leader>g"
-    let g:jedi#goto_assignments_command = "<leader>d"
-    let g:jedi#documentation_command = "<leader>K"
-    let g:jedi#usages_command = "<leader>n"
-    let g:jedi#rename_command = "<leader>e"
-  else
-    noremap <leader>g <c-]>
-  endif
 endfunction
 
 call plug#end()
@@ -521,8 +509,12 @@ function! s:idleboot() abort
 
   call s:lsp_mapping()
 
-endfunction
 
+  call deoplete#custom#var('omni', 'input_patterns', {
+      \ 'tex': g:vimtex#re#deoplete
+    \})
+
+endfunction
 
 " Theme
 set termguicolors
@@ -533,7 +525,6 @@ set background=light
 highlight Comment gui=italic
 
 " Ignore
-set wildignore+=*.pie
 set wildignore+=.hg,.git,.svn                           " Version control
 set wildignore+=*.aux,*.out,*.toc                       " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg          " binary images
@@ -587,12 +578,10 @@ set expandtab
 set inccommand=split
 " set wildoptions=pum
 
-
 " 80 columns
 set colorcolumn=80      " highlight the 80 column
 
 set nowrap
-
 " Display extra whitespace
 set list listchars=tab:▸\ ,trail:·,extends:›,precedes:‹
 " set list listchars=tab:\ \ ,trail:·,extends:›,precedes:‹
@@ -644,8 +633,6 @@ nnoremap <leader><leader> :w!<cr>
 
 vnoremap <silent><expr> ++ VMATH_YankAndAnalyse()
 
-noremap <Leader>G :vsp <cr> <c-]>
-
 inoremap <c-l> <esc>A
 
 noremap j gj
@@ -683,20 +670,6 @@ hi SpellCap  gui=undercurl guifg=#6c71c4
 hi SpellRare gui=undercurl guifg=#6c71c4
 hi SpellLocal gui=undercurl guifg=#eee8d5
 
-" remapping
-cnoreabbrev qwa wqa
-cnoreabbrev qw wq
-cnoreabbrev W! w!
-cnoreabbrev Q! q!
-cnoreabbrev Wq wq
-cnoreabbrev Wa wa
-cnoreabbrev aq qa
-cnoreabbrev wQ wq
-cnoreabbrev WQ wq
-cnoreabbrev W w
-cnoreabbrev Q q
-cnoreabbrev qq q
-
 nnoremap ; :
 vnoremap ; :
 cnoreabbrev ; :
@@ -731,7 +704,7 @@ autocmd WinEnter * call s:CloseOnlyWindow()
 function! s:CloseOnlyWindow() abort
   if winnr('$') == 1
     let s:buftype =  getbufvar(winbufnr(winnr()), "&buftype")
-    if s:buftype == "quickfix" || &filetype == 'twiggy'
+    if s:buftype == "quickfix" || &filetype == 'twiggy' || &filetype == 'fzf'
       q
     endif
   endif
@@ -771,4 +744,16 @@ endfunction
 augroup BWCCreateDir
   autocmd!
   autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
+augroup END
+
+function! Osc52Yank()
+    let buffer=system('base64 -w0', @0)
+    let buffer=substitute(buffer, "\n$", "", "")
+    let buffer='\e]52;c;'.buffer.'\x07'
+    silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape("/dev/tty")
+endfunction
+command! Osc52CopyYank call Osc52Yank()
+augroup Example
+    autocmd!
+    autocmd TextYankPost * if v:event.operator ==# 'y' | call Osc52Yank() | endif
 augroup END

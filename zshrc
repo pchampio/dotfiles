@@ -9,7 +9,7 @@ plugins=(encode64 docker sudo)
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:$GOPATH/bin:/home/drakirus/.gem/ruby/2.5.0/bin:/opt/miniconda3/bin/"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/drakirus/.gem/ruby/2.3.0/bin:/home/drakirus/.gem/ruby/2.4.0/bin:/home/drakirus/.gem/ruby/2.5.0/bin:/opt/miniconda3/bin/"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -38,6 +38,7 @@ PATH=$PATH:/usr/bin/core_perl/
 # mkdir -p ~/lab/go/{pkg,src,bin}
 export GOPATH=$HOME/lab/go
 PATH=$PATH:$GOPATH/bin
+PATH="$PATH:/usr/local/go/bin/"
 
 # pip path
 PATH=$PATH:$HOME/.local/bin

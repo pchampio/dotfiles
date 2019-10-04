@@ -302,8 +302,11 @@ function dialog() {
   # mkdir -p ~/smb/HOTH/Gabarits
   # sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Temp
-  sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/HOTH/Temp
+  # sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+
+  mkdir -p ~/smb/HOTH/Ressources
+  sudo mount -t cifs //hoth/Ressources /home/drakirus/smb/HOTH/Ressources -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   # mkdir -p ~/smb/HOTH/Customers
   # sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
@@ -311,8 +314,8 @@ function dialog() {
   # mkdir -p ~/smb/HOTH/packages
   # sudo mount -t cifs //hoth/packages /home/drakirus/smb/HOTH/packages -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/dev02/wwwroot
-  sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/dev02/wwwroot
+  # sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   # mkdir -p ~/smb/dev02/shibboleth-sp
   # sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
@@ -326,8 +329,8 @@ function dialog() {
   # mkdir -p ~/smb/ITHOR/Memberz
   # sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
-  mkdir -p ~/smb/HOTH/Docs
-  sudo mount -t cifs //hoth/Docs /home/drakirus/smb/HOTH/Docs -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
+  # mkdir -p ~/smb/HOTH/Docs
+  # sudo mount -t cifs //hoth/Docs /home/drakirus/smb/HOTH/Docs -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
 
   tree ~/smb/ -L 2
 
@@ -366,4 +369,8 @@ function juv() {
 
   jupyter nbconvert --to python "$1" --output "/tmp/$UUID-$BASE"
   nvim "/tmp/$UUID-$BASE.py"
+}
+
+function usb_sound() {
+  for app in $(pacmd list-sink-inputs | sed -n -e 's/index:[[:space:]]\([[:digit:]]\)/\1/p');do; pacmd move-sink-input $app alsa_output.usb-Generic_USB_Audio_200901010001-00.HiFi__hw_Dock_0__sink; done
 }

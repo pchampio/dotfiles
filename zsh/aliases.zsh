@@ -76,11 +76,14 @@ alias drak="ssh drakirus@drakirus.com -p 2242"
 
 alias pdf="zathura --fork"
 
+# cat ~/.ssh/id_rsa | ssh-key-on-line
+alias ssh-key-on-line="openssl base64 | tr -d '\n'"
+# echo $ONE-LINE-KEY | ssh-key-on-line-decode
+alias ssh-key-on-line-decode="openssl base64 -A -d"
+
 # alias cat="bat --theme=GitHub"
 alias ping='prettyping --nolegend'
 alias dps='docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"'
-
-alias cb='ruby ~/lab/ruby/credit_mutuel/credit_mutuel_monitor.rb'
 
 ############
 #  Editor  #

@@ -87,6 +87,7 @@ function! statusline#fenc() abort
 endfunction
 
 function! statusline#blur() abort
+  set nocursorline
   " Default blurred statusline (buffer number: filename).
   let l:blurred=''
   let l:blurred.='\ ' " space
@@ -104,6 +105,7 @@ function! statusline#blur() abort
 endfunction
 
 function! statusline#focus() abort
+  set cursorline
   " `setlocal statusline=` will revert to global 'statusline' setting.
   call s:update_statusline('', 'focus')
 endfunction
@@ -166,3 +168,22 @@ function! statusline#wc()
   endif
   return ""
 endfunction
+
+" Ctrlp statusline
+" Arguments: focus, byfname, s:regexp, prv, item, nxt, marked
+"            a:1    a:2      a:3       a:4  a:5   a:6  a:7
+fu! CtrlP_main_status(...)
+  let item = ' ' . (a:5 == 'mru files' ? 'mru' : a:5) . ' '
+  let dir = fnamemodify(getcwd(), ':~') . ' %*'
+
+  " only outputs current mode
+  retu '%7*' . item . ' %4*%* ' . '%=%<' . '%6*%5* ' . dir
+endf
+
+" Argument: len
+"           a:1
+fu! CtrlP_progress_status(...)
+  let len = '%#Function# '.a:1.' %*'
+  let dir = ' %=%<%#LineNr# '.getcwd().' %*'
+  retu len.dir
+endf
