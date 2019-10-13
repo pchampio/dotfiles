@@ -37,8 +37,11 @@ PATH=$PATH:/usr/bin/core_perl/
 # GO config
 # mkdir -p ~/lab/go/{pkg,src,bin}
 export GOPATH=$HOME/lab/go
+export GOROOT=/opt/go
 PATH=$PATH:$GOPATH/bin
-PATH="$PATH:/usr/local/go/bin/"
+PATH=$PATH:$GOROOT/bin
+# INSTALL go
+# wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
 
 # pip path
 PATH=$PATH:$HOME/.local/bin
@@ -91,7 +94,7 @@ export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
 
 # JAVA_HOME
 # export JAVA_HOME=/usr/lib/jvm/jdk-9.0.1
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre
 
 export AS_JAVA=/usr/lib/jvm/java-8-jdk
 
@@ -108,7 +111,7 @@ if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
 if [[ "$SSH_AGENT_PID" == "" ]]; then
-    eval $(<~/.ssh-agent-thing)
+    eval $(<~/.ssh-agent-thing) > /dev/null
 fi
 
 if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
@@ -135,4 +138,4 @@ for config ($DOTFILES/**/*.zsh) source $config
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=white"
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"

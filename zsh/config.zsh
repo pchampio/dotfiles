@@ -25,7 +25,7 @@ if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
   setxkbmap -option caps:escape
 
   # startup app to hide form taskbar
-  wmctrl -x -r MineTime -b add,skip_taskbar
+  # wmctrl -x -r MineTime -b add,skip_taskbar
 
 fi
 

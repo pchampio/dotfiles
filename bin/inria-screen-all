@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# eDP1: Laptop 3840x2160 bottom
+# external: 25" 2560x1440 TOP
+
+external=$(xrandr | grep "DP.-.*\sconnected" | cut -d" " -f1)
+
+xrandr --output "$external" --scale 1.6x1.6 --pos 640x0 --above eDP1 
+xrandr --output eDP1 --scale 1x1 --pos 0x2305 --dpi 192 
+
+# autorandr --save work1

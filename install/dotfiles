@@ -3,7 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-ignoreRC="termite_config|README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|iTerm.png|background.png|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|settings_dataGrip|LSP_settings.json|duckduckgo_solarized_light"
+ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar"
 dir=~/dotfiles
 
 explain "Create symlink for dotfiles"
@@ -21,6 +21,8 @@ for file in $files; do
 done
 
 explain "Create symlink for files config"
+mkdir ~/.vim
+mkdir ~/.config/nvim
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
@@ -33,11 +35,18 @@ tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
 explain "Tmux italics"
 cat <<EOF|tic -x -
 tmux|tmux terminal multiplexer,
-  ritm=\E[23m, rmso=\E[27m, sitm=\E[3m, smso=\E[7m, Ms@,
-  use=xterm+tmux, use=screen,
+  sitm=\E[3m, ritm=\E[23m,
+  smso=\E[7m, rmso=\E[27m,
+  use=screen,
 
 tmux-256color|tmux with 256 colors,
-  use=xterm+256setaf, use=tmux,
+  sitm=\E[3m, ritm=\E[23m,
+  smso=\E[7m, rmso=\E[27m,
+  use=screen-256color,
+
+xterm-256color|xterm with 256 colors and italic,
+  sitm=\E[3m, ritm=\E[23m,
+  use=xterm-256color,
 EOF
 
 explain "Git config"
@@ -47,8 +56,6 @@ git config --global commit.template ~/.gitmessage
 
 
 # tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
-
 [ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
-
 
 zsh

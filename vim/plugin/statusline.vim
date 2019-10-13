@@ -1,25 +1,19 @@
 scriptencoding utf-8
 
 " Highlight
-
 hi statusLine guibg=#EEE8D5 gui=italic
 hi statusLineNC guibg=#eee8d5 gui=italic
-
 hi User1 guibg=#eee8d5 guifg=#586E75 gui=italic
-
 " hi! link User3 User1 " with bold
 exec 'hi User3 gui=bold' .
       \' guibg=' . synIDattr(synIDtrans(hlID('User1')), 'bg', 'gui')
       \' guifg=' . synIDattr(synIDtrans(hlID('User1')), 'fg', 'gui')
-
-
 hi User4 guibg=#eee8d5 guifg=#AF0000
 hi User5 guibg=#586E75 guifg=#F9E4CC
 hi User2 guibg=#586E75 guifg=#F9E4CC
 hi User6 guibg=#eee8d5 guifg=#586E75
 hi User7 guibg=#AF0000 guifg=#F2F0EB
 hi User8 guibg=#eee8d5 guifg=#d33682 gui=italic
-
 " END
 
 let &t_ZH="\e[3m"

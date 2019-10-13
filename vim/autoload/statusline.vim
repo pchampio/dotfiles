@@ -6,13 +6,7 @@ augroup FOCUS
   autocmd User FerretAsyncFinish call statusline#unsetjobs()
   autocmd User ALELintPre call statusline#setjobs()
   autocmd User ALELintPost call statusline#unsetjobs()
-
-  if exists('#TextChangedI')
-    autocmd BufWinEnter,BufWritePost,FileWritePost,TextChanged,TextChangedI,WinEnter * call statusline#check_modified()
-  else
-    autocmd BufWinEnter,BufWritePost,FileWritePost,WinEnter * call statusline#check_modified()
-  endif
-
+  autocmd BufWinEnter,BufWritePost,FileWritePost,TextChanged,TextChangedI,WinEnter * call statusline#check_modified()
 augroup end
 
 function! statusline#sneaking() abort
@@ -33,9 +27,7 @@ function! statusline#check_modified() abort
     exec 'hi User3 gui=bold' .
           \' guibg=' . synIDattr(synIDtrans(hlID('User1')), 'bg', 'gui')
           \' guifg=' . synIDattr(synIDtrans(hlID('User1')), 'fg', 'gui')
-
   endif
-
 endfunction
 
 let g:statusline_max_path = 30
@@ -168,22 +160,3 @@ function! statusline#wc()
   endif
   return ""
 endfunction
-
-" Ctrlp statusline
-" Arguments: focus, byfname, s:regexp, prv, item, nxt, marked
-"            a:1    a:2      a:3       a:4  a:5   a:6  a:7
-fu! CtrlP_main_status(...)
-  let item = ' ' . (a:5 == 'mru files' ? 'mru' : a:5) . ' '
-  let dir = fnamemodify(getcwd(), ':~') . ' %*'
-
-  " only outputs current mode
-  retu '%7*' . item . ' %4*%* ' . '%=%<' . '%6*%5* ' . dir
-endf
-
-" Argument: len
-"           a:1
-fu! CtrlP_progress_status(...)
-  let len = '%#Function# '.a:1.' %*'
-  let dir = ' %=%<%#LineNr# '.getcwd().' %*'
-  retu len.dir
-endf

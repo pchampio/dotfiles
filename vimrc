@@ -13,79 +13,6 @@ if exists('veonim')
   set linespace=15
 endif
 
-" simulate tmux shortcuts in neovim
-Plug 'Vigemus/nvimux', {'do': 'cp -r ./lua $HOME/.config/nvim/'}
-
-" abstraction on top of neovim terminal
-Plug 'kassio/neoterm'
-
-if !exists('$TMUX')
-
-  " use neovim-remote (pip3 install neovim-remote) allows
-  " opening a new split inside neovim instead of nesting
-  " neovim processes for git commit
-  let $GIT_EDITOR  = 'nvr -cc split --remote-wait +"setlocal bufhidden=delete"'
-  let $EDITOR      = 'nvr'
-
-  " send stuff to REPL using NeoTerm
-  nnoremap <silent> <c-Space>l :TREPLSendLine<CR>
-  vnoremap <silent> <c-Space>l :TREPLSendSelection<CR>
-
-lua << EOF
-local nvimux = require('nvimux')
--- Nvimux configuration
-nvimux.config.set_all{
-  prefix = '<C-Space>',
-  new_window = 'enew | Tnew',
-  open_term_by_default = true,
-  new_window_buffer = 'single',
-}
--- Nvimux custom bindings
-nvimux.bindings.bind_all{
-  {'i', ':NvimuxHorizontalSplit', {'n', 'v', 'i', 't'}},
-  {'s', ':NvimuxVerticalSplit', {'n', 'v', 'i', 't'}},
-}
--- Required so nvimux sets the mappings correctly
-nvimux.bootstrap()
-EOF
-
-  nnoremap <silent> <A-n> :NvimuxNewTab<cr>
-
-  " easily escape terminal
-  tnoremap <leader><esc> <C-\><C-n>
-  " start insert mode terminal
-  autocmd BufWinEnter,WinEnter term://* startinsert
-  autocmd BufWinEnter,WinEnter term://* redraw!
-
-  " Move around
-  tnoremap <c-h> <C-\><C-N><C-w>h
-  tnoremap <c-j> <C-\><C-N><C-w>j
-  tnoremap <c-k> <C-\><C-N><C-w>k
-  tnoremap <c-l> <C-\><C-N><C-w>l
-
-  " Tab movement
-  nnoremap <silent> <M-l> :tabnext<cr>
-  nnoremap <silent> <M-h> :tabprevious<cr>
-  tnoremap <silent> <M-l> <C-\><C-n>:tabnext<cr>
-  tnoremap <silent> <M-h> <C-\><C-n>:tabprevious<cr>
-
-  " resizing a window split
-  tnoremap <C-Right> <C-\><C-n><C-w>10<I
-  tnoremap <C-Down> <C-\><C-n><C-W>5-I
-  tnoremap <C-Up> <C-\><C-n><C-W>5+I
-  tnoremap <C-Left> <C-\><C-n><C-w>10>I
-
-
-  let g:neoterm_autoinsert=1
-
-  Plug 'szw/vim-maximizer'
-  nnoremap <C-Space><Space> :MaximizerToggle!<CR>
-  tnoremap <C-Space><Space> <C-\><C-N>:MaximizerToggle!<CR>
-
-  " Plug 'kh3phr3n/tabline'
-
-endif
-
 " Git
 Plug 'tpope/vim-fugitive' " Git wrapper
 nnoremap <silent> - :Gstatus<cr>:13wincmd_<cr>:call search('\v<' . expand('#:t') . '>')<cr>
@@ -136,6 +63,9 @@ let g:FerretExecutableArguments = {
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
 
+" Keeps vim windows stable on layout changes (quickfix or location list pop)
+Plug 'gillyb/stable-windows'
+
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -163,29 +93,33 @@ autocmd  FileType fzf set  noshowmode noruler norelativenumber nonumber | echo "
   \| autocmd BufLeave <buffer> set  showmode ruler relativenumber number
 autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 
-" In love w/ nixprime/cpsm matcher
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'nixprime/cpsm', { 'do': 'env PY3=ON ./install.sh' }
-let g:ctrlp_match_func = { 'match': 'cpsm#CtrlPMatch' }
-autocmd StdinReadPre * let g:isReadingFromStdin = 1
-autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git")) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
-let g:ctrlp_root_markers = ['pubspec.yaml', 'requirements.txt']
-let g:ctrlp_prompt_mappings = {
-    \ 'AcceptSelection("v")': ['<c-s>'],
-    \ 'AcceptSelection("h")': ['<c-i>'],
-    \ 'PrtCurStart()':        ['<space>', '<c-a>'],
-\ }
-if executable('rg')
-  set grepprg=rg\ --color=never
-  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
-  let g:ctrlp_use_caching = 0
-endif
-let g:ctrlp_abbrev = { 'gmode': 't', 'abbrevs': [ { 'pattern': ';', 'expanded': ':', 'mode': 'pfrz', }, ] }
-" Ctrlp Style defined in autoload
-let g:ctrlp_status_func = {
-  \ 'main': 'CtrlP_main_status',
-  \ 'prog': 'CtrlP_progress_status'
-  \}
+" An asynchronous fuzzy finder
+Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+let g:Lf_EmptyQuery = 1
+let g:Lf_DefaultMode = 'NameOnly'
+let g:Lf_IgnoreCurrentBufferName = 1
+let g:Lf_ShortcutF = '<C-P>'
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_CacheDirectory = expand('~/.cache')
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', 'requirements', 'pubspec.yaml']
+let g:Lf_ReverseOrder = 1
+let g:Lf_WindowHeight = 0.25
+let g:Lf_StlColorscheme = 'one'
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2" }
+let g:Lf_StlPalette = {
+    \ 'stlName':     {'guifg': '#F2F0EB', 'guibg': '#AF0000'},
+    \ 'stlBlank':    {'guifg': '#586E75', 'guibg': '#eee8d5'},
+    \ 'stlCwd':      {'guifg': '#586E75', 'guibg': '#eee8d5'},
+    \ 'stlLineInfo': {'guifg': '#F9E4CC', 'guibg': '#586E75'},
+    \ 'stlTotal':    {'guifg': '#F9E4CC', 'guibg': '#586E75'}
+    \}
+let g:Lf_WildIgnore = {
+    \ 'dir': ['.git', '.svn', '.hg', '.gitlab', 'node_modules'],
+    \ 'file': ['*.exe', '*.so', '*.tar', '*.gz', '*.tar', '*.gz', '*.vim', '*.git', '*.o', '*.svn', '*.swp'],
+    \}
+let g:Lf_CommandMap = {'<C-X>': ['<C-i>'], '<C-]>': ['<C-s>'], '<C-S>': ['<C-z>'], '<C-U>': ["<C-u>", "<C-w>"]}
+hi! link Lf_hl_match Character
+hi! link Lf_hl_matchRefine Include
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
@@ -522,7 +456,8 @@ colorscheme base16-solarized-light
 set background=light
 
 " Make comments italic
-highlight Comment gui=italic
+" See terminfo database "tic" command in ./install/dotfiles:35
+highlight Comment gui=italic cterm=italic
 
 " Ignore
 set wildignore+=.hg,.git,.svn                           " Version control

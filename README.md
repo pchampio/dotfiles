@@ -172,3 +172,59 @@ sudo mv nvim /usr/bin
 Alt key map
 
 [about:config?filter=ui.key.menuAccessKeyFocuses](about:config?filter=ui.key.menuAccessKeyFocuses) -> to false
+
+## Disable GRUB delay
+
+```sh
+sudo vim /etc/default/grub
+# set: GRUB_TIMEOUT=0
+sudo update-grub
+```
+
+## Reduce swappiness
+Optimize the use of Swap and RAM.
+
+```sh
+cat /proc/sys/vm/swappiness
+sudo vim /etc/sysctl.d/100-manjaro.conf
+# add line: vm.swappiness=10
+```
+
+## Enable TRIM for SSD
+TRIM is a program that helps to clean blocks in your SSD and thus use it more efficiently and extend the SSD’s life.
+
+```sh
+sudo systemctl enable fstrim.timer
+```
+
+## systemd timeout
+Reduce the default timeout(90s) for starting, stopping and aborting of units.
+
+```sh
+sudo vim /etc/systemd/system.conf 
+# set: DefaultTimeoutStartSec=10s
+# set: DefaultTimeoutStopSec=5s
+```
+
+## Linux Disable Core Dumps
+
+```sh
+sudo vim /etc/systemd/coredump.conf
+set: Storage=none
+set: ProcessSizeMax=0
+sudo systemctl daemon-reload
+```
+
+# KDE
+
+Disable file search in KDE Kickoff Launcher
+
+```sh
+sudo vim /usr/share/kservices5/plasma-runner-baloosearch.desktop
+# set : X-KDE-PluginInfo-EnabledByDefault=false
+```
+
+
+# CPU Undervolting 
+
+https://wiki.archlinux.org/index.php/Undervolting_CPU#intel-undervolt
