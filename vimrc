@@ -1,6 +1,9 @@
 " Leader Mappings
 let mapleader = ","
 
+"  Virtual Environments
+let g:python3_host_prog = '/usr/bin/python3'
+
 " Add bundles
 call plug#begin('~/.vim/bundle/')
 

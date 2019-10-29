@@ -107,6 +107,10 @@ export PATH=${FLUTTER}:${JAVA_HOME}/bin:${PATH}:/opt/android-sdk/tools:/opt/andr
 
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+  export TERM=screen-256color
+fi
+
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
