@@ -73,7 +73,7 @@ alias atal="ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
 alias drak="ssh drakirus@drakirus.com -p 2242"
 alias g5k-all="ssh pchampion@access.grid5000.fr"
-alias g5k="ssh pchampion@access.nancy.grid5000.fr"
+alias g5k="ssh pchampion@access.nancy.grid5000.fr -t zsh"
 
 alias pdf="zathura --fork"
 
