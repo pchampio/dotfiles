@@ -7,12 +7,6 @@ call plug#begin('~/.vim/bundle/')
 " Breakdown Vim's --startuptime output
 " Plug 'tweekmonster/startuptime.vim'
 
-if exists('veonim')
-  set guifont=Hack
-  set guicursor=n:block-CursorNormal,i:hor10-CursorInsert,v:block-CursorVisual
-  set linespace=15
-endif
-
 " Git
 Plug 'tpope/vim-fugitive' " Git wrapper
 nnoremap <silent> - :Gstatus<cr>:13wincmd_<cr>:call search('\v<' . expand('#:t') . '>')<cr>
@@ -55,7 +49,7 @@ Plug 'wincent/ferret'
 let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
 nmap <leader>E <Plug>(FerretAcks)
-nnoremap g/ :Ack<space>
+nnoremap g\ :Ack<space>
 let g:FerretExecutableArguments = {
       \   'rg': '--vimgrep --no-heading --max-columns 4096'
       \ }
@@ -95,6 +89,7 @@ autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 
 " An asynchronous fuzzy finder
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+nnoremap g/ :Leaderf  --nameOnly --cword --stayOpen rg -i <CR>
 let g:Lf_EmptyQuery = 1
 let g:Lf_DefaultMode = 'NameOnly'
 let g:Lf_IgnoreCurrentBufferName = 1
@@ -126,10 +121,49 @@ hi! link Lf_hl_matchRefine Include
 Plug 'sheerun/vim-polyglot'
 Plug 'adimit/prolog.vim'
 
+Plug 'vimwiki/vimwiki', {'branch': 'dev'}
+let g:vimwiki_auto_chdir = 1
+let g:vimwiki_folding = 'syntax'
+let g:vimwiki_hl_cb_checked = 1
+let g:vimwiki_hl_headers = 1
+
+"pchampion's PHD WIKI
+" git clone https://github.com/lotabout/vimwiki-tpl ~/resources/vimwiki
+let wiki_1 = {}
+let wiki_1.path = '~/resources/wiki'
+let wiki_1.path_html = wiki_1.path . '/dist'
+let wiki_1.template_path= wiki_1.path_html . '/template'
+let wiki_1.template_default = 'default'
+let wiki_1.template_ext = '.htm'
+
+let g:vimwiki_list = [wiki_1]
+
+function! VimWikiMapping()
+  nnoremap <Leader>wg :VimwikiAll2HTML<cr>
+  nnoremap <Leader>wb :Vimwiki2HTMLBrowse<cr>
+  nmap <Leader>w<space> <Plug>VimwikiToggleListItem
+  vmap <Leader>w<space> <Plug>VimwikiToggleListItem
+  nmap <Leader>w<BS> <Plug>VimwikiRemoveSingleCB
+  nmap <Leader>wq <Plug>VimwikiVSplitLink
+  nmap <Leader>wQ <Plug>VimwikiSplitLink
+  map << <Plug>VimwikiDecreaseLvlSingleItem
+  map <<< <Plug>VimwikiDecreaseLvlWholeItem
+  map << <Plug>VimwikiDecreaseLvlSingleItem
+  map <<< <Plug>VimwikiDecreaseLvlWholeItem
+  map <<< <Plug>VimwikiDecreaseLvlWholeItem
+  setlocal spell spelllang=en tw=80
+  let b:ale_enabled = 0
+  nnoremap <A-j> zr]]
+  nnoremap <A-k> za
+endfunction
+
+autocmd FileType vimwiki call VimWikiMapping()
+
 Plug 'chriskempson/base16-vim'
 
 " syntastic
 Plug 'dense-analysis/ale'
+let g:ale_linters_ignore = {'vimwiki': ['']}
 let g:ale_completion_enabled=0
 let g:ale_disable_lsp = 1
 let g:ale_lint_on_text_changed = 'never'
@@ -222,11 +256,6 @@ let g:sneak#s_next = 1
 map f <Plug>Sneak_f
 map F <Plug>Sneak_F
 map : <Plug>Sneak_;
-onoremap <silent> f :call sneak#wrap(v:operator, 1, 0, 1, 1)<CR>
-onoremap <silent> F :call sneak#wrap(v:operator, 1, 1, 1, 1)<CR>
-onoremap <silent> t :call sneak#wrap(v:operator, 1, 0, 0, 1)<CR>
-onoremap <silent> T :call sneak#wrap(v:operator, 1, 1, 0, 1)<CR>
-" map t <Plug>Sneak_t
 " Clever-f highlight <3
 autocmd ColorScheme * hi Sneak guifg=red guibg=NONE gui=bold,underline
 autocmd ColorScheme * hi SneakLabel guifg=red guibg=#eee8d5 gui=bold,underline
@@ -246,19 +275,17 @@ nmap rr <plug>(SubversiveSubstituteLine)
 xmap r <plug>(SubversiveSubstitute)
 xmap p <plug>(SubversiveSubstitute)
 xmap P <plug>(SubversiveSubstitute)
+" ie = inner entire buffer
+onoremap iE :exec "normal! ggVG"<cr>
+nmap <silent> <leader>e <plug>(SubversiveSubstituteWordRange)iE
+nmap <silent> <leader>ee ;call sneak#cancel()<cr><plug>(SubversiveSubstituteRange)
+xmap <silent> <leader>e <plug>(SubversiveSubstituteRange)iE
 " cursor will not move when substitutions are applied
 let g:subversivePreserveCursorPosition = 1
 noremap R r
 
 " Vim Exchange
 Plug 'tommcdo/vim-exchange'
-
-" ie = inner entire buffer
-onoremap iE :exec "normal! ggVG"<cr>
-
-nmap <silent> <leader>e <plug>(SubversiveSubstituteWordRange)iE
-nmap <silent> <leader>ee ;call sneak#cancel()<cr><plug>(SubversiveSubstituteRange)
-xmap <silent> <leader>e <plug>(SubversiveSubstituteRange)iE
 
 " Commanter
 Plug 'scrooloose/nerdcommenter'
@@ -289,16 +316,6 @@ Plug 'haya14busa/vim-textobj-function-syntax' " heuristic function Text-object
 
 Plug 'jeetsukumaran/vim-pythonsense' "Python
 
-" comment Text-object.
-Plug 'glts/vim-textobj-comment'
-let g:textobj_comment_no_default_key_mappings = 1
-omap agc <Plug>(textobj-comment-a)
-omap igc <Plug>(textobj-comment-i)
-omap agC <Plug>(textobj-comment-big-a)
-xmap agc <Plug>(textobj-comment-a)
-xmap igc <Plug>(textobj-comment-i)
-xmap agC <Plug>(textobj-comment-big-a)
-
 " word-based columns Text-object
 Plug 'idbrii/textobj-word-column.vim'
 
@@ -322,11 +339,12 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
 " autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 " Copy text over SSH
-" Plug 'haya14busa/vim-poweryank'
+Plug 'haya14busa/vim-poweryank'
+map <Leader>y <Plug>(operator-poweryank-osc52)
 
 Plug 'lervag/vimtex'
 let g:tex_flavor = 'latex'
-let g:vimtex_view_method = 'zathura'
+let g:vimtex_view_method = 'okular'
 
 "  Snippets
 Plug 'SirVer/ultisnips'
@@ -408,7 +426,7 @@ function! s:lsp_mapping()
       nnoremap <silent> <Leader>e :<C-u>LspRename<CR>
       nnoremap <silent> ]e :<C-u>LspNextError<CR>
       nnoremap <silent> [e :<C-u>LspPreviousError<CR>
-      let g:ale_enabled = 0
+      let b:ale_enabled = 0
 
       " message info
       echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
@@ -679,16 +697,4 @@ endfunction
 augroup BWCCreateDir
   autocmd!
   autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
-augroup END
-
-function! Osc52Yank()
-    let buffer=system('base64 -w0', @0)
-    let buffer=substitute(buffer, "\n$", "", "")
-    let buffer='\e]52;c;'.buffer.'\x07'
-    silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape("/dev/tty")
-endfunction
-command! Osc52CopyYank call Osc52Yank()
-augroup Example
-    autocmd!
-    autocmd TextYankPost * if v:event.operator ==# 'y' | call Osc52Yank() | endif
 augroup END

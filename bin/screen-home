@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # eDP1: Laptop 3840x2160 OFF
-# external: 25" 2560x1440 only
+# external: 24" 1920x1080 only
 
 external=$(xrandr | grep "DP.-.*\sconnected" | cut -d" " -f1)
 
-xrandr --output "$external" --scale 1.6x1.6 --mode 2560x1440
+xrandr --output "$external" --scale 1x1 --mode 1920x1080
 xrandr --output eDP1 --off

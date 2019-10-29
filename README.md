@@ -104,11 +104,7 @@ Make sure you update `gitconfig` with your own name and email address otherwise,
 `git config --global commit.template ~/.gitmessage`  
 
 ### Custom Fonts
-You'll need to use a custom font for statusline to look nice. (Seeing weird symbols? This is why!).  
-```sh
-./fonts/install.sh
-```
-> I use *hack* (size 12).  
+https://github.com/vikky49/patchedFonts-Ligatures
 
 ---
 

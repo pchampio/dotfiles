@@ -5,7 +5,7 @@
 
 external=$(xrandr | grep "DP.-.*\sconnected" | cut -d" " -f1)
 
-xrandr --output "$external" --scale 1.6x1.6 --pos 640x0 --above eDP1 
-xrandr --output eDP1 --scale 1x1 --pos 0x2305 --dpi 192 
+xrandr --output "$external" --scale 1.6x1.6 --pos 640x0 --above eDP1 --mode 2560x1440
+xrandr --output eDP1 --scale 1x1 --pos 0x2305 --dpi 192 --mode 3840x2160
 
 # autorandr --save work1
