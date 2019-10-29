@@ -21,15 +21,13 @@ fi
 explain "Download latest nvim app"
 cd /tmp
 wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
-# wget http://gitreleases.dev/gh/neovim/neovim/v0.3.4/nvim.appimage --output-document nvim
+# wget http://gitreleases.dev/gh/neovim/neovim/v0.4.2/nvim.appimage --output-document nvim
 chmod +x nvim
 read -p "move nvim in /usr/bin [y/n]: " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  sudo rm /usr/bin/nvim
-  sudo chown root:root nvim
-  sudo mv nvim /usr/bin
+  mv nvim $HOME/bin/
 fi
 cd -
 

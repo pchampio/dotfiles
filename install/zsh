@@ -5,7 +5,7 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
 
-sudo rm -rf ~/.oh-my-zsh/
+rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
 explain "Installation de oh-my-zsh"
