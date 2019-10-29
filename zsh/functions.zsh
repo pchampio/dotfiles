@@ -1,6 +1,6 @@
 function nvim() {
   if [[ "$#" == 0 ]]; then
-    /usr/sbin/nvim;
+    $HOME/dotfiles/bin/nvim;
   else
     OWNER=$(stat -c '%U' $1)
     if [[ "$OWNER" == "root" ]]; then
@@ -8,7 +8,7 @@ function nvim() {
       sleep 0.3
       sudoedit $*;
     else
-      /usr/sbin/nvim $*;
+      $HOME/dotfiles/bin/nvim $*;
     fi
   fi
 }

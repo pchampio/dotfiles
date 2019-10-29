@@ -24,11 +24,11 @@ cd /tmp
 wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
 # wget http://gitreleases.dev/gh/neovim/neovim/v0.4.2/nvim.appimage --output-document nvim
 chmod +x nvim
-read -p "move nvim in /usr/bin [y/n]: " -n 1 -r
+read -p "move nvim in $HOME/dotfiles/bin [y/n]: " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  mv nvim $HOME/bin/
+  mv nvim $HOME/dotfiles/bin/
 fi
 cd -
 
@@ -51,17 +51,22 @@ if [ ! -e $HOME/.vim/spell ]; then
   wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.spl
 fi
 
-explain "Vim plugins"
-vim +PlugInstall +qa
+mkdir -p ~/.vim
+mkdir -p ~/.config
+mkdir -p ~/.config/nvim
 
 tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
 tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
-
-mkdir ~/.vim
-mkdir ~/.config/nvim
 
 explain "Symlink nvim to vim"
 tell ln -sf ~/.vim/* ~/.config/nvim
 tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
 
 mkdir -p ~/.vimundo
+
+python3 -m pip install --user --upgrade pynvim
+
+explain "Vim plugins"
+$HOME/dotfiles/bin/nvim +UpdateRemotePlugins +qa
+
+$HOME/dotfiles/bin/nvim +PlugInstall +qa

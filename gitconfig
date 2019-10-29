@@ -3,11 +3,11 @@
 [color]
   ui = auto
 [core]
-	excludesfile = /home/pchampio/.gitignore
+	excludesfile = /home/pchampion/.gitignore
   autocrlf = input
 	pager = less -FRSX
 [commit]
-	template = /home/pchampio/.gitmessage
+	template = /home/pchampion/.gitmessage
 [user]
 	name = Drakirus
   email = prr.champion@gmail.com
