@@ -101,11 +101,3 @@ if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
   alias vim="nvimux-vim"
   export EDITOR='nvr'
 fi
-
-
-############
-#  Grid5K  #
-############
-
-alias oar-1080="oarsub -p cluster='grele' -q production -l gpu=1/core=1,walltime=24  sleep 24h"
-alias oar-2080="oarsub -p cluster='graffiti' -q production -l gpu=1/core=1,walltime=24  sleep 24h"
