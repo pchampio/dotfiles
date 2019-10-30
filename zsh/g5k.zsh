@@ -16,3 +16,12 @@ function conda-so-activate(){ source ~/lab/conda/etc/profile.d/conda.sh; conda a
 # bash Miniconda2-latest-Linux-x86_64.sh
 # // Home to ~/lab/conda
 # conda install cudnn
+
+# see my-fzf-completion() in zsh/completion.zsh
+_fzf-compl-oar(){
+    fzf="$(__fzfcmd_complete)"
+    matches=$(command oarstat -u | FZF_DEFAULT_OPTS=" --header-lines=2 --min-height 15 --reverse $FZF_DEFAULT_OPTS" ${=fzf} -m | awk '{print $1}' | tr '\n' ' ')
+    if [ -n "$matches" ]; then
+      LBUFFER="$LBUFFER$matches"
+    fi
+}

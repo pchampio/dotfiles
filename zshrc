@@ -89,7 +89,7 @@ zstyle :prompt:pure:prompt:success color green
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
-export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up'
+export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up,tab:down'
 
 
 # JAVA_HOME
