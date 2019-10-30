@@ -183,10 +183,10 @@ nmap <silent> ]e <Plug>(ale_next_wrap)
 nmap <silent> [e <Plug>(ale_previous_wrap)
 
 nmap <silent> <leader>dt <Plug>(ale_toggle_buffer)
+nmap <leader>df ;let b:ale_fix_on_save = 0
 nnoremap <silent> <leader>d<Space> :call ALEListToggle()<cr>
 
 function! ALEListToggle()
-let b:ale_fix_on_save = 0
   if g:ale_open_list
     let g:ale_open_list = 0
     lclose
@@ -201,7 +201,7 @@ let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'markdown': ['remove_trailing_lines'],
 \   'liquid': ['remove_trailing_lines'],
-\   'python': ['autopep8'],
+\   'python': ['black'],
 \   'go': ['goimports'],
 \   'dart': ['dartfmt'],
 \   'c': ['clang-format'],
