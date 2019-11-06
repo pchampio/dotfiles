@@ -23,9 +23,9 @@ export BROWSER=/bin/firefox
 # Show contents of directory after cd-ing into it
 chpwd() {
   ls
-  if [ -f ./venv/bin/activate ]; then
-    source ./venv/bin/activate
-  fi
+  # if [ -f ./venv/bin/activate ]; then
+    # source ./venv/bin/activate
+  # fi
 }
 
 # downgrade command in manjaro
