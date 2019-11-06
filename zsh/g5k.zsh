@@ -11,7 +11,7 @@ alias oarWatch="watch -n 1 oarstat -u"
 
 # completion zsh
 
-function conda-so-activate(){ source ~/lab/conda/etc/profile.d/conda.sh; conda activate;}
+function conda-so-activate(){ source ~/lab/espnet/tools/venv/etc/profile.d/conda.sh; conda activate;}
 
 # wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 # chmod +x Miniconda3-latest-Linux-x86_64.sh
