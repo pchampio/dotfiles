@@ -5,5 +5,7 @@
 
 external=$(xrandr | grep "DP.-.*\sconnected" | cut -d" " -f1)
 
-xrandr --output "$external" --scale 1x1 --mode 1920x1080
+xrandr --output "$external" --scale 1.5x1.5 --mode 1920x1080
 xrandr --output eDP1 --off
+
+kquitapp5 plasmashell && kstart5 plasmashell
