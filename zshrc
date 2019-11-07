@@ -28,6 +28,9 @@ chpwd() {
   # fi
 }
 
+# downgrade command in manjaro
+export DOWNGRADE_FROM_ALA=1
+
 # mw
 PATH=$PATH:$HOME/dotfiles/mutt-wizard/bin
 
