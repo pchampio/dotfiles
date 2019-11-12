@@ -93,12 +93,11 @@ autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 " An asynchronous fuzzy finder
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
 nnoremap g/ :Leaderf  --nameOnly --cword --stayOpen rg -i <CR>
-let g:Lf_EmptyQuery = 1
 let g:Lf_UseVersionControlTool = 0
-let g:Lf_DefaultMode = 'NameOnly'
 let g:Lf_IgnoreCurrentBufferName = 1
+let g:Lf_ExternalCommand = 'rg --files --no-ignore --hidden --follow -g !.git "%s"'
 let g:Lf_ShortcutF = '<C-P>'
-let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_WorkingDirectoryMode = 'c'
 let g:Lf_CacheDirectory = expand('~/.cache')
 let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', 'requirements', 'pubspec.yaml']
 let g:Lf_ReverseOrder = 1
