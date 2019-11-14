@@ -1,0 +1,19 @@
+#!/bin/sh
+
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+dir=~/dotfiles
+
+explain "Download latest nvim app"
+cd /tmp
+wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
+# wget http://gitreleases.dev/gh/neovim/neovim/v0.4.3/nvim.appimage --output-document nvim
+chmod +x nvim
+read -p "move nvim in $HOME/dotfiles/bin [y/n]: " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  mv nvim $HOME/dotfiles/bin/
+fi
+cd -
