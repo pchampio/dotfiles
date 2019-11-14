@@ -17,15 +17,22 @@ my-fzf-completion() {
   cmd=${tokens[1]}
 
   # trigger-less completion
-  if [ $cmd = "oarsub" -a ${LBUFFER[-1]} = ' ' -a ${LBUFFER[-2]} = 'C' ]; then
-    _fzf-compl-oar
+  if [ $cmd = "oarsub" ]; then
+    if [ ${LBUFFER[-1]} = ' ' -a ${LBUFFER[-2]} = 'C' ]; then
+      _fzf-compl-oar
+      zle reset-prompt
+    fi
     return
-    zle reset-prompt
   fi
   if [ $cmd = "oardel" ]; then
     _fzf-compl-oar
-    return
     zle reset-prompt
+    return
+  fi
+  if [ $cmd = "oarwalltime" ]; then
+    _fzf-compl-oar
+    zle reset-prompt
+    return
   fi
 
 

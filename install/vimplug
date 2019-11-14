@@ -76,4 +76,5 @@ cd /tmp
 curl -LO 'https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep-11.0.2-x86_64-unknown-linux-musl.tar.gz'
 tar xf ripgrep-*.tar.gz
 cp ripgrep-*/rg $HOME/dotfiles/bin/rg
+rm ripgrep-*.tar.gz
 cd -

@@ -52,4 +52,3 @@ silent! let g:plugs['vim-yoink'].commit = '28a77ca'
 silent! let g:plugs['vimtex'].commit = '1db32d3'
 
 PlugUpdate!
-
