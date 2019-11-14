@@ -178,9 +178,6 @@ let g:ale_set_loclist = 1
 let g:ale_fix_on_save = 1
 hi! link ALEErrorSign SpellBad
 hi! link ALEWarningSign SpellRare
-" navigate between errors
-nmap <silent> ]e <Plug>(ale_next_wrap)
-nmap <silent> [e <Plug>(ale_previous_wrap)
 
 nmap <silent> <leader>dt <Plug>(ale_toggle_buffer)
 nmap <leader>df ;let b:ale_fix_on_save = 0
@@ -193,8 +190,8 @@ function! ALEListToggle()
     return
   else
     let g:ale_open_list = 1
+    lopen
   endif
-  ALELint
 endfunction
 
 let g:ale_fixers = {
@@ -376,68 +373,62 @@ let g:jedi#rename_command = "<leader>e"
 
 Plug 'deoplete-plugins/deoplete-jedi'
 let g:deoplete#sources#jedi#statement_length = 30
+
 Plug 'Shougo/echodoc.vim', {'for':['python', 'go', 'dart']}
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'floating'
 
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 set completeopt=noinsert,menu,noselect
 
 " LSP
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
+let g:LanguageClient_serverCommands = {
+    \ 'dart': ['$DART_SDK/dart', "$DART_SDK/snapshots/analysis_server.dart.snapshot", "--lsp"],
+    \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
+    \ }
+" \ 'go': [$GOPATH.'/bin/gopls'],
 
-let g:lsp_signs_enabled = 1           " enable signs
-let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
-if executable('dart')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'dart_language_server',
-        \ 'cmd': {server_info->['dart', '/opt/dart-sdk/bin/snapshots/analysis_server.dart.snapshot', '--lsp']},
-        \ 'whitelist': ['dart'],
-        \ })
-endif
+let g:LanguageClient_loggingFile = '/tmp/LSP.log'
+let g:LanguageClient_changeThrottle = 0.3
+let g:LanguageClient_diagnosticsList = 'Location'
+let g:LanguageClient_rootMarkers = {
+      \ 'dart': ['pubspec.yaml', '.git'],
+      \ 'go':  ['go.mod', '.git'],
+      \ 'c': ['clangd', '-background-index'],
+      \ }
 
-" if executable('gopls')
-    " au User lsp_setup call lsp#register_server({
-        " \ 'name': 'golang',
-        " \ 'cmd': {server_info->['gopls']},
-        " \ 'whitelist': ['go'],
-        " \ })
-" endif
+function! s:code_mapping()
+  if has_key(g:LanguageClient_serverCommands, &filetype)
+    " Lsp mapping
+    nnoremap <buffer> <silent> <leader>== :call LanguageClient#textDocument_formatting()<CR>
+    nnoremap <buffer> <silent> <leader>K :call LanguageClient#textDocument_hover()<CR>
+    nnoremap <buffer> <leader>ll :call LanguageClient_contextMenu()<CR>
+    nnoremap <buffer> <leader>a :call LanguageClient#textDocument_codeAction()<CR>
+    nnoremap <silent> <leader>g :call LanguageClient#textDocument_definition()<CR>
+    nnoremap <silent> <leader>G :call LanguageClient#textDocument_definition({'gotoCmd': 'vsplit'})<CR>
+    nnoremap <silent> <leader>e :call LanguageClient#textDocument_rename()<CR>
+    nnoremap <silent> <leader>r :call LanguageClient#textDocument_references()<CR>
 
-if executable('clangd')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'clangd',
-        \ 'cmd': {server_info->['clangd']},
-        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
-        \ })
-endif
+    " format / same as ALE fix on save
+    augroup LSPFormatDocument
+      autocmd!
+      autocmd BufWritePre <buffer> :call LanguageClient#textDocument_formatting_sync()
+    augroup END
 
-function! s:lsp_mapping()
+    " disable ALE
+    let b:ale_enabled = 0
+    let b:ale_fix_on_save = 0
 
-  for server_name in lsp#get_server_names()
+    " message info
     echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
-    if index(['starting', 'running'], lsp#get_server_status(server_name)) != -1
-
-      " Lsp mapping
-      nnoremap <silent> <Leader>g :<C-u>LspDefinition<CR>
-      nnoremap <silent> <Leader>G :vsplit \| :LspDefinition <CR>
-      nnoremap <silent> <Leader>r :<C-u>LspReferences<CR>
-      nnoremap <silent> <Leader>K :<C-u>LspHover<CR>
-      nnoremap <silent> <Leader>e :<C-u>LspRename<CR>
-      nnoremap <silent> ]e :<C-u>LspNextError<CR>
-      nnoremap <silent> [e :<C-u>LspPreviousError<CR>
-      let b:ale_enabled = 0
-
-      " message info
-      echohl ModeMsg | echo "" | echon '-- LSP enabled --' | echohl None
-      call timer_start(2000, function('execute', ['echo ""'])) " cleanup
-
-      return
-    endif
-  endfor
+    call timer_start(2000, function('execute', ['echo ""'])) " cleanup
+  else
+    noremap <leader>g <c-]>
+  endif
 endfunction
 
 call plug#end()
@@ -462,7 +453,7 @@ function! s:idleboot() abort
   echohl ModeMsg | echon '-- Deoplete enabled --' | echohl None
   call timer_start(2000, function('execute', ['echo ""'])) " cleanup
 
-  call s:lsp_mapping()
+  call s:code_mapping()
 
 
   call deoplete#custom#var('omni', 'input_patterns', {
@@ -568,6 +559,10 @@ nnoremap <silent> <Up> :cprevious<CR>
 nnoremap <silent> <Down> :cnext<CR>
 nnoremap <silent> <Left> :cpfile<CR>
 nnoremap <silent> <Right> :cnfile<CR>
+
+" navigate between errors
+nnoremap <silent> ]e :lbelow<cr>
+nnoremap <silent> [e :labove<cr>
 
 "Moving lines
 nnoremap <A-k> :m .-2<CR>==

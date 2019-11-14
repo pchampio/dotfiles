@@ -94,21 +94,22 @@ zstyle :prompt:pure:prompt:success color green
 export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up,tab:down'
 
+# Dart
+export DART_SDK="/opt/flutter/bin/cache/dart-sdk/bin"
+export PATH=${DART_SDK}:${PATH}
+
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+# Flutter
+export FLUTTER=/opt/flutter/bin
+export PATH=${FLUTTER}:${PATH}
 
 # JAVA_HOME
-# export JAVA_HOME=/usr/lib/jvm/jdk-9.0.1
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre
-
-export AS_JAVA=/usr/lib/jvm/java-8-jdk
 
 # Android - sdk
 export ANDROID_HOME=/opt/android-sdk
-
-export FLUTTER=/opt/flutter/bin
-
-export PATH=${FLUTTER}:${JAVA_HOME}/bin:${PATH}:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
-
-export PATH="$PATH":"$HOME/.pub-cache/bin"
+export PATH=${PATH}:${JAVA_HOME}/bin:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
 
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
   export TERM=screen-256color
