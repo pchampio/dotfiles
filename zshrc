@@ -80,14 +80,6 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
     -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
 
 
-# if [[ -n "$TMUX" ]]; then
-  # local LVL=$(($SHLVL - 3))
-# else
-  # local LVL=1
-# fi
-
-# local SUFFIX=$(printf '❯%.0s' {1..$LVL})
-
 zstyle :prompt:pure:prompt:success color green
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
