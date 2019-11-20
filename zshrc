@@ -107,6 +107,9 @@ if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
   export TERM=screen-256color
 fi
 
+# vim ~/.ssh/config #
+# AddKeysToAgent yes
+# ForwardAgent yes
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
