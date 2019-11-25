@@ -1,6 +1,8 @@
+# term = "hterm"
 preferences {
-    font_size = 15
-    background_color = "rgb(40, 40, 40)"
+    font_size = 14
+    background_color = "rgb(253, 246, 227)"
+    foreground_color = "rgb(101, 123, 131)"
     font_family = "'Hack','DejaVu Sans Mono', 'Everson Mono', FreeMono, 'Menlo', 'Terminal', monospace"
     audible_bell_sound = ""
 }

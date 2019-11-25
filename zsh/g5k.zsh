@@ -17,7 +17,7 @@ _my-oar(){
   walltime=$1
   walltime_justtobesafe=$(($walltime * 3))
   shift 1
-  jobid=$(oarsub -q production -p "cluster='$CLUSTER'" -l walltime="$walltime_justtobesafe":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | grep "OAR_JOB_ID" | sed 's/[^0123456789]//g')
+  jobid=$(oarsub -q production -p "cluster='$CLUSTER'" -l walltime="$walltime_justtobesafe":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
   if [[ "$@" != "" ]]; then # in case of reservations (-r)
     return
   fi
@@ -78,3 +78,14 @@ _fzf-compl-oar(){
       LBUFFER="$LBUFFER$matches"
     fi
 }
+
+# On a cluster's node,
+# display the remaining walltime of this job
+if [[ -v OAR_JOBID  ]]; then
+  startTimeJob=$(ssh $USER@fnancy "oarstat -j $OAR_JOBID -J | jq '.\"$OAR_JOBID\".\"startTime\"'")
+  startTimeJob=$(date '+%Y-%m-%d %H:%M:%S' -d @$startTimeJob)
+  walltime=$(ssh $USER@fnancy "oarwalltime $OAR_JOBID | sed -n 's/Current\swalltime:\s*\(.*\)/\1/p'")
+  walltimeHour=$(echo $walltime | cut -d':' -f1 | awk '{print $1}')
+  endTime=$(date '+%Y-%m-%d %H:%M:%S' -d "$startTimeJob +$walltimeHour hours")
+  RPROMPT='${endTime}'
+fi

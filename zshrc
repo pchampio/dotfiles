@@ -31,6 +31,10 @@ chpwd() {
 # downgrade command in manjaro
 export DOWNGRADE_FROM_ALA=1
 
+# mosh
+export LD_LIBRARY_PATH=$HOME/dotfiles/bin/mosh/lib
+PATH=$PATH:$HOME/dotfiles/bin/mosh/bin
+
 # mw
 PATH=$PATH:$HOME/dotfiles/mutt-wizard/bin
 
@@ -79,14 +83,6 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
     -c 'map <SPACE> <C-D>' -c 'map b <C-U>' \
     -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
 
-
-# if [[ -n "$TMUX" ]]; then
-  # local LVL=$(($SHLVL - 3))
-# else
-  # local LVL=1
-# fi
-
-# local SUFFIX=$(printf '❯%.0s' {1..$LVL})
 
 zstyle :prompt:pure:prompt:success color green
 
