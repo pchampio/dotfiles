@@ -52,16 +52,13 @@ Plug 'wincent/ferret'
 let g:FerretMap=0
 nmap <leader>* <Plug>(FerretAckWord)
 nmap <leader>E <Plug>(FerretAcks)
-nnoremap g\ :Ack<space>
+nnoremap g/ :Ack<space>
 let g:FerretExecutableArguments = {
       \   'rg': '--vimgrep --no-heading --max-columns 4096'
       \ }
 
 " enhances Vim's integration with the terminal
 Plug 'wincent/terminus'
-
-" Keeps vim windows stable on layout changes (quickfix or location list pop)
-Plug 'gillyb/stable-windows'
 
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -92,18 +89,18 @@ autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 
 " An asynchronous fuzzy finder
 Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
-nnoremap g/ :Leaderf  --nameOnly --cword --stayOpen rg -i <CR>
+" let g:Lf_WindowPosition = 'popup'
 let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
 let g:Lf_ExternalCommand = 'rg --files --no-ignore --hidden --follow -g !.git "%s"'
 let g:Lf_ShortcutF = '<C-P>'
-let g:Lf_WorkingDirectoryMode = 'c'
+let g:Lf_WorkingDirectoryMode = 'af'
 let g:Lf_CacheDirectory = expand('~/.cache')
 let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', 'requirements', 'pubspec.yaml']
 let g:Lf_ReverseOrder = 1
-let g:Lf_WindowHeight = 0.25
-let g:Lf_StlColorscheme = 'one'
+let g:Lf_WindowHeight = 0.30
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2" }
+let g:Lf_StlColorscheme = 'one'
 let g:Lf_StlPalette = {
     \ 'stlName':     {'guifg': '#F2F0EB', 'guibg': '#AF0000'},
     \ 'stlBlank':    {'guifg': '#586E75', 'guibg': '#eee8d5'},
@@ -116,8 +113,12 @@ let g:Lf_WildIgnore = {
     \ 'file': ['*.exe', '*.so', '*.tar', '*.gz', '*.tar', '*.gz', '*.vim', '*.git', '*.o', '*.svn', '*.swp'],
     \}
 let g:Lf_CommandMap = {'<C-X>': ['<C-i>'], '<C-]>': ['<C-s>'], '<C-S>': ['<C-z>'], '<C-U>': ["<C-u>", "<C-w>"]}
-hi! link Lf_hl_match Character
-hi! link Lf_hl_matchRefine Include
+let g:Lf_PopupColorscheme = 'gruvbox_material'
+let g:Lf_PopupPalette = {'light': {
+    \ 'Lf_hl_match':    {'guifg': '#DC322F'},
+    \ 'Lf_hl_matchRefine':    {'guifg': '#268BD2'},
+    \ 'Lf_hl_cursorline': {'guifg': '#586E75'},
+    \}}
 
 " Syntax highlight
 " A collection of +70 language packs for Vim

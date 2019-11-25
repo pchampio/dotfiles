@@ -47,6 +47,7 @@ alias de-screen2="adb exec-out screencap -p > screen2.png"
 alias co="cordova"
 alias rm='trash'
 alias loc='tokei'
+function ln-broken(){find . -type l -exec sh -c 'file -b "$1" | grep -q ^broken' sh {} \; -print}
 
 alias lowwifi='sudo iwconfig wlp58s0 txpower 15'
 
