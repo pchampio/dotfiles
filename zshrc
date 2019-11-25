@@ -31,6 +31,10 @@ chpwd() {
 # downgrade command in manjaro
 export DOWNGRADE_FROM_ALA=1
 
+# mosh
+export LD_LIBRARY_PATH=$HOME/dotfiles/bin/mosh/lib
+PATH=$PATH:$HOME/dotfiles/bin/mosh/bin
+
 # mw
 PATH=$PATH:$HOME/dotfiles/mutt-wizard/bin
 
