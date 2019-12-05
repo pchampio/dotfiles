@@ -228,30 +228,9 @@ docker-enter () {
   docker exec -ti $1 sh
 }
 
-svn-clean () {
-  svn st | grep ! | cut -d! -f2| sed 's/^ *//' | sed 's/^/"/g' | sed 's/$/"/g' | xargs svn rm
-}
-
 
 ff() { find . -name "*$1*" -ls; }
 ffrm() { find . -name "*$1*" -exec rm {} +; }
-
-ffig() { find . -name "*$1*" -ls| grep -vFf skip_files; }
-
-nhh () {
-  old=$(xfconf-query -c xfce4-notifyd -p /do-not-disturb)
-  if [[ $old == "true" ]]; then
-    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
-    notify-send  --expire-time=10 -i "notification-alert-symbolic" 'Notification' 'Ne pas déranger est désactivée'
-  else
-    notify-send --expire-time=10 -i "/usr/share/icons/Adwaita/24x24/status/audio-volume-muted-symbolic.symbolic.png" 'Notification' 'Ne pas déranger est activée'
-    xfconf-query -c xfce4-notifyd -p /do-not-disturb -T
-  fi
-}
-
-function mmpl() {
-  mpv -no-video --shuffle --loop "$@"
-}
 
 function mm() {
   mpv --ytdl --loop --no-video "$@"
@@ -261,106 +240,13 @@ function yt-dl (){
   youtube-dl --extract-audio --prefer-ffmpeg  --audio-format mp3  "$1"
 }
 
-function rand-music (){
-  cat /dev/urandom | hexdump -v -e '/1 "%u\n"' | awk '{ split("0,2,4,5,7,9,11,12",a,","); for (i = 0; i < 1; i+= 0.0001) printf("%08X\n", 100*sin(1382*exp((a[$1 % 8]/12)*log(2))*i)) }' | xxd -r -p | aplay -c 2 -f S32_LE -r 16000;
-  }
-
 function jpgg(){
   cp -as `ls -d -1 $PWD/**/tri/**/* | grep jpg` ./jpg
 }
 
-function kkey(){
-  delay=$(xfconf-query -c keyboards -p /Default/KeyRepeat/Delay)
-  xfconf-query -c keyboards -p /Default/KeyRepeat/Delay -s $(($delay+1))
-}
-
-function adb-wifi(){
-
-  sudo adb kill-server
-  sudo adb usb
-  sudo adb devices
-  echo -n '\n Allow debug on the devices'
-  read inputs
-  sudo adb -d tcpip 5555
-  sudo adb connect 192.168.240."$1":5555
-  sudo adb devices
-  sudo adb kill-server
-  echo -n '\n Pls unplug'
-  read inputs
-  sudo adb connect 192.168.240."$1":5555
-}
-
-function dialog() {
-
-  unset password
-  echo "Password for p.champion:"
-  read -s password
-
-  # mkdir -p ~/smb/HOTH/users
-  # sudo mount -t cifs //hoth/Users /home/drakirus/smb/HOTH/users -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/HOTH/Gabarits
-  # sudo mount -t cifs //hoth/Gabarits /home/drakirus/smb/HOTH/Gabarits -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/HOTH/Temp
-  # sudo mount -t cifs //hoth/Temp /home/drakirus/smb/HOTH/Temp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  mkdir -p ~/smb/HOTH/Ressources
-  sudo mount -t cifs //hoth/Ressources /home/drakirus/smb/HOTH/Ressources -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/HOTH/Customers
-  # sudo mount -t cifs //hoth/Customers /home/drakirus/smb/HOTH/Customers -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/HOTH/packages
-  # sudo mount -t cifs //hoth/packages /home/drakirus/smb/HOTH/packages -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/dev02/wwwroot
-  # sudo mount -t cifs //dev02/wwwroot /home/drakirus/smb/dev02/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/dev02/shibboleth-sp
-  # sudo mount -t cifs //dev02/shibboleth-sp /home/drakirus/smb/dev02/shibboleth-sp -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/ITHOR/wwwroot
-  # sudo mount -t cifs //ITHOR/wwwroot /home/drakirus/smb/ITHOR/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/ROGUE/wwwroot
-  # sudo mount -t cifs //10.18.0.11/wwwroot /home/drakirus/smb/ROGUE/wwwroot -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/ITHOR/Memberz
-  # sudo mount -t cifs //ITHOR/Memberz /home/drakirus/smb/ITHOR/Memberz -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  # mkdir -p ~/smb/HOTH/Docs
-  # sudo mount -t cifs //hoth/Docs /home/drakirus/smb/HOTH/Docs -o user=p.champion,password=${password},vers=1.0,file_mode=0777,dir_mode=0777
-
-  tree ~/smb/ -L 2
-
-}
-
-function udialog() {
-  sudo umount ~/smb/HOTH/*
-  sudo umount ~/smb/dev02/*
-  # sudo umount -a -t cifs -l ~/smb/
-  tree ~/smb/
-}
-
-function sound(){
-  echo 0 | sudo tee /sys/module/snd_hda_intel/parameters/power_save
-}
-
-function sdelete(){
-  svn rm $( svn status | sed -e '/^!/!d' -e 's/^!//' )
-}
-
-transfer() { if [ $# -eq 0 ]; then echo -e "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi
-tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); curl --progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; }
-
 function xbox() {
   sudo systemctl start bluetooth.service
   echo -e "power on" | bluetoothctl
-}
-
-function swagger() {
-  swagger-codegen generate -i $1 -l html -o out
 }
 
 function juv() {
@@ -371,6 +257,6 @@ function juv() {
   nvim "/tmp/$UUID-$BASE.py"
 }
 
-function usb_sound() {
-  for app in $(pacmd list-sink-inputs | sed -n -e 's/index:[[:space:]]\([[:digit:]]\)/\1/p');do; pacmd move-sink-input $app alsa_output.usb-Generic_USB_Audio_200901010001-00.HiFi__hw_Dock_0__sink; done
+function drak-todo() {
+  gotify push "TODO" --title "$1" --priority="5"
 }

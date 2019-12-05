@@ -88,19 +88,28 @@ autocmd  FileType fzf set  noshowmode noruler norelativenumber nonumber | echo "
 autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 
 " An asynchronous fuzzy finder
-Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
-" let g:Lf_WindowPosition = 'popup'
+let g:leaderf_install = './install.sh | sed -i "260,300 s/        if self._reverse_order/\0 and \"--popup\" in self._arguments or lfEval(\"g:Lf_WindowPosition\") == \"popup\"/" autoload/leaderf/python/leaderf/instance.py'
+Plug 'Yggdroot/LeaderF', { 'do': g:leaderf_install}
+nnoremap g\ :Leaderf --bottom --reverse --nameOnly rg -i <CR>
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PopupShowStatusline = 0
+let g:Lf_CursorBlink = 0
+let g:Lf_PopupHeight = float2nr(&lines * 0.50)
+let g:Lf_PopupWidth = float2nr(&columns * 0.85)
 let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
-let g:Lf_ExternalCommand = 'rg --files --no-ignore --hidden --follow -g !.git "%s"'
-let g:Lf_ShortcutF = '<C-P>'
+let g:Lf_DefaultExternalTool = "rg"
+nnoremap <silent> <C-p> :LeaderfFile --no-ignore<CR>
+let g:Lf_FollowLinks = 1
 let g:Lf_WorkingDirectoryMode = 'af'
 let g:Lf_CacheDirectory = expand('~/.cache')
 let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', 'requirements', 'pubspec.yaml']
-let g:Lf_ReverseOrder = 1
-let g:Lf_WindowHeight = 0.30
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2" }
 let g:Lf_StlColorscheme = 'one'
+let g:Lf_PreviewCode = 1
+let g:Lf_PreviewInPopup = 1
+let g:Lf_PreviewHorizontalPosition = 'center'
+let g:Lf_PreviewResult = { 'Rg': 1 }
 let g:Lf_StlPalette = {
     \ 'stlName':     {'guifg': '#F2F0EB', 'guibg': '#AF0000'},
     \ 'stlBlank':    {'guifg': '#586E75', 'guibg': '#eee8d5'},
@@ -109,15 +118,27 @@ let g:Lf_StlPalette = {
     \ 'stlTotal':    {'guifg': '#F9E4CC', 'guibg': '#586E75'}
     \}
 let g:Lf_WildIgnore = {
-    \ 'dir': ['.git', '.svn', '.hg', '.gitlab', 'node_modules'],
-    \ 'file': ['*.exe', '*.so', '*.tar', '*.gz', '*.tar', '*.gz', '*.vim', '*.git', '*.o', '*.svn', '*.swp'],
+    \ 'dir': ['.git', '.svn', '.hg', '.gitlab', 'node_modules', '*egg-info'],
+    \ 'file': ['*.exe', '*.so', '*.tar', '*.gz', '*.tar', '*.gz', '*.git', '*.o', '*.svn', '*.swp', '*.pyc'],
     \}
-let g:Lf_CommandMap = {'<C-X>': ['<C-i>'], '<C-]>': ['<C-s>'], '<C-S>': ['<C-z>'], '<C-U>': ["<C-u>", "<C-w>"]}
-let g:Lf_PopupColorscheme = 'gruvbox_material'
+let g:Lf_CommandMap = {'<C-X>': ['<C-i>'], '<C-]>': ['<C-s>'], '<C-S>': ['<C-z>'], '<Home>': ['<C-a>'], '<End>': ['<C-e>']}
+" Solarized light theme for LeaderF popup window
 let g:Lf_PopupPalette = {'light': {
+    \ 'Lf_hl_popup_window': {'guibg': '#f6f0dd', 'guifg': '#586e75'},
+    \ 'Lf_hl_popup_inputText': {'guibg': '#eee8d5', 'guifg': '#657b83'},
     \ 'Lf_hl_match':    {'guifg': '#DC322F'},
     \ 'Lf_hl_matchRefine':    {'guifg': '#268BD2'},
     \ 'Lf_hl_cursorline': {'guifg': '#586E75'},
+    \ 'Lf_hl_popup_inputMode': {'guifg': '#F2F0EB', 'guibg': '#AF0000'},
+    \ 'Lf_hl_popup_total': {'guifg': '#F9E4CC', 'guibg': '#586E75'},
+    \ 'Lf_hl_popup_lineInfo': {'guifg': '#F9E4CC', 'guibg': '#839496'},
+    \ 'Lf_hl_popup_cwd': {'guifg': '#586E75', 'guibg': '#eee8d5'},
+    \ 'Lf_hl_popup_fullPathMode': {'guifg': '#3E4452', 'guibg': '#93a1a1'},
+    \ 'Lf_hl_popup_fuzzyMode': {'guifg': '#3E4452', 'guibg': '#b58900'},
+    \ 'Lf_hl_popup_nameOnlyMode': {'guifg': '#3E4452', 'guibg': '#859900'},
+    \ 'Lf_hl_popup_regexMode': {'guifg': '#3E4452', 'guibg': '#cb4b16'},
+    \ 'Lf_hl_popup_category': {'guifg': '#3E4452', 'guibg': '#839496'},
+    \ 'Lf_hl_popup_blank': {'guibg': '#eee8d5'},
     \}}
 
 " Syntax highlight
@@ -347,6 +368,11 @@ Plug 'lervag/vimtex'
 let g:tex_flavor = 'latex'
 let g:vimtex_view_method = 'okular'
 
+" (Do)cumentation (Ge)nerator (leader d)
+Plug 'kkoomen/vim-doge'
+let g:doge_doc_standard_python = 'google'
+let g:doge_mapping = '<Leader>D'
+
 "  Snippets
 Plug 'SirVer/ultisnips'
 let g:UltiSnipsExpandTrigger="<leader><tab>"
@@ -377,7 +403,7 @@ let g:deoplete#sources#jedi#statement_length = 30
 
 Plug 'Shougo/echodoc.vim', {'for':['python', 'go', 'dart']}
 let g:echodoc#enable_at_startup = 1
-let g:echodoc#type = 'floating'
+let g:echodoc#type = 'virtual'
 
 set completeopt=noinsert,menu,noselect
 
@@ -625,6 +651,7 @@ hi SpellLocal gui=undercurl guifg=#eee8d5
 nnoremap ; :
 vnoremap ; :
 cnoreabbrev ; :
+cnoremap <C-A> <Home>
 
 vnoremap . :norm.<CR>
 

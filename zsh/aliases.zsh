@@ -16,6 +16,7 @@ alias doc="/bin/d"
 alias sshuttle="sshuttle --dns -vvr drakirus@drakirus.com 0/0"
 alias STFU="pulseaudio -k && sudo alsa force-reload"
 alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
+# alias mosh="mosh --server='LD_LIBRARY_PATH=/home/pchampion/dotfiles/bin/mosh/lib /home/pchampion/dotfiles/bin/mosh/bin/mosh-server'"
 
 # NAS
 alias backup-lab="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/lab /run/mount/NAS/xps13-Backup/"
@@ -74,7 +75,7 @@ alias atal="ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
 alias drak="ssh drakirus@drakirus.com -p 2242"
 alias g5k-all="ssh pchampion@access.grid5000.fr"
-alias g5k="ssh pchampion@access.nancy.grid5000.fr -t zsh"
+alias g5k="ssh pchampion@access.nancy.grid5000.fr"
 
 alias pdf="zathura --fork"
 
