@@ -32,7 +32,7 @@ _my-oar(){
   done
   tput rc; tput ed;
   oarwalltime $jobid
-  curl --silent -X POST "https://notif.drakirus.com/message?token=AVTzIYbFxGtl8aU" -F "title=Grid5k" -F "message=$cluster ready, jobid: $jobid" > /dev/null
+  curl --silent -X POST "https://notif.drakirus.com/message?token=AVTzIYbFxGtl8aU" -F "priority=5" -F "title=Grid5k" -F "message=$cluster ready, jobid: $jobid" > /dev/null
 }
 
 function oar-1080(){

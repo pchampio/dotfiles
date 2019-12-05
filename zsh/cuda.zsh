@@ -6,5 +6,4 @@ if ($(which nvidia-smi > /dev/null )) ; then
   export CFLAGS="-I$CUDAROOT/include $CFLAGS"
   export CUDA_HOME=$CUDAROOT
   export CUDA_PATH=$CUDAROOT
-  echo "COUCOUC"
 fi
