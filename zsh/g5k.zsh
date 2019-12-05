@@ -14,10 +14,11 @@
 #
 # call this function through oar-xxx to select the CLUSTER.
 _my-oar(){
+  local cluster
+  cluster=$CLUSTER
   walltime=$1
-  walltime_justtobesafe=$(($walltime * 3))
   shift 1
-  jobid=$(oarsub -q production -p "cluster='$CLUSTER'" -l walltime="$walltime_justtobesafe":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
+  jobid=$(oarsub -q production -p "cluster='$cluster'" -l walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
   if [[ "$@" != "" ]]; then # in case of reservations (-r)
     return
   fi
@@ -27,11 +28,11 @@ _my-oar(){
     output=$(oarstat -u | grep "$jobid")
     tput rc; tput el
     echo $output
-    sleep 0.40
+    sleep 2
   done
   tput rc; tput ed;
-  oarwalltime $jobid -$(($walltime * 2)):00 # fake-it ;P
   oarwalltime $jobid
+  curl --silent -X POST "https://notif.drakirus.com/message?token=AVTzIYbFxGtl8aU" -F "title=Grid5k" -F "message=$cluster ready, jobid: $jobid" > /dev/null
 }
 
 function oar-1080(){
@@ -82,10 +83,10 @@ _fzf-compl-oar(){
 # On a cluster's node,
 # display the remaining walltime of this job
 if [[ -v OAR_JOBID  ]]; then
-  startTimeJob=$(ssh $USER@fnancy "oarstat -j $OAR_JOBID -J | jq '.\"$OAR_JOBID\".\"startTime\"'")
-  startTimeJob=$(date '+%Y-%m-%d %H:%M:%S' -d @$startTimeJob)
-  walltime=$(ssh $USER@fnancy "oarwalltime $OAR_JOBID | sed -n 's/Current\swalltime:\s*\(.*\)/\1/p'")
-  walltimeHour=$(echo $walltime | cut -d':' -f1 | awk '{print $1}')
-  endTime=$(date '+%Y-%m-%d %H:%M:%S' -d "$startTimeJob +$walltimeHour hours")
-  RPROMPT='${endTime}'
+  # startTimeJob=$(ssh $USER@fnancy "oarstat -j $OAR_JOBID -J | jq '.\"$OAR_JOBID\".\"startTime\"'")
+  # startTimeJob=$(date '+%Y-%m-%d %H:%M:%S' -d @$startTimeJob)
+  # walltime=$(ssh $USER@fnancy "oarwalltime $OAR_JOBID | sed -n 's/Current\swalltime:\s*\(.*\)/\1/p'")
+  # walltimeHour=$(echo $walltime | cut -d':' -f1 | awk '{print $1}')
+  # endTime=$(date '+%Y-%m-%d %H:%M:%S' -d "$startTimeJob +$walltimeHour hours")
+  # RPROMPT='${endTime}'
 fi
