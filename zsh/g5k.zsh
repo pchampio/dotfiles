@@ -2,10 +2,17 @@
 #  Grid5K  #
 ############
 
-# Reserving resources
+# Reserving resources OAR Stuff + some alias
 # Optimal Allocation of Resources (or Olivier Auguste Richard)
 
-# call this function through oar-xxx
+# JOB reservation through ORA
+# this function takes 1 arg, the amount walltime of the job.
+# The job submission will ask for 3 time this amount.
+# And scale back to time passed in the arg.
+# This allows to extant the walltime of job, which is not allowed on the
+# g5k/nancy/production clusters.
+#
+# call this function through oar-xxx to select the CLUSTER.
 _my-oar(){
   local cluster
   cluster=$CLUSTER
@@ -39,13 +46,27 @@ function oar-2080(){
 
 alias oarwatch="watch -n 1 oarstat -u"
 
-# completion zsh
+# activate conda venv
+# Works on both g5k and laptop
 
-function conda-so-activate(){ source ~/lab/espnet/tools/venv/etc/profile.d/conda.sh; conda activate;}
+function conda-so-activate(){
+  if [[ $(hostname) == "xps-13" ]]; then
+     source ~/lab/python/espnet/tools/venv/etc/profile.d/conda.sh
+   else
+     source ~/lab/espnet/tools/venv/etc/profile.d/conda.sh
+  fi
+  conda activate;
+}
+
+# Predefined drawgantt filters
+#   Only show the GPU I'm interested into using
+#   Print last hour of jobs and 24 hour ahead
 
 function gg5k(){
-  firefox --new-tab "https://intranet.grid5000.fr/oar/Nancy/drawgantt-svg-prod/drawgantt-svg.php?width=1400&filter=comment%20NOT%20LIKE%20%27Retired%20since%%27%20AND%20gpu%20%3E%200%20AND%20type=%27default%27%20and%20production=%27YES%27AND%20cluster!=%27graphique%27%20AND%20cluster!=%27graphite%27%20&timezone=Europe/Paris&resource_base=host&scale=10&config=prod&scale=20&width=1400&start=$(date +%s  --date='-2 hour')&stop=$(date +%s  --date='+24 hour')"
+  firefox --new-tab "https://intranet.grid5000.fr/oar/Nancy/drawgantt-svg-prod/drawgantt-svg.php?width=1400&filter=comment%20NOT%20LIKE%20%27Retired%20since%%27%20AND%20gpu%20%3E%200%20AND%20type=%27default%27%20and%20production=%27YES%27AND%20cluster!=%27graphique%27%20AND%20cluster!=%27graphite%27%20&timezone=Europe/Paris&resource_base=host&scale=10&config=prod&scale=20&width=1400&start=$(date +%s  --date='-2 hour')&stop=$(date +%s  --date='+55 hour')"
 }
+
+# completion zsh
 
 # see my-fzf-completion() in zsh/completion.zsh
 _fzf-compl-oar(){

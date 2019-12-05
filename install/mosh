@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# G5k
+# mosh --server="LD_LIBRARY_PATH=~/nancy/dotfiles/bin/mosh/lib ~/nancy/dotfiles/bin/mosh/bin/mosh-server" pchampion@access-north.grid5000.fr -p 60001
+
 # Thanks to @samsonjs for the cleaned up version:
 # https://gist.github.com/samsonjs/4076746
 

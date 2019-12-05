@@ -1,0 +1,58 @@
+global !p
+import gi
+import sys
+import os
+import requests
+import subprocess
+from base64 import b64encode
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk  # noqa
+
+
+client_id = "0d7cfd59581bfcb"
+client_secret = "0f8983c9973adbcee07171a91e4cc60a1a63b61a"
+
+headers = {"Authorization": "Client-ID " + client_id}
+
+url = "https://api.imgur.com/3/upload"
+
+
+def upload(img):
+
+    result, data = img.save_to_bufferv("png", [], [])
+
+    response = requests.post(
+        url,
+        headers=headers,
+        data={"key": client_secret, "image": b64encode(data), "type": "base64"},
+    )
+
+    link = response.json()["data"]["link"]
+    return link
+
+
+def getImage():
+    clipboard = Gtk.Clipboard.get(Gdk.SELECTION_PRIMARY)
+    img = clipboard.wait_for_image()
+    if img is None:
+        subprocess.Popen(["notify-send", "No image in clipboard"])
+        return None
+
+    return img
+
+def ImgImgur():
+    try:
+      img = getImage()
+      if img is None:
+        return "Err"
+      else:
+        link = upload(img)
+        return link
+    except:
+        return "ERR"
+endglobal
+
+snippet img "image" iw
+{{`!p if not snip.c: snip.rv = ImgImgur()`|${1:image}|style="max-width:360px;max-height:380px;"}}
+endsnippet
