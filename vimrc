@@ -360,10 +360,6 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
 
 " autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
-" Copy text over SSH
-Plug 'haya14busa/vim-poweryank'
-map <Leader>y <Plug>(operator-poweryank-osc52)
-
 Plug 'lervag/vimtex'
 let g:tex_flavor = 'latex'
 let g:vimtex_view_method = 'okular'
@@ -523,9 +519,22 @@ nnoremap <c-e> 5<c-e>
 nnoremap <c-y> 5<c-y>
 
 " Clipboard
-if has('unnamedplus')
-  set clipboard=unnamed,unnamedplus
-endif
+let g:clipboard = {
+      \ 'name': 'myClipboard',
+      \     'copy': {
+      \         '+': 'env COPY_PROVIDERS=desktop clipboard-provider copy',
+      \         '*': 'env COPY_PROVIDERS=tmux clipboard-provider copy',
+      \     },
+      \     'paste': {
+      \         '+': 'env COPY_PROVIDERS=desktop clipboard-provider paste',
+      \         '*': 'env COPY_PROVIDERS=tmux clipboard-provider paste',
+      \     },
+      \ }
+set clipboard=unnamed   " to/from * by default (tmux only, not system)
+" Yank to system clipboard with Y
+nmap YY "+yy
+nmap Y "+y
+vmap Y "+y
 
 " highlight vertical column of cursor
 set cursorline
