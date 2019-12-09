@@ -68,7 +68,6 @@ xclip-provider() {
 
 osc52-provider() {
     [[ -n "$TTY" ]] || return
-    echo $'\e]52;c;%s\a' "$buffer" > "$TTY" >> /tmp/test
     case $1 in
         copy) printf $'\e]52;c;%s\a' "$buffer" > "$TTY" ;;
         paste) return 1 ;;
