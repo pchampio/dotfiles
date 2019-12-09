@@ -282,13 +282,13 @@ map : <Plug>Sneak_;
 autocmd ColorScheme * hi Sneak guifg=red guibg=NONE gui=bold,underline
 autocmd ColorScheme * hi SneakLabel guifg=red guibg=#eee8d5 gui=bold,underline
 
-Plug 'svermeulen/vim-yoink'
-let g:yoinkMoveCursorToEndOfPaste = 1
-let g:yoinkSwapClampAtEnds = 0
-nmap [y <plug>(YoinkRotateBack)
-nmap ]y <plug>(YoinkRotateForward)
-nmap y <plug>(YoinkYankPreserveCursorPosition)
-xmap y <plug>(YoinkYankPreserveCursorPosition)
+" Plug 'svermeulen/vim-yoink'
+" let g:yoinkMoveCursorToEndOfPaste = 1
+" let g:yoinkSwapClampAtEnds = 0
+" nmap [y <plug>(YoinkRotateBack)
+" nmap ]y <plug>(YoinkRotateForward)
+" nmap y <plug>(YoinkYankPreserveCursorPosition)
+" xmap y <plug>(YoinkYankPreserveCursorPosition)
 
 " replace with register
 Plug 'svermeulen/vim-subversive'
