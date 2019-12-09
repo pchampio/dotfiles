@@ -36,7 +36,10 @@ slurp() { buffer=$(base64); }
 spit() { base64 --decode <<<"$buffer"; }
 
 tmux-provider() {
-    [[ -n $TMUX ]] || return
+    if [[ -z "$TMUX" ]]; then
+      xclip-provider "$@"
+      return
+    fi
     case $1 in
         copy) spit | tmux load-buffer - ;;
         paste) tmux save-buffer - ;;
