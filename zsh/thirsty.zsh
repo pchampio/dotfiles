@@ -1,4 +1,4 @@
-WATER_TIME=2700 # Set time interval in seconds (45min = 2700)
+WATER_TIME=5400 # Set time interval in seconds (1h30 = 5400s)
 
 DRINK_WATER_CONF="$HOME/.water"
 

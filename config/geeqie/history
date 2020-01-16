@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/louviers_les_grimpeurs_alcoolos"
-"/home/drakirus/Images"
-"/home/drakirus/dotfiles/mutt-wizard"
-"/home/drakirus/Téléchargements/tmp"
-"/tmp/drakirus-mutt-tmp"
-"/home/drakirus"
-"/home/drakirus/Téléchargements"
-"/home/drakirus/.cache/astroid"
-"/tmp"
-"/tmp/mozilla_drakirus0"
+"/home/pchampio/Pictures/skii/day_5/pentax/tri/darktable_exported"
+"/home/pchampio/Pictures/skii/day_4/101PENTX/tri/darktable_exported"
+"/home/pchampio/Pictures/skii/day_4/101PENTX"
+"/home/pchampio/Pictures/skii/day_5/pentax"
+"/home/pchampio/Pictures/skii/day_5/pentax/tri"
+"/home/pchampio/Pictures/skii/day_6/101PENTX"
+"/home/pchampio/Pictures/skii/day_6/101PENTX/tri"
+"/home/pchampio/Pictures/skii/day_6/101PENTX/tri/darktable_exported"
+"/home/pchampio/Pictures/skii"
+"/home/pchampio/Downloads"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/tmp"
+".[path]/home/pchampio/Pictures/skii/day_6/101PENTX"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"
@@ -38,5 +38,6 @@
 [move_copy]
 "/home/drakirus"
 "/home/drakirus/Images"
+"/home/pchampio/Pictures/skii/day_6/101PENTX/tri"
 
 #end

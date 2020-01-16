@@ -31,4 +31,10 @@ def __next__(self):
       return result
 endsnippet
 
+snippet torchprintall "Print all elements of a Tensor"
+torch.set_printoptions(profile="full")
+print($1)
+torch.set_printoptions(profile="default")
+endsnippet
+
 # vim:set foldmethod=manual:
