@@ -1,7 +1,6 @@
 #History lists
 
 [path_list]
-"/home/pchampio/Pictures/skii/day_5/pentax/tri/darktable_exported"
 "/home/pchampio/Pictures/skii/day_4/101PENTX/tri/darktable_exported"
 "/home/pchampio/Pictures/skii/day_4/101PENTX"
 "/home/pchampio/Pictures/skii/day_5/pentax"
@@ -11,6 +10,7 @@
 "/home/pchampio/Pictures/skii/day_6/101PENTX/tri/darktable_exported"
 "/home/pchampio/Pictures/skii"
 "/home/pchampio/Downloads"
+"/tmp/imgtosnd/data"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"

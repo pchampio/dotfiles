@@ -146,7 +146,7 @@ prompt_pure_preprompt_render() {
 	# Execution time.
 	[[ -n $prompt_pure_cmd_exec_time ]] && preprompt_parts+=('%F{$prompt_pure_colors[execution_time]}${prompt_pure_cmd_exec_time}%f')
 
-  preprompt_parts+=('$(drink_water)')
+  # preprompt_parts+=('$(drink_water)')
 
 	local cleaned_ps1=$PROMPT
 	local -H MATCH MBEGIN MEND

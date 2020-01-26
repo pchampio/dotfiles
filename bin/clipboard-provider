@@ -42,7 +42,8 @@ tmux-provider() {
     fi
     case $1 in
         copy) spit | tmux load-buffer - ;;
-        paste) tmux save-buffer - ;;
+        paste)
+          tmux save-buffer - ;;
     esac
 }
 
@@ -61,8 +62,11 @@ wl-clipboard-provider() {
 xclip-provider() {
     [[ -n $DISPLAY ]] && type -P xclip &>/dev/null || return
     case $1 in
-        copy) spit | xclip -i -selection clipboard ;;
-        paste) xclip -o -selection clipboard ;;
+        copy)
+          spit | xclip -i -selection clipboard ;;
+        paste)
+            xclip -o -selection clipboard
+          ;;
     esac
 }
 
