@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 BASEDIR=$(dirname $0)
@@ -11,7 +11,7 @@ wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --
 # wget http://gitreleases.dev/gh/neovim/neovim/v0.4.3/nvim.appimage --output-document nvim
 chmod +x nvim
 read -p "move nvim in $HOME/dotfiles/bin [y/n]: " -n 1 -r
-echo    # (optional) move to a new line
+echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   mv nvim $HOME/dotfiles/bin/

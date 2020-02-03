@@ -82,11 +82,11 @@ _fzf-compl-oar(){
 
 # On a cluster's node,
 # display the remaining walltime of this job
-if [[ -v OAR_JOBID  ]]; then
+# if [[ -v OAR_JOBID  ]]; then
   # startTimeJob=$(ssh $USER@fnancy "oarstat -j $OAR_JOBID -J | jq '.\"$OAR_JOBID\".\"startTime\"'")
   # startTimeJob=$(date '+%Y-%m-%d %H:%M:%S' -d @$startTimeJob)
   # walltime=$(ssh $USER@fnancy "oarwalltime $OAR_JOBID | sed -n 's/Current\swalltime:\s*\(.*\)/\1/p'")
   # walltimeHour=$(echo $walltime | cut -d':' -f1 | awk '{print $1}')
   # endTime=$(date '+%Y-%m-%d %H:%M:%S' -d "$startTimeJob +$walltimeHour hours")
   # RPROMPT='${endTime}'
-fi
+# fi
