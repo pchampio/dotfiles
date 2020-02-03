@@ -271,6 +271,7 @@
 ; (gtk_accel_path "<Actions>/MenuActions/Rating4" "<Alt>KP_4")
 ; (gtk_accel_path "<Actions>/MenuActionsExternal/rotate.desktop" "")
 ; (gtk_accel_path "<Actions>/MenuActions/Mark2" "")
+; (gtk_accel_path "<Actions>/MenuActionsExternal/appimagekit-gravit-designer.desktop" "")
 ; (gtk_accel_path "<Actions>/MenuActions/Zoom400" "")
 ; (gtk_accel_path "<Actions>/MenuActions/UnselMark0" "")
 ; (gtk_accel_path "<Actions>/MenuActions/StereoCycle" "")
