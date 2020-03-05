@@ -65,7 +65,7 @@ alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 
 # ssh
 alias drak="ssh drakirus@drakirus.com -p 2242"
-alias atal="ssh s142293@transit.univ-lemans.fr"
+alias atal="env TERM=tmux-256color ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
 alias g5k-all="env TERM=tmux-256color ssh pchampion@access.grid5000.fr"
 alias g5k="env TERM=tmux-256color ssh pchampion@access.nancy.grid5000.fr"
@@ -83,7 +83,9 @@ alias ping='prettyping --nolegend'
 alias osc52clean='echo -e "\033]52;c;!\a"'
 alias osc52='echo -e "\033]52;c;$(base64 <<< hello)\a"'
 
-alias inria-screen-clean="inria-screen-all; inria-screen-one"
+alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one"
+
+alias sig="cat resources/sig | xsel -b --clipboard"
 
 ############
 #  Editor  #
