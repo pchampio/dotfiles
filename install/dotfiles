@@ -106,5 +106,6 @@ git config --global commit.template ~/.gitmessage
 
 # tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
 [ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
+[ -d ~/.tmux-sessionist/ ] || git clone https://github.com/tmux-plugins/tmux-sessionist ~/.tmux-sessionist --depth=1
 
 zsh

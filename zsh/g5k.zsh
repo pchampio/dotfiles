@@ -43,6 +43,10 @@ function oar-2080(){
   CLUSTER='graffiti'
   _my-oar $@
 }
+function oar-t4(){
+  CLUSTER='grue'
+  _my-oar $@
+}
 
 alias oarwatch="watch -n 1 oarstat -u"
 
