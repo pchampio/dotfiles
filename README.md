@@ -20,17 +20,17 @@ synclient AreaLeftEdge=100 AreaRightEdge=850 AreaTopEdge=70
 > /etc/X11/xorg.conf.d/10-synaptics.conf
 ``` conf
 Section "InputClass"
-        Identifier "touchpad catchall"
-        Driver "synaptics"
-        MatchIsTouchpad "on"
-                # Option "PalmDetect" "1"
-                Option "MaxSpeed" "1"
-                Option "AreaLeftEdge" "50"
-                Option "AreaRightEdge" "850"
-                Option "AreaTopEdge" "50"
-                Option "HorizTwoFingerScroll" "on"
-                Option "VertScrollDelta" "40"
-                Option "HorizScrollDelta" "120"
+Identifier "touchpad catchall"
+Driver "synaptics"
+MatchIsTouchpad "on"
+# Option "PalmDetect" "1"
+Option "MaxSpeed" "1"
+Option "AreaLeftEdge" "50"
+Option "AreaRightEdge" "850"
+Option "AreaTopEdge" "50"
+Option "HorizTwoFingerScroll" "on"
+Option "VertScrollDelta" "40"
+Option "HorizScrollDelta" "120"
 EndSection
 
 ```
@@ -69,11 +69,11 @@ It creates symlinks ex.(`.vimrc` -> `~/dotfiles/vimrc`) from your home directory
 sudo apt-get install libluajit-5.1
 make distclean
 ./configure --enable-luainterp=yes \
-            --with-features=huge \
-            --enable-rubyinterp \
-            --enable-pythoninterp \
-            --enable-python3interp \
-            --enable-perlinterp
+--with-features=huge \
+--enable-rubyinterp \
+--enable-pythoninterp \
+--enable-python3interp \
+--enable-perlinterp
 make
 sudo make install
 ```
@@ -132,7 +132,7 @@ https://www.archlinux.org/packages/community/x86_64/termite/
 
 terminus.vim
 ```
-    inoremap <expr><f20> pumvisible() ? "<c-e><c-o>:silent doautocmd <nomodeline> FocusLost %<cr>" : "<c-o>:silent doautocmd <nomodeline> FocusLost %<cr>"
+inoremap <expr><f20> pumvisible() ? "<c-e><c-o>:silent doautocmd <nomodeline> FocusLost %<cr>" : "<c-o>:silent doautocmd <nomodeline> FocusLost %<cr>"
 
 ```
 
@@ -211,7 +211,6 @@ set: ProcessSizeMax=0
 sudo systemctl daemon-reload
 ```
 
-# KDE
 
 Disable file search in KDE Kickoff Launcher
 
@@ -221,6 +220,9 @@ sudo vim /usr/share/kservices5/plasma-runner-baloosearch.desktop
 ```
 
 
+# KDE
 # CPU Undervolting 
+
+kde gtk3 theme: https://store.kde.org/p/1181106/ Plane Gtk-3.20+
 
 https://wiki.archlinux.org/index.php/Undervolting_CPU#intel-undervolt

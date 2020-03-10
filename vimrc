@@ -26,6 +26,11 @@ let g:twiggy_close_on_fugitive_command = 1
 nnoremap _ :Twiggy<cr>
 Plug 'junegunn/gv.vim' " Git commit history (integrates into twiggy)
 
+Plug 'junegunn/vim-easy-align'
+nmap ,ga <Plug>(EasyAlign)
+xmap ,ga <Plug>(EasyAlign)
+
+
 Plug 'airblade/vim-gitgutter'
 let g:gitgutter_preview_win_floating = 0
 let g:gitgutter_map_keys = 0
@@ -43,7 +48,7 @@ nmap <Leader>h <Plug>(VcsJump)
 Plug 'christoomey/vim-tmux-navigator'
 
 " searching
-Plug 'wincent/loupe'
+Plug 'pchampio/loupe'
 map <leader><space> <Plug>(LoupeClearHighlight)
 
 " searching multiple files
@@ -92,7 +97,7 @@ let g:leaderf_install = './install.sh | sed -i "260,300 s/        if self._rever
 Plug 'Yggdroot/LeaderF', { 'do': g:leaderf_install}
 nnoremap g\ :Leaderf --bottom --reverse --nameOnly rg -i <CR>
 let g:Lf_WindowPosition = 'popup'
-let g:Lf_PopupShowStatusline = 0
+let g:Lf_PopupShowStatusline = 1
 let g:Lf_CursorBlink = 0
 let g:Lf_PopupHeight = float2nr(&lines * 0.50)
 let g:Lf_PopupWidth = float2nr(&columns * 0.85)
@@ -140,6 +145,8 @@ let g:Lf_PopupPalette = {'light': {
     \ 'Lf_hl_popup_category': {'guifg': '#3E4452', 'guibg': '#839496'},
     \ 'Lf_hl_popup_blank': {'guibg': '#eee8d5'},
     \}}
+
+Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
@@ -259,7 +266,7 @@ xmap aa <Plug>SidewaysArgumentTextobjA
 omap ia <Plug>SidewaysArgumentTextobjI
 xmap ia <Plug>SidewaysArgumentTextobjI
 
-Plug 'Drakirus/vim-edgemotion'
+Plug 'pchampio/vim-edgemotion'
 " enable line number overwrite
 " let g:edgemotion#line_numbers_overwrite = 1
 map J <Plug>(edgemotion-j)
@@ -292,19 +299,21 @@ xmap y <plug>(YoinkYankPreserveCursorPosition)
 
 " replace with register
 Plug 'svermeulen/vim-subversive'
+" replace with register clipboard with R
+nmap R "+<plug>(SubversiveSubstitute)
+nmap RR "+<plug>(SubversiveSubstituteLine)
 nmap r <plug>(SubversiveSubstitute)
 nmap rr <plug>(SubversiveSubstituteLine)
 xmap r <plug>(SubversiveSubstitute)
 xmap p <plug>(SubversiveSubstitute)
 xmap P <plug>(SubversiveSubstitute)
-" ie = inner entire buffer
+" iE = inner entire buffer
 onoremap iE :exec "normal! ggVG"<cr>
 nmap <silent> <leader>e <plug>(SubversiveSubstituteWordRange)iE
 nmap <silent> <leader>ee ;call sneak#cancel()<cr><plug>(SubversiveSubstituteRange)
 xmap <silent> <leader>e <plug>(SubversiveSubstituteRange)iE
 " cursor will not move when substitutions are applied
 let g:subversivePreserveCursorPosition = 1
-noremap R r
 
 " Vim Exchange
 Plug 'tommcdo/vim-exchange'
@@ -526,15 +535,18 @@ let g:clipboard = {
       \         '*': 'env COPY_PROVIDERS=tmux clipboard-provider copy',
       \     },
       \     'paste': {
-      \         '+': 'env COPY_PROVIDERS=desktop clipboard-provider paste',
-      \         '*': 'env COPY_PROVIDERS=tmux clipboard-provider paste',
+      \         '+': 'env PASTE_PROVIDERS=desktop clipboard-provider paste',
+      \         '*': 'env PASTE_PROVIDERS=tmux clipboard-provider paste',
       \     },
       \ }
-set clipboard=unnamed   " to/from * by default (tmux only, not system)
+set clipboard=unnamed   " to/from * by default (tmux only, not system), use + to access host/OSC-52 clipboard
 " Yank to system clipboard with Y
 nmap YY "+yy
 nmap Y "+y
 vmap Y "+y
+" Paste from system clipboard with P
+" nmap P "+p
+" vmap P "+p
 
 " highlight vertical column of cursor
 set cursorline
@@ -550,7 +562,8 @@ set undodir=~/.vimundo/
 set noswapfile   " No *.swp
 
 " store commands
-set shada=!,'100,<50,s10,
+set shada=!,'1,f0,h,s100
+let &shadafile = expand('~/.vim/shada')
 
 " Softtabs, 2 spaces tabs
 set tabstop=2

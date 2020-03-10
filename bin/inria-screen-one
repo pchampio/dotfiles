@@ -3,7 +3,8 @@
 # eDP1: Laptop 3840x2160 OFF
 # external: 25" 2560x1440 only
 
-external=$(xrandr | grep "DP.-.*\sconnected" | cut -d" " -f1)
+external=$(xrandr | grep "^DP.*\sconnected" | cut -d" " -f1)
+internal=$(xrandr | grep "^eDP.*\sconnected" | cut -d" " -f1)
 
 xrandr --output "$external" --scale 1.6x1.6 --mode 2560x1440
-xrandr --output eDP1 --off
+xrandr --output "$internal" --off

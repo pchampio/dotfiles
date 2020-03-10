@@ -57,7 +57,7 @@ prompt_pure_set_title() {
 	setopt localoptions noshwordsplit
 
 	# Emacs terminal does not support settings the title.
-	(( ${+EMACS} )) && return
+	(( ${+EMACS} || ${+INSIDE_EMACS} )) && return
 
 	case $TTY in
 		# Don't set title over serial console.
@@ -123,6 +123,7 @@ prompt_pure_preprompt_render() {
 
 	# Set color for Git branch/dirty status and change color if dirty checking has been delayed.
 	local git_color=$prompt_pure_colors[git:branch]
+	local git_dirty_color=$prompt_pure_colors[git:dirty]
 	[[ -n ${prompt_pure_git_last_dirty_check_timestamp+x} ]] && git_color=$prompt_pure_colors[git:branch:cached]
 
 	# Initialize the preprompt array.
@@ -134,7 +135,11 @@ prompt_pure_preprompt_render() {
 	# Add Git branch and dirty status info.
 	typeset -gA prompt_pure_vcs_info
 	if [[ -n $prompt_pure_vcs_info[branch] ]]; then
-		preprompt_parts+=("%F{$git_color}"'${prompt_pure_vcs_info[branch]}${prompt_pure_git_dirty}%f')
+		local branch="%F{$git_color}"'${prompt_pure_vcs_info[branch]}'
+		if [[ -n $prompt_pure_vcs_info[action] ]]; then
+			branch+="|%F{$prompt_pure_colors[git:action]}"'$prompt_pure_vcs_info[action]'"%F{$git_color}"
+		fi
+		preprompt_parts+=("$branch""%F{$git_dirty_color}"'${prompt_pure_git_dirty}%f')
 	fi
 	# Git pull/push arrows.
 	if [[ -n $prompt_pure_git_arrows ]]; then
@@ -142,11 +147,9 @@ prompt_pure_preprompt_render() {
 	fi
 
 	# Username and machine, if applicable.
-	[[ -n $prompt_pure_state[username] ]] && preprompt_parts+=('${prompt_pure_state[username]}')
+	[[ -n $prompt_pure_state[username] ]] && preprompt_parts+=($prompt_pure_state[username])
 	# Execution time.
 	[[ -n $prompt_pure_cmd_exec_time ]] && preprompt_parts+=('%F{$prompt_pure_colors[execution_time]}${prompt_pure_cmd_exec_time}%f')
-
-  preprompt_parts+=('$(drink_water)')
 
 	local cleaned_ps1=$PROMPT
 	local -H MATCH MBEGIN MEND
@@ -250,11 +253,11 @@ prompt_pure_async_vcs_info() {
 	# to be used or configured as the user pleases.
 	zstyle ':vcs_info:*' enable git
 	zstyle ':vcs_info:*' use-simple true
-	# Only export two message variables from `vcs_info`.
-	zstyle ':vcs_info:*' max-exports 2
-	# Export branch (%b) and Git toplevel (%R).
+	# Only export three message variables from `vcs_info`.
+	zstyle ':vcs_info:*' max-exports 3
+	# Export branch (%b), Git toplevel (%R), and action (rebase/cherry-pick) (%a).
 	zstyle ':vcs_info:git*' formats '%b' '%R'
-	zstyle ':vcs_info:git*' actionformats '%b|%a' '%R'
+	zstyle ':vcs_info:git*' actionformats '%b' '%R' '%a'
 
 	vcs_info
 
@@ -262,6 +265,7 @@ prompt_pure_async_vcs_info() {
 	info[pwd]=$PWD
 	info[top]=$vcs_info_msg_1_
 	info[branch]=$vcs_info_msg_0_
+	info[action]=$vcs_info_msg_2_
 
 	print -r - ${(@kvq)info}
 }
@@ -327,6 +331,20 @@ prompt_pure_async_git_arrows() {
 	command git rev-list --left-right --count HEAD...@'{u}'
 }
 
+# Try to lower the priority of the worker so that disk heavy operations
+# like `git status` has less impact on the system responsivity.
+prompt_pure_async_renice() {
+	setopt localoptions noshwordsplit
+
+	if command -v renice >/dev/null; then
+		command renice +15 -p $$
+	fi
+
+	if command -v ionice >/dev/null; then
+		command ionice -c 3 -p $$
+	fi
+}
+
 prompt_pure_async_tasks() {
 	setopt localoptions noshwordsplit
 
@@ -335,6 +353,7 @@ prompt_pure_async_tasks() {
 		async_start_worker "prompt_pure" -u -n
 		async_register_callback "prompt_pure" prompt_pure_async_callback
 		typeset -g prompt_pure_async_init=1
+		async_job "prompt_pure" prompt_pure_async_renice
 	}
 
 	# Update the current working directory of the async worker.
@@ -448,6 +467,7 @@ prompt_pure_async_callback() {
 			# Always update branch and top-level.
 			prompt_pure_vcs_info[branch]=$info[branch]
 			prompt_pure_vcs_info[top]=$info[top]
+			prompt_pure_vcs_info[action]=$info[action]
 
 			do_render=1
 			;;
@@ -497,6 +517,8 @@ prompt_pure_async_callback() {
 					fi
 					;;
 			esac
+			;;
+		prompt_pure_async_renice)
 			;;
 	esac
 
@@ -588,7 +610,7 @@ prompt_pure_state_setup() {
 	[[ $UID -eq 0 ]] && username='%F{$prompt_pure_colors[user:root]}%n%f'"$hostname"
 
 	typeset -gA prompt_pure_state
-	prompt_pure_state[version]="1.9.0"
+	prompt_pure_state[version]="1.11.0"
 	prompt_pure_state+=(
 		username "$username"
 		prompt	 "${PURE_PROMPT_SYMBOL:-❯}"
@@ -598,13 +620,15 @@ prompt_pure_state_setup() {
 prompt_pure_system_report() {
 	setopt localoptions noshwordsplit
 
-	print - "- Zsh: $(zsh --version)"
+	print - "- Zsh: $($SHELL --version) ($SHELL)"
 	print -n - "- Operating system: "
 	case "$(uname -s)" in
 		Darwin)	print "$(sw_vers -productName) $(sw_vers -productVersion) ($(sw_vers -buildVersion))";;
 		*)	print "$(uname -s) ($(uname -v))";;
 	esac
-	print - "- Terminal program: $TERM_PROGRAM ($TERM_PROGRAM_VERSION)"
+	print - "- Terminal program: ${TERM_PROGRAM:-unknown} (${TERM_PROGRAM_VERSION:-unknown})"
+	print -n - "- Tmux: "
+	[[ -n $TMUX ]] && print "yes" || print "no"
 
 	local git_version
 	git_version=($(git --version))  # Remove newlines, if hub is present.
@@ -612,10 +636,12 @@ prompt_pure_system_report() {
 
 	print - "- Pure state:"
 	for k v in "${(@kv)prompt_pure_state}"; do
-		print - "\t- $k: \`${(q)v}\`"
+		print - "    - $k: \`${(q)v}\`"
 	done
+	print - "- PROMPT: \`$(typeset -p PROMPT)\`"
+	print - "- Colors: \`$(typeset -p prompt_pure_colors)\`"
 	print - "- Virtualenv: \`$(typeset -p VIRTUAL_ENV_DISABLE_PROMPT)\`"
-	print - "- Prompt: \`$(typeset -p PROMPT)\`"
+	print - "- Conda: \`$(typeset -p CONDA_CHANGEPS1)\`"
 
 	local ohmyzsh=0
 	typeset -la frameworks
@@ -634,8 +660,8 @@ prompt_pure_system_report() {
 	print - "- Detected frameworks: ${(j:, :)frameworks}"
 
 	if (( ohmyzsh )); then
-		print - "\t- Oh My Zsh:"
-		print - "\t\t- Plugins: ${(j:, :)plugins}"
+		print - "    - Oh My Zsh:"
+		print - "        - Plugins: ${(j:, :)plugins}"
 	fi
 }
 
@@ -674,15 +700,18 @@ prompt_pure_setup() {
 		git:arrow            cyan
 		git:branch           242
 		git:branch:cached    red
+		git:action           242
+		git:dirty            218
 		host                 242
 		path                 blue
 		prompt:error         red
 		prompt:success       magenta
+		prompt:continuation  242
 		user                 242
 		user:root            default
 		virtualenv           242
 	)
-	prompt_pure_colors=("${(@fkv)prompt_pure_colors_default}")
+	prompt_pure_colors=("${(@kv)prompt_pure_colors_default}")
 
 	add-zsh-hook precmd prompt_pure_precmd
 	add-zsh-hook preexec prompt_pure_preexec
@@ -701,10 +730,11 @@ prompt_pure_setup() {
 	PROMPT='%(12V.%F{$prompt_pure_colors[virtualenv]}%12v%f .)'
 
 	# Prompt turns red if the previous command didn't exit with 0.
-	PROMPT+='%(?.%F{$prompt_pure_colors[prompt:success]}.%F{$prompt_pure_colors[prompt:error]})${prompt_pure_state[prompt]}%f '
+	local prompt_indicator='%(?.%F{$prompt_pure_colors[prompt:success]}.%F{$prompt_pure_colors[prompt:error]})${prompt_pure_state[prompt]}%f '
+	PROMPT+=$prompt_indicator
 
-	# Indicate continuation prompt by ... and use a darker color for it.
-	PROMPT2='%F{242}... %(1_.%_ .%_)%f%(?.%F{magenta}.%F{red})${prompt_pure_state[prompt]}%f '
+	# Indicate continuation prompt by … and use a darker color for it.
+	PROMPT2='%F{$prompt_pure_colors[prompt:continuation]}… %(1_.%_ .%_)%f'$prompt_indicator
 
 	# Store prompt expansion symbols for in-place expansion via (%). For
 	# some reason it does not work without storing them in a variable first.
@@ -735,6 +765,10 @@ prompt_pure_setup() {
 
 	# Guard against Oh My Zsh themes overriding Pure.
 	unset ZSH_THEME
+
+	# Guard against (ana)conda changing the PS1 prompt
+	# (we manually insert the env when it's available).
+	export CONDA_CHANGEPS1=no
 }
 
 prompt_pure_setup "$@"

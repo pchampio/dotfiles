@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Images/louviers_les_grimpeurs_alcoolos"
-"/home/drakirus/Images"
-"/home/drakirus/dotfiles/mutt-wizard"
-"/home/drakirus/Téléchargements/tmp"
-"/tmp/drakirus-mutt-tmp"
-"/home/drakirus"
-"/home/drakirus/Téléchargements"
-"/home/drakirus/.cache/astroid"
-"/tmp"
-"/tmp/mozilla_drakirus0"
+"/run/mount/NAS/Pictures/2017"
+"/run/mount/NAS/Pictures/2009/photos canal du midi 09 Fuji"
+"/run/mount/NAS/Pictures/2009/photos canal du midi 09 Fuji/tri"
+"/run/mount/NAS/Pictures/2009/photos canal du midi canon"
+"/run/mount/NAS/Pictures/2013/kerlouan/photo vic"
+"/home/pchampio/Downloads/Nancy - Metz à Vélo/test"
+"/run/mount/NAS/Pictures/2013/kerlouan"
+"/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013"
+"/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013/tri"
+"/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013/photos départ 16"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/tmp"
+".[path]/home/pchampio/Downloads"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"
@@ -38,5 +38,7 @@
 [move_copy]
 "/home/drakirus"
 "/home/drakirus/Images"
+"/home/pchampio/Pictures/skii/day_6/101PENTX/tri"
+"/home/pchampio/Pictures"
 
 #end
