@@ -13,7 +13,7 @@
     <global
 
             show_icon_names = "true" 
-            show_star_rating = "false" 
+            show_star_rating = "true" 
             show_guidelines = "false" 
             show_predefined_keyword_tree = "true" 
 
@@ -102,7 +102,7 @@
             fullscreen.disable_saver = "true" 
             fullscreen.above = "false" 
 
-            image_overlay.template_string = "%collection:&lt;i&gt;*&lt;/i&gt;\\n%(%number%/%total%) [%zoom%] &lt;b&gt;%name%&lt;/b&gt;\n%res%|%date%|%size%\n%formatted.Aperture%|%formatted.ShutterSpeed%|%formatted.ISOSpeedRating:ISO *%|%formatted.FocalLength%|%formatted.ExposureBias:* Ev%\n%formatted.Camera:40%|%formatted.Flash%" 
+            image_overlay.template_string = "%collection:&lt;i&gt;*&lt;/i&gt;\\n%(%number%/%total%) [%zoom%] &lt;b&gt;%name%&lt;/b&gt;\n%res%|%date%|%size%\n%formatted.Aperture%|%formatted.ShutterSpeed%|%formatted.ISOSpeedRating:ISO *%|%formatted.FocalLength%|%formatted.ExposureBias:* Ev%\n%formatted.Camera:40%|%formatted.Flash%%name%" 
             image_overlay.x = "10" 
             image_overlay.y = "-10" 
             image_overlay.text_red = "0" 
@@ -338,16 +338,16 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013/photos départ 16" 
+        last_path = "/home/pchampio/Pictures" 
         startup_path = "0" 
         exit_on_close = "false" 
 
-        main_window.x = "-1" 
-        main_window.y = "136" 
-        main_window.w = "1775" 
-        main_window.h = "753" 
-        main_window.maximized = "false" 
-        main_window.hdivider_pos = "458" 
+        main_window.x = "1920" 
+        main_window.y = "72" 
+        main_window.w = "1916" 
+        main_window.h = "2036" 
+        main_window.maximized = "true" 
+        main_window.hdivider_pos = "904" 
         main_window.vdivider_pos = "200" 
 
         folder_window.vdivider_pos = "100" 
@@ -362,7 +362,7 @@
         properties_window.h = "0" 
 
         tools_float = "false" 
-        tools_hidden = "false" 
+        tools_hidden = "true" 
 
         toolbar_hidden = "false" 
         show_info_pixel = "false" 
@@ -373,7 +373,7 @@
         bars_state.tools_hidden = "false" 
         bars_state.hidden = "false" 
 
-        image_overlay.state = "0" 
+        image_overlay.state = "3" 
         image_overlay.histogram_channel = "1" 
         image_overlay.histogram_mode = "0" 
         log_window.x = "0" 
@@ -382,7 +382,7 @@
         log_window.h = "400" 
 
         animate = "true" >
-        <bar enabled = "true" width = "297" >
+        <bar enabled = "false" width = "250" >
             <clear/>
             <pane_histogram id = "histogram" title = "Linear Histogram on RGB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "rating" title = "Rating" expanded = "true" key = "Xmp.xmp.Rating" height = "10" />

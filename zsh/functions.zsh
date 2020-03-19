@@ -260,3 +260,30 @@ function juv() {
 function drak-todo() {
   gotify push "TODO" --title "$1" --priority="5"
 }
+
+function aspec-all() {
+  for file in *.wav; do
+    aspec $file
+  done
+}
+
+function mosh-relay-server() {
+  RELAY="$1"
+  PORT="$2"
+  echo "On relay-host(drakirus.com) run $ udprelay 0.0.0.0 34730 34731"
+  RELAY="drakirus.com"
+  PORT="34730"
+  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$PORT,sourceport=$PORT"
+  mosh-server new -p "$PORT" | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p'
+  echo "Connect using $ mosh-relay-client SERVER_SSH_NAME RELAY_IP"
+}
+
+function mosh-relay-client() {
+  MOSH_SSH_NAME=$1
+  MOSH_RELAY=$2
+  PORT_A=34730
+  PORT_B=34731
+
+  MOSH_KEY=$(ssh "$MOSH_SSH_NAME" "mosh-relay-server \"$MOSH_RELAY\" \"$PORT_A\"")
+  MOSH_KEY="$MOSH_KEY" mosh-client "$MOSH_RELAY" "$PORT_B"
+}

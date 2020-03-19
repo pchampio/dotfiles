@@ -151,6 +151,7 @@ Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
 " Syntax highlight
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
+let g:polyglot_disabled = ['latex']
 Plug 'adimit/prolog.vim'
 
 Plug 'vimwiki/vimwiki', {'branch': 'dev'}
@@ -371,7 +372,15 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
 
 Plug 'lervag/vimtex'
 let g:tex_flavor = 'latex'
-let g:vimtex_view_method = 'okular'
+let g:vimtex_view_method = 'general'
+let g:vimtex_view_general_viewer = 'okular'
+let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+let g:vimtex_view_general_options_latexmk = '--unique'
+" https://github.com/machakann/vim-sandwich/blob/master/macros/sandwich/ftplugin/tex.vim
+" install tectonic
+autocmd FileType tex set wrap
+let g:vimtex_compiler_progname = 'nvr'
+let g:vimtex_compiler_method = 'tectonic'
 
 " (Do)cumentation (Ge)nerator (leader d)
 Plug 'kkoomen/vim-doge'

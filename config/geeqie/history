@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/run/mount/NAS/Pictures/2017"
-"/run/mount/NAS/Pictures/2009/photos canal du midi 09 Fuji"
-"/run/mount/NAS/Pictures/2009/photos canal du midi 09 Fuji/tri"
-"/run/mount/NAS/Pictures/2009/photos canal du midi canon"
-"/run/mount/NAS/Pictures/2013/kerlouan/photo vic"
 "/home/pchampio/Downloads/Nancy - Metz à Vélo/test"
 "/run/mount/NAS/Pictures/2013/kerlouan"
 "/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013"
 "/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013/tri"
 "/run/mount/NAS/Pictures/2013/kerlouan/Summer 2013/photos départ 16"
+"/home/pchampio/Pictures/Van_building_at_anais_mom"
+"/home/pchampio/Pictures/Van_building_at_anais_mom/tri/darktable_exported"
+"/tmp"
+"/home/pchampio/Downloads"
+"/home/pchampio/Pictures"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
