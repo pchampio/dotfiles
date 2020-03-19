@@ -271,19 +271,20 @@ function mosh-relay-server() {
   RELAY="$1"
   PORT="$2"
   echo "On relay-host(drakirus.com) run $ udprelay 0.0.0.0 34730 34731"
-  RELAY="drakirus.com"
+  RELAY="163.172.164.152"
   PORT="34730"
-  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$PORT,sourceport=$PORT"
-  mosh-server new -p "$PORT" | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p'
-  echo "Connect using $ mosh-relay-client SERVER_SSH_NAME RELAY_IP"
+  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$PORT,sourceport=$PORT" | exit 1
+  mosh-server new -p "$PORT" | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p' | exit 1
+  echo "Connect using $ MOSH_KEY=xxx mosh-client 163.172.164.152 34731" | exit 1
 }
 
-function mosh-relay-client() {
-  MOSH_SSH_NAME=$1
-  MOSH_RELAY=$2
+function mosh-relay() {
+  MOSH_RELAY=163.172.164.152
   PORT_A=34730
   PORT_B=34731
 
-  MOSH_KEY=$(ssh "$MOSH_SSH_NAME" "mosh-relay-server \"$MOSH_RELAY\" \"$PORT_A\"")
-  MOSH_KEY="$MOSH_KEY" mosh-client "$MOSH_RELAY" "$PORT_B"
+  printf 'Enter MOSH_KEY : '
+  read -r MOSH_KEY
+
+  env TERM=tmux-256color MOSH_KEY="$MOSH_KEY" mosh-client "$MOSH_RELAY" "$PORT_B"
 }
