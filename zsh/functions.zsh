@@ -273,18 +273,12 @@ function mosh-relay-server() {
   echo "On relay-host(drakirus.com) run $ udprelay 0.0.0.0 34730 34731"
   RELAY="163.172.164.152"
   PORT="34730"
-  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$PORT,sourceport=$PORT" | exit 1
-  mosh-server new -p "$PORT" | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p' | exit 1
-  echo "Connect using $ MOSH_KEY=xxx mosh-client 163.172.164.152 34731" | exit 1
-}
+  kill -9 $(lsof -t -i:$PORT)
+  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$PORT,sourceport=$PORT"
+  key=$(mosh-server new -p "$PORT" | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p')
+  cmd="MOSH_KEY=$key mosh-client 163.172.164.152 34731"
+  echo "Connect using $ $cmd"
 
-function mosh-relay() {
-  MOSH_RELAY=163.172.164.152
-  PORT_A=34730
-  PORT_B=34731
-
-  printf 'Enter MOSH_KEY : '
-  read -r MOSH_KEY
-
-  env TERM=tmux-256color MOSH_KEY="$MOSH_KEY" mosh-client "$MOSH_RELAY" "$PORT_B"
+  # uses osc52 to copy cmd to host
+  echo -e "\033]52;c;$(base64 <<< $cmd)\a"
 }

@@ -35,6 +35,7 @@ export PATH=$PREFIX/bin:$PATH
 # Install mosh (Link to our curses library)
 git clone https://github.com/mobile-shell/mosh
 cd mosh
+./autogen.sh
 ./configure --prefix=$PREFIX --with-curses=$PREFIX
 make
 make install
