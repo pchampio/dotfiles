@@ -147,6 +147,7 @@ let g:Lf_PopupPalette = {'light': {
     \}}
 
 Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
+" let g:clap_theme = 'solarized_light'
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
@@ -159,6 +160,7 @@ let g:vimwiki_auto_chdir = 1
 let g:vimwiki_folding = 'syntax'
 let g:vimwiki_hl_cb_checked = 1
 let g:vimwiki_hl_headers = 1
+au FileType vimwiki set tw=10000
 
 "pchampion's PHD WIKI
 " git clone https://github.com/lotabout/vimwiki-tpl ~/resources/vimwiki
@@ -184,7 +186,7 @@ function! VimWikiMapping()
   map << <Plug>VimwikiDecreaseLvlSingleItem
   map <<< <Plug>VimwikiDecreaseLvlWholeItem
   map <<< <Plug>VimwikiDecreaseLvlWholeItem
-  setlocal spell spelllang=en tw=80
+  setlocal spell spelllang=en
   let b:ale_enabled = 0
   nnoremap <A-j> zr]]
   nnoremap <A-k> za
@@ -247,6 +249,8 @@ Plug 'machakann/vim-sandwich'
 Plug 'machakann/vim-highlightedyank'
 autocmd ColorScheme * hi HighlightedyankRegion guifg=#d33682 gui=underline,bold
 let g:highlightedyank_highlight_duration = 500
+" TODO remove this plugin
+" https://www.reddit.com/r/neovim/comments/gofplz/neovim_has_added_the_ability_to_highlight_yanked/
 
 " Indent Guides
 Plug 'nathanaelkane/vim-indent-guides'
@@ -371,16 +375,25 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
 " autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
 Plug 'lervag/vimtex'
-let g:tex_flavor = 'latex'
-let g:vimtex_view_method = 'general'
-let g:vimtex_view_general_viewer = 'okular'
-let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
-let g:vimtex_view_general_options_latexmk = '--unique'
-" https://github.com/machakann/vim-sandwich/blob/master/macros/sandwich/ftplugin/tex.vim
-" install tectonic
-autocmd FileType tex set wrap
-let g:vimtex_compiler_progname = 'nvr'
-let g:vimtex_compiler_method = 'tectonic'
+let g:vimtex_view_general_callback = 'TermPDF'
+let g:vimtex_view_automatic = 0
+
+function! TermPDF(status) abort
+  if a:status
+    call system('kitty @ kitten termpdf.py ' .  b:vimtex.root . '/' . b:vimtex.name . '.pdf')
+  endif
+endfunction
+
+function TermPDFClose() abort
+  call system('kitty @ close-window --match title:termpdf')
+endfunction
+
+augroup VimtexTest
+  autocmd!
+  autocmd FileType tex :VimtexCompile
+  autocmd FileType tex :Clean
+  autocmd! User VimtexEventCompileStopped call TermPDFClose()
+augroup end
 
 " (Do)cumentation (Ge)nerator (leader d)
 Plug 'kkoomen/vim-doge'
@@ -423,9 +436,9 @@ set completeopt=noinsert,menu,noselect
 
 " LSP
 let g:LanguageClient_serverCommands = {
-    \ 'dart': ['$DART_SDK/dart', "$DART_SDK/snapshots/analysis_server.dart.snapshot", "--lsp"],
     \ 'cpp': ['cquery', '--init={"cacheDirectory": "/tmp/.cache/cquery/"}'],
     \ }
+    " \ 'dart': ['$DART_SDK/dart', "$DART_SDK/snapshots/analysis_server.dart.snapshot", "--lsp"],
 " \ 'go': [$GOPATH.'/bin/gopls'],
 
 Plug 'autozimu/LanguageClient-neovim', {

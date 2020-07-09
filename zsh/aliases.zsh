@@ -67,7 +67,7 @@ alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 alias drak="ssh drakirus@drakirus.com -p 2242"
 alias atal="env TERM=tmux-256color ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
-alias g5k-all="env TERM=tmux-256color ssh pchampion@access.grid5000.fr"
+alias g5k-all="env TERM=tmux-256color ssh -t pchampion@access.grid5000.fr ssh -t nancy "
 alias g5k="env TERM=tmux-256color ssh pchampion@access.nancy.grid5000.fr"
 alias lst="ssh pchampi@lst1"
 
@@ -86,6 +86,13 @@ alias osc52='echo -e "\033]52;c;$(base64 <<< hello)\a"'
 alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one"
 
 alias sig="cat resources/sig | xsel -b --clipboard"
+
+alias ssh="env TERM=tmux-256color ssh"
+
+# lychee photos
+alias lychee_copy="scp -P 2242 -r ./*  drakirus@drakirus.com:~/APP/data/lychee_upload/import/drakirus"
+alias lychee_import="ssh -t drakirus@drakirus.com -p 2242 'cd APP && make lychee-import'"
+alias lychee_clean="ssh -t drakirus@drakirus.com -p 2242 'cd APP && cd data/lychee_upload/import/drakirus && rm * -rfv || cd - && docker-compose exec lychee php artisan lychee:ghostbuster 0 0'"
 
 ############
 #  Editor  #
