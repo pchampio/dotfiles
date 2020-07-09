@@ -1,3 +1,11 @@
+# Profiling zsh startup time
+# time  zsh -i -c exit
+profiling=false
+if [ $profiling = true ]; then
+  zmodload zsh/zprof
+  zprof
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
@@ -146,3 +154,8 @@ for config ($DOTFILES/**/*.zsh) source $config
 export PATH="$PATH:$HOME/.rvm/bin"
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
+
+if [ $profiling = true ]; then
+  zmodload zsh/zprof
+  zprof
+fi

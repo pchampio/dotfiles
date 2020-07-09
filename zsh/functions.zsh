@@ -13,6 +13,11 @@ function nvim() {
   fi
 }
 
+function kkey(){
+   delay=$(xfconf-query -c keyboards -p /Default/KeyRepeat/Delay)
+   xfconf-query -c keyboards -p /Default/KeyRepeat/Delay -s $(($delay+1))
+}
+
 function nvimux-vim() {
   if [[ "$#" == 0 ]]; then
     nvr -c "CtrlP `pwd`"
@@ -217,11 +222,11 @@ net-list(){
   echo "Please, select a network interface:"
   select interface in `ls /sys/class/net/ | cut -d/ -f4`; do
   echo $interface selected
-  ip=`ifconfig $interface | grep 'inet ' | sed 's/  */ /g' | cut -d" " -f 3`
+  ip=`ip address show eth0 | grep 'inet ' | sed 's/  */ /g' | cut -d" " -f 3 | tr "\n" " "`
   break
   done
   vared -p 'Enter the network and press [ENTER]: ' -c ip
-  sudo nmap -sP $ip/24
+  sudo nmap -sP $ip
 }
 
 docker-enter () {
@@ -266,6 +271,10 @@ function aspec-all() {
     aspec $file
   done
 }
+
+##########
+#  MOSH  #
+##########
 
 function mosh-relay-server() {
   RELAY="163.172.164.152" # drakirus.com
