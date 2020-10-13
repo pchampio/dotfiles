@@ -2,15 +2,15 @@
 
 [path_list]
 "/home/pchampio/Pictures/Escalade Maron debut juin 2020"
-"/home/pchampio/resources/fruits-legume"
-"/run/media/pchampio/EC08-E119/DCIM/100PENTX"
-"/run/media/pchampio/EC08-E119/DCIM/101PENTX"
+"/home/pchampio/Pictures/Escalade Maron debut Mai 2020"
 "/home/pchampio/Pictures/shara appart/100PENTX"
-"/home/pchampio/Pictures/shara appart/100PENTX/tri"
-"/home/pchampio/Pictures/shara appart/100PENTX/tri/testing_pio"
-"/home/pchampio/Pictures/shara appart/100PENTX/tri/darktable_exported"
-"/home/pchampio"
+"/home/pchampio/Downloads/test"
 "/home/pchampio/resources"
+"/tmp"
+"/home/pchampio/Pictures/GR34"
+"/home/pchampio/resources/old/resource/pierre"
+"/run/media/pchampio/disk/DCIM/106_FUJI"
+"/home/pchampio/Pictures/Anti pub nancy"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/home/pchampio/Pictures/shara appart/100PENTX"
+".[path]/home/pchampio/Pictures"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"

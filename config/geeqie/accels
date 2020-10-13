@@ -55,6 +55,7 @@
 ; (gtk_accel_path "<Actions>/MenuActions/SelectMark7" "<Primary>7")
 ; (gtk_accel_path "<Actions>/MenuActions/ZoomFit" "x")
 ; (gtk_accel_path "<Actions>/MenuActions/SetMark5" "")
+; (gtk_accel_path "<Actions>/MenuActionsExternal/rawtherapee.desktop" "")
 ; (gtk_accel_path "<Actions>/MenuActionsExternal/image-crop.desktop" "")
 ; (gtk_accel_path "<Actions>/MenuActions/AddMark6" "")
 ; (gtk_accel_path "<Actions>/MenuActions/IntMark6" "")

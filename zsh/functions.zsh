@@ -197,27 +197,6 @@ share() {
 }
 
 
-
-thunarCmd(){
-  WINTITLE="Gestionnaire de fichiers" # Main 'app' window has this in titlebar
-  PROGNAME="thunar" # This is the name of the binary for 'app'
-
-  # Use wmctrl to list all windows, count how many contain WINTITLE,
-  # and test if that count is non-zero:
-
-  if [ `wmctrl -l | grep -c "$WINTITLE"` != 0 ]
-  then
-    wmctrl -a "$WINTITLE" # If it exists, bring 'app' window to front
-    sleep 0.2
-    xdotool key ctrl+t
-    xdotool key ctrl+l
-    xdotool type "$(pwd)"
-    xdotool key KP_Enter
-  else
-    thunar > /dev/null 2>&1 &  # Otherwise, just launch 'app'
-  fi
-}
-
 net-list(){
   echo "Please, select a network interface:"
   select interface in `ls /sys/class/net/ | cut -d/ -f4`; do
