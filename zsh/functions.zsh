@@ -150,6 +150,49 @@ function spectrum_ls() {
   done
 }
 
+function http_share() {
+  cat << EOF
+                                .
+                               *
+.oPYo.  ' oPYo. .oPYo. \`o  o'    ooYoYo. .oPYo
+8    8   8  \`' 8    8  \`bd'     8' 8  8 8oooo8
+o    *  8     8    8  d'\`b     8  8  8 8.
+88Y0P   8     \`YooP' o'  \`o    8  8  8 \`Yooo'
+8
+8                     Dead simple public URLs
+
+- only port 2222 is exposed on the drakirus.com host.
+  (usefull for non-http service)
+
+EOF
+
+  port=8080
+  vared -p ' Share local port: ' -c port
+  proxmeport=$port
+  vared -p ' On proxme port : ' -c proxmeport
+
+
+  if [[ $proxmeport = '2222' ]]
+  then
+    echo " Usage example of non http port fowrarding:"
+    echo "  rsync -avzh --progress -e 'ssh -p 2222' /PATH_FILE_SEND $(whoami)@drakirus.com:~/OUT --dry-run"
+  else
+    echo -n " Start python3 http server on $port [default Yes]: "
+    read inputs
+    if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]
+    then
+      echo " Not starting the http server"
+    else
+      echo " Starting http server on port $port.."
+      python3 -m http.server $port &
+    fi
+
+    echo " --> https://$proxmeport.proxme.drakirus.com/"
+  fi
+  ssh -NR "${proxmeport}:localhost:${port}" share@drakirus.com
+  fg
+}
+
 # Share your terminal as a web application
 # https://github.com/yudai/gotty
 #
