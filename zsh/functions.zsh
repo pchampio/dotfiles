@@ -150,7 +150,7 @@ function spectrum_ls() {
   done
 }
 
-function http_share() {
+function proxme() {
   cat << EOF
                                 .
                                *
