@@ -338,25 +338,25 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/pchampio/Pictures/Anti pub nancy" 
+        last_path = "/home/pchampio" 
         startup_path = "0" 
         exit_on_close = "false" 
 
         main_window.x = "0" 
-        main_window.y = "0" 
-        main_window.w = "720" 
-        main_window.h = "540" 
+        main_window.y = "1286" 
+        main_window.w = "2050" 
+        main_window.h = "750" 
         main_window.maximized = "true" 
-        main_window.hdivider_pos = "610" 
+        main_window.hdivider_pos = "247" 
         main_window.vdivider_pos = "200" 
 
         folder_window.vdivider_pos = "100" 
 
         float_window.x = "0" 
-        float_window.y = "64" 
+        float_window.y = "0" 
         float_window.w = "260" 
         float_window.h = "450" 
-        float_window.vdivider_pos = "134" 
+        float_window.vdivider_pos = "-1" 
 
         properties_window.w = "0" 
         properties_window.h = "0" 
@@ -382,14 +382,14 @@
         log_window.h = "400" 
 
         animate = "true" >
-        <bar enabled = "true" width = "318" >
+        <bar enabled = "true" width = "415" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
-            <pane_comment id = "title" title = "Titre" expanded = "false" key = "Xmp.dc.title" height = "40" />
-            <pane_keywords id = "keywords" title = "Mots-clés" expanded = "false" key = "Xmp.dc.subject" height = "200" >
+            <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />
+            <pane_keywords id = "keywords" title = "Mots-clés" expanded = "true" key = "Xmp.dc.subject" height = "200" >
             </pane_keywords>
-            <pane_comment id = "comment" title = "Commentaire" expanded = "false" key = "Xmp.dc.description" height = "150" />
-            <pane_comment id = "rating" title = "Rating" expanded = "false" key = "Xmp.xmp.Rating" height = "10" />
+            <pane_comment id = "comment" title = "Commentaire" expanded = "true" key = "Xmp.dc.description" height = "150" />
+            <pane_comment id = "rating" title = "Rating" expanded = "true" key = "Xmp.xmp.Rating" height = "10" />
             <pane_exif id = "exif" title = "Exif" expanded = "true" show_all = "false" >
                 <entry key = "formatted.Camera" if_set = "true" editable = "false" />
                 <entry key = "formatted.DateTime" if_set = "true" editable = "false" />

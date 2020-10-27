@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/pchampio/Pictures/Escalade Maron debut juin 2020"
-"/home/pchampio/Pictures/Escalade Maron debut Mai 2020"
-"/home/pchampio/Pictures/shara appart/100PENTX"
-"/home/pchampio/Downloads/test"
-"/home/pchampio/resources"
+"/home/pchampio/Pictures/michto 2020/tri"
 "/tmp"
-"/home/pchampio/Pictures/GR34"
-"/home/pchampio/resources/old/resource/pierre"
-"/run/media/pchampio/disk/DCIM/106_FUJI"
-"/home/pchampio/Pictures/Anti pub nancy"
+"/home/pchampio/resources/inria/articles/unknown"
+"/home/pchampio/Pictures/lerouville"
+"/home/pchampio/Pictures/lerouville/tri"
+"/home/pchampio/Pictures/lerouville/tri/champ"
+"/home/pchampio/Pictures/lerouville/tri/champ/darktable_exported/test"
+"/home/pchampio/Pictures/lerouville/tri/champ/darktable_exported"
+"/home/pchampio/Pictures/lerouville/tri/gaby/darktable_exported/test/test"
+"/home/pchampio"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/home/pchampio/Pictures"
+".[path]/home/pchampio/resources/inria/articles/unknown"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"

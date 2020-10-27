@@ -16,9 +16,10 @@
 _my-oar(){
   local cluster
   cluster=$CLUSTER
+  gpu="$GPU"
   walltime=$1
   shift 1
-  jobid=$(oarsub -q production -p "cluster='$cluster'" -l walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
+  jobid=$(oarsub -q production -p "cluster='$cluster'" -l ${gpu}$walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
   if [[ "$@" != "" ]]; then # in case of reservations (-r)
     return
   fi
@@ -45,6 +46,11 @@ function oar-2080(){
 }
 function oar-t4(){
   CLUSTER='grue'
+  _my-oar $@
+}
+
+function oar-grappe(){
+  CLUSTER='grappe'
   _my-oar $@
 }
 

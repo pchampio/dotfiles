@@ -3,9 +3,10 @@
 # eDP1: Laptop 3840x2160 OFF
 # external: 24" 1920x1080 only
 
-external=$(xrandr | grep "DP.-.*\sconnected" | cut -d" " -f1)
+external=$(xrandr | grep "^DP.*\sconnected" | cut -d" " -f1)
+internal=$(xrandr | grep "^eDP.*\sconnected" | cut -d" " -f1)
 
-xrandr --output "$external" --scale 1.5x1.5 --mode 1920x1080
-xrandr --output eDP1 --off
+xrandr --output "$external" --scale 1.7x1.7 --mode 1920x1080
+xrandr --output "$internal" --off
 
 kquitapp5 plasmashell && kstart5 plasmashell
