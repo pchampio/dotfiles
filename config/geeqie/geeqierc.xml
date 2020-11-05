@@ -338,7 +338,7 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/pchampio" 
+        last_path = "/home/pchampio/Pictures/confinement 2.0/darktable_exported" 
         startup_path = "0" 
         exit_on_close = "false" 
 
@@ -382,7 +382,7 @@
         log_window.h = "400" 
 
         animate = "true" >
-        <bar enabled = "true" width = "415" >
+        <bar enabled = "true" width = "910" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />

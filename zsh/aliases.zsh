@@ -91,9 +91,8 @@ alias sig="cat resources/sig | xsel -b --clipboard"
 alias ssh="env TERM=tmux-256color ssh"
 
 # lychee photos
-alias lychee_copy="scp -P 2242 -r ./*  drakirus@drakirus.com:~/APP/data/lychee_upload/import/drakirus"
+# see ./abbreviations.zsh
 alias lychee_import="ssh -t drakirus@drakirus.com -p 2242 'cd APP && make lychee-import'"
-alias lychee_clean="ssh -t drakirus@drakirus.com -p 2242 'cd APP && cd data/lychee_upload/import/drakirus && rm * -rfv || cd - && docker-compose exec lychee php artisan lychee:ghostbuster 0 0'"
 
 ############
 #  Editor  #
