@@ -1,6 +1,6 @@
 typeset -A abbrevs
 abbrevs=(
-        "lychee_rsync" "rsync -avzh --protect-args --progress -e 'ssh -p 2242' ./__CURSOR__ \"drakirus@drakirus.com:~/APP/data_s3fs/shared/photos/\" -n"
+        "lychee_rsync" "rsync -avzh --protect-args --progress -e 'ssh -p 2242' ./__CURSOR__ \"drakirus@drakirus.com:/home/drakirus/APP/data_s3fs/shared/photos/\" -n"
         "lychee_scp" "scp -P 2242 -r ./*  drakirus@drakirus.com:~/APP/data_s3fs/shared/photos/'"
 )
 

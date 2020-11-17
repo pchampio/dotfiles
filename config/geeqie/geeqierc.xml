@@ -338,15 +338,15 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/run/mount/NAS/Pictures/2014" 
+        last_path = "/home/pchampio/Pictures/confinement 2.0/mid" 
         startup_path = "0" 
         exit_on_close = "false" 
 
-        main_window.x = "0" 
-        main_window.y = "1286" 
-        main_window.w = "2050" 
-        main_window.h = "750" 
-        main_window.maximized = "true" 
+        main_window.x = "929" 
+        main_window.y = "64" 
+        main_window.w = "2040" 
+        main_window.h = "2186" 
+        main_window.maximized = "false" 
         main_window.hdivider_pos = "247" 
         main_window.vdivider_pos = "200" 
 
@@ -382,7 +382,7 @@
         log_window.h = "400" 
 
         animate = "true" >
-        <bar enabled = "true" width = "910" >
+        <bar enabled = "false" width = "250" >
             <clear/>
             <pane_histogram id = "histogram" title = "Histogramme linéaire RVB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />

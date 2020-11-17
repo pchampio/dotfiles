@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/run/media/pchampio/disk/DCIM/106_FUJI"
-"/home/pchampio/Pictures/confinement 2.0"
-"/tmp/mozilla_pchampio0"
-"/home/pchampio/Pictures"
 "/run/mount/NAS/Pictures/2018/les airelles abris"
 "/home/pchampio/Downloads"
 "/home/pchampio/Pictures/confinement 2.0/darktable_exported"
 "/run/mount/NAS/Pictures/2019"
 "/run/mount/NAS/Pictures/2015"
 "/run/mount/NAS/Pictures/2014"
+"/home/pchampio/resources/inria/articles/slt"
+"/tmp"
+"/run/media/pchampio/disk/DCIM/106_FUJI"
+"/home/pchampio/Pictures/confinement 2.0/mid"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
