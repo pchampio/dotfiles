@@ -19,6 +19,7 @@ _my-oar(){
   gpu="$GPU"
   walltime=$1
   shift 1
+  echo "oarsub -q production -p "cluster='$cluster'" -l ${gpu}walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p'"
   jobid=$(oarsub -q production -p "cluster='$cluster'" -l ${gpu}walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
   if [[ "$@" != "" ]]; then # in case of reservations (-r)
     return
@@ -29,11 +30,11 @@ _my-oar(){
     output=$(oarstat -u | grep "$jobid")
     tput rc; tput el
     echo $output
-    sleep 2
+    oarstat -j "$jobid" --full | grep scheduledStart
+    sleep 5
   done
   tput rc; tput ed;
   oarwalltime $jobid
-  curl --silent -X POST "https://notif.drakirus.com/message?token=AVTzIYbFxGtl8aU" -F "priority=5" -F "title=Grid5k" -F "message=$cluster ready, jobid: $jobid" > /dev/null
 }
 
 function oar-1080(){
@@ -51,6 +52,11 @@ function oar-t4(){
 
 function oar-grappe(){
   CLUSTER='grappe'
+  _my-oar $@
+}
+
+function oar-grvingt(){
+  CLUSTER='grvingt'
   _my-oar $@
 }
 

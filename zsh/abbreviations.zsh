@@ -2,6 +2,7 @@ typeset -A abbrevs
 abbrevs=(
         "lychee_rsync" "rsync -avzh --protect-args --progress -e 'ssh -p 2242' ./__CURSOR__ \"drakirus@drakirus.com:/home/drakirus/APP/data_s3fs/shared/photos/\" -n"
         "lychee_scp" "scp -P 2242 -r ./*  drakirus@drakirus.com:~/APP/data_s3fs/shared/photos/'"
+        "awkd" "awk '{a[\$0]++}END{for(i in a){print i, a[i]}}'"
 )
 
 #create aliases for the abbrevs too
