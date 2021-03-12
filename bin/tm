@@ -23,6 +23,7 @@ else
   echo "Available Options"
   echo "------------------"
   echo " "
+  COLUMNS=20
   select opt in "${options[@]}"
   do
     case $opt in

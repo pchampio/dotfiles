@@ -19,7 +19,7 @@ _my-oar(){
   gpu="$GPU"
   walltime=$1
   shift 1
-  echo "oarsub -q production -p "cluster='$cluster'" -l ${gpu}walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p'"
+  echo "oarsub -q production -p \"cluster='$cluster'\" -l ${gpu}walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d'"
   jobid=$(oarsub -q production -p "cluster='$cluster'" -l ${gpu}walltime="$walltime":40 --stderr=$HOME/.cache/oar/%jobid%-err.log --stdout=$HOME/.cache/oar/%jobid%-out.log 'sleep 10d' $@ | sed -n 's/OAR_JOB_ID=\(.*\)/\1/p')
   if [[ "$@" != "" ]]; then # in case of reservations (-r)
     return
