@@ -64,6 +64,7 @@ function! VMATH_Analyse ()
     let avg = s:average(raw_numbers)
     let min = s:tidy( s:min(numbers) )
     let max = s:tidy( s:max(numbers) )
+    let std = s:tidy( s:std(numbers) )
 
     " Convert temporals...
     if temporal
@@ -71,6 +72,7 @@ function! VMATH_Analyse ()
         let avg = s:tidystr( s:sec2str(avg) )
         let min = s:tidystr( s:sec2str(min) )
         let max = s:tidystr( s:sec2str(max) )
+        let std = s:tidystr( s:sec2str(std) )
    endif
 
     " En-register metrics...
@@ -78,6 +80,7 @@ function! VMATH_Analyse ()
     call setreg('a', avg )
     call setreg('x', max )
     call setreg('n', min )
+    call setreg('d', std )
     call setreg('r', string(min) . ' to ' . string(max) )
 
     " Default paste buffer should depend on original contents (TODO)
@@ -104,6 +107,11 @@ function! VMATH_Analyse ()
     echon   'x'
     echohl NONE
     echon    ': ' . @x . gap
+    echon 'st'
+    echohl NormalUnderlined
+    echon   'd'
+    echohl NONE
+    echon    ': ' . @d . gap
 
 endfunction
 
@@ -154,6 +162,21 @@ endfunction
 
 function! s:tidystr (str)
     return substitute(a:str, '[.]0\+$', '', '')
+endfunction
+
+" Compute std
+function! s:std (numbers)
+    " Compute std...
+    let summation = eval( len(a:numbers) ? join( a:numbers, ' + ') : '0' )
+    let avg = 1.0 * summation / s:max([len(a:numbers), 1])
+
+    let deviations = []
+    for num in a:numbers
+      let deviations = add(deviations, pow((num * 1.0) - avg, 2))
+    endfor
+
+    let variance = eval( len(deviations) ? join(deviations, ' + ') : '0' ) / s:max([len(a:numbers), 1])
+    return sqrt(variance)
 endfunction
 
 " Compute average with meaningful number of decimal places...
