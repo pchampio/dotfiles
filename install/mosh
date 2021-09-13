@@ -15,18 +15,18 @@ wget https://github.com/google/protobuf/releases/download/v2.6.1/protobuf-2.6.1.
 tar -xf protobuf-2.6.1.tar.gz
 cd protobuf-2.6.1
 ./configure --prefix=$PREFIX
-make
+make -j $(nproc)
 make install
 cd ..
 
 # Install Ncurses (This was needed on CentOS, probably not necessary on Dreamhost)
-wget https://invisible-mirror.net/archives/ncurses/ncurses-5.9.tar.gz
-tar -xf ncurses-5.9.tar.gz
-cd ncurses-5.9
-./configure --prefix=$PREFIX --with-shared --without-debug  --without-normal
-make
-make install
-cd ..
+# wget https://invisible-mirror.net/archives/ncurses/ncurses-5.9.tar.gz
+# tar -xf ncurses-5.9.tar.gz
+# cd ncurses-5.9
+# ./configure --prefix=$PREFIX --with-shared --without-debug  --without-normal
+# make -j $(nproc)
+# make install
+# cd ..
 
 # You'll need this setting to have mosh find the Protocol Buffer lib
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
@@ -37,7 +37,7 @@ git clone https://github.com/mobile-shell/mosh
 cd mosh
 ./autogen.sh
 ./configure --prefix=$PREFIX --with-curses=$PREFIX
-make
+make -j $(nproc)
 make install
 
 # Post-Install Notes
