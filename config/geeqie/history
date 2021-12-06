@@ -1,9 +1,6 @@
 #History lists
 
 [path_list]
-"/run/mount/NAS/Pictures/2014"
-"/home/pchampio/resources/inria/articles/slt"
-"/tmp"
 "/home/pchampio/Pictures/confinement 2.0/mid"
 "/home/pchampio/Pictures/confinement 2.0/mid-2"
 "/home/pchampio/Pictures/Printed/Printed"
@@ -11,6 +8,9 @@
 "/run/media/pchampio/disk/DCIM/106_FUJI"
 "/home/pchampio/Pictures/confinement 2.0/start/darktable_exported"
 "/home/pchampio/Pictures/confinement 2.0/mid/darktable_exported"
+"/run/media/drakirus/disk/DCIM/107_FUJI"
+"/home/drakirus/thesis/Couverture-these/ecoles-doctorales/MathSTIC/svg_old"
+"/home/drakirus/Pictures/bruxelle"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
