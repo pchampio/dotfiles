@@ -92,6 +92,7 @@ export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
     -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
 
 
+export PURE_PROMPT_SYMBOL="\$~"
 zstyle :prompt:pure:prompt:success color green
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

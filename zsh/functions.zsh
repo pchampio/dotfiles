@@ -300,11 +300,11 @@ function aspec-all() {
 
 function mosh-relay-server() {
   RELAY="163.172.164.152" # drakirus.com
-  PORT="$(seq 34730 2 34830 | shuf -n 1)"
+  PORT="$(seq 7000 2 7019 | shuf -n 1)"
   kill -9 $(lsof -t -i:$PORT)
-  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$PORT,sourceport=$PORT"
+  echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$(($PORT - 7000)),sourceport=$PORT"
   key=$(env TMUX='' MOSH_SERVER_NETWORK_TMOUT=604800 MOSH_SERVER_SIGNAL_TMOUT=604800 mosh-server new -p "$PORT" | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p')
-  cmd="MOSH_KEY=$key mosh-client 163.172.164.152 $(($PORT + 1))"
+  cmd="MOSH_KEY=$key mosh-client 163.172.164.152 $(($PORT - 7000 + 1))"
   echo "Connect using $ $cmd"
 
   # uses osc52 to copy cmd to host
