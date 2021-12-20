@@ -152,7 +152,7 @@ Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
 " Syntax highlight
 " A collection of +70 language packs for Vim
 Plug 'sheerun/vim-polyglot'
-let g:polyglot_disabled = ['latex']
+let g:polyglot_disabled = ['latex', 'csv']
 Plug 'adimit/prolog.vim'
 
 Plug 'vimwiki/vimwiki', {'branch': 'dev'}
@@ -488,13 +488,13 @@ endfunction
 call plug#end()
 
 " Wait until idle to run additional "boot" commands.
-augroup Idleboot
-  autocmd!
-  if has('vim_starting')
-    set updatetime=700
-    autocmd CursorHold,CursorHoldI * call s:idleboot()
-  endif
-augroup END
+" augroup Idleboot
+  " autocmd!
+  " if has('vim_starting')
+    " set updatetime=700
+    " autocmd CursorHold,CursorHoldI * call s:idleboot()
+  " endif
+" augroup END
 
 function! s:idleboot() abort
   " Make sure we automatically call s:idleboot() only once.
