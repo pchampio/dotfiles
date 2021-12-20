@@ -7,8 +7,7 @@ dir=~/dotfiles
 
 explain "Download latest nvim app"
 cd /tmp
-wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output-document nvim
-# wget http://gitreleases.dev/gh/neovim/neovim/v0.4.3/nvim.appimage --output-document nvim
+wget https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage --output-document nvim
 chmod +x nvim
 read -p "move nvim in $HOME/dotfiles/bin [y/n]: " -n 1 -r
 echo ""    # (optional) move to a new line

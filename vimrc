@@ -374,27 +374,6 @@ autocmd FileType prolog :nnoremap <buffer> <silent> <cr> :execute "normal vip\<P
 
 " autocmd FileType sh,bash,zsh :nnoremap <cr> mavip:VtrSendLinesToRunner<cr>`a
 
-Plug 'lervag/vimtex'
-let g:vimtex_view_general_callback = 'TermPDF'
-let g:vimtex_view_automatic = 0
-
-function! TermPDF(status) abort
-  if a:status
-    call system('kitty @ kitten termpdf.py ' .  b:vimtex.root . '/' . b:vimtex.name . '.pdf')
-  endif
-endfunction
-
-function TermPDFClose() abort
-  call system('kitty @ close-window --match title:termpdf')
-endfunction
-
-augroup VimtexTest
-  autocmd!
-  autocmd FileType tex :VimtexCompile
-  autocmd FileType tex :Clean
-  autocmd! User VimtexEventCompileStopped call TermPDFClose()
-augroup end
-
 " (Do)cumentation (Ge)nerator (leader d)
 Plug 'kkoomen/vim-doge'
 let g:doge_doc_standard_python = 'google'
@@ -509,10 +488,6 @@ function! s:idleboot() abort
 
   call s:code_mapping()
 
-
-  call deoplete#custom#var('omni', 'input_patterns', {
-      \ 'tex': g:vimtex#re#deoplete
-    \})
 
 endfunction
 

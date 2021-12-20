@@ -17,7 +17,7 @@ plugins=(encode64 docker sudo)
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -53,8 +53,8 @@ PATH=$PATH:/usr/bin/core_perl/
 # mkdir -p ~/lab/go/{pkg,src,bin}
 export GOPATH=$HOME/lab/go
 export GOROOT=/opt/go
-PATH=$PATH:$GOPATH/bin
-PATH=$PATH:$GOROOT/bin
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
 # INSTALL go
 # wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
 

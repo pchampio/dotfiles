@@ -10,6 +10,7 @@ Name=NoteGeeqie-exiftool
 
 # Replace "command" with the actual command or script:
 # Exec=exiftool -rating=1 -overwrite_original  %f
+# install: perl-image-exiftool
 Exec=exiftool -if '$rating >= 1' "%f" && exiftool -rating=0 -overwrite_original "%f" || exiftool -rating=1 -overwrite_original "%f"
 # Exec=mv "%f" ../valide_photos/
 
