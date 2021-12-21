@@ -1,4 +1,4 @@
-# !/usr/bin/env bash
+#!/usr/bin/env bash
 
 get_current_pane_info() {
   tmux display -p '#{pane_id} #{pane_pid}'
@@ -65,10 +65,12 @@ _capture_pane() {
 ssh_command="$(_ssh_command)"
 if [[ -z "$ssh_command" ]]
 then
+    echo "TEST 1"
     tmux set-buffer -- $(tmux run pwd)
 else
-    echo "EST,"
-    path=$(_capture_pane | tac | grep --max-count 1 "^\$~" -A 1 | sed -n '2 p' | awk '{match($0,/\/[^"]*/,a);print a[0]}' | sed "s/$(git rev-parse --abbrev-ref HEAD).*//")
+    echo "TEST 2"
+    path=$(_capture_pane | tac | grep --max-count 1 "^\$~" -A 1| awk '{match($0,/\/[^"]*/,a);print a[0]}' | sed "s/$(git rev-parse --abbrev-ref HEAD).*//")
+    echo $(_capture_pane | tac | awk 'match($0,/\/.*\/[^ ]*/){print substr($0,RSTART,RLENGTH)}')
     echo $path
     tmux set-buffer -- "$path"
 fi
