@@ -366,7 +366,7 @@
         show_thumbnails = "false" 
         show_directory_date = "false" 
         home_path = "" 
-        last_path = "/home/drakirus/Pictures/epinal" 
+        last_path = "/home/drakirus/Pictures/font_2022/tri/darktable_exported" 
         startup_path = "0" 
 
         main_window.x = "929" 

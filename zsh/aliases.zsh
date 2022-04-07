@@ -90,6 +90,8 @@ alias sig="cat resources/sig | xsel -b --clipboard"
 
 alias ssh="env TERM=tmux-256color ssh"
 
+alias icat="kitty +kitten icat"
+
 # lychee photos
 # see ./abbreviations.zsh
 alias lychee_import="ssh -t drakirus@drakirus.com -p 2242 'cd APP && make lychee-import'"

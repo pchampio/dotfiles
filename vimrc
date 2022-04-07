@@ -31,6 +31,7 @@ nmap ,ga <Plug>(EasyAlign)
 xmap ,ga <Plug>(EasyAlign)
 
 
+if !exists('g:vscode')
 Plug 'airblade/vim-gitgutter'
 let g:gitgutter_preview_win_floating = 0
 let g:gitgutter_map_keys = 0
@@ -40,6 +41,7 @@ nmap <Leader>ha <Plug>(GitGutterStageHunk)
 nmap <Leader>hu <Plug>(GitGutterUndoHunk)
 nmap <Leader>hs <Plug>(GitGutterPreviewHunk)
 nnoremap <Leader>hS :GitGutterLineHighlightsToggle<CR>
+endif
 
 Plug 'wincent/vcs-jump'
 nmap <Leader>h <Plug>(VcsJump)
@@ -197,7 +199,9 @@ autocmd FileType vimwiki call VimWikiMapping()
 Plug 'chriskempson/base16-vim'
 
 " syntastic
+if !exists('g:vscode')
 Plug 'dense-analysis/ale'
+endif
 let g:ale_linters_ignore = {'vimwiki': ['']}
 let g:ale_completion_enabled=0
 let g:ale_disable_lsp = 1
@@ -253,9 +257,11 @@ let g:highlightedyank_highlight_duration = 500
 " https://www.reddit.com/r/neovim/comments/gofplz/neovim_has_added_the_ability_to_highlight_yanked/
 
 " Indent Guides
+if !exists('g:vscode')
 Plug 'nathanaelkane/vim-indent-guides'
 let g:indent_guides_color_change_percent = 3
 let g:indent_guides_enable_on_vim_startup = 1
+endif
 
 " simplifies the transition between multiline and single-line code
 Plug 'AndrewRadev/splitjoin.vim'
@@ -420,10 +426,12 @@ let g:LanguageClient_serverCommands = {
     " \ 'dart': ['$DART_SDK/dart', "$DART_SDK/snapshots/analysis_server.dart.snapshot", "--lsp"],
 " \ 'go': [$GOPATH.'/bin/gopls'],
 
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+if !exists('g:vscode')
+  Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
+endif
 
 let g:LanguageClient_loggingFile = '/tmp/LSP.log'
 let g:LanguageClient_changeThrottle = 0.3
@@ -546,7 +554,9 @@ vmap Y "+y
 " vmap P "+p
 
 " highlight vertical column of cursor
+if !exists('g:vscode')
 set cursorline
+endif
 
 " relativ number
 set relativenumber
