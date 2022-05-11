@@ -3,11 +3,11 @@
 [color]
   ui = auto
 [core]
-	excludesfile = /export/home/lium/pchampi/.gitignore
+	excludesfile = /lium/home/pchampi/.gitignore
   autocrlf = input
 	pager = less -FRSX
 [commit]
-	template = /export/home/lium/pchampi/.gitmessage
+	template = /lium/home/pchampi/.gitmessage
 [user]
 	name = pchampio
   email = prr.champion@gmail.com
