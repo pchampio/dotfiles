@@ -120,6 +120,9 @@ if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
   export TERM=screen-256color
 fi
 
+# Rust
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # vim ~/.ssh/config #
 # AddKeysToAgent yes
 # ForwardAgent yes

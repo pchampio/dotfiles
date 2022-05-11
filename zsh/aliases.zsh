@@ -84,11 +84,13 @@ alias ping='prettyping --nolegend'
 alias osc52clean='echo -e "\033]52;c;!\a"'
 alias osc52='echo -e "\033]52;c;$(base64 <<< hello)\a"'
 
-alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one"
+alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one; killall 'latte-dock'; nohup latte-dock > /dev/null 2> /dev/null &"
 
 alias sig="cat resources/sig | xsel -b --clipboard"
 
 alias ssh="env TERM=tmux-256color ssh"
+
+alias icat="kitty +kitten icat"
 
 # lychee photos
 # see ./abbreviations.zsh
