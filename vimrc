@@ -93,21 +93,19 @@ autocmd  FileType fzf set  noshowmode noruler norelativenumber nonumber | echo "
 autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 
 " An asynchronous fuzzy finder
-let g:leaderf_install = './install.sh | sed -i "260,300 s/        if self._reverse_order/\0 and \"--popup\" in self._arguments or lfEval(\"g:Lf_WindowPosition\") == \"popup\"/" autoload/leaderf/python/leaderf/instance.py'
-Plug 'Yggdroot/LeaderF', { 'do': g:leaderf_install}
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension'}
 nnoremap g\ :Leaderf --bottom --reverse --nameOnly rg -i <CR>
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PopupShowStatusline = 1
 let g:Lf_CursorBlink = 0
-let g:Lf_PopupHeight = float2nr(&lines * 0.50)
-let g:Lf_PopupWidth = float2nr(&columns * 0.85)
-let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
 let g:Lf_DefaultExternalTool = "rg"
-nnoremap <silent> <C-p> :LeaderfFile --no-ignore<CR>
+nnoremap <silent> <C-p> :Leaderf file --no-ignore<CR>
 let g:Lf_FollowLinks = 1
-let g:Lf_WorkingDirectoryMode = 'af'
+let g:Lf_WorkingDirectoryMode = 'c'
 let g:Lf_CacheDirectory = expand('~/.cache')
+" let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
 let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', 'requirements', 'pubspec.yaml']
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2" }
 let g:Lf_StlColorscheme = 'one'

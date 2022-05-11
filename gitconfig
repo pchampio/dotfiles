@@ -3,11 +3,11 @@
 [color]
   ui = auto
 [core]
-	excludesfile = /home/drakirus/.gitignore
+	excludesfile = /export/home/lium/pchampi/.gitignore
   autocrlf = input
 	pager = less -FRSX
 [commit]
-	template = /home/drakirus/.gitmessage
+	template = /export/home/lium/pchampi/.gitmessage
 [user]
 	name = pchampio
   email = prr.champion@gmail.com
@@ -28,10 +28,5 @@
 	trustExitCode = true
 [mergetool]
 	keepBackup = false
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
 [credential]
 	helper = store
