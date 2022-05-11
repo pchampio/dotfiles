@@ -12,7 +12,7 @@ call plug#begin('~/.vim/bundle/')
 
 " Git
 Plug 'tpope/vim-fugitive' " Git wrapper
-nnoremap <silent> - :Gstatus<cr>:13wincmd_<cr>:call search('\v<' . expand('#:t') . '>')<cr>
+nnoremap <silent> - :Git<cr>:13wincmd_<cr>:call search('\v<' . expand('#:t') . '>')<cr>
 au FileType gitrebase nnoremap <buffer> <silent> <c-s><c-s> :s/^#\?\w\+/squash/<cr>:noh<cr>
 set diffopt+=vertical
 set diffopt+=iwhiteall
@@ -266,6 +266,24 @@ endif
 " simplifies the transition between multiline and single-line code
 Plug 'AndrewRadev/splitjoin.vim'
 let g:splitjoin_trailing_comma = 1
+
+Plug 'tpope/vim-speeddating'
+let g:speeddating_no_mappings = 1
+Plug 'AndrewRadev/switch.vim'
+let g:switch_custom_definitions =
+    \ [
+    \    [ '\\part', '\\chapter', '\\section', '\\subsection', '\\subsubsection', '\\paragraph', '\\subparagraph' ],
+    \    [ 'part:', 'chap:', 'sec:', 'subsec:', 'subsubsec:' ],
+    \ ]
+let g:switch_mapping = ""
+nnoremap <Plug>SpeedDatingFallbackUp <c-a>
+nnoremap <Plug>SpeedDatingFallbackDown <c-x>
+
+" Manually invoke speeddating in case switch didn't work
+nnoremap <c-a> :if !switch#Switch() <bar>
+      \ call speeddating#increment(v:count1) <bar> endif <cr>
+nnoremap <c-x> :if !switch#Switch({'reverse': 1}) <bar>
+      \ call speeddating#increment(-v:count1) <bar> endif <cr>
 
 " move function arguments
 Plug 'AndrewRadev/sideways.vim'
@@ -642,8 +660,8 @@ vnoremap <silent><expr> ++ VMATH_YankAndAnalyse()
 
 inoremap <c-l> <esc>A
 
-noremap j gj
-noremap k gk
+nmap j gj
+nmap k gk
 
 noremap <leader>cd :lcd <c-r>=expand("%:p:h")<cr>
 
