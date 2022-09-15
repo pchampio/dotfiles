@@ -161,7 +161,7 @@ o    *  8     8    8  d'\`b     8  8  8 8.
 8
 8                     Dead simple public URLs
 
-- only port 2222 is exposed on the drakirus.com host.
+- only port 2222 is exposed on the prr.re host.
   (usefull for non-http service)
 
 EOF
@@ -175,7 +175,7 @@ EOF
   if [[ $proxmeport = '2222' ]]
   then
     echo " Usage example of non http port fowrarding:"
-    echo "  rsync -avzh --progress -e 'ssh -p 2222' /PATH_FILE_SEND $(whoami)@drakirus.com:~/OUT --dry-run"
+    echo "  rsync -avzh --progress -e 'ssh -p 2222' /PATH_FILE_SEND $(whoami)@prr.re:~/OUT --dry-run"
   else
     echo -n " Start python3 http server on $port [default Yes]: "
     read inputs
@@ -187,9 +187,9 @@ EOF
       python3 -m http.server $port &
     fi
 
-    echo " --> https://$proxmeport.proxme.drakirus.com/"
+    echo " --> https://$proxmeport.proxme.prr.re/"
   fi
-  ssh -NR "${proxmeport}:localhost:${port}" share@drakirus.com
+  ssh -NR "${proxmeport}:localhost:${port}" share@prr.re
   fg
 }
 
@@ -229,8 +229,8 @@ share() {
   fi
 
   # Share
-  echo "https://2280.proxme.drakirus.com/"
-  ssh -NR 2280:localhost:2280 share@drakirus.com 2>&1 &
+  echo "https://2280.proxme.prr.re/"
+  ssh -NR 2280:localhost:2280 share@prr.re 2>&1 &
   PID=$!
 
   # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
@@ -299,7 +299,7 @@ function aspec-all() {
 ##########
 
 function mosh-relay-server() {
-  RELAY="163.172.164.152" # drakirus.com
+  RELAY="163.172.164.152" # prr.re
   PORT="$(seq 7000 2 7019 | shuf -n 1)"
   kill -9 $(lsof -t -i:$PORT)
   echo -n 'nat-hole-punch' | socat STDIN "UDP-SENDTO:$RELAY:$(($PORT - 7000)),sourceport=$PORT"
