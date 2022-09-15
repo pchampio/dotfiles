@@ -58,6 +58,19 @@ let g:sandwich#recipes += [
   \   }
   \ ]
 
+autocmd FileType tex call sandwich#util#addlocal([
+            \ {'buns': ['`',        "'"],   'nesting': 0, 'input': ["q"]},
+            \ {'buns': ['``',       "''"],  'nesting': 0, 'input': ['Q']},
+            \ {'buns': ['$',        '$'],   'nesting': 0, 'input': ['7']},
+            \ {'buns': ['\(',       '\)'],  'nesting': 0, 'input': ['8']},
+            \ {'buns': ['$$',       '$$'],  'nesting': 0, 'input': ['9']},
+            \ {'buns': ['\[',       '\]'],  'nesting': 0, 'input': ['0']},
+            \ {'buns': ['\textbf{', '}'],   'nesting': 0, 'input': ['bb']},
+            \ {'buns': ['\textit{', '}'],   'nesting': 0, 'input': ['ii']},
+            \ {'buns': ['\mathrm{', '}'],   'nesting': 0, 'input': ['rr']},
+            \ {'buns': ['\texttt{', '}'],   'nesting': 0, 'input': ['tt']},
+\ ])
+
 autocmd FileType python call sandwich#util#addlocal([
   \   {'buns': ['"""', '"""'], 'nesting': 0, 'input': ['3"']},
 \ ])

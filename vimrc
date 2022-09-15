@@ -10,6 +10,8 @@ call plug#begin('~/.vim/bundle/')
 " Breakdown Vim's --startuptime output
 " Plug 'tweekmonster/startuptime.vim'
 
+Plug 'Konfekt/vim-sentence-chopper'
+
 " Git
 Plug 'tpope/vim-fugitive' " Git wrapper
 nnoremap <silent> - :Git<cr>:13wincmd_<cr>:call search('\v<' . expand('#:t') . '>')<cr>
@@ -18,6 +20,8 @@ set diffopt+=vertical
 set diffopt+=iwhiteall
 autocmd FileType gitcommit startinsert
 autocmd FileType gitcommit setlocal spell! spelllang=en
+
+Plug 'tpope/vim-abolish'
 
 Plug 'whiteinge/diffconflicts'
 
@@ -47,7 +51,40 @@ Plug 'wincent/vcs-jump'
 nmap <Leader>h <Plug>(VcsJump)
 
 " tmux-navigator configuration
-Plug 'christoomey/vim-tmux-navigator'
+
+if !exists('g:vscode')
+  Plug 'christoomey/vim-tmux-navigator'
+else
+  nmap <c-l> <C-w>l " Move focus right
+  nmap <c-h> <C-w>h " Move focus left
+  nmap <c-j> <C-w>j " Move focus down
+  nmap <c-k> <C-w>k " Move focus up
+  " Close window
+  nmap <leader>wk <Cmd>call VSCodeNotify('workbench.action.closeEditorsInGroup')<CR>
+
+
+  """ View editor panels (v)
+  " Toggle sidebar
+  nnoremap <leader>vs <Cmd>call VSCodeNotify('workbench.action.toggleSidebarVisibility')<CR>
+
+  " Show file in file explorer
+  nnoremap <leader>vf <Cmd>call VSCodeNotify('workbench.files.action.showActiveFileInExplorer')<CR>
+
+  " Toggle panel
+  nnoremap <leader>vp <Cmd>call VSCodeNotify('workbench.action.togglePanel')<CR>
+
+
+  """ Navigation / Go to (g)
+  " Go to next error or warning
+  nnoremap ]e <Cmd>call VSCodeNotify('editor.action.marker.next')<CR>
+
+  " Go to previous error or warning
+  nnoremap [e <Cmd>call VSCodeNotify('editor.action.marker.prev')<CR>
+
+  " Code action
+  nmap <A-s> <Cmd>call VSCodeNotify('editor.action.quickFix')<CR>
+
+endif
 
 " searching
 Plug 'pchampio/loupe'
@@ -280,9 +317,9 @@ nnoremap <Plug>SpeedDatingFallbackUp <c-a>
 nnoremap <Plug>SpeedDatingFallbackDown <c-x>
 
 " Manually invoke speeddating in case switch didn't work
-nnoremap <c-a> :if !switch#Switch() <bar>
+nnoremap <silent><c-a> :if !switch#Switch() <bar>
       \ call speeddating#increment(v:count1) <bar> endif <cr>
-nnoremap <c-x> :if !switch#Switch({'reverse': 1}) <bar>
+nnoremap <silent><c-x> :if !switch#Switch({'reverse': 1}) <bar>
       \ call speeddating#increment(-v:count1) <bar> endif <cr>
 
 " move function arguments
@@ -634,9 +671,11 @@ nnoremap <silent> <Down> :cnext<CR>
 nnoremap <silent> <Left> :cpfile<CR>
 nnoremap <silent> <Right> :cnfile<CR>
 
-" navigate between errors
-nnoremap <silent> ]e :lbelow<cr>
-nnoremap <silent> [e :labove<cr>
+if !exists('g:vscode')
+  " navigate between errors
+  nnoremap <silent> ]e :lbelow<cr>
+  nnoremap <silent> [e :labove<cr>
+endif
 
 "Moving lines
 nnoremap <A-k> :m .-2<CR>==
@@ -654,7 +693,12 @@ noremap L g_
 nnoremap c "_c
 nnoremap C "_C
 
-nnoremap <leader><leader> :w!<cr>
+if !exists('g:vscode')
+  nnoremap <leader><leader> :w!<cr>
+else
+  nnoremap <leader><leader> <Cmd>call VSCodeCall('workbench.action.files.save')<CR>
+endif
+
 
 vnoremap <silent><expr> ++ VMATH_YankAndAnalyse()
 
