@@ -3,14 +3,16 @@
 [color]
   ui = auto
 [core]
-	excludesfile = /lium/home/pchampi/.gitignore
+	excludesfile = ~/.gitignore
   autocrlf = input
 	pager = less -FRSX
 [commit]
-	template = /lium/home/pchampi/.gitmessage
+	template = ~/.gitmessage
+	gpgsign = true
 [user]
 	name = pchampio
   email = prr.champion@gmail.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEHiM31gF5XvQxtM9ZZmk4ZgE/YCasyOzVEazIgTbrWj
 [github]
 	user = Drakirus
 [pager]
@@ -30,3 +32,5 @@
 	keepBackup = false
 [credential]
 	helper = store
+[gpg]
+	format = ssh

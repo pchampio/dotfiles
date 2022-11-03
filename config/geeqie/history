@@ -1,16 +1,16 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Pictures/ski/day4/tri"
-"/home/drakirus/Pictures/ski/day6"
-"/home/drakirus/Pictures/midline arnage"
+"/home/drakirus/lab/python_speech_features"
+"/home/drakirus/thesis/chapt1_audio/figures/src"
+"/run/media/drakirus/disk/DCIM/104_FUJI"
+"/run/media/drakirus/0123-4567/DCIM/107_FUJI"
+"/tmp"
+"/tmp/app_extract/dist"
 "/home/drakirus/Pictures"
-"/home/drakirus/Pictures/Pierre"
-"/home/drakirus/Pictures/donon"
-"/home/drakirus/Pictures/epinal"
-"/run/user/1000/gvfs/gphoto2:host=04cb_USB_PTP_Camera_59353437373418082692E330610913/SLOT 1/DCIM/107_FUJI"
-"/home/drakirus/Pictures/font_2022"
-"/home/drakirus/Pictures/font_2022/tri/darktable_exported"
+"/home/drakirus/Downloads"
+"/home/drakirus/Downloads/Expo Photos MULTISPEECH STIP"
+"/home/drakirus/Downloads/pdftoimage/Dossier d'inscription en doctorat 2022-2023"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/home/pchampio/resources/inria/articles/unknown"
+".[path]/run/media/drakirus/disk/DCIM/104_FUJI"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"
@@ -41,5 +41,6 @@
 "/home/pchampio/Pictures/skii/day_6/101PENTX/tri"
 "/home/pchampio/Pictures"
 "/run/media/pchampio/28A9-83CB/DCIM/101A____/Escalade Maron fin Mai 2020"
+"/home/drakirus/Pictures"
 
 #end
