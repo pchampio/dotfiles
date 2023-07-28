@@ -177,14 +177,17 @@ EOF
     echo " Usage example of non http port fowrarding:"
     echo "  rsync -avzh --progress -e 'ssh -p 2222' /PATH_FILE_SEND $(whoami)@prr.re:~/OUT --dry-run"
   else
-    echo -n " Start python3 http server on $port [default Yes]: "
-    read inputs
-    if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]
-    then
-      echo " Not starting the http server"
-    else
-      echo " Starting http server on port $port.."
-      python3 -m http.server $port &
+
+    if ! lsof -Pi :$port -sTCP:LISTEN -t >/dev/null; then
+      echo -n " Start python3 http server on $port [default Yes]: "
+      read inputs
+      if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]
+      then
+        echo " Not starting the http server"
+      else
+        echo " Starting http server on port $port.."
+        python3 -m http.server $port &
+      fi
     fi
 
     echo " --> https://$proxmeport.proxme.prr.re/"

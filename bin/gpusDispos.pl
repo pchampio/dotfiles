@@ -51,19 +51,19 @@ foreach(@out){
 			}
 		}
 
-			
+
 	}else{
 		push(@nodes, $node);
 	}
 	$state = $infos[3];
 	$cpus = $infos[7];
-	
+
 	$cpus = sprintf("%d", $cpus/scalar(@nodes));
 
 	$memu = $infos[8];
 
 	next if($l =~ /ReqNodeNotAvail/);
-	
+
 	next if($l =~/launch failed/);
 
 	if($memu =~ /^(.*)M$/){
@@ -74,7 +74,7 @@ foreach(@out){
 	}else{
 		die "Strange $memu\n";
 	}
-	next if ($state ne "R");	
+	next if ($state ne "R");
 	$nb=-1;
 	if($ginfo =~ /:([0-9]+)$/){
 		$nb = $1;
@@ -116,7 +116,7 @@ foreach(@out){
 			@prev = split("/", $umems{$node});
 			$umems{$node}= ($prev[0]+$memu)."/0";
 		}
-		
+
 		$nbUsed+=$nb;
 	}
 
@@ -142,7 +142,7 @@ foreach(@out){
 	@iinfos = split(/\,/, $memg);
 	$memgpu{$node}="";
 	for($j=1; $j<scalar(@iinfos); $j++){
-		$memgpu{$node}.=$iinfos[$j].",";	
+		$memgpu{$node}.=$iinfos[$j].",";
 	}
 	chop($memgpu{$node});
 	$memgpu{$node} =~ s/gpu//g;
@@ -194,8 +194,8 @@ foreach(@out){
 	$val = sprintf("%3d", $val);
 
         $umems{$node}=$val."/".$memu;
-        
-	
+
+
 }
 $tot = 0;
 foreach(keys %gpui){
@@ -324,7 +324,7 @@ sub afficheDetails{
 			}
 		}
 		print "|";
-		
+
 		print printNCars($nodeLen, $node);
 		print "|";
 
@@ -334,15 +334,15 @@ sub afficheDetails{
 		$infos = $gpui{$node};
 		@ii = split(/\//, $infos);
 		$nbG=$ii[0];
-		
+
 		print printNCars($lenNb, $nbG);
 		print "|";
 		$nbU = 0;
 		$nbU = $gpus{$node} if(exists($gpus{$node}));
-		
+
 		print printNCars($lenNb, $nbU);
 		print "|";
-		
+
 		$free=$nbG-$nbU;
 		print printNCars($lenNb, $free);
 		print "|";
@@ -441,4 +441,3 @@ sub printSepL{
         print printNsep($nSep, "-");
         print "|\n";
 }
-
