@@ -27,7 +27,7 @@ source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
 source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 source $ZSH/custom/plugins/zsh-autoquoter/zsh-autoquoter.zsh
-ZAQ_PREFIXES=('git commit( [^ ]##)# -[^ -]#m' 'ssh( [^ ]##)# [^ -][^ ]#')
+ZAQ_PREFIXES=('git commit( [^ ]##)# -[^ -]#m')
 ZSH_HIGHLIGHT_HIGHLIGHTERS+=(zaq)
 
 export BROWSER=/bin/firefox

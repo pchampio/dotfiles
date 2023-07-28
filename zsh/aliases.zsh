@@ -1,8 +1,4 @@
 alias cls="clear && ls"
-alias gs="gdstst"
-alias gau="git add -u"
-alias gpatch="git format-patch -1 HEAD"
-alias git-size="git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | awk '/^blob/ {print substr($0,6)}' | sort --numeric-sort --key=2 | cut --complement --characters=13-40 | numfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=neares"
 # alias e="thunar &> /dev/null &"
 # alias e="thunarCmd > /dev/null 2>&1"
 alias e="xdg-open ."
@@ -11,7 +7,7 @@ alias q="exit"
 alias dc="docker-compose"
 alias size="du -h --max-depth=1 . | sort -h"
 alias http_serv="python3 -m http.server"
-alias sshuttle="sshuttle --dns -vvr drakirus@drakirus.com 0/0"
+alias sshuttle="sshuttle --dns -vvr drakirus@prr.re 0/0"
 alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
 
 # NAS
@@ -22,9 +18,9 @@ alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.ex
 alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.16.146:/volume1/Share /run/mount/NAS/"
 alias unas="sudo umount -l /run/mount/NAS"
 
-# drakirus.com
-alias weeb_send="rsync -avPh --delete ~/Weeb/ drakirus@drakirus.com:APP/data/www/gif --rsh='ssh -p2242' "
-alias resume_send="test -f ~/Downloads/resume.pdf && mv ~/Downloads/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@drakirus.com:APP/data/www/resume --rsh='ssh -p2242'"
+# prr.re
+alias weeb_send="rsync -avPh --delete ~/Weeb/ drakirus@prr.re:APP/data/www/gif --rsh='ssh -p2242' "
+alias resume_send="test -f ~/Downloads/resume.pdf && mv ~/Downloads/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@prr.re:APP/data/www/resume --rsh='ssh -p2242'"
 
 alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
@@ -65,7 +61,7 @@ alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -rr -x --exclude .
 alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
 
 # ssh
-alias drak="ssh drakirus@drakirus.com -p 2242"
+alias drak="ssh drakirus@prr.re -p 2242"
 alias atal="env TERM=tmux-256color ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
 alias g5k-all="env TERM=tmux-256color ssh -t pchampion@access.grid5000.fr ssh -t nancy "
@@ -94,7 +90,7 @@ alias icat="kitty +kitten icat"
 
 # lychee photos
 # see ./abbreviations.zsh
-alias lychee_import="ssh -t drakirus@drakirus.com -p 2242 'cd APP && make lychee-import'"
+alias lychee_import="ssh -t drakirus@prr.re -p 2242 'cd APP && make lychee-import'"
 
 ############
 #  Editor  #

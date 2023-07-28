@@ -76,10 +76,12 @@ else
 
   """ Navigation / Go to (g)
   " Go to next error or warning
-  nnoremap ]e <Cmd>call VSCodeNotify('editor.action.marker.next')<CR>
+  " nnoremap ]e <Cmd>call VSCodeNotify('editor.action.marker.next')<CR>
+  nnoremap ]e <Cmd>call VSCodeNotify('go-to-next-error.next.error')<CR>
 
   " Go to previous error or warning
   nnoremap [e <Cmd>call VSCodeNotify('editor.action.marker.prev')<CR>
+  " nnoremap [e <Cmd>call VSCodeNotify('go-to-next-error.next.error')<CR>
 
   " Code action
   nmap <A-s> <Cmd>call VSCodeNotify('editor.action.quickFix')<CR>
@@ -131,60 +133,45 @@ autocmd  FileType fzf set  noshowmode noruler norelativenumber nonumber | echo "
   \| autocmd BufLeave <buffer> set  showmode ruler relativenumber number
 autocmd! User FzfStatusLine setlocal statusline=%7*\ FZF\ %*%4*
 
-" An asynchronous fuzzy finder
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension'}
-nnoremap g\ :Leaderf --bottom --reverse --nameOnly rg -i <CR>
-let g:Lf_WindowPosition = 'popup'
-let g:Lf_PopupShowStatusline = 1
-let g:Lf_CursorBlink = 0
-let g:Lf_IgnoreCurrentBufferName = 1
-let g:Lf_DefaultExternalTool = "rg"
-nnoremap <silent> <C-p> :Leaderf file --no-ignore<CR>
-let g:Lf_FollowLinks = 1
-let g:Lf_WorkingDirectoryMode = 'c'
-let g:Lf_CacheDirectory = expand('~/.cache')
-" let g:Lf_UseCache = 0
-let g:Lf_UseVersionControlTool = 0
-let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', 'requirements', 'pubspec.yaml']
-let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2" }
-let g:Lf_StlColorscheme = 'one'
-let g:Lf_PreviewCode = 1
-let g:Lf_PreviewInPopup = 1
-let g:Lf_PreviewHorizontalPosition = 'center'
-let g:Lf_PreviewResult = { 'Rg': 1 }
-let g:Lf_StlPalette = {
-    \ 'stlName':     {'guifg': '#F2F0EB', 'guibg': '#AF0000'},
-    \ 'stlBlank':    {'guifg': '#586E75', 'guibg': '#eee8d5'},
-    \ 'stlCwd':      {'guifg': '#586E75', 'guibg': '#eee8d5'},
-    \ 'stlLineInfo': {'guifg': '#F9E4CC', 'guibg': '#586E75'},
-    \ 'stlTotal':    {'guifg': '#F9E4CC', 'guibg': '#586E75'}
-    \}
-let g:Lf_WildIgnore = {
-    \ 'dir': ['.git', '.svn', '.hg', '.gitlab', 'node_modules', '*egg-info'],
-    \ 'file': ['*.exe', '*.so', '*.tar', '*.gz', '*.tar', '*.gz', '*.git', '*.o', '*.svn', '*.swp', '*.pyc'],
-    \}
-let g:Lf_CommandMap = {'<C-X>': ['<C-i>'], '<C-]>': ['<C-s>'], '<C-S>': ['<C-z>'], '<Home>': ['<C-a>'], '<End>': ['<C-e>']}
-" Solarized light theme for LeaderF popup window
-let g:Lf_PopupPalette = {'light': {
-    \ 'Lf_hl_popup_window': {'guibg': '#f6f0dd', 'guifg': '#586e75'},
-    \ 'Lf_hl_popup_inputText': {'guibg': '#eee8d5', 'guifg': '#657b83'},
-    \ 'Lf_hl_match':    {'guifg': '#DC322F'},
-    \ 'Lf_hl_matchRefine':    {'guifg': '#268BD2'},
-    \ 'Lf_hl_cursorline': {'guifg': '#586E75'},
-    \ 'Lf_hl_popup_inputMode': {'guifg': '#F2F0EB', 'guibg': '#AF0000'},
-    \ 'Lf_hl_popup_total': {'guifg': '#F9E4CC', 'guibg': '#586E75'},
-    \ 'Lf_hl_popup_lineInfo': {'guifg': '#F9E4CC', 'guibg': '#839496'},
-    \ 'Lf_hl_popup_cwd': {'guifg': '#586E75', 'guibg': '#eee8d5'},
-    \ 'Lf_hl_popup_fullPathMode': {'guifg': '#3E4452', 'guibg': '#93a1a1'},
-    \ 'Lf_hl_popup_fuzzyMode': {'guifg': '#3E4452', 'guibg': '#b58900'},
-    \ 'Lf_hl_popup_nameOnlyMode': {'guifg': '#3E4452', 'guibg': '#859900'},
-    \ 'Lf_hl_popup_regexMode': {'guifg': '#3E4452', 'guibg': '#cb4b16'},
-    \ 'Lf_hl_popup_category': {'guifg': '#3E4452', 'guibg': '#839496'},
-    \ 'Lf_hl_popup_blank': {'guibg': '#eee8d5'},
-    \}}
+" Fuzzy finder
+Plug 'ctrlpvim/ctrlp.vim'
+" Checkout yoink mapping
+let g:ctrlp_map=''
+" let g:ctrlp_dotfiles = 1
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("v")': ['<c-v>', '<RightMouse>', '<c-s>'],
+    \ 'AcceptSelection("h")': ['<c-x>', '<c-cr>', '<c-i>'],
+    \ 'PrtCurStart()':        ['<space>', '<c-a>'],
+\ }
+if executable('rg')
+  set grepprg=rg\ --color=never
+  let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+  let g:ctrlp_use_caching = 0
+endif
+" Ctrlp Style defined in autoload
+" let g:ctrlp_status_func = {
+  " \ 'main': 'CtrlP_main_status',
+  " \ 'prog': 'CtrlP_progress_status'
+  " \}
 
-Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
-" let g:clap_theme = 'solarized_light'
+let g:ctrlp_abbrev = {
+    \ 'gmode': 't',
+    \ 'abbrevs': [
+        \ {
+        \ 'pattern': ';',
+        \ 'expanded': ':',
+        \ 'mode': 'pfrz',
+        \ },
+        \ ]
+    \ }
+let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt']
+" let g:ctrlp_default_input = 1
+autocmd StdinReadPre * let g:isReadingFromStdin = 1
+autocmd VimEnter * if (argc() && isdirectory(argv()[0]) || !argc()) && (isdirectory(".git") || filereadable(".gitignore")) && !exists('g:isReadingFromStdin') | execute' CtrlP' | endif
+
+" sudo apt install cmake python-dev libboost-all-dev
+Plug 'ompugao/cpsm', { 'do': 'env PY3=ON ./install.sh',  'branch': 'feature/remove_boost_dependency'  }
+let g:ctrlp_match_func = { 'match': 'cpsm#CtrlPMatch' }
 
 " Syntax highlight
 " A collection of +70 language packs for Vim
@@ -360,6 +347,8 @@ nmap [y <plug>(YoinkRotateBack)
 nmap ]y <plug>(YoinkRotateForward)
 nmap y <plug>(YoinkYankPreserveCursorPosition)
 xmap y <plug>(YoinkYankPreserveCursorPosition)
+" Ctrlp fuzzy finder w/ yoink
+nmap <expr> <c-p> yoink#isSwapping() ? '<plug>(YoinkPostPasteSwapForward)' : '<Plug>(ctrlp)'
 
 " replace with register
 Plug 'svermeulen/vim-subversive'
@@ -589,12 +578,12 @@ nnoremap <c-y> 5<c-y>
 let g:clipboard = {
       \ 'name': 'myClipboard',
       \     'copy': {
-      \         '+': 'env COPY_PROVIDERS=desktop clipboard-provider copy',
-      \         '*': 'env COPY_PROVIDERS=tmux clipboard-provider copy',
+      \         '+': 'env COPY_PROVIDERS=desktop /home/drakirus/dotfiles/bin/clipboard-provider copy',
+      \         '*': 'env COPY_PROVIDERS=tmux /home/drakirus/dotfiles/bin/clipboard-provider copy',
       \     },
       \     'paste': {
-      \         '+': 'env PASTE_PROVIDERS=desktop clipboard-provider paste',
-      \         '*': 'env PASTE_PROVIDERS=tmux clipboard-provider paste',
+      \         '+': 'env PASTE_PROVIDERS=desktop /home/drakirus/dotfiles/bin/clipboard-provider paste',
+      \         '*': 'env PASTE_PROVIDERS=tmux /home/drakirus/dotfiles/bin/clipboard-provider paste',
       \     },
       \ }
 set clipboard=unnamed   " to/from * by default (tmux only, not system), use + to access host/OSC-52 clipboard

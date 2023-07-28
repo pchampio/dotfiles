@@ -1,4 +1,4 @@
-global !p
+# global !p
 import gi
 import sys
 import os
@@ -51,8 +51,14 @@ def ImgImgur():
         return link
     except:
         return "ERR"
-endglobal
+# endglobal
 
-snippet img "image" iw
-{{`!p if not snip.c: snip.rv = ImgImgur()`|${1:image}|style="max-width:360px;max-height:380px;"}}
-endsnippet
+
+
+if __name__ == "__main__":
+    print(ImgImgur())
+
+
+# snippet img "image" iw
+# {{`!p if not snip.c: snip.rv = ImgImgur()`|${1:image}|style="max-width:360px;max-height:380px;"}}
+# endsnippet

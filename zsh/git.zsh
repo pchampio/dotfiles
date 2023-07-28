@@ -43,6 +43,10 @@ alias g='git'
 alias ga='git add'
 alias gaa='git add --all'
 alias gapa='git add --patch'
+alias gau="git add -u"
+alias gs="gdstst"
+alias gpatch="git format-patch -1 HEAD"
+alias git-size="git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | awk '/^blob/ {print substr($0,6)}' | sort --numeric-sort --key=2 | cut --complement --characters=13-40 | numfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=neares"
 
 alias gb='git branch'
 alias gba='git branch -a'
@@ -57,7 +61,7 @@ alias gbsg='git bisect good'
 alias gbsr='git bisect reset'
 alias gbss='git bisect start'
 
-alias gc='git commit -v'
+alias gc='ssh-add -L | grep -E ssh-ed25519 || ssh-add ~/.ssh/id_ed25519 && git commit -v'
 alias gc!='git commit -v --amend'
 alias gcn!='git commit -v --no-edit --amend'
 alias gca='git commit -v -a'

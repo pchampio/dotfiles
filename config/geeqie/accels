@@ -168,6 +168,7 @@
 ; (gtk_accel_path "<Actions>/MenuActions/SlideShowPause" "p")
 ; (gtk_accel_path "<Actions>/MenuActions/ConnectZoom300" "")
 ; (gtk_accel_path "<Actions>/MenuActions/HistogramChanB" "")
+; (gtk_accel_path "<Actions>/MenuActionsExternal/org.gnome.Evince.desktop" "")
 ; (gtk_accel_path "<Actions>/MenuActions/ExifWin" "<Primary>e")
 ; (gtk_accel_path "<Actions>/MenuActions/Zoom100" "z")
 ; (gtk_accel_path "<Actions>/MenuActions/OpenCollection" "o")
