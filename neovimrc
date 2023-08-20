@@ -298,7 +298,11 @@ require('lazy').setup({
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       require('luasnip.loaders.from_vscode').lazy_load()
-      local cmp_kinds = { Text = '  ', Method = '  ', Function = '  ', Constructor = '  ', Field = '  ', Variable = '  ', Class = '  ', Interface = '  ', Module = '  ', Property = '  ', Unit = '  ', Value = '  ', Enum = '  ', Keyword = '  ', Snippet = '  ', Color = '  ', File = '  ', Reference = '  ', Folder = '  ', EnumMember = '  ', Constant = '  ', Struct = '  ', Event = '  ', Operator = '  ', TypeParameter = '  ' }
+      local cmp_kinds = { Copilot = ' ', Text = '  ', Method = '  ', Function = '  ', Constructor = '  ',
+        Field = '  ', Variable = '  ', Class = '  ', Interface = '  ', Module = '  ', Property = '  ',
+        Unit = '  ', Value = '  ', Enum = '  ', Keyword = '  ', Snippet = '  ', Color = '  ',
+        File = '  ', Reference = '  ', Folder = '  ', EnumMember = '  ', Constant = '  ', Struct = '  ',
+        Event = '  ', Operator = '  ', TypeParameter = '  ' }
       local border_opts = { border = "rounded", winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None" }
       luasnip.config.setup {}
       cmp.setup {
@@ -327,6 +331,7 @@ require('lazy').setup({
           end, { "i", "s" }),
         },
         sources = {
+          { name = "copilot" },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'buffer' },
@@ -345,10 +350,25 @@ require('lazy').setup({
     "zbirenbaum/copilot.lua",
     event = { "CursorHold", "CursorHoldI" },
     config = function()
-      require("copilot").setup({})
+      require("copilot").setup({
+        suggestion = { enabled = false },
+        panel = { enabled = false },
+        -- suggestion = {
+        --   enabled = true,
+        --   auto_trigger = false,
+        --   debounce = 75,
+        --   keymap = {
+        --     accept = "<c-e>",
+        --     accept_word = false,
+        --     accept_line = false,
+        --     next = "<M-]>",
+        --     prev = "<M-[>",
+        --     dismiss = "<C-]>",
+        --   },
+        -- },
+      })
     end,
   },
-
   {
     -- Browse and preview json files
     "gennaro-tedesco/nvim-jqx",
