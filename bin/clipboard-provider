@@ -13,22 +13,22 @@
 : ${TTY:=`(tty || tmux display-message -p '#{pane_tty}') 2>/dev/null | grep /dev/`}
 
 main() {
-    declare p status=99
+  declare p status=99
 
-    case $1 in
-        copy)
-            slurp
-            for p in $COPY_PROVIDERS; do
-                $p-provider copy && status=0
-            done ;;
+   case $1 in
+    copy)
+      slurp
+      for p in $COPY_PROVIDERS; do
+        $p-provider copy && status=0
+      done ;;
 
-        paste)
-            for p in $PASTE_PROVIDERS; do
-                $p-provider paste && status=0 && break
-            done ;;
-    esac
+    paste)
+      for p in $PASTE_PROVIDERS; do
+        $p-provider paste && status=0 && break
+      done ;;
+  esac
 
-    exit $status
+  exit $status
 }
 
 # N.B. buffer is global for simplicity
@@ -36,46 +36,46 @@ slurp() { buffer=$(base64); }
 spit() { base64 --decode <<<"$buffer"; }
 
 tmux-provider() {
-    if [[ -z "$TMUX" ]]; then
-      xclip-provider "$@"
-      return
-    fi
-    case $1 in
-        copy) spit | tmux load-buffer - ;;
-        paste)
-          tmux save-buffer - ;;
-    esac
+  [[ -n $TMUX ]] || return
+  case $1 in
+    copy) spit | tmux load-buffer - ;;
+    paste) tmux save-buffer - ;;
+  esac
 }
 
 desktop-provider() {
-    xclip-provider "$@" || osc52-provider "$@"
+  pasteboard-provider "$@" || wayland-provider "$@" || xclip-provider "$@" || osc52-provider "$@"
 }
 
-wl-clipboard-provider() {
-    [[ -n $WAYLAND_DISPLAY ]] || return
-    case $1 in
-        copy) type -P wl-copy &>/dev/null && spit | wl-copy --type=text/plain ;;
-        paste) type -P wl-paste &>/dev/null && wl-paste --no-newline ;;
-    esac
+pasteboard-provider() {
+  case $1 in
+    copy) type -P pbcopy &>/dev/null && spit | pbcopy ;;
+    paste) type -P pbpaste &>/dev/null && pbpaste ;;
+  esac
+}
+
+wayland-provider() {
+  [[ -n $WAYLAND_DISPLAY ]] || return
+  case $1 in
+    copy) type -P wl-copy &>/dev/null && spit | wl-copy --trim-newline --type=text/plain ;;
+    paste) type -P wl-paste &>/dev/null && wl-paste ;;
+  esac
 }
 
 xclip-provider() {
-    [[ -n $DISPLAY ]] && type -P xclip &>/dev/null || return
-    case $1 in
-        copy)
-          spit | xclip -i -selection clipboard ;;
-        paste)
-            xclip -o -selection clipboard
-          ;;
-    esac
+  [[ -n $DISPLAY ]] && type -P xclip &>/dev/null && ! xdpyinfo | grep -q Apple || return
+  case $1 in
+    copy) spit | xclip -i -selection clipboard ;;
+    paste) xclip -o -selection clipboard ;;
+  esac
 }
 
 osc52-provider() {
-    [[ -n "$TTY" ]] || return
-    case $1 in
-        copy) printf $'\e]52;c;%s\a' "$buffer" > "$TTY" ;;
-        paste) return 1 ;;
-    esac
+  [[ -n "$TTY" ]] || return
+  case $1 in
+    copy) printf $'\e]52;c;%s\a' "$buffer" > "$TTY" ;;
+    paste) return 1 ;;
+  esac
 }
 
 main "$@"

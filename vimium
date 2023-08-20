@@ -1,7 +1,0 @@
-# Insert your preferred key mappings here.
-
-map  <a-l> nextTab
-map  <a-h> previousTab
-
-map <c-o> goBack
-map <c-i> goForward

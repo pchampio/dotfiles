@@ -1,15 +1,15 @@
 #History lists
 
 [path_list]
-"/home/drakirus/Pictures"
-"/run/media/drakirus/0123-4567/DCIM/109_FUJI/tri/darktable_exported"
-"/home/drakirus/lab/anonymization_metrics/examples/output"
-"/home/drakirus/Downloads/darktable_exported"
-"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/pchampio"
-"/run/media/drakirus/0123-4567/DCIM/109_FUJI"
-"/home/drakirus/Pictures/font-2023"
 "/tmp"
 "/tmp/landez/combined_local/13/4126"
+"/run/media/drakirus/0123-4567/DCIM/109_FUJI"
+"/run/media/drakirus/0123-4567/DCIM/107_FUJI/second"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/gif"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo"
+"/home/drakirus/.local/share/nvim/lazy/smartyank.nvim"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/darktable_exported"
 "/home/drakirus/Downloads"
 
 [sort_manager]
@@ -24,7 +24,7 @@
 "info_includes_exif[INT]:1"
 
 [bookmarks]
-".[path]/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/pchampio/coree=xt3/second/tri"
+".[path]/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo"
 "Rép. perso[path]/home/drakirus"
 "Bureau[path]/home/drakirus/Desktop"
 "Collections[path]/home/drakirus/.local/share/geeqie/collections"
@@ -42,17 +42,19 @@
 "/home/pchampio/Pictures"
 "/run/media/pchampio/28A9-83CB/DCIM/101A____/Escalade Maron fin Mai 2020"
 "/home/drakirus/Pictures"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/gif"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri"
 
 [image_list]
-"/home/drakirus/Pictures/Screenshot_20211112_165227.png"
-"/run/media/drakirus/0123-4567/DCIM/109_FUJI/tri/darktable_exported/DSCF9152.jpg"
-"/home/drakirus/lab/anonymization_metrics/examples/output/figure_cllr_scores_8.png"
-"/home/drakirus/Downloads/darktable_exported/DALL·E 2023-03-05 19.34.31 - From non-anonymized to anonymized speech signal, logo, digital art (1)_02.jpg"
-"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/pchampio/doddington.png"
-"/run/media/drakirus/0123-4567/DCIM/109_FUJI/DSCF9478.JPG"
-"/home/drakirus/Pictures/font-2023/DSCF9691.JPG"
 "/tmp/MULTISPEECH_Inria-0392-001-photoFStucin_3000x2400.webp"
 "/tmp/landez/combined_local/13/4126/5159.png"
-"/home/drakirus/Downloads/words_date_plot(10).png"
+"/run/media/drakirus/0123-4567/DCIM/109_FUJI/DSCF9692.JPG"
+"/run/media/drakirus/0123-4567/DCIM/107_FUJI/second/DSCF8664.JPG"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/gif/DSCF0309.JPG"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/DSCF1222.JPG"
+"/home/drakirus/.local/share/nvim/lazy/smartyank.nvim/fzf-lua-tmux.png"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/DSCF0022.JPG"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/darktable_exported/DSCF9921_01.jpg"
+"/home/drakirus/Downloads/unnamed.png"
 
 #end

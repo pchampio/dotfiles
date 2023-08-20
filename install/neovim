@@ -5,9 +5,9 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 dir=~/dotfiles
 
-explain "Download latest nvim app"
+explain "Download latest nvim"
 cd /tmp
-wget https://github.com/neovim/neovim/releases/download/v0.5.1/nvim.appimage --output-document nvim
+wget https://github.com/neovim/neovim/releases/download/stable/nvim.appimage --output-document nvim
 chmod +x nvim
 read -p "move nvim in $HOME/dotfiles/bin [y/n]: " -n 1 -r
 echo ""    # (optional) move to a new line
@@ -16,3 +16,55 @@ then
   mv nvim $HOME/dotfiles/bin/
 fi
 cd -
+
+explain "pynvim Install"
+python3 -m pip install --user --upgrade pynvim
+
+if [ ! -e $HOME/.vim/spell ]; then
+  explain "Spelling dictionary"
+  mkdir -p ~/.vim/spell
+  cd ~/.vim/spell
+  wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.spl
+  wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.sug
+  wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.spl
+  wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.sug
+  wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.sug
+  wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.spl
+fi
+
+mkdir -p ~/.config
+mkdir -p ~/.config/nvim
+mkdir -p ~/.vimundo
+
+tell ln -sf ~/.neovimrc ~/.config/nvim/init.lua
+
+explain "RipGrep Install"
+cd /tmp
+curl -LO 'https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz'
+tar xf ripgrep-*.tar.gz
+cp ripgrep-*/rg $HOME/dotfiles/bin/rg
+rm ripgrep-*.tar.gz
+cd -
+
+
+explain "FD Install"
+cd /tmp
+if [[ `uname` == 'Linux' ]]; then
+  URL="https://github.com/sharkdp/fd/releases/download/v7.2.0/fd-v7.2.0-x86_64-unknown-linux-gnu.tar.gz"
+elif [[ `uname` == 'Darwin' ]]; then
+  URL="https://github.com/sharkdp/fd/releases/download/v7.2.0/fd-v7.2.0-x86_64-apple-darwin.tar.gz"
+fi
+wget -O fd.tar.gz "$URL"
+
+mkdir -p fd
+tar xf fd.tar.gz -C fd --strip-components=1
+ls fd
+
+cp ./fd/fd ~/dotfiles/bin/fd
+
+rm fd.tar.gz
+rm -rf ./fd
+
+explain "FZF Install"
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
