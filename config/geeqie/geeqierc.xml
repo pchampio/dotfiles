@@ -104,7 +104,7 @@
             thumbnails.use_color_management = "false" 
             thumbnails.use_ft_metadata = "true" 
             thumbnails.collection_preview = "20" 
-            file_sort.method = "8" 
+            file_sort.method = "7" 
             file_sort.ascending = "true" 
             file_sort.case_sensitive = "false" 
             file_sort.natural = "false" 
@@ -443,7 +443,7 @@
         advanced_exif_window.h = "600" 
 
         animate = "false" >
-        <bar enabled = "true" width = "2862" >
+        <bar enabled = "true" width = "2799" >
             <clear/>
             <pane_histogram id = "histogram" title = "Linear Histogram on RGB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />

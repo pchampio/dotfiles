@@ -1,7 +1,6 @@
 #History lists
 
 [path_list]
-"/tmp"
 "/tmp/landez/combined_local/13/4126"
 "/run/media/drakirus/0123-4567/DCIM/109_FUJI"
 "/run/media/drakirus/0123-4567/DCIM/107_FUJI/second"
@@ -9,8 +8,9 @@
 "/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo"
 "/home/drakirus/.local/share/nvim/lazy/smartyank.nvim"
 "/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri"
-"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/darktable_exported"
 "/home/drakirus/Downloads"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/darktable_exported"
+"/home/drakirus/Pictures/50ans V&C"
 
 [sort_manager]
 ".[path]/home/drakirus/Images/asup"
@@ -46,7 +46,6 @@
 "/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri"
 
 [image_list]
-"/tmp/MULTISPEECH_Inria-0392-001-photoFStucin_3000x2400.webp"
 "/tmp/landez/combined_local/13/4126/5159.png"
 "/run/media/drakirus/0123-4567/DCIM/109_FUJI/DSCF9692.JPG"
 "/run/media/drakirus/0123-4567/DCIM/107_FUJI/second/DSCF8664.JPG"
@@ -54,7 +53,8 @@
 "/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/DSCF1222.JPG"
 "/home/drakirus/.local/share/nvim/lazy/smartyank.nvim/fzf-lua-tmux.png"
 "/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/DSCF0022.JPG"
-"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/darktable_exported/DSCF9921_01.jpg"
 "/home/drakirus/Downloads/unnamed.png"
+"/run/media/drakirus/69b24d87-fdc1-46e7-b579-1fde87f1d41f/HRP_photo/tri/darktable_exported/DSCF9851.jpg"
+"/home/drakirus/Pictures/50ans V&C/DSCF1927.JPG"
 
 #end

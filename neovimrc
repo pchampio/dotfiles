@@ -841,7 +841,7 @@ require('lazy').setup({
     build = ":UpdateRemotePlugins",
     dependencies = {
       "sharkdp/fd",
-      { "ompugao/cpsm",          build = "PY3=ON bash install.sh" },
+      { "ompugao/cpsm",          build = "PY3=ON bash install.sh", branch = 'feature/remove_boost_dependency'},
       { "romgrk/fzy-lua-native", build = "make" },
       'ryanoasis/vim-devicons',
       'https://git.prr.re/Drakirus/my_wilder_config.nvim',
@@ -850,6 +850,16 @@ require('lazy').setup({
       require("my_wilder_config")
     end,
 
+  },
+
+  {
+    "roobert/f-string-toggle.nvim",
+    ft = "python",
+    config = function()
+      require("f-string-toggle").setup({
+        key_binding = "<leader>f"
+      })
+    end
   },
 
   {
@@ -964,7 +974,7 @@ require('lazy').setup({
     keys = {
       { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = '[?] Find recently opened files' },
       { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = 'Search [G]it [F]iles' },
-      { '<leader>sp', function() require('telescope.builtin').find_files() end, desc = '[S]earch Files' },
+      { '<c-p>', function() require('telescope.builtin').find_files() end, desc = '[S]earch Files' },
       { '<leader>sh', function() require('telescope.builtin').help_tags() end, desc = '[S]earch [H]elp' },
       { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = '[S]earch current [W]ord' },
       { '<leader>sg', function() require('telescope.builtin').live_grep() end, desc = '[S]earch by [G]rep' },
@@ -979,6 +989,12 @@ require('lazy').setup({
     config = function()
       local telescope = require('telescope')
       local actions = require('telescope.actions')
+      score_positions = function(positions)
+        if not positions or #positions == 0 then return -1 end
+        local first, last = positions[1], positions[#positions]
+        local cutoff = H.get_config().cutoff
+        return cutoff * math.min(last - first + 1, cutoff) + math.min(first, cutoff)
+      end
       telescope.setup({
         extensions = {
           undo = {
@@ -997,6 +1013,22 @@ require('lazy').setup({
           },
         },
         defaults = {
+          file_sorter = function(opts)
+            opts = opts or {}
+            return require('telescope.sorters').Sorter:new({
+              start = function(self, prompt)
+                -- Use 'smart case': insensitive if `prompt` is lowercase
+                self.case_sensitive = prompt ~= prompt:lower()
+              end,
+
+              scoring_function = function(self, prompt, line)
+                line = self.case_sensitive and line or line:lower()
+                -- print(vim.fn['cpsm#CtrlPMatch']({"tea", "four", "fur", "furfur"}, "fur", 100, "filename-only", 1, "", 0) )
+                -- vim.fn['cpsm#CtrlPMatch'](line)
+                vim.notify(line)
+              end,
+            })
+          end,
           mappings = {
             i = {
               ["<ESC>"] = actions.close,
@@ -1051,7 +1083,7 @@ vim.o.shada = "!,'1,f0,h,s100"
 -- Set the shadafile option to the specified path
 vim.o.shadafile = vim.fn.expand('~/.vim/shada')
 
-vim.o.noswapfile = true
+vim.api.nvim_command("set noswapfile")
 
 -- Case-insensitive searching UNLESS \C or capital in search
 vim.o.ignorecase = true
