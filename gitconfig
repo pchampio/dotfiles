@@ -8,6 +8,7 @@
 	pager = less -FRSX
 [commit]
 	template = /home/pchampio/.gitmessage
+	gpgsign = false
 [user]
 	name = pchampio
   email = prr.champion@gmail.com
