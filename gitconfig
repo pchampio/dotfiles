@@ -3,12 +3,12 @@
 [color]
   ui = auto
 [core]
-	excludesfile = /home/pchampio/.gitignore
+	excludesfile = ~/.gitignore
   autocrlf = input
 	pager = less -FRSX
 [commit]
-	template = /home/pchampio/.gitmessage
-	gpgsign = false
+	template = ~/.gitmessage
+	gpgsign = true
 [user]
 	name = pchampio
   email = prr.champion@gmail.com

@@ -3,4 +3,4 @@
 /bin/rg
 /bin/mosh
 /bin/fd
-bin/nvim-linux64
+bin/nvim-linux64*
