@@ -4,7 +4,6 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-
 rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
@@ -26,11 +25,5 @@ explain "Installation de zsh-completions"
 explain "Installation de zsh-autoquoter"
   tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
 
-sudo vim /etc/passwd
+chsh -s $(which zsh)
 success "Success"
-
-read -r -p "Install the Theme ? [y/N] " response
-if [ $response = "y" ];
-then
-  $HOME/dotfiles/install/dotfiles
-fi

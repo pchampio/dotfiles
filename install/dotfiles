@@ -21,12 +21,10 @@ for file in $files; do
 done
 
 explain "Create symlink for files config"
-mkdir ~/.vim
 mkdir ~/.config/nvim
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
-tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
-# tell cp -f --recursive --symbolic-link $dir/jupyter/* ~/.jupyter/
+# tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
 
 explain "Symlink nvim to vim"
 tell ln -sf ~/.vim ~/.config/nvim
@@ -98,16 +96,12 @@ screen-256color|tmux with 256 colors,
 	E0=\E(B, S0=\E(%p1%c, Se=\E[2 q, Ss=\E[%p1%d q, TS=\E]0;,
 EOF
 
-explain "Git config"
-git config github.user Drakirus
-git config --global core.excludesfile ~/.gitignore
-git config --global commit.template ~/.gitmessage
-
-
 # tell cp -f --recursive --symbolic-link $dir/oh-my-zsh/* ~/.oh-my-zsh/
 [ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
 [ -d ~/.tmux-sessionist/ ] || git clone https://github.com/tmux-plugins/tmux-sessionist ~/.tmux-sessionist --depth=1
 [ -d ~/.tmux-ssh-split/ ] || git clone https://github.com/pschmitt/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
 [ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
+
+mkdir ~/lab/ || true
 
 zsh

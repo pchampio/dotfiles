@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+if [ ! -d "${HOME}/.zinit/bin" ];
+then
+  explain "Install zinit"
+  git clone https://github.com/zdharma/zinit.git ~/.zinit/bin;
+fi
+
+# Install nix
+if [ ! -d "/nix" ]; then
+  explain "Install nix"
+  sudo mkdir /nix
+  sudo chown "$USER" /nix
+  sh <(curl -L https://nixos.org/nix/install) --no-daemon
+fi
+source "$HOME/.nix-profile/etc/profile.d/nix.sh"
+
+mkdir -p ${HOME}/.config/nixpkgs
+
+if ! [ -x "$(command -v home-manager)" ]; then
+  explain "Install nix home-manager"
+  nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+  nix-channel --add https://github.com/rycee/home-manager/archive/master.tar.gz home-manager
+  nix-channel --update
+
+  nix-shell '<home-manager>' -A install
+fi
+
+
+explain "Create symlink for home.nix and includes"
+rm -rf ${HOME}/.config/nixpkgs/includes/*
+tell cp -f --recursive --symbolic-link `pwd`/$BASEDIR/../nix/includes/* ${HOME}/.config/nixpkgs/
+rm -rf ${HOME}/.config/nixpkgs/home.nix
+tell ln -sf `pwd`/$BASEDIR/../nix/user.nix ${HOME}/.config/nixpkgs/home.nix
+
+nix-channel --update
+
+tell home-manager switch
