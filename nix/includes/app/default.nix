@@ -4,9 +4,12 @@
   home.file.".config/fontconfig/conf.d/01-emoji.conf".source = ./google-chrome/01-emoji.conf;
 
   home.packages = (with pkgs; [
-      kitty
-      firefox
-      google-chrome
+    kitty
+    unzip
+    curl
+    wget
+    firefox
+    google-chrome
   ]);
 # Set environment variables
   home.sessionVariables = {

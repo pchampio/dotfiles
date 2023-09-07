@@ -3,10 +3,8 @@
 {
   home.packages = (with pkgs; [
     direnv
-    unzip
-    curl
-    wget
     zsh
+    tmux
   ]);
 
   programs.direnv.enable = true;
