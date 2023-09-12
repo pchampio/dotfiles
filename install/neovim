@@ -64,7 +64,3 @@ cp ./fd/fd ~/dotfiles/bin/fd
 
 rm fd.tar.gz
 rm -rf ./fd
-
-explain "FZF Install"
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install

@@ -103,6 +103,11 @@ zstyle :prompt:pure:prompt:success color green
 export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up,tab:down'
 
+# Nix
+if [[ -f ~/.nix-profile/etc/profile.d/nix.sh ]]; then
+  source ~/.nix-profile/etc/profile.d/nix.sh
+fi
+
 # Dart
 export DART_SDK="/opt/flutter/bin/cache/dart-sdk/bin"
 export PATH=${DART_SDK}:${PATH}

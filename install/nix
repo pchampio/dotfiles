@@ -18,7 +18,7 @@ if [ ! -d "/nix" ]; then
 fi
 source "$HOME/.nix-profile/etc/profile.d/nix.sh"
 
-mkdir -p ${HOME}/.config/nixpkgs
+mkdir -p ${HOME}/.config/home-manager
 
 if ! [ -x "$(command -v home-manager)" ]; then
   explain "Install nix home-manager"
@@ -30,12 +30,23 @@ if ! [ -x "$(command -v home-manager)" ]; then
 fi
 
 
+if [ ! -f ~/.config/nix/nix.conf ]; then
+  touch ~/.config/nix/nix.conf
+  echo 'experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
+fi
+
 explain "Create symlink for home.nix and includes"
-rm -rf ${HOME}/.config/nixpkgs/includes/*
-tell cp -f --recursive --symbolic-link `pwd`/$BASEDIR/../nix/includes/* ${HOME}/.config/nixpkgs/
-rm -rf ${HOME}/.config/nixpkgs/home.nix
-tell ln -sf `pwd`/$BASEDIR/../nix/user.nix ${HOME}/.config/nixpkgs/home.nix
+rm -rf ${HOME}/.config/home-manager/*
+mkdir -p ${HOME}/.config/home-manager/includes
+tell cp -f --recursive --symbolic-link `pwd`/$BASEDIR/../nix/includes/* ${HOME}/.config/home-manager/includes
+tell ln -sf `pwd`/$BASEDIR/../nix/user.nix ${HOME}/.config/home-manager/home.nix
 
 nix-channel --update
 
-tell home-manager switch
+cd $BASEDIR/../nix
+tell home-manager switch --flake '.'
+
+# export XDG_DATA_DIRS="$HOME/.nix-profile/share/:$XDG_DATA_DIRS"
+# sudo update-desktop-database
+
+explain "Run:  source ~/.nix-profile/etc/profile.d/nix.sh"

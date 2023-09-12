@@ -1,26 +1,25 @@
 { config, pkgs, ... }:
 
-let
-  isDir = path: builtins.pathExists (path + "/.");
+{
 
-  include = path:
-    if isDir path
-    then
-      let
-        content = builtins.readDir path;
-      in
-        map (n: import (path + ("/" + n)))
-            (builtins.filter (n: builtins.match ".*\\.nix" n != null || builtins.pathExists (path + ("/" + n + "/default.nix")))
-                    (builtins.attrNames content))
-    else
-    import path;
-in {
-  nixpkgs.config.allowUnfree = true;
+  imports = [
+    ./includes/development/default.nix
+    ./includes/shell/default.nix
+    ./includes/app/default.nix
+    ./includes/desktop/default.nix
+  ];
 
-  programs.home-manager = {
-    enable = true;
-    path = https://github.com/rycee/home-manager/archive/master.tar.gz;
-  };
+  # Home Manager needs a bit of information about you and the paths it should
+  # manage.
+  home.username = "pchampio";
+  home.homeDirectory = "/home/pchampio";
 
-  imports = include ./includes;
+
+  # Let Home Manager install and manage itself.
+  programs.home-manager.enable = true;
+
+  # You should not change this value, even if you update Home Manager. If you do
+  # want to update the value, then make sure to first check the Home Manager
+  # release notes.
+  home.stateVersion = "23.05"; # Please read the comment before changing.
 }

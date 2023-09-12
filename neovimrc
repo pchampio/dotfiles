@@ -1023,22 +1023,22 @@ require('lazy').setup({
           },
         },
         defaults = {
-          file_sorter = function(opts)
-            opts = opts or {}
-            return require('telescope.sorters').Sorter:new({
-              start = function(self, prompt)
-                -- Use 'smart case': insensitive if `prompt` is lowercase
-                self.case_sensitive = prompt ~= prompt:lower()
-              end,
+          -- file_sorter = function(opts)
+          --   opts = opts or {}
+          --   return require('telescope.sorters').Sorter:new({
+          --     start = function(self, prompt)
+          --       -- Use 'smart case': insensitive if `prompt` is lowercase
+          --       self.case_sensitive = prompt ~= prompt:lower()
+          --     end,
 
-              scoring_function = function(self, prompt, line)
-                line = self.case_sensitive and line or line:lower()
-                -- print(vim.fn['cpsm#CtrlPMatch']({"tea", "four", "fur", "furfur"}, "fur", 100, "filename-only", 1, "", 0) )
-                -- vim.fn['cpsm#CtrlPMatch'](line)
-                vim.notify(line)
-              end,
-            })
-          end,
+          --     scoring_function = function(self, prompt, line)
+          --       line = self.case_sensitive and line or line:lower()
+          --       -- print(vim.fn['cpsm#CtrlPMatch']({"tea", "four", "fur", "furfur"}, "fur", 100, "filename-only", 1, "", 0) )
+          --       -- vim.fn['cpsm#CtrlPMatch'](line)
+          --       vim.notify(line)
+          --     end,
+          --   })
+          -- end,
           mappings = {
             i = {
               ["<ESC>"] = actions.close,

@@ -25,5 +25,6 @@ explain "Installation de zsh-completions"
 explain "Installation de zsh-autoquoter"
   tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
 
-chsh -s $(which zsh)
+command -v zsh | sudo tee -a /etc/shells
+sudo chsh -s "$(command -v zsh)" "${USER}"
 success "Success"

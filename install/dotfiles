@@ -1,7 +1,7 @@
-#!/bin/sh
-
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
+
+mkdir -p ~/lab/ || true
 
 ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar"
 dir=~/dotfiles
@@ -102,6 +102,7 @@ EOF
 [ -d ~/.tmux-ssh-split/ ] || git clone https://github.com/pschmitt/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
 [ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
 
-mkdir ~/lab/ || true
-
-zsh
+explain "FZF Install"
+\rm -rf ~/.fzf || true
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --all

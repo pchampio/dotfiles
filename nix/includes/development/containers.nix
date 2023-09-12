@@ -3,7 +3,7 @@
 {
   home.packages = (with pkgs; [
     containerd
-    docker_compose
+    docker-compose
     runc
   ]);
 }
