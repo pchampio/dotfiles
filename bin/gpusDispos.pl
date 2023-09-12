@@ -27,6 +27,7 @@ foreach(@out){
 	$name = $infos[1];
 	$jname = $infos[2];
 	$ginfo = $infos[6];
+	$ginfo =~ s/\(S:\d+(?:-\d+)?\)//;
 	$node = $infos[5];
 	if($node =~ /^(.*)\[(.*)\]$/){
 		$deb=$1;
@@ -72,14 +73,14 @@ foreach(@out){
 	}elsif($memu =~ /^(.*)G/){
 		$memu = $1;
 	}else{
-		die "Strange $memu\n";
+		die "Strange menu $memu\n";
 	}
 	next if ($state ne "R");
 	$nb=-1;
 	if($ginfo =~ /:([0-9]+)$/){
 		$nb = $1;
 	}else{
-		#die "Strange !! $l\n";
+		#die "Strange line !! $l\n";
 		$nb = 0;
 	}
 
@@ -134,6 +135,7 @@ foreach(@out){
 	@infos = split(/\s+/, $l);
 	$partition = $infos[0];
 	$ginfo = $infos[6];
+	$ginfo =~ s/\(S:\d+(?:-\d+)?\)//;
 	$node = $infos[1];
 	$state = $infos[2];
 	$cpus = $infos[3];
@@ -174,7 +176,7 @@ foreach(@out){
 			$type=$gg[1];
 		}
 	}else{
-		die "Strange !! $l\n";
+		die "Strange line end !! $l\n";
 	}
 	$gpui{$node}=$nb."/".$type;
 	$igpus{$node}=$state;

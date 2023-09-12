@@ -1,4 +1,4 @@
-if ($(which nvidia-smi > /dev/null )) ; then
+if ($(which nvidia-smi > /dev/null 2>&1 )) ; then
   CUDAROOT=/usr/local/cuda
 
   export PATH=$CUDAROOT/bin:$PATH

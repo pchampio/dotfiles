@@ -11,7 +11,8 @@ export ZSH=~/.oh-my-zsh
 
 setopt prompt_subst # enable command substition in prompt
 
-plugins=(encode64 docker sudo zsh-autoquoter)
+# plugins=(encode64 docker sudo zsh-autoquoter)
+plugins=(encode64 docker sudo)
 
 # faster startup
 DISABLE_AUTO_UPDATE="true"

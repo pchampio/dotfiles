@@ -102,7 +102,8 @@ EOF
 [ -d ~/.tmux-ssh-split/ ] || git clone https://github.com/pschmitt/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
 [ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
 
-explain "FZF Install"
-\rm -rf ~/.fzf || true
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --all
+if [ ! -d ~/.fzf ]; then
+  explain "FZF Install"
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --all
+fi

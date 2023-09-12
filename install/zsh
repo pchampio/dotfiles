@@ -28,32 +28,34 @@ explain "Installation de zsh-completions"
 #  tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
 
 
+explain "Installation de zsh-bin"
 rm -rf /tmp/zsh-bin
 mkdir /tmp/zsh-bin
 wget -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
 sh /tmp/zsh-bin/install -d ~/dotfiles -e no
 
 
-read -p "Add exec zsh to .profile? " -n 1 -r
+read -p "Add exec zsh to .profile? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo "[ -f $HOME/dotfiles/bin/zsh ] && exec $HOME/bin/zsh -l" >> $HOME/.profile
+  echo "[ -f $HOME/dotfiles/bin/zsh ] && exec $HOME/dotfiles/bin/zsh -l" >> $HOME/.profile
 fi
 
 read -p "Add exec zsh to csh or tcsh? " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo "if ( -f ~/dotfiles/bin/zsh ) exec ~/bin/zsh -l" >> $HOME/.login
+  echo "if ( -f ~/dotfiles/bin/zsh ) exec ~/dotfiles/bin/zsh -l" >> $HOME/.login
 fi
 
-read -p "chsh to zsh" -n 1 -r
+read -p "chsh to zsh? " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 	command -v zsh | sudo tee -a /etc/shells
 	sudo chsh -s "$(command -v zsh)" "${USER}"
 fi
+
 
 success "Success"
