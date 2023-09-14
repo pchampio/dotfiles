@@ -8,7 +8,6 @@ dir=~/dotfiles
 explain "Download latest nvim"
 cd /tmp
 curl -L https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar -C "${HOME}/dotfiles/bin" -xz
-mv "${HOME}/dotfiles/bin/nvim-linux64/bin/nvim" ${HOME}/dotfiles/bin/nvim
 
 explain "pynvim Install"
 python3 -m pip install --user --upgrade pynvim

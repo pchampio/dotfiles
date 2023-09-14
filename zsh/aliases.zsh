@@ -97,8 +97,4 @@ alias lychee_import="ssh -t drakirus@prr.re -p 2242 'cd APP && make lychee-impor
 ############
 
 export EDITOR='nvim'
-alias vim="nvim"
-if [ -n "${NVIM_LISTEN_ADDRESS+x}" ]; then
-  alias vim="nvimux-vim"
-  export EDITOR='nvr'
-fi
+alias vim='nvim'
