@@ -24,13 +24,14 @@ explain "Installation zsh-autosuggestions"
 explain "Installation de zsh-completions"
   tell git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/zsh-completions
 
-# explain "Installation de zsh-autoquoter"
-#  tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
+explain "Installation de zsh-autoquoter"
+ tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
 
 
 read -p "Local install of zsh? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
+then
   explain "Installation de zsh-bin"
   rm -rf /tmp/zsh-bin
   mkdir /tmp/zsh-bin
@@ -44,6 +45,13 @@ echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "[ -f $HOME/dotfiles/bin/zsh ] && exec $HOME/dotfiles/bin/zsh -l" >> $HOME/.profile
+fi
+
+read -p "Add exec zsh to .bashrc? [y] " -n 1 -r
+echo ""    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  echo "[ -f $HOME/dotfiles/bin/zsh ] && exec $HOME/dotfiles/bin/zsh -l" >> $HOME/.bashrc
 fi
 
 read -p "Add exec zsh to csh or tcsh? " -n 1 -r

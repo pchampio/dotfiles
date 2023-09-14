@@ -11,8 +11,7 @@ export ZSH=~/.oh-my-zsh
 
 setopt prompt_subst # enable command substition in prompt
 
-# plugins=(encode64 docker sudo zsh-autoquoter)
-plugins=(encode64 docker sudo)
+plugins=(encode64 docker sudo zsh-autoquoter)
 
 # faster startup
 DISABLE_AUTO_UPDATE="true"
@@ -27,7 +26,7 @@ source $ZSH/oh-my-zsh.sh
 source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh
 source $ZSH/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# source $ZSH/custom/plugins/zsh-autoquoter/zsh-autoquoter.zsh
+source $ZSH/custom/plugins/zsh-autoquoter/zsh-autoquoter.zsh
 ZAQ_PREFIXES=('git commit( [^ ]##)# -[^ -]#m')
 ZSH_HIGHLIGHT_HIGHLIGHTERS+=(zaq)
 
