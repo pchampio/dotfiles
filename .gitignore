@@ -3,5 +3,7 @@
 /bin/rg
 /bin/mosh
 /bin/fd
+/bin/zsh
+/bin/tmux
 bin/nvim-linux64*
 gcc*
