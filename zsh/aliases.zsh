@@ -67,6 +67,7 @@ alias webai="ssh dialog@172.16.250.7"
 alias g5k-all="env TERM=tmux-256color ssh -t pchampion@access.grid5000.fr ssh -t nancy "
 alias g5k="env TERM=tmux-256color ssh pchampion@access.nancy.grid5000.fr"
 alias lst="ssh pchampi@lst1"
+alias cleps="env TERM=tmux-256color ssh -o "IdentitiesOnly=yes" -i ~/.ssh/id_ed25519 pchampio@cleps.inria.fr"
 
 
 # cat ~/.ssh/id_rsa | ssh-key-on-line
