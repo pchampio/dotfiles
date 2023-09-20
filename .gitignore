@@ -7,3 +7,4 @@
 /bin/tmux
 bin/nvim-linux64*
 gcc*
+/bin/tmux_bin

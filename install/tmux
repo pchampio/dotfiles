@@ -15,7 +15,7 @@ LIBEVENT_VERSION=2.1.12
 NCURSES_VERSION=6.3
 TMUX_VERSION=3.3a
 
-TARGETDIR=~/dotfiles/bin/tmux
+TARGETDIR=~/dotfiles/bin/tmux_bin
 if [[ "${TARGETDIR}" = "" ]]; then
 	TARGETDIR="${PWD}/out"
 fi
@@ -187,5 +187,5 @@ EOF
 
 [ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
 [ -d ~/.tmux-sessionist/ ] || git clone https://github.com/tmux-plugins/tmux-sessionist ~/.tmux-sessionist --depth=1
-[ -d ~/.tmux-ssh-split/ ] || git clone https://github.com/pschmitt/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
+[ -d ~/.tmux-ssh-split/ ] || git clone https://git.prr.re/Drakirus/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
 [ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
