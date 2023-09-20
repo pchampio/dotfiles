@@ -1,47 +1,191 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
+set -o errexit
 
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-explain "Installation tmux-bin"
+cd /tmp/
 
-emulate -L zsh -o err_return
-setopt no_unset extended_glob typeset_silent no_multi_byte \
-       prompt_percent no_prompt_subst warn_create_global pipe_fail
+explain "Compiling tmux"
 
-() {
+# FROM: https://gist.github.com/zenofile/d2acef1a0423e5081e74162cd5a0ae2d
+MUSL_VERSION=1.2.3
+LIBEVENT_VERSION=2.1.12
+NCURSES_VERSION=6.3
+TMUX_VERSION=3.3a
 
-zmodload -F zsh/files b:{zf_mkdir,zf_rm,zf_ln}
+TARGETDIR=~/dotfiles/bin/tmux
+if [[ "${TARGETDIR}" = "" ]]; then
+	TARGETDIR="${PWD}/out"
+fi
+mkdir -p "${TARGETDIR}"
 
-wget https://github.com/pythops/tmux-linux-binary/releases/download/v3.3a/tmux-linux-x86_64 -O ~/dotfiles/bin/tmux
+TASKS=$(($(nproc) + 1))
+CC=("${TARGETDIR}/bin/musl-gcc" -static)
+_CFLAGS=( -Os -ffunction-sections -fdata-sections )
+if "${REALGCC:-gcc}" -v 2>&1 | grep -q -- --enable-default-pie; then
+  _CFLAGS+=( -no-pie )
+fi
+_LDFLAGS=("-Wl,--gc-sections" -flto)
 
-cd
-curl -fsSL https://github.com/romkatv/terminfo/archive/v1.2.0.tar.gz | tar -xz
-
-local src=(terminfo*)
-(( $#src == 1 ))
-
-local pat hex char
-for pat in "[^A-Z]" "[A-Z]"; do
-  for hex in $src/[[:xdigit:]][[:xdigit:]](:t); do
-    printf -v char "\\x$hex"
-    [[ $char == $~pat ]] || continue
-    [[ -e ~/.terminfo/$hex ]] || zf_mkdir -p -- ~/.terminfo/$hex || return
-    cp -- $src/$hex/* ~/.terminfo/$hex/ || return
-    if [[ $char == [a-z] || ! ~/.terminfo/$char -ef ~/.terminfo/${(L)char}] ]]; then
-      [[ -e ~/.terminfo/$char ]]                       ||
-        zf_ln -s -- $hex ~/.terminfo/$char 2>/dev/null ||
-        zf_mkdir -p -- ~/.terminfo/$char               ||
-        return
-      cp -- $src/$hex/* ~/.terminfo/$char/ || return
-    fi
-    zf_rm -rf -- $src/$hex || return
-  done
-done
-
-zf_rm -rf -- $src
-
+_musl() {
+	if [[ ! -e musl-${MUSL_VERSION}.tar.gz ]]; then
+		curl -LO https://www.musl-libc.org/releases/musl-${MUSL_VERSION}.tar.gz
+	fi
+	tar zxf musl-${MUSL_VERSION}.tar.gz --skip-old-files
+	pushd .
+	cd musl-${MUSL_VERSION}
+	CFLAGS="${_CFLAGS[*]}" LDFLAGS="${_LDFLAGS[*]}" ./configure --prefix="${TARGETDIR}" --disable-shared
+	make -j $TASKS
+	make install
+	make clean
+	popd
 }
 
-success "Success"
+_libevent() {
+	if [[ ! -e libevent-${LIBEVENT_VERSION}-stable.tar.gz ]]; then
+		curl -LO https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz
+	fi
+	tar zxf libevent-${LIBEVENT_VERSION}-stable.tar.gz --skip-old-files
+	pushd .
+	cd libevent-${LIBEVENT_VERSION}-stable
+	_cflags=("${_CFLAGS[@]}" -flto)
+	CC="${CC[*]}" CFLAGS="${_cflags[*]}" LDFLAGS="${_LDFLAGS[*]}" ./configure --prefix="${TARGETDIR}" --disable-shared --disable-openssl
+	make -j $TASKS
+	make install
+	make clean
+	popd
+}
+
+_ncurses() {
+	if [[ ! -e ncurses-${NCURSES_VERSION}.tar.gz ]]; then
+		curl -LO https://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz
+	fi
+	tar zxvf ncurses-${NCURSES_VERSION}.tar.gz --skip-old-files
+	pushd .
+	cd ncurses-${NCURSES_VERSION}
+
+	_cflags=("${_CFLAGS[@]}" -flto)
+	CC="${CC[*]}" CFLAGS="${_cflags[*]}" LDFLAGS="${_LDFLAGS[*]}" ./configure --prefix $TARGETDIR \
+		--with-default-terminfo-dir=/usr/share/terminfo \
+		--with-terminfo-dirs="/etc/terminfo:/lib/terminfo:/usr/share/terminfo" \
+		--enable-pc-files \
+		--with-pkg-config-libdir="${TARGETDIR}/lib/pkgconfig" \
+		--without-ada \
+		--without-debug \
+		--with-termlib \
+		--without-cxx \
+		--without-progs \
+		--without-manpages \
+		--disable-db-install \
+		--without-tests
+	make -j $TASKS
+	make install
+	make clean
+	popd
+}
+
+_tmux() {
+	if [[ ! -e tmux-${TMUX_VERSION}.tar.gz ]]; then
+		curl -LO https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz
+	fi
+	tar zxf tmux-${TMUX_VERSION}.tar.gz --skip-old-files
+	pushd .
+	cd tmux-${TMUX_VERSION}
+	_cflags=("${_CFLAGS[@]}" -flto "-I${TARGETDIR}/include/ncurses/")
+	CC="${CC[*]}" CFLAGS="${_cflags[*]}" LDFLAGS="${_LDFLAGS[*]}" PKG_CONFIG_PATH="${TARGETDIR}/lib/pkgconfig" ./configure --enable-static --prefix="${TARGETDIR}"
+	make -j $TASKS
+	make install
+	make clean
+	popd
+
+	cp "${TARGETDIR}/bin/tmux" .
+	strip --strip-all ./tmux
+	if command -v upx &>/dev/null; then
+		upx -k --best ./tmux
+	fi
+}
+
+rm -rf "${TARGETDIR}/out"
+
+if [[ ! -x "${TARGETDIR}/bin/musl-gcc" ]]; then
+	_musl
+fi
+
+_libevent
+_ncurses
+_tmux
+
+cp "${TARGETDIR}/bin/tmux" ~/dotfiles/bin
+
+explain "Tmux italics"
+cat <<EOF|tic -x -
+#	Reconstructed via infocmp from file: /usr/share/terminfo/t/tmux
+screen|tmux terminal multiplexer,
+	OTbs, OTpt, am, hs, km, mir, msgr, xenl, AX, G0,
+	colors#8, cols#80, it#8, lines#24, pairs#64, U8#1,
+	acsc=++\,\,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
+	bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z, civis=\E[?25l,
+	clear=\E[H\E[J, cnorm=\E[34h\E[?25h, cr=^M,
+	csr=\E[%i%p1%d;%p2%dr, cub=\E[%p1%dD, cub1=^H,
+	cud=\E[%p1%dB, cud1=^J, cuf=\E[%p1%dC, cuf1=\E[C,
+	cup=\E[%i%p1%d;%p2%dH, cuu=\E[%p1%dA, cuu1=\EM,
+	cvvis=\E[34l, dch=\E[%p1%dP, dch1=\E[P, dim=\E[2m,
+	dl=\E[%p1%dM, dl1=\E[M, dsl=\E]0;\007, ed=\E[J, el=\E[K,
+	el1=\E[1K, enacs=\E(B\E)0, flash=\Eg, fsl=^G, home=\E[H,
+	ht=^I, hts=\EH, ich=\E[%p1%d@, il=\E[%p1%dL, il1=\E[L,
+	ind=^J, is2=\E)0, kbs=\177, kcbt=\E[Z, kcub1=\EOD,
+	kcud1=\EOB, kcuf1=\EOC, kcuu1=\EOA, kdch1=\E[3~,
+	kend=\E[4~, kf1=\EOP, kf10=\E[21~, kf11=\E[23~,
+	kf12=\E[24~, kf2=\EOQ, kf3=\EOR, kf4=\EOS, kf5=\E[15~,
+	kf6=\E[17~, kf7=\E[18~, kf8=\E[19~, kf9=\E[20~,
+	khome=\E[1~, kich1=\E[2~, kmous=\E[M, knp=\E[6~, kpp=\E[5~,
+	nel=\EE, op=\E[39;49m, rc=\E8, rev=\E[7m, ri=\EM,
+	ritm=\E[23m, rmacs=^O, rmcup=\E[?1049l, rmir=\E[4l,
+	rmkx=\E[?1l\E>, rmso=\E[27m, rmul=\E[24m,
+	rs2=\Ec\E[?1000l\E[?25h, sc=\E7, setab=\E[4%p1%dm,
+	setaf=\E[3%p1%dm,
+	sgr=\E[0%?%p6%t;1%;%?%p1%t;3%;%?%p2%t;4%;%?%p3%t;7%;%?%p4%t;5%;%?%p5%t;2%;m%?%p9%t\016%e\017%;,
+	sgr0=\E[m\017, sitm=\E[3m, smacs=^N, smcup=\E[?1049h,
+	smir=\E[4h, smkx=\E[?1h\E=, smso=\E[7m, smul=\E[4m,
+	tbc=\E[3g, tsl=\E]0;, Cr=\E]112\007, Cs=\E]12;%p1%s\007,
+	E0=\E(B, Ms@, S0=\E(%p1%c, Se=\E[2 q, Ss=\E[%p1%d q,
+	TS=\E]0;,
+#	Reconstructed via infocmp from file: /usr/share/terminfo/t/tmux-256color
+screen-256color|tmux with 256 colors,
+	OTbs, OTpt, am, hs, km, mir, msgr, xenl, AX, G0,
+	colors#256, cols#80, it#8, lines#24, pairs#32767, U8#1,
+	acsc=++\,\,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
+	bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z, civis=\E[?25l,
+	clear=\E[H\E[J, cnorm=\E[34h\E[?25h, cr=^M,
+	csr=\E[%i%p1%d;%p2%dr, cub=\E[%p1%dD, cub1=^H,
+	cud=\E[%p1%dB, cud1=^J, cuf=\E[%p1%dC, cuf1=\E[C,
+	cup=\E[%i%p1%d;%p2%dH, cuu=\E[%p1%dA, cuu1=\EM,
+	cvvis=\E[34l, dch=\E[%p1%dP, dch1=\E[P, dim=\E[2m,
+	dl=\E[%p1%dM, dl1=\E[M, dsl=\E]0;\007, ed=\E[J, el=\E[K,
+	el1=\E[1K, enacs=\E(B\E)0, flash=\Eg, fsl=^G, home=\E[H,
+	ht=^I, hts=\EH, ich=\E[%p1%d@, il=\E[%p1%dL, il1=\E[L,
+	ind=^J, is2=\E)0, kbs=\177, kcbt=\E[Z, kcub1=\EOD,
+	kcud1=\EOB, kcuf1=\EOC, kcuu1=\EOA, kdch1=\E[3~,
+	kend=\E[4~, kf1=\EOP, kf10=\E[21~, kf11=\E[23~,
+	kf12=\E[24~, kf2=\EOQ, kf3=\EOR, kf4=\EOS, kf5=\E[15~,
+	kf6=\E[17~, kf7=\E[18~, kf8=\E[19~, kf9=\E[20~,
+	khome=\E[1~, kich1=\E[2~, kmous=\E[M, knp=\E[6~, kpp=\E[5~,
+	nel=\EE, op=\E[39;49m, rc=\E8, rev=\E[7m, ri=\EM,
+	ritm=\E[23m, rmacs=^O, rmcup=\E[?1049l, rmir=\E[4l,
+	rmkx=\E[?1l\E>, rmso=\E[27m, rmul=\E[24m,
+	rs2=\Ec\E[?1000l\E[?25h, sc=\E7,
+	setab=\E[%?%p1%{8}%<%t4%p1%d%e%p1%{16}%<%t10%p1%{8}%-%d%e48;5;%p1%d%;m,
+	setaf=\E[%?%p1%{8}%<%t3%p1%d%e%p1%{16}%<%t9%p1%{8}%-%d%e38;5;%p1%d%;m,
+	sgr=\E[0%?%p6%t;1%;%?%p1%t;3%;%?%p2%t;4%;%?%p3%t;7%;%?%p4%t;5%;%?%p5%t;2%;m%?%p9%t\016%e\017%;,
+	sgr0=\E[m\017, sitm=\E[3m, smacs=^N, smcup=\E[?1049h,
+	smir=\E[4h, smkx=\E[?1h\E=, smso=\E[7m, smul=\E[4m,
+	tbc=\E[3g, tsl=\E]0;, Cr=\E]112\007, Cs=\E]12;%p1%s\007,
+	E0=\E(B, S0=\E(%p1%c, Se=\E[2 q, Ss=\E[%p1%d q, TS=\E]0;,
+EOF
+
+[ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
+[ -d ~/.tmux-sessionist/ ] || git clone https://github.com/tmux-plugins/tmux-sessionist ~/.tmux-sessionist --depth=1
+[ -d ~/.tmux-ssh-split/ ] || git clone https://github.com/pschmitt/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
+[ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
