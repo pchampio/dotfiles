@@ -188,7 +188,7 @@ require('lazy').setup({
 
   {
     'mrjones2014/smart-splits.nvim',
-    opts = { default_amount = 6, },
+    opts = { default_amount = 6, disable_multiplexer_nav_when_zoomed = false, },
     keys = {
       { '<C-h>',     function() require('smart-splits').move_cursor_left() end,  desc = '[h] Move cursor left pane' },
       { '<C-j>',     function() require('smart-splits').move_cursor_down() end,  desc = '[j] Move cursor down pane' },
@@ -813,6 +813,7 @@ require('lazy').setup({
           augend.integer.alias.decimal,  -- nonnegative decimal number (0, 1, 2, 3, ...)
           augend.constant.alias.bool,    -- boolean value (true <-> false)
           augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
+          augend.constant.new({ elements = { "true", "false" }, preserve_case = true })
         },
       }
       require("dial.config").augends:on_filetype({}) -- for specific languages
