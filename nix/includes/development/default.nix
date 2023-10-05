@@ -46,7 +46,8 @@
     yarn
 
     # Python
-    python3
+    python311
+    python311Packages.pip
   ]);
 
   home.sessionVariables = {

@@ -192,7 +192,7 @@ EOF
 
     echo " --> https://$proxmeport.proxme.prr.re/"
   fi
-  ssh -NR "${proxmeport}:localhost:${port}" share@prr.re
+  ssh -R "${proxmeport}:localhost:${port}" share@prr.re
   fg
 }
 
