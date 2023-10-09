@@ -1,9 +1,15 @@
 # Profiling zsh startup time
 # time  zsh -i -c exit
-profiling=false
+profiling=true
 if [ $profiling = true ]; then
-  zmodload zsh/zprof
-  zprof
+  ## Per-command profiling:
+  # zmodload zsh/datetime
+  # setopt promptsubst
+  # PS4='+$EPOCHREALTIME %N:%i> '
+  # exec 3>&2 2> startlog.$$
+  # setopt xtrace prompt_subst
+  ## Per-function profiling:
+  # zmodload zsh/zprof
 fi
 
 # Path to your oh-my-zsh installation.
@@ -158,10 +164,8 @@ m() {
   fi
 }
 
-
-export DOTFILES=$HOME/dotfiles
 # source all .zsh files inside of the zsh/ directory
-for config ($DOTFILES/**/*.zsh) source $config
+for config ($HOME/dotfiles/zsh/*.zsh) source $config
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
@@ -169,6 +173,9 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 
 if [ $profiling = true ]; then
-  zmodload zsh/zprof
-  zprof
+  ## Per-command profiling: (open startlog.*)
+  # unsetopt xtrace
+  # exec 2>&3 3>&-
+  ## Per-function profiling:
+  # zprof
 fi

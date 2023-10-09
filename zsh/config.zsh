@@ -21,11 +21,11 @@ stty stop undef
 
 if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
 
-  # escape remap
-  setxkbmap -option caps:escape
+    # escape remap
+    setxkbmap -option caps:escape
 
-  # startup app to hide form taskbar
-  # wmctrl -x -r MineTime -b add,skip_taskbar
+    # startup app to hide form taskbar
+    # wmctrl -x -r MineTime -b add,skip_taskbar
 
 fi
 
