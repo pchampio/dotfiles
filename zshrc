@@ -1,6 +1,6 @@
 # Profiling zsh startup time
 # time  zsh -i -c exit
-profiling=true
+profiling=false
 if [ $profiling = true ]; then
   ## Per-command profiling:
   # zmodload zsh/datetime
@@ -9,7 +9,7 @@ if [ $profiling = true ]; then
   # exec 3>&2 2> startlog.$$
   # setopt xtrace prompt_subst
   ## Per-function profiling:
-  # zmodload zsh/zprof
+  zmodload zsh/zprof
 fi
 
 # Path to your oh-my-zsh installation.
@@ -177,5 +177,5 @@ if [ $profiling = true ]; then
   # unsetopt xtrace
   # exec 2>&3 3>&-
   ## Per-function profiling:
-  # zprof
+  zprof
 fi
