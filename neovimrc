@@ -592,6 +592,9 @@ require('lazy').setup({
   {
     "whiteinge/diffconflicts",
     cmd = "DiffConflicts",
+    init = function()
+      vim.cmd('hi DiffText guifg=#268bd2 ctermbg=NONE guibg=NONE guisp=#268bd2')
+    end,
   },
 
   {
