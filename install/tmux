@@ -186,6 +186,5 @@ screen-256color|tmux with 256 colors,
 EOF
 
 [ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
-[ -d ~/.tmux-sessionist/ ] || git clone https://github.com/tmux-plugins/tmux-sessionist ~/.tmux-sessionist --depth=1
 [ -d ~/.tmux-ssh-split/ ] || git clone https://git.prr.re/Drakirus/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
 [ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
