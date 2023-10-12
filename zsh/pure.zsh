@@ -204,6 +204,7 @@ prompt_pure_precmd() {
     psvar[12]=
     # Check if a Conda environment is active and display its name.
     if [[ -n $CONDA_DEFAULT_ENV ]]; then
+        async_job my_async_task tmux setenv CONDA_ENV ${CONDA_DEFAULT_ENV}/bin/
         psvar[12]="${CONDA_DEFAULT_ENV//[$'\t\r\n']}"
     fi
     # When VIRTUAL_ENV_DISABLE_PROMPT is empty, it was unset by the user and
@@ -329,6 +330,15 @@ prompt_pure_async_git_fetch() {
 prompt_pure_async_git_arrows() {
     setopt localoptions noshwordsplit
     command git rev-list --left-right --count HEAD...@'{u}'
+}
+
+prompt_pure_async_tmux_set_envvar() {
+    echo "TEST"
+    if [[ -n $CONDA_DEFAULT_ENV ]]; then
+        sleep 5
+        tmux setenv CONDA_ENV $CONDA_DEFAULT_ENV
+    echo "TEST2"
+    fi
 }
 
 # Try to lower the priority of the worker so that disk heavy operations
@@ -713,6 +723,8 @@ prompt_pure_system_report() {
         )
         prompt_pure_colors=("${(@kv)prompt_pure_colors_default}")
 
+
+        async_start_worker my_async_task -n
         add-zsh-hook precmd prompt_pure_precmd
         add-zsh-hook preexec prompt_pure_preexec
 
@@ -769,6 +781,7 @@ prompt_pure_system_report() {
         # Guard against (ana)conda changing the PS1 prompt
         # (we manually insert the env when it's available).
         export CONDA_CHANGEPS1=no
+
     }
 
     prompt_pure_setup "$@"
