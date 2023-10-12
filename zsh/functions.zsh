@@ -1,4 +1,4 @@
-size_threshold=25350
+size_threshold=5000000
 function nvim() {
     if [[ "$#" == 0 ]]; then
         $HOME/dotfiles/bin/nvim-linux64/bin/nvim;
@@ -18,7 +18,7 @@ function nvim() {
                 # --startuptime vim.log 
                 large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux64/bin/nvim $* ;
             else
-                $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
+                large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
             fi
         fi
     fi
