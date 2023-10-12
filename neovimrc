@@ -1,3 +1,6 @@
+vim.g.largeEnable = vim.fn.getenv('large_file_disable_plugin')
+vim.g.largeEnable = vim.g.largeEnable == vim.NIL or vim.g.largeEnable == "true"
+
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
@@ -14,7 +17,6 @@ vim.g.loaded_netrwPlugin = 1
 -- Install package manager
 -- ~/.local/share/nvim/lazy
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-print(lazypath)
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
     'git',
@@ -37,11 +39,12 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      { 'williamboman/mason.nvim', config = true },
-      'williamboman/mason-lspconfig.nvim',
-      -- { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      { 'williamboman/mason.nvim', config = true, event = "VeryLazy" },
+      {'williamboman/mason-lspconfig.nvim', event = "VeryLazy",},
+      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {}, event = "VeryLazy" },
       {
         "KostkaBrukowa/definition-or-references.nvim",
+        event = "VeryLazy",
         config = function()
           require("definition-or-references").setup({
             on_references_result = function(result)
@@ -214,63 +217,27 @@ require('lazy').setup({
   },
 
   {
-    'wincent/loupe',
+    'miallo/loupe',
     event = { "CmdlineEnter", "CursorHold" },
     keys = {
       { "<leader><space>", "<Plug>(LoupeClearHighlight)", desc = "Clear Search Highlight (Loupe)" },
     },
+    init = function()
+      vim.g.LoupeVeryMagicReplace=1
+    end,
   },
 
   {
+    'tzachar/highlight-undo.nvim',
+    enabled = vim.g.largeEnable,
     init = function()
       vim.cmd([[hi UndoHighlight gui=underline,bold guifg=#6c71c4 guisp=Violetd]])
     end,
-    'tzachar/highlight-undo.nvim',
     opts = { hlgroup = 'UndoHighlight' },
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
   },
 
-
-  { -- Useful status updates for LSP and other
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-    },
-    config = function()
-      require("noice").setup({
-        messages = { enabled = false },
-        cmdline = { enabled = false },
-        views = {
-          mini = { timeout = 100, position = { row = -2, col = "100%" }, zindex = 100, win_options = { winblend = 0 } } },
-        lsp = {
-          progress = {
-            enabled = true,
-            format = {
-              { "{progress} ", contents = {} },
-              { "{spinner} ",  hl_group = "NoiceLspProgressSpinner" },
-              "({data.progress.percentage}%) ",
-              { "{data.progress.title} ",  hl_group = "NoiceLspProgressTitle" },
-              { "{data.progress.client} ", hl_group = "NoiceLspProgressClient" },
-            }
-          },
-        },
-        format = { spinner = { name = "dots12" } },
-        presets = { lsp_doc_border = true, }
-      })
-      vim.keymap.set({ "n", "i", "s" }, "<c-e>", function()
-        if not require("noice.lsp").scroll(4) then
-          return "4<c-e>"
-        end
-      end, { silent = true, expr = true })
-      vim.keymap.set({ "n", "i", "s" }, "<c-y>", function()
-        if not require("noice.lsp").scroll(-4) then
-          return "4<c-y>"
-        end
-      end, { silent = true, expr = true })
-    end
-  },
 
   {
     -- Autocompletion
@@ -355,29 +322,29 @@ require('lazy').setup({
         end,
   },
 
-  {
-    "zbirenbaum/copilot.lua",
-    event = { "CursorHold", "CursorHoldI" },
-    config = function()
-      require("copilot").setup({
-        suggestion = { enabled = false },
-        panel = { enabled = false },
-        -- suggestion = {
-        --   enabled = true,
-        --   auto_trigger = false,
-        --   debounce = 75,
-        --   keymap = {
-        --     accept = "<c-e>",
-        --     accept_word = false,
-        --     accept_line = false,
-        --     next = "<M-]>",
-        --     prev = "<M-[>",
-        --     dismiss = "<C-]>",
-        --   },
-        -- },
-      })
-    end,
-  },
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --   event = { "CursorHold", "CursorHoldI" },
+  --   config = function()
+  --     require("copilot").setup({
+  --       suggestion = { enabled = false },
+  --       panel = { enabled = false },
+  --       -- suggestion = {
+  --       --   enabled = true,
+  --       --   auto_trigger = false,
+  --       --   debounce = 75,
+  --       --   keymap = {
+  --       --     accept = "<c-e>",
+  --       --     accept_word = false,
+  --       --     accept_line = false,
+  --       --     next = "<M-]>",
+  --       --     prev = "<M-[>",
+  --       --     dismiss = "<C-]>",
+  --       --   },
+  --       -- },
+  --     })
+  --   end,
+  -- },
   {
     -- Browse and preview json files
     "gennaro-tedesco/nvim-jqx",
@@ -482,7 +449,7 @@ require('lazy').setup({
         -- Clue window settings
         window = {
           -- Floating window config
-          config = { anchor = 'NE', row = 'auto', col = 'auto', width = 60 },
+          config = { anchor = 'SW', row = 'auto', col = 'auto', width = 30 },
           -- Delay before showing clue window
           delay = 1000,
           -- Keys to scroll inside the clue window
@@ -531,9 +498,9 @@ require('lazy').setup({
           miniclue.gen_clues.marks(),
           miniclue.gen_clues.registers(),
           miniclue.gen_clues.windows(),
-          miniclue.gen_clues.z(),
-          { mode = 'n', keys = 'zl', postkeys = '4z' },
-          { mode = 'n', keys = 'zh', postkeys = '4z' },
+          -- miniclue.gen_clues.z(),
+          { mode = 'n', keys = 'zl', postkeys = '4z', desc = 'Pane right' },
+          { mode = 'n', keys = 'zh', postkeys = '4z', desc = 'Pane left' },
           { mode = 'n', keys = ']h', postkeys = ']' },
           { mode = 'n', keys = '[h', postkeys = '[' },
           { mode = 'n', keys = '[y', postkeys = '[' },
@@ -563,6 +530,7 @@ require('lazy').setup({
     -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
      event = "BufRead",
+    enabled = vim.g.largeEnable,
     opts = {
       signs = {
         add          = { text = '+' },
@@ -600,6 +568,7 @@ require('lazy').setup({
   {
     -- TODO
     "aduros/ai.vim",
+    enabled = vim.g.largeEnable,
     init = function()
       vim.g.ai_no_mappings = true
       vim.g.ai_temperature = 0.7
@@ -648,7 +617,8 @@ require('lazy').setup({
   -- replace without yankink deleted
   {
     'gbprod/substitute.nvim',
-    event = 'VeryLazy',
+    event = "CursorHold",
+    dependencies = { "gbprod/yanky.nvim", },
     config = function()
 
       -- Upper Y yank to system clipboard
@@ -761,28 +731,16 @@ require('lazy').setup({
     }
   },
 
-  {
-    "Wansmer/treesj",
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    keys = {
-      { "gJ", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
-      { "gS", "<cmd>TSJSplit<cr>",  desc = "Join Split" }
-    },
-    opts = { use_default_keymaps = false, max_join_length = 1000 },
-  },
 
   {
     'NTBBloodbath/galaxyline.nvim',
     dependencies = { 'kyazdani42/nvim-web-devicons', 'https://git.prr.re/Drakirus/my_galaxyline_config.nvim' },
-    config = function()
-      require("my_galaxyline_config")
-    end
   },
 
   {
     -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim', main = "ibl",
-     opts = {
+    opts = {
       indent = { char = "┊" },
       scope = { show_start = false, show_end = false },
     },
@@ -882,10 +840,8 @@ require('lazy').setup({
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
     build = ':TSUpdate',
+    enabled = vim.g.largeEnable,
     config = function()
       require('nvim-treesitter.configs').setup({
         ensure_installed = {
@@ -893,6 +849,9 @@ require('lazy').setup({
           'diff', 'regex', 'gitcommit', 'git_config', 'git_rebase', 'markdown', 'markdown_inline',
         },
         auto_install = true,
+        indent = {
+          enable = true
+        },
         highlight = {
           enable = true,
           additional_vim_regex_highlighting = { false },
@@ -933,24 +892,45 @@ require('lazy').setup({
         },
       })
     end,
-    init = function()
-      vim.opt.foldmethod = "expr"
-      vim.opt.foldlevel = 6
-      vim.opt.foldlevelstart = 99
-      vim.opt.foldexpr = "nvim_treesitter#foldexpr()"       -- TreeSitter folding
-    end,
+  },
+  {'nvim-treesitter/nvim-treesitter-textobjects',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    enabled = vim.g.largeEnable,
+  },
+  {
+    "Wansmer/treesj",
+    enabled = vim.g.largeEnable,
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    keys = {
+      { "gJ", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
+      { "gS", "<cmd>TSJSplit<cr>",  desc = "Join Split" }
+    },
+    opts = { use_default_keymaps = false, max_join_length = 1000 },
   },
 
   {
-    "chrisgrieser/nvim-origami",
-    event = "BufReadPost",
-    opts = {},
-  },
-
   "LunarVim/bigfile.nvim",
+  lazy=false,
+    config = function()
+      require("bigfile").setup {
+        filesize = 2, -- size of the file in MiB, the plugin round file sizes to the closest MiB
+        features = { -- features to disable
+        "indent_blankline",
+        "illuminate",
+        "lsp",
+        "treesitter",
+        "syntax",
+        "vimopts",
+        "filetype",
+      },
+    }
+    end,
+
+},
 
   {
     "gbprod/yanky.nvim",
+    event = "CursorHold",
     config = function ()
     vim.cmd([[hi YankyPut guifg=#37afd3 gui=underline,bold]])
     local mapping = require "yanky.telescope.mapping"
@@ -959,6 +939,7 @@ require('lazy').setup({
     mappings.i["<cr>"] = mapping.set_register(require("yanky.utils").get_default_register())
     require("yanky").setup({
       system_clipboard={sync_with_ring=false},
+      ring = {storage = "memory",},
         picker = {
           telescope = {
             use_default_mappings = false,
@@ -1030,6 +1011,9 @@ require('lazy').setup({
           },
         },
         defaults = {
+          preview = {
+            treesitter = false,
+          },
           -- file_sorter = function(opts)
           --   opts = opts or {}
           --   return require('telescope.sorters').Sorter:new({
@@ -1100,7 +1084,8 @@ vim.o.shada = "!,'1,f0,h,s100"
 -- Set the shadafile option to the specified path
 vim.o.shadafile = vim.fn.expand('~/.vim/shada')
 
-vim.api.nvim_command("set noswapfile")
+vim.o.swapfile = false
+
 
 -- Case-insensitive searching UNLESS \C or capital in search
 vim.o.ignorecase = true

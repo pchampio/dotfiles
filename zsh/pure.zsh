@@ -60,7 +60,7 @@ prompt_pure_set_title() {
     (( ${+EMACS} || ${+INSIDE_EMACS} )) && return
 
     case $TTY in
-            # Don't set title over serial console.
+            # Dont set title over serial console.
         /dev/ttyS[0-9]*) return ;;
     esac
 
