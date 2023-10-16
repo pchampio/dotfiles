@@ -3,11 +3,11 @@
 profiling=false
 if [ $profiling = true ]; then
   ## Per-command profiling:
-  # zmodload zsh/datetime
-  # setopt promptsubst
-  # PS4='+$EPOCHREALTIME %N:%i> '
-  # exec 3>&2 2> startlog.$$
-  # setopt xtrace prompt_subst
+  zmodload zsh/datetime
+  setopt promptsubst
+  PS4='+$EPOCHREALTIME %N:%i> '
+  exec 3>&2 2> startlog.$$
+  setopt xtrace prompt_subst
   ## Per-function profiling:
   zmodload zsh/zprof
 fi
@@ -73,9 +73,6 @@ PATH=$PATH:$HOME/.local/bin
 
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
-
-# Add emacs bins
-export PATH=$HOME/.emacs.d/bin:$PATH
 
 
 # Local lib (for pip usualy)
@@ -148,21 +145,12 @@ if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing) > /dev/null
 fi
 
-if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
-  SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
-  if [ $SessionNb -eq 0 ]; then
+# if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
+  # SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
+  # if [ $SessionNb -eq 0 ]; then
     # tm && exit
-  fi
-fi
-
-m() {
-  if [ -z "$1" ]
-  then
-    emacsclient -e "(find-file-in-project \"`pwd`\")"
-  else
-    emacsclient -n "$@"
-  fi
-}
+  # fi
+# fi
 
 # source all .zsh files inside of the zsh/ directory
 for config ($HOME/dotfiles/zsh/*.zsh) source $config
@@ -174,8 +162,8 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 
 if [ $profiling = true ]; then
   ## Per-command profiling: (open startlog.*)
-  # unsetopt xtrace
-  # exec 2>&3 3>&-
+  unsetopt xtrace
+  exec 2>&3 3>&-
   ## Per-function profiling:
   zprof
 fi

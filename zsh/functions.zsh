@@ -7,19 +7,12 @@ function nvim() {
             $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
             return
         fi
-        OWNER=$(stat -c '%U' "$1")
-        if [[ "$OWNER" == "root" ]]; then
-            echo -e "\e[3m\033[1;31mMust be root to edit the file! \033[0m \e[23m"
-            sleep 0.3
-            sudoedit $*;
+        file_size=$(stat -c %s "$1")
+        if [ "$file_size" -gt "$size_threshold" ]; then
+            # --startuptime vim.log 
+            large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux64/bin/nvim $* ;
         else
-            file_size=$(stat -c %s "$1")
-            if [ "$file_size" -gt "$size_threshold" ]; then
-                # --startuptime vim.log 
-                large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux64/bin/nvim $* ;
-            else
-                large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
-            fi
+            large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
         fi
     fi
 }

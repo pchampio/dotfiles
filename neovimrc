@@ -5,7 +5,7 @@ vim.g.largeEnable = vim.g.largeEnable == vim.NIL or vim.g.largeEnable == "true"
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
 
-vim.loader.enable() -- optimizes loading plugins
+-- vim.loader.enable() -- optimizes loading plugins
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
@@ -658,7 +658,6 @@ require('lazy').setup({
       vim.cmd([[hi SubstituteExchange guifg=#37afd3 gui=underline,bold]])
       vim.keymap.set({'x', 'n'}, 'r', require('substitute').operator, {noremap = true})
       vim.keymap.set('n', 'rr', require('substitute').line, { noremap = true })
-      vim.keymap.set('n', 'R', require('substitute').eol, { noremap = true })
       vim.keymap.set("x", "s", require('substitute').visual, { noremap = true })
       vim.keymap.set("n", "rx", require('substitute.exchange').operator, { noremap = true })
       vim.keymap.set("n", "rxx", require('substitute.exchange').line, { noremap = true })
@@ -668,6 +667,7 @@ require('lazy').setup({
       vim.keymap.set("x", "<leader>r", require('substitute.range').visual, { noremap = true })
       vim.keymap.set("n", "<leader>rr", require('substitute.range').word, { noremap = true })
       vim.api.nvim_set_keymap('o', 'iE', ':exec "normal! ggVG"<cr>', { silent = true, noremap = true, desc = 'inner entire buffer' })
+      vim.keymap.set({'n', 'v'}, 'R', 'r', { noremap = true }) -- map R to old r behavior
     end
   },
 
