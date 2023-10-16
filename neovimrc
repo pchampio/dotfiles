@@ -5,7 +5,8 @@ vim.g.largeEnable = vim.g.largeEnable == vim.NIL or vim.g.largeEnable == "true"
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
 
--- vim.loader.enable() -- optimizes loading plugins
+-- Use new loader
+if vim.loader then vim.loader.enable() end
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
