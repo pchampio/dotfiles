@@ -182,14 +182,6 @@ require('lazy').setup({
   },
 
   {
-    "lambdalisue/suda.vim",
-    event = "VeryLazy",
-    config = function()
-      vim.g.suda_smart_edit = 1
-    end,
-  },
-
-  {
     'mrjones2014/smart-splits.nvim',
     opts = { default_amount = 6, disable_multiplexer_nav_when_zoomed = false, },
     keys = {
@@ -612,6 +604,11 @@ require('lazy').setup({
       vim.api.nvim_set_keymap('v', '++', "y:call VMATH_Analyse()<CR>",
         { silent = false, noremap = true, desc = "[+] Simple math on visual selection" })
     end
+  },
+
+  {
+    'https://git.prr.re/Drakirus/sudo.nvim',
+    event = "VeryLazy",
   },
 
   -- replace without yankink deleted

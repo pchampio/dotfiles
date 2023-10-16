@@ -36,3 +36,4 @@ bindkey 'K' up-line-or-beginning-search
 bindkey 'J' down-line-or-beginning-search
 
 bindkey '^B' backward-word
+bindkey '^F' forward-word

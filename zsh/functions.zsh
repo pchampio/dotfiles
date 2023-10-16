@@ -324,3 +324,23 @@ function mosh-relay-server() {
     # uses osc52 to copy cmd to host
     echo -e "\033]52;c;$(base64 <<< $cmd)\a"
 }
+
+kill-port() {
+  local pid
+  pid=$(lsof -n -i -P | fzf -m | awk '{print $2}')
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
+
+fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
