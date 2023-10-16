@@ -7,14 +7,6 @@ BASEDIR=$(dirname $0)
 rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
-explain "Installation de imgcat"
-home=$(pwd)
-cd /tmp
-git clone https://github.com/wookayin/python-imgcat
-cd python-imgcat
-pip install -e .
-cd $home
-
 explain "Installation de oh-my-zsh"
   echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
   if [ -f ~/.zsh-update ]; then

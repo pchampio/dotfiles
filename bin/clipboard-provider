@@ -15,7 +15,7 @@
 main() {
   declare p status=99
 
-   case $1 in
+  case $1 in
     copy)
       slurp
       for p in $COPY_PROVIDERS; do

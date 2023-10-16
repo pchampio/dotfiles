@@ -1,3 +1,5 @@
+#!/bin/bash
+
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
@@ -36,3 +38,28 @@ if [ ! -d ~/.fzf ]; then
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install --all
 fi
+
+if [ ! -f ~/dotfiles/bin/bw ]; then
+  explain "Bitwarden-cli Install"
+  VERSION="1.22.1"
+  TAR="bw-linux-${VERSION}.zip"
+  DOWNLOAD_URL="https://github.com/bitwarden/cli/releases/download/v${VERSION}/${TAR}"
+  wget -O /tmp/$TAR "${DOWNLOAD_URL}"
+  unzip -d ~/dotfiles/bin /tmp/$TAR
+  chmod +x ~/dotfiles/bin/bw
+  rm /tmp/$TAR
+fi
+
+
+if [ ! -f ~/.cache/imgcat_install ]; then
+  explain "Imgcat install"
+  home=$(pwd)
+  cd /tmp
+  git clone https://github.com/wookayin/python-imgcat
+  cd python-imgcat
+  pip install -e .
+  cd $home
+  touch ~/.cache/imgcat_install
+fi
+
+success "Success"
