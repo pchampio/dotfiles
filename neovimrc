@@ -34,7 +34,16 @@ require('lazy').setup({
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
-
+  {
+    "andymass/vim-matchup",
+    event = "VeryLazy",
+    config = function()
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
+      vim.g.matchup_motion_enabled = false
+      vim.g.matchup_text_obj_enabled = false
+      vim.g.matchup_surround_enabled = false
+    end,
+  },
   {
     -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -434,7 +443,6 @@ require('lazy').setup({
   {
     -- which-key Useful plugin to show you pending keybinds.
     'echasnovski/mini.clue',
-    opts = {},
     event = { "CursorHold", "CursorHoldI" },
     config = function()
       local miniclue = require('mini.clue')
@@ -843,7 +851,7 @@ require('lazy').setup({
     config = function()
       require('nvim-treesitter.configs').setup({
         ensure_installed = {
-          'c', 'bash', 'vim', 'vimdoc', 'query', 'lua', 'luadoc', 'luap', 'python', 'go',
+          'c', 'bash', 'vim', 'vimdoc', 'query', 'lua', 'luadoc', 'luap', 'python', 'go', 'yaml',
           'diff', 'regex', 'gitcommit', 'git_config', 'git_rebase', 'markdown', 'markdown_inline',
         },
         auto_install = true,

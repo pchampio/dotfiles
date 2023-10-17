@@ -15,8 +15,19 @@ wezterm.on("window-config-reloaded", function(window)
     end
 end)
 
+wezterm.on('gui-startup', function()
+ local tab, pane, window = wezterm.mux.spawn_window({})
+ window:gui_window():maximize()
+end)
+
 local act = wezterm.action
 local config = wezterm.config_builder()
+
+local edit_wezterm_config = function()
+  wezterm.action.SpawnCommandInNewTab({
+    args = { "sleep", "10"},
+  })
+end
 
 config.audible_bell = "Disabled"
 -- Disable ligatures.
@@ -41,10 +52,17 @@ config.window_padding = {
   top = 0,
   bottom = 0,
 }
+local to = function()
+  return wezterm.action.SpawnCommandInNewTab({
+    args = { "/usr/bin/zsh", "-ic", "bw_totp_1" },
+  })
+end
+
 config.disable_default_key_bindings = true
 config.keys = {
   -- CTRL-SHIFT-i activates the debug overlay
   { key = 'I', mods = 'CTRL', action = act.ShowDebugOverlay },
+  { key = "l", mods = "CTRL|SHIFT",  action = to()},
   { key = "+", mods = "CTRL", action = act.IncreaseFontSize },
   { key = "+", mods = "SHIFT|CTRL", action = act.IncreaseFontSize },
   { key = "-", mods = "CTRL", action = act.DecreaseFontSize },
@@ -119,6 +137,13 @@ config.bold_brightens_ansi_colors = "No"
 
 config.color_scheme = 'Canonical Solarized Light'
 
+-- the foreground color of selected text
+config.colors.selection_fg = '#0f0f0e'
+-- the background color of selected text
+config.colors.selection_bg = '#aaa46d'
+
+config.window_decorations = "RESIZE"
+config.adjust_window_size_when_changing_font_size = true
 
 -- table.insert(config.hyperlink_rules, {
 -- 	regex = [[["]?([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["]?]],

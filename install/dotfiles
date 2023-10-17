@@ -41,9 +41,8 @@ fi
 
 if [ ! -f ~/dotfiles/bin/bw ]; then
   explain "Bitwarden-cli Install"
-  VERSION="1.22.1"
-  TAR="bw-linux-${VERSION}.zip"
-  DOWNLOAD_URL="https://github.com/bitwarden/cli/releases/download/v${VERSION}/${TAR}"
+  TAR="bw-linux.zip"
+  DOWNLOAD_URL="https://vault.bitwarden.com/download/?app=cli&platform=linux"
   wget -O /tmp/$TAR "${DOWNLOAD_URL}"
   unzip -d ~/dotfiles/bin /tmp/$TAR
   chmod +x ~/dotfiles/bin/bw
