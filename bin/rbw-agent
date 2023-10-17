@@ -1,0 +1,14 @@
+#!/bin/bash
+
+docker run --rm -ti \
+  --detach=true \
+  --name=rbw-agent-$(id -u) \
+  -v ~/.cache/rbw/tmp-rbw-$(id -u):/tmp/rbw-$(id -u) \
+  -v ~/.cache/rbw/home-rbw-.config:/home/rbw/.config \
+  -v ~/.cache/rbw/home-rbw-.local:/home/rbw/.local \
+  -v ~/.cache/rbw/home-rbw-.cache:/home/rbw/.cache \
+  -e UID=$(id -u) \
+  git.prr.re/drakirus/rbw:1.0 \
+  /usr/local/bin/rbw-agent --no-daemonize
+
+

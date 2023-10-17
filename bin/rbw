@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [[ ! -S ~/.cache/rbw/tmp-rbw-$(id -u)/socket ]]; then
+  echo "No running agent found. Start agent first. Exiting..."
+  exit 1
+fi
+
+EDITOR=/usr/bin/vim 
+
+if [[ ! -z "$PWINPUT" ]]; then
+  docker exec -ti --tty --user $(id -u):$(id -g) \
+    rbw-agent-$(id -u) \
+    /usr/local/bin/rbw unlock
+  EDITOR="/pseudoeditor.sh"
+fi
+
+docker exec -ti --tty --user $(id -u):$(id -g) \
+  -e PWINPUT="$PWINPUT" \
+  -e EDITOR="$EDITOR" \
+  rbw-agent-$(id -u) \
+  /usr/local/bin/rbw "$@"
+

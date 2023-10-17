@@ -363,7 +363,9 @@ bw_totp_1() {
             break
         fi
     done
-    token=$(bw get totp 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --session "$session_id")
+    # token=$(bw get totp 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --session "$session_id")
+    echo "$session_id"
+    bw status --session "$session_id"
     echo "$token" | xclip -selection c
     echo "Token $token copied"
     sleep 0.1
