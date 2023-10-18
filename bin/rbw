@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ ! -S ~/.cache/rbw/tmp-rbw-$(id -u)/socket ]]; then
-  echo "No running agent found. Start agent first. Exiting..."
-  exit 1
+  echo "No running agent found. Starting agent first."
+  rbw-agent
 fi
 
 EDITOR=/usr/bin/vim 
