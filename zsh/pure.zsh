@@ -332,15 +332,6 @@ prompt_pure_async_git_arrows() {
     command git rev-list --left-right --count HEAD...@'{u}'
 }
 
-prompt_pure_async_tmux_set_envvar() {
-    echo "TEST"
-    if [[ -n $CONDA_DEFAULT_ENV ]]; then
-        sleep 5
-        tmux setenv CONDA_ENV $CONDA_DEFAULT_ENV
-    echo "TEST2"
-    fi
-}
-
 # Try to lower the priority of the worker so that disk heavy operations
 # like `git status` has less impact on the system responsivity.
 prompt_pure_async_renice() {
