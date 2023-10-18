@@ -340,33 +340,14 @@ fkill() {
 
 bw_totp_1() {
     echo "Loading bitwarden"
-    session_id=$(cat ~/.cache/bw_session)
-    while true; do
-        statusbw=$(bw status --session "$session_id" --raw)
-        output=$(echo $statusbw | jq -r .serverUrl)
-        if [ ${#output} -ne 24 ]; then
-            echo "Wrong server configured (use: bw config server https:// )"
-            return
-        fi
-
-        if test "$(echo $statusbw | jq -r .status)" = "unlocked"; then
-            break
-        fi
-        if test "$(echo $statusbw | jq -r .status)" = "unauthenticated"; then
-            echo "Auth"
-            session_id="$(bw login --raw)"
-            break
-        fi
-        if test "$(echo $statusbw | jq -r .status)" = "locked"; then
-            echo "Unlock"
-            session_id="$(bw unlock --raw)"
-            break
-        fi
-    done
-    token=$(bw get totp 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --session "$session_id")
+    rbw unlocked
+    if [[ $? -ne 0 ]]; then
+        rbw unlock
+    fi
+    token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
     echo "$token" | xclip -selection c
-    echo "Token $token copied"
-    sleep 0.1
+    echo "Token copied"
+    sleep 0.2
     echo $session_id > ~/.cache/bw_session
     chmod 0600 ~/.cache/bw_session
 }

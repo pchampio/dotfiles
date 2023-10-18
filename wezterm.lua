@@ -1,5 +1,6 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
+local io = require 'io'
 
 wezterm.GLOBALS = wezterm.GLOBALS or {}
 wezterm.GLOBALS.seen_windows = wezterm.GLOBALS.seen_windows or {}
@@ -22,12 +23,6 @@ end)
 
 local act = wezterm.action
 local config = wezterm.config_builder()
-
-local edit_wezterm_config = function()
-  wezterm.action.SpawnCommandInNewTab({
-    args = { "sleep", "10"},
-  })
-end
 
 config.audible_bell = "Disabled"
 -- Disable ligatures.
@@ -53,9 +48,18 @@ config.window_padding = {
   bottom = 0,
 }
 local to = function()
-  return wezterm.action.SpawnCommandInNewTab({
-    args = { "/usr/bin/zsh", "-ic", "bw_totp_1" },
-  })
+  return act.Multiple {
+    act.SpawnCommandInNewTab({
+      args = { "/usr/bin/zsh", "-ic", "bw_totp_1" },
+    }),
+    -- act.PasteFrom("Clipboard")
+    -- wezterm.action_callback(function(win, pane)
+    --   local pipe = io.popen("xclip -o -selection clipboard", "r")
+    --   local clipboard = pipe:read("*a")
+    --   pipe:close()
+    --   win:perform_action(act.SendString("coucou"), pane)
+    -- end)
+  }
 end
 
 config.disable_default_key_bindings = true
