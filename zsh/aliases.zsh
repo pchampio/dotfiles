@@ -15,7 +15,7 @@ alias backup-lab="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.exclude
 alias backup-music="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Musique /run/mount/NAS/xps13-Backup/"
 alias backup-image="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/Images /run/mount/NAS/xps13-Backup/"
 alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.excludes" ~/resource /run/mount/NAS/xps13-Backup/"
-alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.16.146:/volume1/Share /run/mount/NAS/"
+alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.1.55:/volume1/Share /run/mount/NAS/"
 alias unas="sudo umount -l /run/mount/NAS"
 
 # prr.re
