@@ -15,7 +15,7 @@ if [[ ! -d "$HOME/.config/rbw/conf-rbw-$(id -u)" ]]; then
     -v ~/.cache/rbw/tmp-rbw-$(id -u):/root/.cache/rbw/ \
     -e UID=$(id -u) \
     $image \
-    /setup.sh
+    setup
 fi
 
 if ! podman ps --format '{{.Names}}' | grep -q "^rbw-agent-$(id -u)"; then
