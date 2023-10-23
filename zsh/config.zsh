@@ -1,7 +1,7 @@
 # Save a ton of history
-HISTSIZE=20000000
+HISTSIZE=1000000
 HISTFILE=~/.zsh_history
-SAVEHIST=20000000
+SAVEHIST=1000000
 
 # Disable % eof
 unsetopt prompt_cr prompt_sp
@@ -23,6 +23,8 @@ if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
 
     # escape remap
     setxkbmap -option caps:escape
+    # xmodmap -e "keycode 51 = Return" -e "keycode 94 = Shift_L"
+    # https://tldp.org/HOWTO/Keyboard-and-Console-HOWTO-15.html
 
     # startup app to hide form taskbar
     # wmctrl -x -r MineTime -b add,skip_taskbar

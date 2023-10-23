@@ -12,6 +12,9 @@ if [ $profiling = true ]; then
   zmodload zsh/zprof
 fi
 
+source $HOME/.config/instant-zsh.zsh
+instant-zsh-pre "%004F${${(V)${(%):-%~}//\%/%%}//\///}%b%f"$'\n'"%002F\$~%f "
+
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
@@ -23,7 +26,7 @@ plugins=(encode64 docker sudo zsh-autoquoter)
 DISABLE_AUTO_UPDATE="true"
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:$HOME/.local/podman/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -159,6 +162,7 @@ for config ($HOME/dotfiles/zsh/*.zsh) source $config
 export PATH="$PATH:$HOME/.rvm/bin"
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
+instant-zsh-post
 
 if [ $profiling = true ]; then
   ## Per-command profiling: (open startlog.*)

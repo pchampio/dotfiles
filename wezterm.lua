@@ -25,6 +25,7 @@ local act = wezterm.action
 local config = wezterm.config_builder()
 
 config.audible_bell = "Disabled"
+config.window_close_confirmation = 'NeverPrompt'
 -- Disable ligatures.
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
@@ -66,22 +67,25 @@ config.disable_default_key_bindings = true
 config.keys = {
   -- CTRL-SHIFT-i activates the debug overlay
   { key = 'I', mods = 'CTRL', action = act.ShowDebugOverlay },
+  -- Bitwarden like extension
   { key = "l", mods = "CTRL|SHIFT",  action = to()},
+  -- zooms
   { key = "+", mods = "CTRL", action = act.IncreaseFontSize },
-  { key = "+", mods = "SHIFT|CTRL", action = act.IncreaseFontSize },
   { key = "-", mods = "CTRL", action = act.DecreaseFontSize },
-  { key = "-", mods = "SHIFT|CTRL", action = act.DecreaseFontSize },
-  { key = "-", mods = "SUPER", action = act.DecreaseFontSize },
   { key = "0", mods = "CTRL", action = act.ResetFontSize },
-  { key = "0", mods = "SHIFT|CTRL", action = act.ResetFontSize },
-  { key = "0", mods = "SUPER", action = act.ResetFontSize },
   { key = "=", mods = "CTRL", action = act.IncreaseFontSize },
-  { key = "=", mods = "SHIFT|CTRL", action = act.IncreaseFontSize },
-  { key = "=", mods = "SUPER", action = act.IncreaseFontSize },
-
+  -- clipboard
   { key = "C", mods = "SHIFT|CTRL", action = act.CopyTo("Clipboard") },
   { key = "V", mods = "SHIFT|CTRL", action = act.PasteFrom("Clipboard") },
+  -- OpenUrl
   { key = "x", mods = "SHIFT|CTRL", action = openUrl },
+  -- Quit
+  { key = "q", mods = "CMD", action = act.QuitApplication },
+}
+config.mouse_bindings = {
+  { event = { Drag = { streak = 1, button = "Left" } }, mods = "SHIFT", action = act({ ExtendSelectionToMouseCursor = "Cell" }) },
+  { event = { Drag = { streak = 2, button = "Left" } }, mods = "SHIFT", action = act({ ExtendSelectionToMouseCursor = "Word" }) },
+  { event = { Drag = { streak = 3, button = "Left" } }, mods = "SHIFT", action = act({ ExtendSelectionToMouseCursor = "Line" }) },
 }
 
 -- Define the colors just once
@@ -148,6 +152,7 @@ config.colors.selection_bg = '#aaa46d'
 
 config.window_decorations = "RESIZE"
 config.adjust_window_size_when_changing_font_size = true
+config.enable_wayland = false
 
 -- table.insert(config.hyperlink_rules, {
 -- 	regex = [[["]?([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["]?]],
