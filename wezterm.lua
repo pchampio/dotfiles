@@ -152,6 +152,7 @@ config.colors.selection_bg = '#aaa46d'
 
 config.window_decorations = "RESIZE"
 config.adjust_window_size_when_changing_font_size = true
+config.enable_wayland = false
 
 -- table.insert(config.hyperlink_rules, {
 -- 	regex = [[["]?([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["]?]],
