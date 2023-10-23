@@ -93,9 +93,4 @@ alias icat="kitty +kitten icat"
 # see ./abbreviations.zsh
 alias lychee_import="ssh -t drakirus@prr.re -p 2242 'cd APP && make lychee-import'"
 
-############
-#  Editor  #
-############
-
-export EDITOR='nvim'
 alias vim='nvim'
