@@ -2,7 +2,7 @@
 #
 image=git.prr.re/drakirus/rbw:1.0
 
-if [[ ! -d "$HOME/.config/rbw/conf-rbw-$(id -u)" ]]; then
+if [[ ! -f "$HOME/.config/rbw/conf-rbw-$(id -u)"/config.json ]]; then
   echo "Setting up config"
   podman rm rbw-agent-$(id -u) -f || true
 
