@@ -1,22 +1,43 @@
 #!/bin/bash
+#
+image=git.prr.re/drakirus/rbw:1.0
 
-if [[ ! -S ~/.cache/rbw/tmp-rbw-$(id -u)/socket ]]; then
-  echo "No running agent found. Starting agent first."
-  rbw-agent
+if [[ ! -d "$HOME/.config/rbw/conf-rbw-$(id -u)" ]]; then
+  echo "Setting up config"
+  podman rm rbw-agent-$(id -u) -f || true
+
+  mkdir -p ~/.config/rbw/conf-rbw-$(id -u)
+  mkdir -p ~/.cache/rbw/tmp-rbw-$(id -u)
+
+  podman run --rm -ti --tty=true \
+    --name=rbw-agent-$(id -u) \
+    -v ~/.config/rbw/conf-rbw-$(id -u):/root/.config/rbw/ \
+    -v ~/.cache/rbw/tmp-rbw-$(id -u):/root/.cache/rbw/ \
+    -e UID=$(id -u) \
+    $image \
+    /setup.sh
+fi
+
+if ! podman ps --format '{{.Names}}' | grep -q "^rbw-agent-$(id -u)"; then
+  echo "Starting container rbw-agent"
+  podman rm rbw-agent-$(id -u) -f || true
+
+  mkdir -p ~/.config/rbw/conf-rbw-$(id -u)
+  mkdir -p ~/.cache/rbw/tmp-rbw-$(id -u)
+
+  podman run -it --rm --tty=true \
+    --detach=true \
+    --name=rbw-agent-$(id -u) \
+    -v ~/.config/rbw/conf-rbw-$(id -u):/root/.config/rbw/ \
+    -v ~/.cache/rbw/tmp-rbw-$(id -u):/root/.cache/rbw/ \
+    $image \
+    agent
 fi
 
 EDITOR=/usr/bin/vim 
 
-if [[ ! -z "$PWINPUT" ]]; then
-  docker exec -ti --tty --user $(id -u):$(id -g) \
-    rbw-agent-$(id -u) \
-    /usr/local/bin/rbw unlock
-  EDITOR="/pseudoeditor.sh"
-fi
-
-docker exec -ti --tty --user $(id -u):$(id -g) \
+podman exec -ti --tty \
   -e PWINPUT="$PWINPUT" \
   -e EDITOR="$EDITOR" \
   rbw-agent-$(id -u) \
   /usr/local/bin/rbw "$@"
-

@@ -1,7 +1,7 @@
 # Save a ton of history
-HISTSIZE=20000000
+HISTSIZE=1000000
 HISTFILE=~/.zsh_history
-SAVEHIST=20000000
+SAVEHIST=1000000
 
 # Disable % eof
 unsetopt prompt_cr prompt_sp

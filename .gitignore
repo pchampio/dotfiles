@@ -9,3 +9,4 @@
 bin/nvim-linux64*
 gcc*
 /bin/tmux_bin
+*.zwc
