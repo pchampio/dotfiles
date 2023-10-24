@@ -24,13 +24,14 @@ tell sudo ln -s $dir/keyd/all.conf /etc/keyd/all.conf
 tell sudo keyd reload
 
 explain "XkbOptions compose:menu for unicode éèà"
-cat <<EOF >> /etc/X11/xorg.conf.d/compose.conf  
+# similar as: setxkbmap -option compose:menu
+sudo bash -c 'cat <<EOF >> /etc/X11/xorg.conf.d/compose.conf
 Section "InputClass"
     Identifier "system-keyboard"
     MatchIsKeyboard "on"
     Option "XkbOptions" "compose:menu"
 EndSection
 END
-EOF
+EOF'
 
 success "Success"
