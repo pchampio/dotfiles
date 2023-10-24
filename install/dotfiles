@@ -5,7 +5,7 @@ BASEDIR=$(dirname $0)
 
 mkdir -p ~/lab/ || true
 
-ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar"
+ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf"
 dir=~/dotfiles
 
 explain "Create symlink for dotfiles"
