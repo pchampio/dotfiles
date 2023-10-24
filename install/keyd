@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+explain "Installation de keyd (Need sudo)"
+
+dir=~/dotfiles
+
+cd /tmp
+rm -rf keyd || true
+git clone https://github.com/rvaiya/keyd
+cd keyd
+make
+sudo make uninstall || true
+sudo make install
+sudo systemctl enable keyd && sudo systemctl start keyd
+
+sudo rm /etc/keyd/german.conf
+sudo rm /etc/keyd/all.conf
+tell sudo ln -s $dir/keyd/german.conf /etc/keyd/german.conf
+tell sudo ln -s $dir/keyd/all.conf /etc/keyd/all.conf
+tell sudo keyd reload
+
+explain "XkbOptions compose:menu for unicode éèà"
+# similar as: setxkbmap -option compose:menu
+sudo bash -c 'cat <<EOF >> /etc/X11/xorg.conf.d/compose.conf
+Section "InputClass"
+    Identifier "system-keyboard"
+    MatchIsKeyboard "on"
+    Option "XkbOptions" "compose:menu"
+EndSection
+END
+EOF'
+
+success "Success"

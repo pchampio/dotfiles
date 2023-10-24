@@ -19,18 +19,6 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 stty start undef
 stty stop undef
 
-if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
-
-    # escape remap
-    setxkbmap -option caps:escape
-    # xmodmap -e "keycode 51 = Return" -e "keycode 94 = Shift_L"
-    # https://tldp.org/HOWTO/Keyboard-and-Console-HOWTO-15.html
-
-    # startup app to hide form taskbar
-    # wmctrl -x -r MineTime -b add,skip_taskbar
-
-fi
-
 setopt extendedglob
 # rm -- ^file.txt
 
