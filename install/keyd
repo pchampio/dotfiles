@@ -22,3 +22,5 @@ sudo rm /etc/keyd/all.conf
 tell sudo ln -s $dir/keyd/german.conf /etc/keyd/german.conf
 tell sudo ln -s $dir/keyd/all.conf /etc/keyd/all.conf
 tell sudo keyd reload
+
+success "Success"
