@@ -35,11 +35,6 @@ EndSection
 
 ```
 
-## Key
-```sh
-xmodmap -e "keycode 51 = Return" -e "keycode 94 = Shift_L" -e "keycode 118 = backslash bar" -e "keycode 118 = Multi_key"
-```
-
 ## Installation
 
 #### Clone
