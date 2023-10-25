@@ -166,6 +166,17 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 instant-zsh-post
 
+# Check if the specific SSH key is present
+for key in \
+    id_rsa \
+    id_ed25519
+do
+  if [[ -f ~/.ssh/$key ]]; then
+      tmux display-message "WARNING: You are still using the specific SSH key. Please consider updating your SSH configuration."
+      break
+  fi
+done
+
 if [ $profiling = true ]; then
   ## Per-command profiling: (open startlog.*)
   unsetopt xtrace
