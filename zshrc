@@ -58,9 +58,6 @@ export DOWNGRADE_FROM_ALA=1
 export LD_LIBRARY_PATH=$HOME/dotfiles/bin/mosh/lib
 PATH=$PATH:$HOME/dotfiles/bin/mosh/bin
 
-# mw
-PATH=$PATH:$HOME/dotfiles/mutt-wizard/bin
-
 # perl
 PATH=$PATH:/usr/bin/core_perl/
 
@@ -96,13 +93,6 @@ export PATH=/usr/bin/vendor_perl:$PATH
 
 # 10ms for key sequences
 export KEYTIMEOUT=1
-
-# vim as a man-page viewer
-export PAGER="/bin/sh -c \"unset PAGER;col -b -x | \
-    nvim -R -c 'set ft=man nomod nolist' -c 'map q :q<CR>' \
-    -c 'map <SPACE> <C-D>' -c 'map b <C-U>' \
-    -c 'nmap K :Man <C-R>=expand(\\\"<cword>\\\")<CR><CR>' -\""
-
 
 export PURE_PROMPT_SYMBOL="\$~"
 zstyle :prompt:pure:prompt:success color green
@@ -143,19 +133,12 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # vim ~/.ssh/config #
 # AddKeysToAgent yes
 # ForwardAgent yes
-if ! pgrep -u $USER ssh-agent > /dev/null; then
+# if ! pgrep -u $USER ssh-agent > /dev/null; then
+if [ ! -f ~/.ssh-agent-thing ]; then
     ssh-agent > ~/.ssh-agent-thing
-fi
-if [[ "$SSH_AGENT_PID" == "" ]]; then
+else
     eval $(<~/.ssh-agent-thing) > /dev/null
 fi
-
-# if [[ "$SSH_CONNECTION" == '' && "$FROM_IDEA" == ''  ]]; then
-  # SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | wc -l )
-  # if [ $SessionNb -eq 0 ]; then
-    # tm && exit
-  # fi
-# fi
 
 # source all .zsh files inside of the zsh/ directory
 for config ($HOME/dotfiles/zsh/*.zsh) source $config

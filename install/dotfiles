@@ -39,32 +39,14 @@ if [ ! -d ~/.fzf ]; then
   ~/.fzf/install --all
 fi
 
-if [ ! -f ~/dotfiles/bin/rbw ]; then
-  explain "Bitwarden cli-frends Install"
-  TAR="bw-linux.zip"
-  # DOWNLOAD_URL="https://vault.bitwarden.com/download/?app=cli&platform=linux"
-  # wget -O /tmp/$TAR "${DOWNLOAD_URL}"
-  # unzip -d ~/dotfiles/bin /tmp/$TAR
-  # chmod +x ~/dotfiles/bin/bw
-
-  PKG_VERSION="1.8.3"
-  DOWNLOAD_URL=https://github.com/doy/rbw/archive/refs/tags/${PKG_VERSION}.tar.gz
-  wget -O /tmp/$TAR "${DOWNLOAD_URL}"
-  tar -xvf /tmp/$TAR -C ~/dotfiles/bin
-  chmod +x ~/dotfiles/bin/rbw
-  rm /tmp/$TAR
-fi
-
-
-if [ ! -f ~/.cache/imgcat_install ]; then
-  explain "Imgcat install"
-  home=$(pwd)
-  cd /tmp
-  git clone https://github.com/wookayin/python-imgcat
-  cd python-imgcat
-  pip install -e .
-  cd $home
-  touch ~/.cache/imgcat_install
+if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
+  explain "Conf ssh config"
+chmod +w "$HOME"/.ssh/config
+cat <<EOF >>"$HOME"/.ssh/config
+Host *
+  AddKeysToAgent yes
+  ForwardAgent yes
+EOF
 fi
 
 success "Success"
