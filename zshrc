@@ -133,12 +133,13 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # vim ~/.ssh/config #
 # AddKeysToAgent yes
 # ForwardAgent yes
-# if ! pgrep -u $USER ssh-agent > /dev/null; then
-if [ ! -f ~/.ssh-agent-thing ]; then
+if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
-else
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing) > /dev/null
 fi
+
 
 # source all .zsh files inside of the zsh/ directory
 for config ($HOME/dotfiles/zsh/*.zsh) source $config
