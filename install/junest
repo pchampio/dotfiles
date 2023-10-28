@@ -1,0 +1,28 @@
+#!/bin/bash
+
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+[ -d ~/.local/share/junest ] && {
+  read -p "Delete older junest? [y] " -n 1 -r
+  echo ""    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    \rm -rf ~/.local/share/junest
+    \rm -rf ~/.junest
+  fi
+}
+
+[ ! -f ~/.local/share/junest/bin/junest ] && {
+  explain "Installation junest"
+  git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
+  ~/.local/share/junest/bin/junest setup
+} 
+
+explain "MAJ pacman"
+~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
+~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm
+~/.local/share/junest/bin/junest -f -- pacman --noconfirm -Scc
+~/.local/share/junest/bin/junest -- sudo yay -Yg
+~/.local/share/junest/bin/junest -- sudo yay --save --answerdiff None --answerclean None --removemake

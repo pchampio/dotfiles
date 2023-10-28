@@ -16,7 +16,7 @@ then
 cat <<EOF >> PKGBUILD
 pkgname=tmux-git
 _gitname=tmux
-pkgver=10096_3.3a.r263.g62f65784
+pkgver=10136_3.3a.r303.gb7777807
 pkgrel=1
 pkgdesc="A terminal multiplexer"
 url="https://github.com/tmux/tmux/wiki"
