@@ -324,14 +324,14 @@ require('lazy').setup({
         end,
   },
 
-  {
-     "TabbyML/vim-tabby",
-    init = function()
-      vim.g.tabby_node_binary = '/home/pchampio/lab/tabby/venv/bin/node'
-      vim.g.tabby_keybinding_accept = '<C-e>'
-      vim.g.tabby_keybinding_trigger_or_dismiss = '<C-\\>'
-    end,
-  },
+  -- {
+  --    "TabbyML/vim-tabby",
+  --   init = function()
+  --     vim.g.tabby_node_binary = '/home/pchampio/lab/tabby/venv/bin/node'
+  --     vim.g.tabby_keybinding_accept = '<Tab>'
+  --     vim.g.tabby_keybinding_trigger_or_dismiss = '<C-\\>'
+  --   end,
+  -- },
 
 
   -- {
