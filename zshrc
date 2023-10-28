@@ -123,9 +123,9 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre
 export ANDROID_HOME=/opt/android-sdk
 export PATH=${PATH}:${JAVA_HOME}/bin:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
 
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-  export TERM=screen-256color
-fi
+# if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+#   export TERM=screen-256color
+# fi
 
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
