@@ -32,7 +32,6 @@ Section "InputClass"
     MatchIsKeyboard "on"
     Option "XkbOptions" "compose:menu"
 EndSection
-END
 EOF'
 
 success "Success"

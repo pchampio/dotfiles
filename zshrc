@@ -61,6 +61,10 @@ PATH=$PATH:$HOME/dotfiles/bin/mosh/bin
 # perl
 PATH=$PATH:/usr/bin/core_perl/
 
+# junest
+export PATH=$HOME/.local/share/junest/bin:$PATH
+# export PATH="$PATH:$HOME/.junest/usr/bin_wrappers"
+
 # GO config
 # mkdir -p ~/lab/go/{pkg,src,bin}
 export GOPATH=$HOME/lab/go
