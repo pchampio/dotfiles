@@ -326,14 +326,7 @@ fkill() {
 
 bw_totp_1() {
     echo "Loading bitwarden"
-    rbw unlocked
-    if [[ $? -ne 0 ]]; then
-        rbw unlock
-    fi
     token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
     echo "$token" | xclip -selection c
     echo "Token copied"
-    sleep 0.2
-    echo $session_id > ~/.cache/bw_session
-    chmod 0600 ~/.cache/bw_session
 }

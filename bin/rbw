@@ -18,9 +18,14 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   # fi
   $junest rbw register
   >&2 echo "Set up complete. Start the agent..."
-else
-  >&2 echo "Set up already done. Start the agent"
-  $junest rbw-agent
+# else
+  # >&2 echo "Set up already done. Start the agent"
+  # $junest rbw-agent
+fi
+
+$junest rbw unlocked
+if [[ $? -ne 0 ]]; then
+    $junest rbw unlock
 fi
 
 $junest rbw "$@"

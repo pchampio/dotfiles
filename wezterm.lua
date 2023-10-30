@@ -19,8 +19,8 @@ end)
 
 wezterm.on('gui-startup', function()
   local tab, pane, window = wezterm.mux.spawn_window({})
-  window:maximize()
-  window:focus()
+  window:gui_window():maximize()
+  window:gui_window():focus()
 end)
 
 local act = wezterm.action
