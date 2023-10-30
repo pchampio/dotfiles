@@ -294,7 +294,7 @@ function mosh-relay-server() {
     kill -9 $(lsof -t -i:${PORT})
     kill -9 $(lsof -t -i:$(($PORT + 1)))
     tcp2udp --tcp-listen  0.0.0.0:$PORT --udp-forward 0.0.0.0:$(($PORT + 1)) &
-    key=$(TMUX='' MOSH_SERVER_NETWORK_TMOUT=604800 MOSH_SERVER_SIGNAL_TMOUT=604800 LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 /tmp/mo/mosh-server new -p "$(($PORT + 1))"  -- /bin/zsh | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p')
+    key=$(TMUX='' MOSH_SERVER_NETWORK_TMOUT=604800 MOSH_SERVER_SIGNAL_TMOUT=604800 LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 ~/dotfiles/bin/mosh-server new -p "$(($PORT + 1))"  -- /bin/zsh | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p')
     cmd="ssh -L $(($PORT + 2)):localhost:$(($PORT + 2)) share@prr.re &; udp2tcp --udp-listen 0.0.0.0:$(($PORT + 3)) --tcp-forward 0.0.0.0:$(($PORT + 2)) &; LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 MOSH_KEY=$key mosh-client 0.0.0.0 $(($PORT + 3))"
     echo "Connect using $ $cmd"
 

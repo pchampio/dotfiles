@@ -7,7 +7,9 @@ BASEDIR=$(dirname $0)
 
 
 explain "Instalation de MOSH"
-cd /tmp/
+mkdir ~/.mosh-build
+cd ~/.mosh-build
 wget https://github.com/eggbean/mosh-static-multiarch/releases/download/null/mosh-static-x86_64.tar.gz
 tar -xvf mosh-static-x86_64.tar.gz
 cp mosh-client mosh-server ~/dotfiles/bin
+rm -rf ~/.mosh-build
