@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+
+explain "Instalation de MOSH"
+cd /tmp/
+wget https://github.com/eggbean/mosh-static-multiarch/releases/download/null/mosh-static-x86_64.tar.gz
+tar -xvf mosh-static-x86_64.tar.gz
+cp mosh-client mosh-server ~/dotfiles/bin

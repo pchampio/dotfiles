@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+
+explain "Instalation de rust bitwarden"
+yes | ~/.local/share/junest/bin/junest -- yay -S rbw-git
+

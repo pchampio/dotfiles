@@ -12,13 +12,15 @@ wezterm.on("window-config-reloaded", function(window)
     wezterm.GLOBALS.seen_windows[id] = true
 
     if is_new_window then
-        window:maximize()
+      window:maximize()
+      window:focus()
     end
 end)
 
 wezterm.on('gui-startup', function()
- local tab, pane, window = wezterm.mux.spawn_window({})
- window:gui_window():maximize()
+  local tab, pane, window = wezterm.mux.spawn_window({})
+  window:maximize()
+  window:focus()
 end)
 
 local act = wezterm.action
@@ -28,6 +30,7 @@ config.audible_bell = "Disabled"
 config.window_close_confirmation = 'NeverPrompt'
 -- Disable ligatures.
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+config. selection_word_boundary = " \t\n{}[]()\"'`,;:|│"
 
 local openUrl = act.QuickSelectArgs({
   label = "open url",

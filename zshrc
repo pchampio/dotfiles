@@ -75,11 +75,10 @@ export PATH=$PATH:$GOROOT/bin
 # wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
 
 # pip path
-PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/.local/bin
 
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
-
 
 # Local lib (for pip usualy)
 export LD_LIBRARY_PATH=/usr/local/lib/:"${LD_LIBRARY_PATH}"
@@ -104,11 +103,6 @@ zstyle :prompt:pure:prompt:success color green
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
 export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up,tab:down'
-
-# Nix
-if [[ -f ~/.nix-profile/etc/profile.d/nix.sh ]]; then
-  source ~/.nix-profile/etc/profile.d/nix.sh
-fi
 
 # Dart
 export DART_SDK="/opt/flutter/bin/cache/dart-sdk/bin"
@@ -144,6 +138,10 @@ if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing) > /dev/null
 fi
 
+# Automatic fallback to Junest for not found commands in the native Linux system
+function command_not_found_handler(){
+    junest -f -- $@ || echo "Command not found:" + $1
+}
 
 # source all .zsh files inside of the zsh/ directory
 for config ($HOME/dotfiles/zsh/*.zsh) source $config

@@ -1,43 +1,26 @@
 #!/bin/bash
-#
-image=git.prr.re/drakirus/rbw:1.0
 
-if [[ ! -f "$HOME/.config/rbw/conf-rbw-$(id -u)"/config.json ]]; then
-  echo "Setting up config"
-  podman rm rbw-agent-$(id -u) -f || true
+junest=$HOME/.local/share/junest/bin/junest
 
-  mkdir -p ~/.config/rbw/conf-rbw-$(id -u)
-  mkdir -p ~/.cache/rbw/tmp-rbw-$(id -u)
+if [[ ! -f $HOME/.config/rbw/config.json ]]; then
+  >&2 echo "Setting up config.."
+  read -r -p 'Enter your Bitwarden login: ' email
+  >&2 echo "email $email"
+  $junest rbw config set email "$email"
 
-  podman run --rm -ti --tty=true \
-    --name=rbw-agent-$(id -u) \
-    -v ~/.config/rbw/conf-rbw-$(id -u):/root/.config/rbw/ \
-    -v ~/.cache/rbw/tmp-rbw-$(id -u):/root/.cache/rbw/ \
-    -e UID=$(id -u) \
-    $image \
-    setup
+  read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
+  if [[ ! -z "$self_url" ]]; then
+    $junest rbw config set base_url "$self_url"
+  fi
+  # read -r -p 'Enter self-hosted installation identity url, if applicable: ' self_ident_url
+  # if [[ ! -z "$self_ident_url" ]]; then
+  #   $junest rbw config set identity_url "$self_ident_url"
+  # fi
+  $junest rbw register
+  >&2 echo "Set up complete. Start the agent..."
+else
+  >&2 echo "Set up already done. Start the agent"
+  $junest rbw-agent
 fi
 
-if ! podman ps --format '{{.Names}}' | grep -q "^rbw-agent-$(id -u)"; then
-  echo "Starting container rbw-agent"
-  podman rm rbw-agent-$(id -u) -f || true
-
-  mkdir -p ~/.config/rbw/conf-rbw-$(id -u)
-  mkdir -p ~/.cache/rbw/tmp-rbw-$(id -u)
-
-  podman run -it --rm --tty=true \
-    --detach=true \
-    --name=rbw-agent-$(id -u) \
-    -v ~/.config/rbw/conf-rbw-$(id -u):/root/.config/rbw/ \
-    -v ~/.cache/rbw/tmp-rbw-$(id -u):/root/.cache/rbw/ \
-    $image \
-    agent
-fi
-
-EDITOR=/usr/bin/vim 
-
-podman exec -ti --tty \
-  -e PWINPUT="$PWINPUT" \
-  -e EDITOR="$EDITOR" \
-  rbw-agent-$(id -u) \
-  /usr/local/bin/rbw "$@"
+$junest rbw "$@"

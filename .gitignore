@@ -2,7 +2,7 @@
 /bin/bw
 /bin/nvtop
 /bin/rg
-/bin/mosh
+/bin/mosh-*
 /bin/fd
 /bin/zsh
 /bin/tmux
