@@ -13,3 +13,5 @@ wget https://github.com/eggbean/mosh-static-multiarch/releases/download/null/mos
 tar -xvf mosh-static-x86_64.tar.gz
 cp mosh-client mosh-server ~/dotfiles/bin
 rm -rf ~/.mosh-build
+
+success "Success"
