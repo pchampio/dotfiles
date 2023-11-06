@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+success "Success"

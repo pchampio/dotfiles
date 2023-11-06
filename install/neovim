@@ -56,3 +56,4 @@ cp ./fd/fd ~/dotfiles/bin/fd
 
 rm fd.tar.gz
 rm -rf ./fd
+success "Success"

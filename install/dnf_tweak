@@ -24,3 +24,5 @@ while true; do
         * ) break;;
     esac
 done
+
+success "Success"
