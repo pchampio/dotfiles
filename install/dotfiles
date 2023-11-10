@@ -41,8 +41,9 @@ fi
 
 if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   explain "Conf ssh config"
-chmod +w "$HOME"/.ssh/config
-cat <<EOF >>"$HOME"/.ssh/config
+  touch "$HOME"/.ssh/config
+  chmod +w "$HOME"/.ssh/config
+  cat <<EOF >>"$HOME"/.ssh/config
 Host *
   AddKeysToAgent yes
   ForwardAgent yes
