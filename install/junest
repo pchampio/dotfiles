@@ -22,6 +22,7 @@ BASEDIR=$(dirname $0)
 
 explain "MAJ pacman"
 ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
+~/.local/share/junest/bin/junest -f -- pacman -S gnu-free-fonts
 ~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm
 ~/.local/share/junest/bin/junest -f -- pacman --noconfirm -Scc
 ~/.local/share/junest/bin/junest -- sudo yay -Yg

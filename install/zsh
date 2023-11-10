@@ -8,14 +8,15 @@ rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
 explain "Installation de oh-my-zsh"
-  echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+  export KEEP_ZSHRC='yes'
+  export echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
   if [ -f ~/.zsh-update ]; then
     sudo chown $USER ~/.zsh-update
   fi
 
 explain "Installation de instant-zsh"
   curl -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
-  zcompile ~/.config/instant-zsh.zsh
+  # zcompile ~/.config/instant-zsh.zsh
 
 explain "Installation de zsh-syntax-highlighting"
   tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
