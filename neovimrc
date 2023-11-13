@@ -51,7 +51,7 @@ require('lazy').setup({
       -- Automatically install LSPs to stdpath for neovim
       { 'williamboman/mason.nvim', config = true, event = "VeryLazy" },
       {'williamboman/mason-lspconfig.nvim', event = "VeryLazy",},
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {}, event = "VeryLazy" },
+      { 'j-hui/fidget.nvim', opts = { fmt = { max_messages = 3,} }, event = "VeryLazy" },
       {
         "KostkaBrukowa/definition-or-references.nvim",
         event = "VeryLazy",

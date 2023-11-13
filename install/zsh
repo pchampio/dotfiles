@@ -62,7 +62,7 @@ then
   echo "[ -f $wherezsh ] && exec $wherezsh -l" >> $HOME/.bashrc
 fi
 
-read -p "Add exec zsh to csh or tcsh? " -n 1 -r
+read -p "Add exec zsh to csh or tcsh (.login)? " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -77,5 +77,11 @@ then
 	sudo chsh -s "$(command -v zsh)" "${USER}"
 fi
 
+if [[ -f $wherezsh ]]
+then
+  ln -s $wherezsh ~/.local/bin/zsh || true
+else
+  ln -s "$(command -v zsh)" ~/.local/bin/zsh || true
+fi
 
 success "Success"

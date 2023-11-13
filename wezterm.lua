@@ -1,6 +1,8 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
-local io = require 'io'
+local os = require 'os'
+
+HOME = os.getenv("HOME")
 
 wezterm.GLOBALS = wezterm.GLOBALS or {}
 wezterm.GLOBALS.seen_windows = wezterm.GLOBALS.seen_windows or {}
@@ -54,15 +56,19 @@ config.window_padding = {
 local to = function()
   return act.Multiple {
     act.SpawnCommandInNewTab({
-      args = { "/usr/bin/zsh", "-ic", "bw_totp_1" },
+      label = 'Get Totp',
+      args = { HOME .. "/.local/bin/zsh", "-ic", "bw_totp_1" },
     }),
     -- act.PasteFrom("Clipboard")
-    -- wezterm.action_callback(function(win, pane)
-    --   local pipe = io.popen("xclip -o -selection clipboard", "r")
-    --   local clipboard = pipe:read("*a")
-    --   pipe:close()
-    --   win:perform_action(act.SendString("coucou"), pane)
-    -- end)
+    wezterm.action_callback(function(win, pane)
+      local clipboard = ""
+      while not clipboard:match "^BW@:" do
+        local success, stdout, stderr = wezterm.run_child_process { "xclip", "-o", "-selection", "clipboard" }
+        clipboard = stdout
+        wezterm.sleep_ms(100)
+      end
+      pane:send_paste(clipboard:sub(5))
+    end)
   }
 end
 
