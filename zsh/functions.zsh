@@ -353,8 +353,8 @@ ssh() {
     fi
     echo "Loading ssh keys from vault"
     rbw unlocked
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add  -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add  -
     if [ $# -ne 0 ]; then
         command ssh $@
         exit $?
