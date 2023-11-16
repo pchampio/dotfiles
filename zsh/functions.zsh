@@ -288,6 +288,19 @@ function aspec-all() {
 ##########
 #  MOSH  #
 ##########
+#
+function moshw() {
+    # Create a named pipe for communication
+    pipe=/tmp/background_pipe
+    mkfifo $pipe
+
+    ssh -NL ${1}:localhost:${1} share@prr.re < $pipe &
+    sleep 2s
+
+    echo "4" > $pipe
+    rm /tmp/background_pipe
+}
+
 
 function mosh-relay-server() {
     PORT="$(seq 7000 4 7050 | shuf -n 1)"
@@ -326,7 +339,21 @@ fkill() {
 
 bw_totp_1() {
     echo "Loading bitwarden"
-    token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
-    echo "BW@:$token" | env COPY_PROVIDERS=desktop clipboard-provider copy
+    # token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
+    # echo "BW@:$token" | env COPY_PROVIDERS=desktop clipboard-provider copy
+    rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp' --clipboard
     echo "Token copied"
+}
+
+ssh() {
+    line_count=$(ssh-add -l | wc -l)
+    # Check if the line count is greater than or equal to 2
+    if [ "$line_count" -ge 3 ]; then
+        command ssh $@
+    else
+        rbw unlocked
+        rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
+        rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
+        command ssh $@
+    fi
 }

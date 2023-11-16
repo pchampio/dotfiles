@@ -8,4 +8,5 @@ BASEDIR=$(dirname $0)
 
 explain "Instalation de rust bitwarden"
 yes | ~/.local/share/junest/bin/junest -- yay -S rbw-git
+yes | ~/.local/share/junest/bin/junest -- yay -S sshpass
 

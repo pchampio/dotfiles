@@ -85,7 +85,7 @@ alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one; killall '
 
 alias sig="cat resources/sig | xsel -b --clipboard"
 
-alias ssh="env TERM=tmux-256color ssh"
+# alias ssh="env TERM=tmux-256color ssh"
 
 alias icat="kitty +kitten icat"
 
