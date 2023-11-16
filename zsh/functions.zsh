@@ -347,13 +347,16 @@ bw_totp_1() {
 
 ssh() {
     line_count=$(ssh-add -l | wc -l)
-    # Check if the line count is greater than or equal to 2
-    if [ "$line_count" -ge 3 ]; then
+    if [ "$line_count" -ge 2 ] && [ $# -ne 0 ]; then
         command ssh $@
-    else
-        rbw unlocked
-        rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
-        rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
+        exit $?
+    fi
+    echo "Loading ssh keys from vault"
+    rbw unlocked
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase')  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -
+    if [ $# -ne 0 ]; then
         command ssh $@
+        exit $?
     fi
 }
