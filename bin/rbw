@@ -24,8 +24,5 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
 fi
 
 $junest rbw unlocked
-if [[ $? -ne 0 ]]; then
-    $junest rbw unlock
-fi
 
 $junest rbw "$@"
