@@ -339,9 +339,9 @@ fkill() {
 
 bw_totp_1() {
     echo "Loading bitwarden"
-    # token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
-    # echo "BW@:$token" | env COPY_PROVIDERS=desktop clipboard-provider copy
-    rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp' --clipboard
+    token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
+    echo "BW@:$token" | env COPY_PROVIDERS=desktop clipboard-provider copy
+    # rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp' --clipboard
     echo "Token copied"
 }
 
@@ -353,8 +353,11 @@ ssh() {
     fi
     echo "Loading ssh keys from vault"
     rbw unlocked
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add  -
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add  -
+    if [[ $? -ne 0 ]]; then
+        rbw unlock
+    fi
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 1h  -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 1h  -
     if [ $# -ne 0 ]; then
         command ssh $@
         exit $?

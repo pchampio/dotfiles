@@ -127,7 +127,7 @@ config.color_schemes = {
   -- No selection_fg since the solarized selection_bg is designed to work without it
   ["Canonical Solarized Light"] = {
     foreground = solarized_colors.brights[4],
-    background = solarized_colors.brights[8],
+    background = "#fbf3db",
     cursor_bg = solarized_colors.brights[3],
     cursor_border = solarized_colors.brights[3],
     cursor_fg = solarized_colors.ansi[8],
