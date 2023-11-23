@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+VERSION=20230712-072601-f4abf8fd # https://wezfurlong.org/wezterm/install/source.html#installing-from-source
+
+cd /opt/
+
+cargo --version
+if [[ $? -ne 0 ]]; then
+  explain "Install rust/cargo"
+  curl https://sh.rustup.rs -sSf | sh -s
+fi
+explain "Install wezterm-$VERSION"
+\rm wezterm-$VERSION -rf || true
+curl -LO https://github.com/wez/wezterm/releases/download/$VERSION/wezterm-${VERSION}-src.tar.gz
+tar -xzf wezterm-$VERSION-src.tar.gz
+cd wezterm-$VERSION
+./get-deps
+cargo build --release
+
+cat <<EOF >> $HOME/.local/share/applications/org.wezfurlong.wezterm.desktop
+[Desktop Entry]
+Categories=System;TerminalEmulator;Utility;
+Comment[fr_FR]=Wez's Terminal Emulator
+Comment=Wez's Terminal Emulator
+Exec=/opt/wezterm-$VERSION/target/release/wezterm start --cwd .
+GenericName[fr_FR]=
+GenericName=
+Icon=org.wezfurlong.wezterm
+Keywords=shell;prompt;command;commandline;cmd;
+MimeType=
+Name[fr_FR]=WezTerm
+Name=WezTerm
+Path=
+StartupNotify=true
+StartupWMClass=org.wezfurlong.wezterm
+Terminal=false
+TerminalOptions=
+TryExec=wezterm
+Type=Application
+X-KDE-RunOnDiscreteGpu=false
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+EOF
+
+success "Success"
