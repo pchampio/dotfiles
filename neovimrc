@@ -595,8 +595,9 @@ require('lazy').setup({
   {
     "whiteinge/diffconflicts",
     cmd = "DiffConflicts",
-    init = function()
-      vim.cmd('hi DiffText guifg=#268bd2 ctermbg=NONE guibg=NONE guisp=#268bd2')
+    lazy = true,
+    config = function()
+      vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
     end,
   },
 
@@ -611,10 +612,10 @@ require('lazy').setup({
     end,
     keys = {
       { mode = { "i" }, "<C-a>", "<Esc>:AI<CR>a", { silent = true } },
-      { mode = { "n" }, "<M-a>", ":AI",           { silent = true } },
+      { mode = { "n" }, "<A-a>", ":AI",           { silent = true } },
       {
         mode = { "v" },
-        "<M-c>",
+        "<A-c>",
         ":AI Corrects sentences into standard English.<CR>",
         { desc = "Grammar check", silent = true },
       },
