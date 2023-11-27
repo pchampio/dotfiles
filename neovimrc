@@ -1,3 +1,5 @@
+vim.api.nvim_set_var('python3_host_prog', vim.fn.expand("~") .. '/.local/share/pyenv/bin/python')
+
 vim.g.largeEnable = vim.fn.getenv('large_file_disable_plugin')
 vim.g.largeEnable = vim.g.largeEnable == vim.NIL or vim.g.largeEnable == "true"
 
@@ -36,11 +38,10 @@ require('lazy').setup({
   'tpope/vim-sleuth',
   {
     "andymass/vim-matchup",
-    event = "VeryLazy",
     config = function()
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
-      vim.g.matchup_motion_enabled = false
-      vim.g.matchup_text_obj_enabled = false
+      vim.g.matchup_motion_enabled = true
+      vim.g.matchup_text_obj_enabled = true
       vim.g.matchup_surround_enabled = false
     end,
   },
@@ -50,8 +51,31 @@ require('lazy').setup({
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
       { 'williamboman/mason.nvim', config = true, event = "VeryLazy" },
-      {'williamboman/mason-lspconfig.nvim', event = "VeryLazy",},
-      { 'j-hui/fidget.nvim', opts = { fmt = { max_messages = 3,} }, event = "VeryLazy" },
+      { 'williamboman/mason-lspconfig.nvim', event = "VeryLazy", },
+      {
+        'j-hui/fidget.nvim',
+        config = function()
+          require("definition-or-references").setup({
+            progress = {
+              suppress_on_insert = false, -- Suppress new messages while in insert mode
+              ignore_done_already = false, -- Ignore new tasks that are already complete
+              ignore = { "null-ls" }, -- List of LSP servers to ignore
+              display = {
+                render_limit = 4, -- How many LSP messages to show at once
+                done_ttl = 2, -- How long a message should persist after completion
+              },
+            },
+            notification = {
+              override_vim_notify = true, -- Automatically override vim.notify() with Fidget
+              window = {
+                winblend = 0, -- Background color opacity in the notification window
+                zindex = 75, -- Stacking priority of the notification window
+              },
+            },
+          })
+        end,
+        event = "VeryLazy"
+      },
       {
         "KostkaBrukowa/definition-or-references.nvim",
         event = "VeryLazy",
@@ -80,27 +104,27 @@ require('lazy').setup({
       --  This function gets run when an LSP connects to a particular buffer.
       local on_attach = function(_, bufnr)
         local nmap = function(keys, func, desc)
-          if desc then desc = 'LSP: ' .. desc end
+          if desc then desc = ' ' .. desc end
           vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
         end
-        nmap('<leader>e', vim.lsp.buf.rename, '[R]e[n]ame')
-        nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+        nmap('<leader>e', vim.lsp.buf.rename, 'Rename')
+        nmap('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
 
-        nmap('gd', require("definition-or-references").definition_or_references, '[G]oto [D]efinition or references')
-        nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-        nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
+        nmap('gd', require("definition-or-references").definition_or_references, 'Goto Definition or references')
+        nmap('gI', vim.lsp.buf.implementation, 'Goto Implementation')
+        nmap('<leader>D', vim.lsp.buf.type_definition, 'Type Definition')
 
         -- See `:help K` for why this keymap
         nmap('<leader>k', vim.lsp.buf.hover, 'Hover Documentation')
         nmap('<leader>K', vim.lsp.buf.signature_help, 'Signature Documentation')
 
         -- Lesser used LSP functionality
-        nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-        nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-        nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-        nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, '[W]orkspace [L]ist Folders')
+        nmap('gD', vim.lsp.buf.declaration, 'Goto Declaration')
+        nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, 'Workspace Add Folder')
+        nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, 'Workspace Remove Folder')
+        nmap('<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 'Workspace List Folders')
 
-        nmap('<leader>ff', vim.lsp.buf.format, '[F]ormat current buffer with LSP')
+        nmap('<leader>ff', vim.lsp.buf.format, 'Format current buffer with LSP')
 
         -- Create a command `:Format` local to the LSP buffer
         vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_) vim.lsp.buf.format() end, { desc = 'Format current buffer with LSP' })
@@ -209,11 +233,11 @@ require('lazy').setup({
   {
     "folke/trouble.nvim",
     keys = {
-      { "<leader>dx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
-      { "<leader>dX", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
-      { "<leader>dq", "<cmd>TroubleToggle quickfix<cr>", desc = "Quickfix List (Trouble)" },
-      { "]e", "<cmd>Trouble document_diagnostics<cr> <cmd> lua require('trouble').next({skip_groups = true, jump = true});<cr>", silent = true, desc = "Next error (Trouble)" },
-      { "[e", "<cmd>Trouble document_diagnostics<cr> <cmd> lua require('trouble').previous({skip_groups = true, jump = true});<cr>", silent = true, desc = "Previous error (Trouble)" },
+      { "<leader>dx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = " Document Diagnostics" },
+      { "<leader>dX", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = " Workspace Diagnostics" },
+      { "<leader>dq", "<cmd>TroubleToggle quickfix<cr>", desc = " Quickfix List" },
+      { "]e", "<cmd>Trouble document_diagnostics<cr> <cmd> lua require('trouble').next({skip_groups = true, jump = true});<cr>", silent = true, desc = " Next error" },
+      { "[e", "<cmd>Trouble document_diagnostics<cr> <cmd> lua require('trouble').previous({skip_groups = true, jump = true});<cr>", silent = true, desc = " Previous error" },
     },
     opts = { padding = false, }
   },
@@ -366,7 +390,7 @@ require('lazy').setup({
   {
     "echasnovski/mini.trailspace",
     keys = {
-      { "<leader>ts", function() require("mini.trailspace").trim() end, desc = "Trim white space" },
+      { "<leader>ts", function() require("mini.trailspace").trim() end, desc = "󱁐  Trim white space" },
     },
   },
 
@@ -437,16 +461,16 @@ require('lazy').setup({
       vim.g.textobj_sandwich_no_default_key_mappings = 1
     end,
     keys = {
-      { mode = { "n", "x" }, "S", "<Plug>(operator-sandwich-add)", desc = "Add surrounding character" },
-      { mode = { "n", "x" }, "SS", "<Plug>(operator-sandwich-add)line", desc = "Add surrounding character line" },
-      { mode = { "n" }, "ds", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "Delete surrounding character" },
-      { mode = { "n" }, "dss", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "Delete surrounding character automatically" },
-      { mode = { "n" }, "cs", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "Change surrounding character" },
-      { mode = { "n" }, "css", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "Change surrounding character automatically" },
-      { mode = { "x", "o" }, "is", "<Plug>(textobj-sandwich-query-i)", desc = "Select inside surrounding character" },
-      { mode = { "x", "o" }, "as", "<Plug>(textobj-sandwich-query-a)", desc = "Select around surrounding character" },
-      { mode = { "x", "o" }, "ii", "<Plug>(textobj-sandwich-auto-i)", desc = "Select inside surrounding character automatically" },
-      { mode = { "x", "o" }, "ai", "<Plug>(textobj-sandwich-auto-a)", desc = "Select around surrounding character automatically" },
+      { mode = { "n", "x" }, "S", "<Plug>(operator-sandwich-add)", desc = "󰗅 Add surrounding character" },
+      { mode = { "n", "x" }, "SS", "<Plug>(operator-sandwich-add)line", desc = "󰗅  Add surrounding character line" },
+      { mode = { "n" }, "ds", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Delete surrounding character" },
+      { mode = { "n" }, "dss", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Delete surrounding character automatically" },
+      { mode = { "n" }, "cs", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Change surrounding character" },
+      { mode = { "n" }, "css", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Change surrounding character automatically" },
+      { mode = { "x", "o" }, "is", "<Plug>(textobj-sandwich-query-i)", desc = "󰗅  Select inside surrounding character" },
+      { mode = { "x", "o" }, "as", "<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Select around surrounding character" },
+      { mode = { "x", "o" }, "ii", "<Plug>(textobj-sandwich-auto-i)", desc = "󰗅  Select inside surrounding character automatically" },
+      { mode = { "x", "o" }, "ai", "<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Select around surrounding character automatically" },
     },
   },
 
@@ -510,8 +534,8 @@ require('lazy').setup({
           miniclue.gen_clues.registers(),
           miniclue.gen_clues.windows(),
           -- miniclue.gen_clues.z(),
-          { mode = 'n', keys = 'zl', postkeys = '4z', desc = 'Pane right' },
-          { mode = 'n', keys = 'zh', postkeys = '4z', desc = 'Pane left' },
+          { mode = 'n', keys = 'zl', postkeys = '4z', desc = ' Pane right' },
+          { mode = 'n', keys = 'zh', postkeys = '4z', desc = ' Pane left' },
           { mode = 'n', keys = ']h', postkeys = ']' },
           { mode = 'n', keys = '[h', postkeys = '[' },
           { mode = 'n', keys = '[y', postkeys = '[' },
@@ -553,13 +577,13 @@ require('lazy').setup({
       },
     },
     keys = {
-      { "]h", function() require("gitsigns").next_hunk() end, desc = "next_hunk" },
-      { "[h", function() require("gitsigns").prev_hunk() end, desc = "prev_hunk" },
-      { "<leader>ha", function() require("gitsigns").stage_hunk() end, desc = "stage_hunk" },
-      { "<leader>hu", function() require("gitsigns").undo_stage_hunk() end, desc = "undo_stage_hunk" },
-      { "<leader>hr", function() require("gitsigns").reset_hunk() end, desc = "reset_hunk" },
-      { "<leader>hp", function() require("gitsigns").preview_hunk() end, desc = "preview_hunk" },
-      { "<leader>hd", function() require("gitsigns").diffthis() end, desc = "diffthis" },
+      { "]h", function() require("gitsigns").next_hunk() end, desc = " Next hunk" },
+      { "[h", function() require("gitsigns").prev_hunk() end, desc = " Prev hunk" },
+      { "<leader>ha", function() require("gitsigns").stage_hunk() end, desc = " Stage hunk" },
+      { "<leader>hu", function() require("gitsigns").undo_stage_hunk() end, desc = " Undo stage hunk" },
+      { "<leader>hr", function() require("gitsigns").reset_hunk() end, desc = " Reset hunk" },
+      { "<leader>hp", function() require("gitsigns").preview_hunk() end, desc = " Preview hunk" },
+      { "<leader>hd", function() require("gitsigns").diffthis() end, desc = " Diffthis" },
     },
   },
 
@@ -883,26 +907,22 @@ require('lazy').setup({
             enable = true,
             include_surrounding_whitespace = true,
             keymaps = {
-              ['ih'] = { query = '@parameter.outer', desc = "ts: outer param" },
-              ['il'] = { query = '@parameter.inner', desc = "ts: inner param" },
-              ['af'] = { query = '@function.outer', desc = 'ts: all function' },
-              ['if'] = { query = '@function.inner', desc = 'ts: inner function' },
-              ['ac'] = { query = '@class.outer', desc = 'ts: all class' },
-              ['ic'] = { query = '@class.inner', desc = 'ts: inner class' },
-              ['aC'] = { query = '@conditional.outer', desc = 'ts: all conditional' },
-              ['iC'] = { query = '@conditional.inner', desc = 'ts: inner conditional' },
-              ['aL'] = { query = '@assignment.lhs', desc = 'ts: assignment lhs' },
-              ['aR'] = { query = '@assignment.rhs', desc = 'ts: assignment rhs' },
+              ['ih'] = { query = '@parameter.outer', desc = "󱘎 outer param" },
+              ['il'] = { query = '@parameter.inner', desc = "󱘎 inner param" },
+              ['af'] = { query = '@function.outer', desc = '󱘎 all function' },
+              ['if'] = { query = '@function.inner', desc = '󱘎 inner function' },
+              ['ac'] = { query = '@class.outer', desc = '󱘎 all class' },
+              ['ic'] = { query = '@class.inner', desc = '󱘎 inner class' },
+              ['aC'] = { query = '@conditional.outer', desc = '󱘎 all conditional' },
+              ['iC'] = { query = '@conditional.inner', desc = '󱘎 inner conditional' },
+              ['aL'] = { query = '@assignment.lhs', desc = '󱘎 assignment lhs' },
+              ['aR'] = { query = '@assignment.rhs', desc = '󱘎 assignment rhs' },
             },
           },
           swap = {
             enable = true,
-            swap_next = {
-              ["<leader>a"] = "@parameter.inner",
-            },
-            swap_previous = {
-              ["<leader>x"] = "@parameter.inner",
-            },
+            swap_next = { ["<leader>a"] = "@parameter.inner" },
+            swap_previous = { ["<leader>x"] = "@parameter.inner" },
           },
           move = {
             enable = true,
@@ -923,10 +943,13 @@ require('lazy').setup({
     enabled = vim.g.largeEnable,
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     keys = {
-      { "gJ", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
-      { "gS", "<cmd>TSJSplit<cr>",  desc = "Join Split" }
+      { "gJ", "<cmd>TSJToggle<cr>", desc = " Join Toggle" },
+      { "gS", "<cmd>TSJSplit<cr>",  desc = " Join Split" }
     },
     opts = { use_default_keymaps = false, max_join_length = 1000 },
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-context"
   },
 
   {
@@ -946,21 +969,20 @@ require('lazy').setup({
       },
     }
     end,
-
-},
+  },
 
   {
     "gbprod/yanky.nvim",
     event = "CursorHold",
-    config = function ()
-    vim.cmd([[hi YankyPut guifg=#37afd3 gui=underline,bold]])
-    local mapping = require "yanky.telescope.mapping"
-    local mappings = mapping.get_defaults()
-    mappings.i["<c-p>"] = nil
-    mappings.i["<cr>"] = mapping.set_register(require("yanky.utils").get_default_register())
-    require("yanky").setup({
-      system_clipboard={sync_with_ring=false},
-      ring = {storage = "memory",},
+    config = function()
+      vim.cmd([[hi YankyPut guifg=#37afd3 gui=underline,bold]])
+      local mapping = require "yanky.telescope.mapping"
+      local mappings = mapping.get_defaults()
+      mappings.i["<c-p>"] = nil
+      mappings.i["<cr>"] = mapping.set_register(require("yanky.utils").get_default_register())
+      require("yanky").setup({
+        system_clipboard = { sync_with_ring = false },
+        ring = { storage = "memory", },
         picker = {
           telescope = {
             use_default_mappings = false,
@@ -972,18 +994,74 @@ require('lazy').setup({
           on_yank = false,
           timer = 500,
         },
-    })
-    vim.keymap.set({"n","x"}, "y", "<Plug>(YankyYank)")
-    vim.keymap.set("n", "[y", "<Plug>(YankyCycleForward)")
-    vim.keymap.set("n", "]y", "<Plug>(YankyCycleBackward)")
-    vim.api.nvim_set_keymap("", "p", "<Plug>(YankyPutAfter)", { desc = "Paste after" })
-    vim.api.nvim_set_keymap("", "P", "<Plug>(YankyPutBefore)", { desc = "Paste before" })
-    vim.api.nvim_set_keymap("", "gp", "<Plug>(YankyPutIndentAfterLinewise)", { desc = "Paste G after" })
-    vim.api.nvim_set_keymap("", "gP", "<Plug>(YankyPutIndentBeforeLinewise)", { desc = "Paste G before" })
-    require("telescope").load_extension("yank_history")
-    vim.api.nvim_set_keymap("", "<leader>yy", ":Telescope yank_history<cr>", { desc = "Open Yank History",  noremap = true, silent = true })
-  end,
-},
+      })
+      vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
+      vim.keymap.set("n", "[y", "<Plug>(YankyCycleForward)")
+      vim.keymap.set("n", "]y", "<Plug>(YankyCycleBackward)")
+      vim.api.nvim_set_keymap("", "p", "<Plug>(YankyPutAfter)", { desc = "Paste after" })
+      vim.api.nvim_set_keymap("", "P", "<Plug>(YankyPutBefore)", { desc = "Paste before" })
+      vim.api.nvim_set_keymap("", "gp", "<Plug>(YankyPutIndentAfterLinewise)", { desc = "Paste G after" })
+      vim.api.nvim_set_keymap("", "gP", "<Plug>(YankyPutIndentBeforeLinewise)", { desc = "Paste G before" })
+      require("telescope").load_extension("yank_history")
+    end,
+  },
+
+  { -- Harpoon
+    "ThePrimeagen/harpoon",
+    lazy = true,
+    keys = {
+      { "<leader>h<space>", function() require("harpoon.ui").toggle_quick_menu() end, desc = "󱕘 Edit marks" },
+      { "<leader>sh", "<cmd>Telescope harpoon marks<cr>", desc = "󱕘 Show marks" },
+      { "<leader>hh", function() require("harpoon.mark").add_file() end, desc = "󱕘 Mark this file" },
+      { "<A-y>", function() require("harpoon.ui").nav_file(1) end, desc = "󱕘 Navigate to file 1" },
+      { "<A-u>", function() require("harpoon.ui").nav_file(2) end, desc = "󱕘 Navigate to file 2" },
+      { "<A-i>", function() require("harpoon.ui").nav_file(3) end, desc = "󱕘 Navigate to file 3" },
+      { "<A-o>", function() require("harpoon.ui").nav_file(4) end, desc = "󱕘 Navigate to file 4" },
+      { "<A-p>", function() require("harpoon.ui").nav_file(5) end, desc = "󱕘 Navigate to file 4" },
+      { "<A-o>", function()
+        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<A-o>", true, false, true), "j", "k", "h", "l" }
+        require("portal.builtin").harpoon.tunnel() end, desc = "󱕘 Portal Harpoon" },
+    },
+    config = function()
+      require("telescope").load_extension("harpoon")
+    end,
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+    },
+  },
+
+  {
+    "cbochs/portal.nvim",
+    keys = {
+      { "<C-o>", function()
+        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }
+        require("portal.builtin").jumplist.tunnel_backward(
+          { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
+        )
+      end, desc = "󰈈 Jump Backward" },
+      { "<C-i>", function()
+        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-i>", true, false, true), "j", "k", "h", "l" }
+        require("portal.builtin").jumplist.tunnel_forward(
+          { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
+        )
+        end, desc = "󰈈 Jump Forward" },
+      { "g;", "<cmd>Portal changelist backward<cr>", desc = "󰈈 Change Backward" },
+      { "g,", "<cmd>Portal changelist forward<cr>", desc = "󰈈 Change Forward" },
+    },
+  },
+
+
+  {
+    "ThePrimeagen/git-worktree.nvim",
+    keys = {
+      { "<leader>gt", function() require("telescope").extensions.git_worktree.git_worktrees() end, desc = " Git Worktree switch" },
+      { "<leader>gn", function() require("telescope").extensions.git_worktree.create_git_worktree() end, desc = " Git Worktree new branch" },
+    },
+    config = function()
+      require("git-worktree").setup {}
+      require("telescope").load_extension "git_worktree"
+    end,
+  },
 
   {
     -- Fuzzy Finder (files, lsp, etc)
@@ -991,19 +1069,19 @@ require('lazy').setup({
     branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim', "debugloop/telescope-undo.nvim", },
     keys = {
-      { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = '[?] Find recently opened files' },
-      { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = 'Search [G]it [F]iles' },
-      { '<c-p>', function() require('telescope.builtin').find_files() end, desc = '[S]earch Files' },
-      { '<leader>sh', function() require('telescope.builtin').help_tags() end, desc = '[S]earch [H]elp' },
-      { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = '[S]earch current [W]ord' },
-      { '<leader>sg', function() require('telescope.builtin').live_grep() end, desc = '[S]earch by [G]rep' },
-      { '<leader>sd', function() require('telescope.builtin').diagnostics() end, desc = '[S]earch [D]iagnostics' },
-      { '<leader>/', function() require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes') .get_dropdown { winblend = 10, previewer = false }) end, desc = '[/] Fuzzily search in current buffer' },
-      { 'gr', function() require('telescope.builtin').lsp_references() end, desc = '[G]oto [R]eferences' },
-      { '<leader>ds', function() require('telescope.builtin').lsp_document_symbols() end, desc = '[G]oto [R]eferences' },
-      { '<leader>ws', function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, desc = '[W]orkspace [S]ymbols' },
-      { '<leader>uu', "<cmd>Telescope undo<cr>", desc = '[U]ndo Tree' },
-      { '<leader>yy', "<cmd>Telescope yank_history<cr>", desc = '[Yank] history' },
+      { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = ' Find recently opened files' },
+      { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
+      { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
+      { '<leader>sH', function() require('telescope.builtin').help_tags() end, desc = ' Search Help' },
+      { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = ' Search current Word' },
+      { '<leader>sg', function() require('telescope.builtin').live_grep() end, desc = ' Search by Grep' },
+      { '<leader>sd', function() require('telescope.builtin').diagnostics() end, desc = ' Search Diagnostics' },
+      { '<leader>/', function() require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes') .get_dropdown { winblend = 10, previewer = false }) end, desc = ' / Fuzzily search in current buffer' },
+      { 'gr', function() require('telescope.builtin').lsp_references() end, desc = ' Goto References' },
+      { '<leader>ds', function() require('telescope.builtin').lsp_document_symbols() end, desc = ' Goto References' },
+      { '<leader>ws', function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, desc = ' Workspace Symbols' },
+      { '<leader>uu', "<cmd>Telescope undo<cr>", desc = '󰚰 Undo Tree' },
+      { '<leader>yy', "<cmd>Telescope yank_history<cr>", desc = '󰮲 Yank history' },
     },
     config = function()
       local telescope = require('telescope')
@@ -1234,17 +1312,17 @@ vim.keymap.set('n', '<leader>dj', vim.diagnostic.setloclist, { desc = 'Open diag
 
 -- [[ Spell check ]]
 vim.api.nvim_set_keymap('n', '<leader>sen', '<Esc>:silent setlocal spell! spelllang=en<CR>',
-  { noremap = true, silent = true, desc = "Toggle english spell-checking" })
+  { noremap = true, silent = true, desc = "󰓆 Toggle english spell-checking" })
 vim.api.nvim_set_keymap('n', '<leader>sfr', '<Esc>:silent setlocal spell! spelllang=fr<CR>',
-  { noremap = true, silent = true, desc = "Toggle french spell-checking" })
+  { noremap = true, silent = true, desc = "󰓆 Toggle french spell-checking" })
 vim.api.nvim_set_keymap('n', '<leader>sall', '<Esc>:silent setlocal spell! spelllang=fr,en<CR>',
-  { noremap = true, silent = true, desc = "Toggle french/english spell-checking" })
+  { noremap = true, silent = true, desc = "󰓆 Toggle french/english spell-checking" })
 -- Add word to the spelling dictionary
 vim.api.nvim_set_keymap('n', '<leader>sa', '<Esc>zg',
-  { noremap = true, silent = true, desc = "[A] Add word to the spelling dictionary" })
+  { noremap = true, silent = true, desc = "󰓆 Add word to the spelling dictionary" })
 -- Remove word from the spelling dictionary
 vim.api.nvim_set_keymap('n', '<leader>sr', '<Esc>zug',
-  { noremap = true, silent = true, desc = "[R] Remove word from the spelling dictionary" })
+  { noremap = true, silent = true, desc = "󰓆 Remove word from the spelling dictionary" })
 
 -- Additional character mappings
 -- Insert mode mappings
@@ -1266,6 +1344,9 @@ vim.o.spellfile = vim.fn.expand('~/dotfiles/spell/ownSpellFile.utf-8.add')
 
 -- [ My CUSTOM viml functions ] --
 vim.cmd([[
+inoremap <expr> <A-s>  pumvisible() ?  "\<C-n>" : "\<C-x>s"
+nnoremap <expr> <A-s> pumvisible() ?  "i\<C-n>" : "w[sei\<C-x>s"
+
 " Close vim if the quickfix window or other listed window is the only window visible
 function! s:CloseOnlyWindow() abort
 let s:buftype =  getbufvar(winbufnr(winnr()), "&buftype")

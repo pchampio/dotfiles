@@ -134,7 +134,7 @@ package() {
 
 EOF
   yes | ~/.local/share/junest/bin/junest -- makepkg -Acsi
-  yes | cp ~/.junest/bin/tmux ~/dotfiles/bin/tmux
+  yes | cp -f ~/.junest/bin/tmux ~/dotfiles/bin/tmux
   # ~/.local/share/junest/bin/junest -- yay -S aur/tmux-git
 fi
 

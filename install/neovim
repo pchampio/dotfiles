@@ -10,7 +10,13 @@ cd /tmp
 curl -L https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz | tar -C "${HOME}/dotfiles/bin" -xz
 
 explain "pynvim Install"
-python3 -m pip install --user --upgrade pynvim
+python -m venv $HOME/.local/share/pyenv
+. $HOME/.local/share/pyenv/bin/activate
+pip install --upgrade pip
+python3 -m pip install pipx
+python3 -m pipx ensurepath
+python3 -m pip install --upgrade pynvim
+# pipx install XXX
 
 if [ ! -e $HOME/.vim/spell ]; then
   explain "Spelling dictionary"
