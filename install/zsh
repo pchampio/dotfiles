@@ -33,11 +33,11 @@ explain "Installation de zsh-completions"
 explain "Installation de zsh-autoquoter"
  tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
 
-explain "Installation de git-worktree-switcher"
- tell curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/wt > ~/dotfiles/bin/wt
- chmod +x ~/dotfiles/bin/wt
- mkdir -p ~/.oh-my-zsh/completions/
- curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt_completion
+# explain "Installation de git-worktree-switcher"
+#  tell curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/wt > ~/dotfiles/bin/wt
+#  chmod +x ~/dotfiles/bin/wt
+#  mkdir -p ~/.oh-my-zsh/completions/
+#  curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt
 
 explain "Installation de jq"
  tell curl https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux-amd64 > ~/dotfiles/bin/jq

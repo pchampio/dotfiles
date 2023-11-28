@@ -554,7 +554,7 @@ require('lazy').setup({
       vim.cmd([[
         nnoremap <silent> - :let current_file = expand('%')<cr>:Git<cr>:call search('\v<'.current_file.'>')<cr>
         set diffopt+=vertical
-        set diffopt+=iwhiteall
+        " set diffopt+=iwhiteall
         autocmd FileType gitcommit startinsert
         autocmd FileType gitcommit setlocal spell! spelllang=en
       ]])
@@ -580,8 +580,8 @@ require('lazy').setup({
       { "]h", function() require("gitsigns").next_hunk() end, desc = " Next hunk" },
       { "[h", function() require("gitsigns").prev_hunk() end, desc = " Prev hunk" },
       { "<leader>ha", function() require("gitsigns").stage_hunk() end, desc = " Stage hunk" },
-      { "<leader>hu", function() require("gitsigns").undo_stage_hunk() end, desc = " Undo stage hunk" },
-      { "<leader>hr", function() require("gitsigns").reset_hunk() end, desc = " Reset hunk" },
+      { "<leader>hU", function() require("gitsigns").undo_stage_hunk() end, desc = " Undo stage hunk" },
+      { "<leader>hu", function() require("gitsigns").reset_hunk() end, desc = " Reset hunk" },
       { "<leader>hp", function() require("gitsigns").preview_hunk() end, desc = " Preview hunk" },
       { "<leader>hd", function() require("gitsigns").diffthis() end, desc = " Diffthis" },
     },
@@ -597,7 +597,11 @@ require('lazy').setup({
     cmd = "DiffConflicts",
     lazy = true,
     config = function()
-      vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
+      -- vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
+      vim.cmd([[hi! DiffText cterm=bold ctermfg=0 guifg=#ad8900 guibg=#ece3cc]])
+    end,
+    init = function()
+      vim.cmd([[hi! DiffText cterm=bold ctermfg=0 guifg=#ad8900 guibg=#ece3cc]])
     end,
   },
 
@@ -950,7 +954,8 @@ require('lazy').setup({
     opts = { use_default_keymaps = false, max_join_length = 1000 },
   },
   {
-    "nvim-treesitter/nvim-treesitter-context"
+    "nvim-treesitter/nvim-treesitter-context",
+    opts = { max_lines = 1 },
   },
 
   {
@@ -1019,7 +1024,7 @@ require('lazy').setup({
       { "<A-i>", function() require("harpoon.ui").nav_file(3) end, desc = "󱕘 Navigate to file 3" },
       { "<A-o>", function() require("harpoon.ui").nav_file(4) end, desc = "󱕘 Navigate to file 4" },
       { "<A-p>", function() require("harpoon.ui").nav_file(5) end, desc = "󱕘 Navigate to file 4" },
-      { "<A-o>", function()
+      { "<leader>ho", function()
         require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<A-o>", true, false, true), "j", "k", "h", "l" }
         require("portal.builtin").harpoon.tunnel() end, desc = "󱕘 Portal Harpoon" },
     },
@@ -1033,6 +1038,20 @@ require('lazy').setup({
 
   {
     "cbochs/portal.nvim",
+    opts = {
+      window_options = {
+        relative = "editor",
+        border = "rounded",
+        row = 100,
+        col = math.floor(vim.o.columns / 4),
+        width = math.floor(vim.o.columns / 2),
+        height = 4,
+      },
+    },
+    init = function()
+      vim.api.nvim_set_keymap('n', '<A-o>', '<C-o>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<A-i>', '<C-i>', { noremap = true, silent = true })
+    end,
     keys = {
       { "<C-o>", function()
         require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }
