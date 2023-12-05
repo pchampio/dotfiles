@@ -32,7 +32,7 @@ alias py="python"
 alias py2="python2"
 alias docker_alpine="docker run -it --rm alpine /bin/ash"
 alias music="mpv ./* --shuffle --no-video"
-alias df="df --exclude-type=tmpfs -h"
+alias df="df --exclude-type=tmpfs -h | grep -v loop"
 alias de="adb devices"
 alias de-screen="adb exec-out screencap -p > screen.png"
 alias de-screen1="adb exec-out screencap -p > screen1.png"
@@ -85,12 +85,10 @@ alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one; killall '
 
 alias sig="cat resources/sig | xsel -b --clipboard"
 
-# alias ssh="env TERM=tmux-256color ssh"
-
-alias icat="kitty +kitten icat"
-
 # lychee photos
 # see ./abbreviations.zsh
 alias lychee_import="ssh -t drakirus@prr.re -p 2242 'cd APP && make lychee-import'"
 
 alias vim='nvim'
+alias vi='nvim'
+alias v='nvim'

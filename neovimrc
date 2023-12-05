@@ -287,20 +287,12 @@ require('lazy').setup({
       -- Autopairs insert `(` after select function or method item
       'windwp/nvim-autopairs',
 
-      -- github copilot
-      {
-        "zbirenbaum/copilot-cmp",
-        config = function ()
-          require("copilot_cmp").setup()
-        end
-      },
-
     },
     config = function()
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       require('luasnip.loaders.from_vscode').lazy_load()
-      local cmp_kinds = { Copilot = ' ', Text = '  ', Method = '  ', Function = '  ', Constructor = '  ',
+      local cmp_kinds = { Text = '  ', Method = '  ', Function = '  ', Constructor = '  ',
         Field = '  ', Variable = '  ', Class = '  ', Interface = '  ', Module = '  ', Property = '  ',
         Unit = '  ', Value = '  ', Enum = '  ', Keyword = '  ', Snippet = '  ', Color = '  ',
         File = '  ', Reference = '  ', Folder = '  ', EnumMember = '  ', Constant = '  ', Struct = '  ',
@@ -333,7 +325,6 @@ require('lazy').setup({
           end, { "i", "s" }),
         },
         sources = {
-          { name = "copilot" },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'buffer' },
@@ -348,43 +339,22 @@ require('lazy').setup({
         end,
   },
 
-  -- {
-  --    "TabbyML/vim-tabby",
-  --   init = function()
-  --     vim.g.tabby_node_binary = '/home/pchampio/lab/tabby/venv/bin/node'
-  --     vim.g.tabby_keybinding_accept = '<Tab>'
-  --     vim.g.tabby_keybinding_trigger_or_dismiss = '<C-\\>'
-  --   end,
-  -- },
-
-
-  -- {
-  --   "zbirenbaum/copilot.lua",
-  --   event = { "CursorHold", "CursorHoldI" },
-  --   config = function()
-  --     require("copilot").setup({
-  --       suggestion = { enabled = false },
-  --       panel = { enabled = false },
-  --       -- suggestion = {
-  --       --   enabled = true,
-  --       --   auto_trigger = false,
-  --       --   debounce = 75,
-  --       --   keymap = {
-  --       --     accept = "<c-e>",
-  --       --     accept_word = false,
-  --       --     accept_line = false,
-  --       --     next = "<M-]>",
-  --       --     prev = "<M-[>",
-  --       --     dismiss = "<C-]>",
-  --       --   },
-  --       -- },
-  --     })
-  --   end,
-  -- },
-  {
-    -- Browse and preview json files
-    "gennaro-tedesco/nvim-jqx",
-    ft = { "json", "yaml" },
+  { "David-Kunz/gen.nvim",
+    opts = {
+      model = "codellama", -- The default model to use.
+      display_mode = "split", -- The display mode. Can be "float" or "split".
+      show_prompt = true, -- Shows the Prompt submitted to Ollama.
+      show_model = true, -- Displays which model you are using at the beginning of your chat session.
+      no_auto_close = false, -- Never closes the window automatically.
+      init = function(options) pcall(io.popen, "/home/pchampio/lab/ollama.sh serve > /dev/null 2>&1 &") end,
+      -- Function to initialize Ollama
+      command = "curl --silent --no-buffer -X POST http://localhost:11434/api/generate -d $body",
+      -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
+      -- This can also be a lua function returning a command string, with options as the input parameter.
+      -- The executed command must return a JSON object with { response, context }
+      -- (context property is optional).
+      debug = false -- Prints errors and the command which is run.
+    }
   },
 
   {
@@ -596,13 +566,6 @@ require('lazy').setup({
     "whiteinge/diffconflicts",
     cmd = "DiffConflicts",
     lazy = true,
-    config = function()
-      -- vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
-      vim.cmd([[hi! DiffText cterm=bold ctermfg=0 guifg=#ad8900 guibg=#ece3cc]])
-    end,
-    init = function()
-      vim.cmd([[hi! DiffText cterm=bold ctermfg=0 guifg=#ad8900 guibg=#ece3cc]])
-    end,
   },
 
   {
@@ -633,6 +596,7 @@ require('lazy').setup({
     init = function()
       vim.o.background = 'light'
       vim.cmd.colorscheme 'selenized-light'
+      vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
     end,
   },
 
