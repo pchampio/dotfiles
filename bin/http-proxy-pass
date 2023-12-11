@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+import http.server
+import http.client
+from urllib.parse import urlparse
+import sys
+
+if len(sys.argv) < 2:
+    print("No command-line arguments provided (source target / port / Bearer).")
+    sys.exit(1)
+
+
+class ProxyHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.handle_request("GET")
+
+    def do_POST(self):
+        self.handle_request("POST")
+
+    def handle_request(self, method):
+        target_url = "http://localhost:" + str(sys.argv[1])  # Replace with your target endpoint
+
+        # Extract the Bearer token from the Authorization header
+        auth_header = self.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            self.send_response(401)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"Bearer token missing")
+            return
+
+        token = auth_header.split(" ")[1]
+
+        if token != str(sys.argv[3]):
+            self.send_response(401)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"Wrong Bearer token")
+            return
+
+        # Prepare the request to the target endpoint
+        parsed_url = urlparse(target_url)
+        connection = http.client.HTTPConnection(parsed_url.netloc)
+
+        # Read the content for POST requests
+        content_length = int(self.headers.get("Content-Length", 0))
+        post_data = self.rfile.read(content_length) if method == "POST" else None
+
+        target_path = parsed_url.path + self.path
+
+        # Send the request to the target endpoint
+        connection.request(method, target_path, body=post_data)
+        response = connection.getresponse()
+
+        # Send the response back to the client
+        self.send_response(response.status)
+        for header, value in response.getheaders():
+            self.send_header(header, value)
+        self.end_headers()
+        self.wfile.write(response.read())
+        connection.close()
+
+if __name__ == "__main__":
+    server_address = ("", int(sys.argv[2]))  # Replace with your desired port
+    httpd = http.server.HTTPServer(server_address, ProxyHandler)
+    print(f"Proxy server running on port {server_address[1]}")
+    httpd.serve_forever()

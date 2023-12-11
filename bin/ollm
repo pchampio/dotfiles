@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <Auth Bearer token>"
+    exit 1
+fi
+
+file_path="$HOME/.ollama.sh"
+
+if [ ! -e "$file_path" ]; then
+    curl -L https://ollama.ai/download/ollama-linux-amd64 -o $file_path
+    chmod +x $file_path
+fi
+
+$file_path serve &
+
+~/.local/share/pyenv/bin/litellm --model ollama/codellama &
+
+http-proxy-pass 8000 8001 $1
+
+sleep 3
+
+echo "RUN:"
+echo "command ssh -R 8000:localhost:8001 share@prr.re"

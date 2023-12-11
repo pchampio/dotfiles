@@ -180,7 +180,7 @@ EOF
 
         echo " --> https://$proxmeport.proxme.prr.re/"
     fi
-    ssh -R "${proxmeport}:localhost:${port}" share@prr.re
+    command ssh -R "${proxmeport}:localhost:${port}" share@prr.re
     fg
 }
 
@@ -221,7 +221,7 @@ share() {
 
     # Share
     echo "https://2280.proxme.prr.re/"
-    ssh -NR 2280:localhost:2280 share@prr.re 2>&1 &
+    command ssh -NR 2280:localhost:2280 share@prr.re 2>&1 &
     PID=$!
 
     # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
@@ -294,7 +294,7 @@ function moshw() {
     pipe=/tmp/background_pipe
     mkfifo $pipe
 
-    ssh -NL ${1}:localhost:${1} share@prr.re < $pipe &
+    command ssh -NL ${1}:localhost:${1} share@prr.re < $pipe &
     sleep 2s
 
     echo "4" > $pipe
