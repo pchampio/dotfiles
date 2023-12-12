@@ -287,20 +287,12 @@ require('lazy').setup({
       -- Autopairs insert `(` after select function or method item
       'windwp/nvim-autopairs',
 
-      -- github copilot
-      {
-        "zbirenbaum/copilot-cmp",
-        config = function ()
-          require("copilot_cmp").setup()
-        end
-      },
-
     },
     config = function()
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       require('luasnip.loaders.from_vscode').lazy_load()
-      local cmp_kinds = { Copilot = ' ', Text = '  ', Method = '  ', Function = '  ', Constructor = '  ',
+      local cmp_kinds = { Text = '  ', Method = '  ', Function = '  ', Constructor = '  ',
         Field = '  ', Variable = '  ', Class = '  ', Interface = '  ', Module = '  ', Property = '  ',
         Unit = '  ', Value = '  ', Enum = '  ', Keyword = '  ', Snippet = '  ', Color = '  ',
         File = '  ', Reference = '  ', Folder = '  ', EnumMember = '  ', Constant = '  ', Struct = '  ',
@@ -333,7 +325,6 @@ require('lazy').setup({
           end, { "i", "s" }),
         },
         sources = {
-          { name = "copilot" },
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'buffer' },
@@ -348,43 +339,22 @@ require('lazy').setup({
         end,
   },
 
-  -- {
-  --    "TabbyML/vim-tabby",
-  --   init = function()
-  --     vim.g.tabby_node_binary = '/home/pchampio/lab/tabby/venv/bin/node'
-  --     vim.g.tabby_keybinding_accept = '<Tab>'
-  --     vim.g.tabby_keybinding_trigger_or_dismiss = '<C-\\>'
-  --   end,
-  -- },
-
-
-  -- {
-  --   "zbirenbaum/copilot.lua",
-  --   event = { "CursorHold", "CursorHoldI" },
-  --   config = function()
-  --     require("copilot").setup({
-  --       suggestion = { enabled = false },
-  --       panel = { enabled = false },
-  --       -- suggestion = {
-  --       --   enabled = true,
-  --       --   auto_trigger = false,
-  --       --   debounce = 75,
-  --       --   keymap = {
-  --       --     accept = "<c-e>",
-  --       --     accept_word = false,
-  --       --     accept_line = false,
-  --       --     next = "<M-]>",
-  --       --     prev = "<M-[>",
-  --       --     dismiss = "<C-]>",
-  --       --   },
-  --       -- },
-  --     })
-  --   end,
-  -- },
-  {
-    -- Browse and preview json files
-    "gennaro-tedesco/nvim-jqx",
-    ft = { "json", "yaml" },
+  { "David-Kunz/gen.nvim",
+    opts = {
+      model = "codellama", -- The default model to use.
+      display_mode = "split", -- The display mode. Can be "float" or "split".
+      show_prompt = true, -- Shows the Prompt submitted to Ollama.
+      show_model = true, -- Displays which model you are using at the beginning of your chat session.
+      no_auto_close = false, -- Never closes the window automatically.
+      init = function(options) pcall(io.popen, "/home/pchampio/lab/ollama.sh serve > /dev/null 2>&1 &") end,
+      -- Function to initialize Ollama
+      command = "curl --silent --no-buffer -X POST http://localhost:11434/api/generate -d $body",
+      -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
+      -- This can also be a lua function returning a command string, with options as the input parameter.
+      -- The executed command must return a JSON object with { response, context }
+      -- (context property is optional).
+      debug = false -- Prints errors and the command which is run.
+    }
   },
 
   {
@@ -554,7 +524,7 @@ require('lazy').setup({
       vim.cmd([[
         nnoremap <silent> - :let current_file = expand('%')<cr>:Git<cr>:call search('\v<'.current_file.'>')<cr>
         set diffopt+=vertical
-        set diffopt+=iwhiteall
+        " set diffopt+=iwhiteall
         autocmd FileType gitcommit startinsert
         autocmd FileType gitcommit setlocal spell! spelllang=en
       ]])
@@ -580,8 +550,8 @@ require('lazy').setup({
       { "]h", function() require("gitsigns").next_hunk() end, desc = " Next hunk" },
       { "[h", function() require("gitsigns").prev_hunk() end, desc = " Prev hunk" },
       { "<leader>ha", function() require("gitsigns").stage_hunk() end, desc = " Stage hunk" },
-      { "<leader>hu", function() require("gitsigns").undo_stage_hunk() end, desc = " Undo stage hunk" },
-      { "<leader>hr", function() require("gitsigns").reset_hunk() end, desc = " Reset hunk" },
+      { "<leader>hU", function() require("gitsigns").undo_stage_hunk() end, desc = " Undo stage hunk" },
+      { "<leader>hu", function() require("gitsigns").reset_hunk() end, desc = " Reset hunk" },
       { "<leader>hp", function() require("gitsigns").preview_hunk() end, desc = " Preview hunk" },
       { "<leader>hd", function() require("gitsigns").diffthis() end, desc = " Diffthis" },
     },
@@ -596,9 +566,6 @@ require('lazy').setup({
     "whiteinge/diffconflicts",
     cmd = "DiffConflicts",
     lazy = true,
-    config = function()
-      vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
-    end,
   },
 
   {
@@ -629,6 +596,7 @@ require('lazy').setup({
     init = function()
       vim.o.background = 'light'
       vim.cmd.colorscheme 'selenized-light'
+      vim.api.nvim_set_hl(0, "DiffText", { link = "DiffChange" })
     end,
   },
 
@@ -950,7 +918,8 @@ require('lazy').setup({
     opts = { use_default_keymaps = false, max_join_length = 1000 },
   },
   {
-    "nvim-treesitter/nvim-treesitter-context"
+    "nvim-treesitter/nvim-treesitter-context",
+    opts = { max_lines = 1 },
   },
 
   {
@@ -1019,7 +988,7 @@ require('lazy').setup({
       { "<A-i>", function() require("harpoon.ui").nav_file(3) end, desc = "󱕘 Navigate to file 3" },
       { "<A-o>", function() require("harpoon.ui").nav_file(4) end, desc = "󱕘 Navigate to file 4" },
       { "<A-p>", function() require("harpoon.ui").nav_file(5) end, desc = "󱕘 Navigate to file 4" },
-      { "<A-o>", function()
+      { "<leader>ho", function()
         require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<A-o>", true, false, true), "j", "k", "h", "l" }
         require("portal.builtin").harpoon.tunnel() end, desc = "󱕘 Portal Harpoon" },
     },
@@ -1033,6 +1002,20 @@ require('lazy').setup({
 
   {
     "cbochs/portal.nvim",
+    opts = {
+      window_options = {
+        relative = "editor",
+        border = "rounded",
+        row = 100,
+        col = math.floor(vim.o.columns / 4),
+        width = math.floor(vim.o.columns / 2),
+        height = 4,
+      },
+    },
+    init = function()
+      vim.api.nvim_set_keymap('n', '<A-o>', '<C-o>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<A-i>', '<C-i>', { noremap = true, silent = true })
+    end,
     keys = {
       { "<C-o>", function()
         require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }

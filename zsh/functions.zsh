@@ -180,7 +180,7 @@ EOF
 
         echo " --> https://$proxmeport.proxme.prr.re/"
     fi
-    ssh -R "${proxmeport}:localhost:${port}" share@prr.re
+    command ssh -R "${proxmeport}:localhost:${port}" share@prr.re
     fg
 }
 
@@ -221,7 +221,7 @@ share() {
 
     # Share
     echo "https://2280.proxme.prr.re/"
-    ssh -NR 2280:localhost:2280 share@prr.re 2>&1 &
+    command ssh -NR 2280:localhost:2280 share@prr.re 2>&1 &
     PID=$!
 
     # gotty ${args} -p 2280 -a $host -c pair:$passwd $cmd
@@ -294,7 +294,7 @@ function moshw() {
     pipe=/tmp/background_pipe
     mkfifo $pipe
 
-    ssh -NL ${1}:localhost:${1} share@prr.re < $pipe &
+    command ssh -NL ${1}:localhost:${1} share@prr.re < $pipe &
     sleep 2s
 
     echo "4" > $pipe
@@ -347,10 +347,21 @@ bw_totp_1() {
 }
 
 ssh() {
+    set -o pipefail
+    # set +o pipefail # invert
     line_count=$(ssh-add -l | wc -l)
+    if [ $? -eq 2 ]; then
+        eval $(<~/.ssh-agent-thing) > /dev/null
+        line_count=$(ssh-add -l | wc -l)
+        if [ $? -eq 2 ]; then
+            ssh-agent > ~/.ssh-agent-thing
+            eval $(<~/.ssh-agent-thing) > /dev/null
+            line_count=$(ssh-add -l | wc -l)
+        fi
+    fi
     if [ "$line_count" -ge 2 ] && [ $# -ne 0 ]; then
         command ssh $@
-        exit $?
+        return
     fi
     echo "Loading ssh keys from vault"
     rbw unlocked
@@ -361,6 +372,6 @@ ssh() {
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
     if [ $# -ne 0 ]; then
         command ssh $@
-        exit $?
+        return
     fi
 }

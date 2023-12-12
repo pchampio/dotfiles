@@ -11,4 +11,5 @@ gcc*
 /bin/tmux_bin
 /bin/junest
 /bin/wezterm
+/bin/jq
 *.zwc
