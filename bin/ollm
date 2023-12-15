@@ -14,7 +14,7 @@ fi
 
 $file_path serve &
 
-~/.local/share/pyenv/bin/litellm --model ollama/codellama &
+~/.local/share/pyenv/bin/litellm --model ollama/codellama --drop_params &
 
 http-proxy-pass 8000 8001 $1
 

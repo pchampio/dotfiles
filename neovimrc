@@ -254,6 +254,11 @@ require('lazy').setup({
   },
 
   {
+    event = { "CmdlineEnter", "CursorHold" },
+    'm-demare/hlargs.nvim', opts = {color = '#05a4ee',}
+  },
+
+  {
     'tzachar/highlight-undo.nvim',
     enabled = vim.g.largeEnable,
     init = function()
@@ -262,6 +267,39 @@ require('lazy').setup({
     opts = { hlgroup = 'UndoHighlight' },
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
+  },
+
+
+  {
+    "dpayne/CodeGPT.nvim",
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      'j-hui/fidget.nvim',
+    },
+    config = function()
+      vim.g["codegpt_chat_completions_url"] = os.getenv("LLM_API_URL")
+      vim.g["codegpt_ui_commands"] = {
+        -- some default commands, you can remap the keys
+        quit = "q", -- key to quit the popup
+        use_as_output = "<c-i>", -- key to use the popup content as output and replace the original lines
+        use_as_input = "<c-n>", -- key to use the popup content as input for a new API request
+      }
+      local progress = require("fidget.progress")
+      local handle = nil
+      vim.g["codegpt_hooks"] = {
+        request_started = function()
+          handle = progress.handle.create({
+            title = "GPT ask..",
+            message = "",
+            lsp_client = { name = "GPT" },
+          })
+        end,
+        request_finished = vim.schedule_wrap(function()
+           handle:finish()
+        end)
+      }
+    end
   },
 
 
