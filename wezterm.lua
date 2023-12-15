@@ -159,9 +159,9 @@ config.colors.selection_fg = '#0f0f0e'
 -- the background color of selected text
 config.colors.selection_bg = '#aaa46d'
 
-config.window_decorations = "RESIZE"
+config.window_decorations = "TITLE | RESIZE"
 config.adjust_window_size_when_changing_font_size = true
-config.enable_wayland = false
+config.enable_wayland = true
 
 -- table.insert(config.hyperlink_rules, {
 -- 	regex = [[["]?([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["]?]],

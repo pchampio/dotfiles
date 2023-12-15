@@ -343,6 +343,7 @@ bw_totp_1() {
     echo "BW@:$token" | env COPY_PROVIDERS=desktop clipboard-provider copy
     # rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp' --clipboard
     echo "Token copied"
+    sleep 0.3
 }
 
 ssh() {
