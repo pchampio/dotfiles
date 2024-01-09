@@ -1,5 +1,6 @@
 #!/bin/bash
 
+model=wizard-vicuna
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <Auth Bearer token>"
     exit 1
@@ -13,8 +14,9 @@ if [ ! -e "$file_path" ]; then
 fi
 
 $file_path serve &
+# $file_path run $model
 
-~/.local/share/pyenv/bin/litellm --model ollama/codellama --drop_params &
+~/.local/share/pyenv/bin/litellm --model ollama/$model --drop_params &
 
 http-proxy-pass 8000 8001 $1
 

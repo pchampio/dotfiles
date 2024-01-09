@@ -150,7 +150,6 @@ for config ($HOME/dotfiles/zsh/*.zsh) source $config
 export PATH="$PATH:$HOME/.rvm/bin"
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
-instant-zsh-post
 
 # Check if the specific SSH key is present
 for key in \
@@ -163,6 +162,8 @@ do
   fi
 done
 
+instant-zsh-post
+
 if [ $profiling = true ]; then
   ## Per-command profiling: (open startlog.*)
   unsetopt xtrace
@@ -170,7 +171,3 @@ if [ $profiling = true ]; then
   ## Per-function profiling:
   zprof
 fi
-
-export NVM_DIR="$HOME/lab/annotation_tool/venv/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

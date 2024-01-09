@@ -536,7 +536,7 @@ require('lazy').setup({
           { mode = 'n', keys = ']' },
           { mode = 'n', keys = '[' },
         },
-        clues = {
+        clues = {  -- hydra like
           miniclue.gen_clues.g(),
           miniclue.gen_clues.marks(),
           miniclue.gen_clues.registers(),
@@ -912,18 +912,18 @@ require('lazy').setup({
           lookahead = true,
           select = {
             enable = true,
-            include_surrounding_whitespace = true,
+            include_surrounding_whitespace = false,
             keymaps = {
               ['ih'] = { query = '@parameter.outer', desc = "󱘎 outer param" },
               ['il'] = { query = '@parameter.inner', desc = "󱘎 inner param" },
               ['af'] = { query = '@function.outer', desc = '󱘎 all function' },
               ['if'] = { query = '@function.inner', desc = '󱘎 inner function' },
-              ['ac'] = { query = '@class.outer', desc = '󱘎 all class' },
-              ['ic'] = { query = '@class.inner', desc = '󱘎 inner class' },
-              ['aC'] = { query = '@conditional.outer', desc = '󱘎 all conditional' },
-              ['iC'] = { query = '@conditional.inner', desc = '󱘎 inner conditional' },
-              ['aL'] = { query = '@assignment.lhs', desc = '󱘎 assignment lhs' },
-              ['aR'] = { query = '@assignment.rhs', desc = '󱘎 assignment rhs' },
+              ['am'] = { query = '@class.outer', desc = '󱘎 all class' },
+              ['im'] = { query = '@class.inner', desc = '󱘎 inner class' },
+              ['ac'] = { query = '@conditional.outer', desc = '󱘎 all conditional' },
+              ['ic'] = { query = '@conditional.inner', desc = '󱘎 inner conditional' },
+              ['aH'] = { query = '@assignment.lhs', desc = '󱘎 assignment lhs' },
+              ['aL'] = { query = '@assignment.rhs', desc = '󱘎 assignment rhs' },
             },
           },
           swap = {
@@ -1067,7 +1067,12 @@ require('lazy').setup({
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
         end, desc = "󰈈 Jump Forward" },
-      { "g;", "<cmd>Portal changelist backward<cr>", desc = "󰈈 Change Backward" },
+      { "g;", function()
+        require('portal.settings').labels = { vim.api.nvim_replace_termcodes(";", true, false, true), "j", "k", "h", "l" }
+        require("portal.builtin").changelist.tunnel(
+          { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
+        )
+        end, desc = "󰈈 Change Backward" },
       { "g,", "<cmd>Portal changelist forward<cr>", desc = "󰈈 Change Forward" },
     },
   },
