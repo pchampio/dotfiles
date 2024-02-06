@@ -5,7 +5,7 @@ set -o errexit
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-VERSION=20230712-072601-f4abf8fd # https://wezfurlong.org/wezterm/install/source.html#installing-from-source
+VERSION=20240203-110809-5046fc22 # https://wezfurlong.org/wezterm/install/source.html#installing-from-source
 
 cd /opt/
 
@@ -46,5 +46,13 @@ X-KDE-RunOnDiscreteGpu=false
 X-KDE-SubstituteUID=false
 X-KDE-Username=
 EOF
+
+
+read -p "RUN sudo update-desktop-database ? [y]" -n 1 -r
+echo ""    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  sudo update-desktop-database
+fi
 
 success "Success"
