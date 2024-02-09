@@ -53,6 +53,7 @@ config.window_padding = {
   top = 0,
   bottom = 0,
 }
+local old_totp = "old"
 local to = function()
   return act.Multiple {
     act.SpawnCommandInNewTab({
@@ -62,11 +63,12 @@ local to = function()
     -- act.PasteFrom("Clipboard")
     wezterm.action_callback(function(win, pane)
       local clipboard = ""
-      while not clipboard:match "^BW@:" do
+      while (not clipboard:match "^BW@:") and (old_totp ~= clipboard) do
         local success, stdout, stderr = wezterm.run_child_process { "xclip", "-o", "-selection", "clipboard" }
         clipboard = stdout
         wezterm.sleep_ms(100)
       end
+      old_totp = clipboard
       pane:send_paste(clipboard:sub(5))
     end)
   }
