@@ -19,7 +19,13 @@ explain "Install wezterm-$VERSION"
 curl -LO https://github.com/wez/wezterm/releases/download/$VERSION/wezterm-${VERSION}-src.tar.gz
 tar -xzf wezterm-$VERSION-src.tar.gz
 cd wezterm-$VERSION
-./get-deps
+
+read -p "RUN wezterm install compile deps ? [y]" -n 1 -r
+echo ""    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  ./get-deps
+fi
 cargo build --release
 
 cat <<EOF >> $HOME/.local/share/applications/org.wezfurlong.wezterm.desktop

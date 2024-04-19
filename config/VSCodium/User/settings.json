@@ -63,7 +63,6 @@
   },
   "ltex.checkFrequency": "save",
   "ltex.completionEnabled": true,
-  "workbench.activityBar.visible": false,
   "workbench.editor.scrollToSwitchTabs": true,
   "workbench.editor.pinnedTabSizing": "compact",
   "workbench.editor.tabSizing": "shrink",
@@ -71,4 +70,5 @@
   "update.mode": "none",
   "update.showReleaseNotes": false,
   "window.zoomLevel": 1,
+  "workbench.activityBar.location": "hidden",
 }
