@@ -7,10 +7,11 @@ BASEDIR=$(dirname $0)
 
 
 explain "Instalation de deps"
-yes 1 | ~/.local/share/junest/bin/junest -- yay -S rbw-git || true
+# yes 1 | ~/.local/share/junest/bin/junest -- yay -S rbw-git || true
 # yes | ~/.local/share/junest/bin/junest -- yay -S rbw-git
-yes | ~/.local/share/junest/bin/junest -- yay -S sshpass
-yes | ~/.local/share/junest/bin/junest -- yay -S openssh
+yes | ~/.local/share/junest/bin/junest -- yay -S --nouseask sshpass
+yes | ~/.local/share/junest/bin/junest -- yay -S --nouseask openssh
+yes | ~/.local/share/junest/bin/junest -- yay -S --nouseask rust
 
 explain "Instalation de rust bitwarden"
 \rm -rf /tmp/rbw-git-pkg || true
@@ -34,9 +35,8 @@ license=('MIT')
 
 build() {
     # git clone https://git.tozt.net/\${_name}
-    git clone https://github.com/Mic92/rbw \${_name} # TODO rm
+    git clone https://github.com/doy/rbw \${_name}
     cd "\${_name}"
-    git checkout no-fail # TODO rm
     cargo build --release --locked
     cargo run --release --locked --bin rbw -- gen-completions bash >bash-completions
     cargo run --release --locked --bin rbw -- gen-completions zsh >zsh-completions
