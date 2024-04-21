@@ -24,6 +24,10 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   # $junest rbw-agent
 fi
 
+if ! grep -q "pinentry-tty" "$HOME/.config/rbw/config.json"; then
+  $junest rbw config set pinentry "/usr/bin/pinentry-tty"
+fi
+
 $junest rbw unlocked
 if [[ $? -ne 0 ]]; then
     $junest rbw unlock

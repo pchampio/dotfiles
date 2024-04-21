@@ -4,7 +4,7 @@ alias cls="clear && ls"
 alias e="xdg-open ."
 alias x=extract  #Function extract
 alias q="exit"
-alias dc="docker-compose"
+alias dc="docker compose"
 alias size="du -h --max-depth=1 . | sort -h"
 alias http_serv="python3 -m http.server"
 alias sshuttle="sshuttle --dns -vvr drakirus-gateway@prr.re 0/0"
