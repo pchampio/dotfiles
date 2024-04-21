@@ -7,7 +7,7 @@ alias q="exit"
 alias dc="docker-compose"
 alias size="du -h --max-depth=1 . | sort -h"
 alias http_serv="python3 -m http.server"
-alias sshuttle="sshuttle --dns -vvr drakirus@prr.re 0/0"
+alias sshuttle="sshuttle --dns -vvr drakirus-gateway@prr.re 0/0"
 alias paclean="sudo pacman -Rns \$(pacman -Qqtd)"
 
 # NAS
