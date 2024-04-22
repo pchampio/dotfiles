@@ -43,7 +43,7 @@ explain "Installation de jq"
  tell curl https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux-amd64 > ~/dotfiles/bin/jq
  chmod +x ~/dotfiles/bin/jq
 
-wherezsh=/bin/zsh
+wherezsh="$(command -v zsh)"
 
 read -p "Local install of zsh? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
@@ -84,14 +84,16 @@ echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 	command -v zsh | sudo tee -a /etc/shells
-	sudo chsh -s "$(command -v zsh)" "${USER}"
+	sudo chsh -s "$wherezsh"  "${USER}"
 fi
 
+mkdir ~/.local/bin/ || true
+\rm ~/.local/bin/zsh
 if [[ -f $wherezsh ]]
 then
-  ln -s $wherezsh ~/.local/bin/zsh || true
+  tell ln -s $wherezsh ~/.local/bin/zsh || true
 else
-  ln -s "$(command -v zsh)" ~/.local/bin/zsh || true
+  tell ln -s "$(command -v zsh)" ~/.local/bin/zsh || true
 fi
 
 success "Success"
