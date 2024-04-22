@@ -32,7 +32,7 @@ config.audible_bell = "Disabled"
 config.window_close_confirmation = 'NeverPrompt'
 -- Disable ligatures.
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
-config. selection_word_boundary = " \t\n{}[]()\"'`,;:|│"
+config. selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
 
 local openUrl = act.QuickSelectArgs({
   label = "open url",
