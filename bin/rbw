@@ -4,7 +4,6 @@ junest=$HOME/.local/share/junest/bin/junest
 
 
 if [[ "$1" -eq "unlocked" ]]; then
-    echo "test"
     $junest rbw unlocked
     exit $?
 fi
