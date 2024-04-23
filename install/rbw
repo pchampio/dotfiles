@@ -37,7 +37,13 @@ build() {
     # git clone https://git.tozt.net/\${_name}
     git clone https://github.com/doy/rbw \${_name}
     cd "\${_name}"
-    cargo build --release --locked
+    rm Cargo.lock
+    curl https://raw.githubusercontent.com/doy/rbw/bdf255d8efca18feed9dbe99d6166012821b8768/Cargo.lock > Cargo.lock
+    rm Cargo.toml
+    curl https://raw.githubusercontent.com/doy/rbw/bdf255d8efca18feed9dbe99d6166012821b8768/Cargo.toml > Cargo.toml
+    sed -i '68i rustix = { version = "0.38.28", features = ["termios", "procfs", "process", "pipe"] }' Cargo.toml
+    sed -i '68i regex = "1.10.2"' Cargo.toml
+    cargo build --release
     cargo run --release --locked --bin rbw -- gen-completions bash >bash-completions
     cargo run --release --locked --bin rbw -- gen-completions zsh >zsh-completions
     cargo run --release --locked --bin rbw -- gen-completions fish >fish-completions
