@@ -3,7 +3,7 @@
 junest=$HOME/.local/share/junest/bin/junest
 
 
-if [[ "$1" -eq "unlocked" ]]; then
+if [[ "$1" == "unlocked" ]]; then
     $junest rbw unlocked
     exit $?
 fi
