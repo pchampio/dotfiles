@@ -3,8 +3,20 @@
 junest=$HOME/.local/share/junest/bin/junest
 
 
+if [[ "$1" == "unlock" ]]; then
+  $junest rbw unlocked 2> /dev/null > /dev/null
+  if [[ $? -ne 0 ]]; then
+      $junest rbw unlock
+  fi
+fi
+
 if [[ "$1" == "unlocked" ]]; then
     $junest rbw unlocked
+    exit $?
+fi
+
+if [[ "$1" == "lock" ]]; then
+    $junest rbw lock
     exit $?
 fi
 
@@ -36,7 +48,7 @@ fi
 
 $junest rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -ne 0 ]]; then
-    $junest rbw unlock 2> /dev/null > /dev/null
+    $junest rbw unlock
 fi
 
 
