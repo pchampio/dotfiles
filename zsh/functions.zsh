@@ -349,7 +349,7 @@ bw_totp_1() {
 ssh() {
     set -o pipefail
     # set +o pipefail # invert
-    line_count=$(ssh-add -l | wc -l)
+    line_count=$(ssh-add -l 2> /dev/null | wc -l )
     if [ $? -eq 2 ]; then
         eval $(<~/.ssh-agent-thing) > /dev/null
         line_count=$(ssh-add -l | wc -l)

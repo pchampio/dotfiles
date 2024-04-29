@@ -11,7 +11,6 @@ explain "Instalation de deps"
 # yes | ~/.local/share/junest/bin/junest -- yay -S rbw-git
 yes | ~/.local/share/junest/bin/junest -- yay -S --noconfirm sshpass
 yes | ~/.local/share/junest/bin/junest -- yay -S --noconfirm openssh
-yes | ~/.local/share/junest/bin/junest -- yay -S --noconfirm rust
 
 explain "Instalation de rust bitwarden"
 \rm -rf /tmp/rbw-git-pkg || true

@@ -34,9 +34,9 @@ if ! grep -q "pinentry-tty" "$HOME/.config/rbw/config.json"; then
   $junest rbw config set pinentry "/usr/bin/pinentry-tty"
 fi
 
-$junest rbw unlocked
+$junest rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -ne 0 ]]; then
-    $junest rbw unlock
+    $junest rbw unlock 2> /dev/null > /dev/null
 fi
 
 
