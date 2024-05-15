@@ -339,11 +339,38 @@ fkill() {
 
 bw_totp_1() {
     echo "Loading bitwarden"
-    token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
+    declare -a options
+    options=(
+        "Proxmox TOTP"
+        "Homelab prr password"
+        "Homelab zep password"
+        "Homelab root password"
+        "Master password"
+    )
+    echo "${options[@]}"
+    selected_option=$(printf "%s\n" "${options[@]}" | fzf --prompt="Select an item: " --height=10 --border --ansi)
+    token=""
+    case "$selected_option" in
+    "Proxmox TOTP")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
+        ;;
+    "Homelab prr password")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'Homelab prr password')
+        ;;
+    "Homelab zep password")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'Homelab zep password')
+        ;;
+    "Homelab root password")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7")
+        ;;
+    "Master password")
+        token=$(rbw get "2ac8a334-7607-42b5-9198-5c31c371599e")
+        ;;
+    *)
+        echo "Invalid option"
+        ;;
+    esac
     echo "BW@:$token" > ~/.cache/.totp
-    # rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp' --clipboard
-    echo "Token copied"
-    sleep 0.3
 }
 
 ssh() {
