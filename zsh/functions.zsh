@@ -353,7 +353,7 @@ bw_totp_1() {
     selected_option=$(printf "%s\n" "${options[@]}" | fzf --prompt="Select an item: " --height=20 --border --ansi)
     token=""
     case "$selected_option" in
-    "Proxmox TOTP")
+    "Homelab TOTP")
         token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
         ;;
     "Homelab prr password")
@@ -376,9 +376,11 @@ bw_totp_1() {
         ;;
     *)
         echo "Invalid option"
+        sleep 10
         ;;
     esac
     echo "BW@:$token" > ~/.cache/.totp
+    sleep 0.3
 }
 
 ssh() {
