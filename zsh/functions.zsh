@@ -341,14 +341,16 @@ bw_totp_1() {
     echo "Loading bitwarden"
     declare -a options
     options=(
-        "Proxmox TOTP"
+        "Homelab TOTP"
         "Homelab prr password"
         "Homelab zep password"
         "Homelab root password"
+        "GH token"
+        "Gitea token"
         "Master password"
     )
     echo "${options[@]}"
-    selected_option=$(printf "%s\n" "${options[@]}" | fzf --prompt="Select an item: " --height=10 --border --ansi)
+    selected_option=$(printf "%s\n" "${options[@]}" | fzf --prompt="Select an item: " --height=20 --border --ansi)
     token=""
     case "$selected_option" in
     "Proxmox TOTP")
@@ -365,6 +367,12 @@ bw_totp_1() {
         ;;
     "Master password")
         token=$(rbw get "2ac8a334-7607-42b5-9198-5c31c371599e")
+        ;;
+    "GH token")
+        token=$(rbw get "242d4b24-ea36-4eb9-bea3-c4a4d4f8da63" --field "gh cli")
+        ;;
+    "Gitea token")
+        token=" $(rbw get 'a25b73d3-942c-4c8a-b424-b85c59f433fc' --field 'token')"
         ;;
     *)
         echo "Invalid option"
