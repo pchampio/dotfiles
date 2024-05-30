@@ -231,6 +231,15 @@ require('lazy').setup({
   },
 
   {
+    'junegunn/vim-easy-align',
+    on = { '<Plug>(EasyAlign)', 'EasyAlign' },
+    dependencies = 'tpope/vim-repeat',
+    keys = {
+      { '<leader>ga',  '<Plug>(EasyAlign)', mode = { 'n', 'x' }, desc = 'Align' },
+    }
+  },
+
+  {
     "folke/trouble.nvim",
     keys = {
       { "<leader>dx", "<cmd>TroubleToggle document_diagnostics<cr>", desc = " Document Diagnostics" },

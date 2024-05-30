@@ -57,8 +57,8 @@ alias ms="LC_ALL=en_US.UTF-8 minishift"
 
 alias tb="netcat termbin.com 9999 | xclip -selection c"
 
-alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -rr -x --exclude .git --exclude node_modules"
-alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
+alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -x --exclude .git --exclude node_modules"
+alias ncdu="ncdu --color dark -x --exclude .git --exclude node_modules"
 
 # ssh
 alias drak="ssh drakirus@prr.re -p 2242"
