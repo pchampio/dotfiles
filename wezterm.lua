@@ -32,7 +32,7 @@ config.audible_bell = "Disabled"
 config.window_close_confirmation = 'NeverPrompt'
 -- Disable ligatures.
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
-config. selection_word_boundary = " \t\n{}[]()\"'`,;:|│"
+config. selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
 
 local openUrl = act.QuickSelectArgs({
   label = "open url",
@@ -53,22 +53,21 @@ config.window_padding = {
   top = 0,
   bottom = 0,
 }
-local old_totp = "old"
 local to = function()
   return act.Multiple {
     act.SpawnCommandInNewTab({
       label = 'Get Totp',
       args = { HOME .. "/.local/bin/zsh", "-ic", "bw_totp_1" },
     }),
-    -- act.PasteFrom("Clipboard")
     wezterm.action_callback(function(win, pane)
       local clipboard = ""
-      while (not clipboard:match "^BW@:") and (old_totp ~= clipboard) do
-        local success, stdout, stderr = wezterm.run_child_process { "xclip", "-o", "-selection", "clipboard" }
+      while (not clipboard:match "^BW@:") do
+        local success, stdout, stderr = wezterm.run_child_process { "cat", HOME .. "/.cache/.totp" }
+        wezterm.log_info(stdout)
         clipboard = stdout
-        wezterm.sleep_ms(100)
+        wezterm.sleep_ms(50)
       end
-      old_totp = clipboard
+      local success, stdout, stderr = wezterm.run_child_process { "truncate", "-s", "0", HOME .. "/.cache/.totp" }
       pane:send_paste(clipboard:sub(5))
     end)
   }

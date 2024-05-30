@@ -135,20 +135,8 @@ package() {
 EOF
   yes | ~/.local/share/junest/bin/junest -- makepkg -Acsi
   yes | cp -f ~/.junest/bin/tmux ~/dotfiles/bin/tmux
-  # ~/.local/share/junest/bin/junest -- yay -S aur/tmux-git
 fi
 
-
-if [ ! -f ~/.cache/imgcat_install ]; then
-  explain "Imgcat install"
-  home=$(pwd)
-  cd /tmp
-  git clone https://github.com/wookayin/python-imgcat
-  cd python-imgcat
-  pip install -e .
-  cd $home
-  touch ~/.cache/imgcat_install
-fi
 
 explain "Tmux italics"
 cat <<EOF|tic -x -
@@ -222,4 +210,18 @@ explain "Tmux plugins"
 [ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
 [ -d ~/.tmux-thumbs/ ] || git clone https://github.com/fcsonline/tmux-thumbs ~/.tmux-thumbs/ --depth=1
 [ -d ~/.tmux-last/ ] || git clone https://git.prr.re/Drakirus/tmux-last ~/.tmux-last/ --depth=1
+
+
+
+if [ ! -f ~/.cache/imgcat_install ]; then
+  explain "Imgcat install"
+  home=$(pwd)
+  cd /tmp
+  git clone https://github.com/wookayin/python-imgcat
+  cd python-imgcat
+  pip install -e .
+  cd $home
+  touch ~/.cache/imgcat_install
+fi
+
 success "Success"

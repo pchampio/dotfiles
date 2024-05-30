@@ -2,11 +2,30 @@
 
 junest=$HOME/.local/share/junest/bin/junest
 
+
+if [[ "$1" == "unlock" ]]; then
+  $junest rbw unlocked 2> /dev/null > /dev/null
+  if [[ $? -ne 0 ]]; then
+      $junest rbw unlock
+  fi
+fi
+
+if [[ "$1" == "unlocked" ]]; then
+    $junest rbw unlocked
+    exit $?
+fi
+
+if [[ "$1" == "lock" ]]; then
+    $junest rbw lock
+    exit $?
+fi
+
 if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   >&2 echo "Setting up config.."
   read -r -p 'Enter your Bitwarden login: ' email
   >&2 echo "email $email"
   $junest rbw config set email "$email"
+  $junest rbw config set pinentry "/usr/bin/pinentry-tty"
 
   read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
   if [[ ! -z "$self_url" ]]; then
@@ -23,7 +42,11 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   # $junest rbw-agent
 fi
 
-$junest rbw unlocked
+if ! grep -q "pinentry-tty" "$HOME/.config/rbw/config.json"; then
+  $junest rbw config set pinentry "/usr/bin/pinentry-tty"
+fi
+
+$junest rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -ne 0 ]]; then
     $junest rbw unlock
 fi

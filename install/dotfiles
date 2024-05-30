@@ -50,7 +50,12 @@ Host *
 EOF
 fi
 
-echo "export $(rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'URL')" > $HOME/dotfiles/zsh/priv.zsh
-echo "export $(rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'KEY')" >> $HOME/dotfiles/zsh/priv.zsh
+rbw unlocked 2> /dev/null > /dev/null
+if [[ $? -eq 0 ]]; then
+  echo "export $(rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'URL')" > $HOME/dotfiles/zsh/priv.zsh
+  echo "export $(rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'KEY')" >> $HOME/dotfiles/zsh/priv.zsh
+else
+ echo "" > $HOME/dotfiles/zsh/priv.zsh
+fi
 
 success "Success"
