@@ -339,20 +339,57 @@ fkill() {
 
 bw_totp_1() {
     echo "Loading bitwarden"
-    token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
+    declare -a options
+    options=(
+        "Homelab TOTP"
+        "Homelab prr password"
+        "Homelab zep password"
+        "Homelab root password"
+        "GH token"
+        "Gitea token"
+        "Master password"
+    )
+    echo "${options[@]}"
+    selected_option=$(printf "%s\n" "${options[@]}" | fzf --prompt="Select an item: " --height=20 --border --ansi)
+    token=""
+    case "$selected_option" in
+    "Homelab TOTP")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
+        ;;
+    "Homelab prr password")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'Homelab prr password')
+        ;;
+    "Homelab zep password")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'Homelab zep password')
+        ;;
+    "Homelab root password")
+        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7")
+        ;;
+    "Master password")
+        token=$(rbw get "2ac8a334-7607-42b5-9198-5c31c371599e")
+        ;;
+    "GH token")
+        token=$(rbw get "242d4b24-ea36-4eb9-bea3-c4a4d4f8da63" --field "gh cli")
+        ;;
+    "Gitea token")
+        token=" $(rbw get 'a25b73d3-942c-4c8a-b424-b85c59f433fc' --field 'token')"
+        ;;
+    *)
+        echo "Invalid option"
+        sleep 10
+        ;;
+    esac
     echo "BW@:$token" > ~/.cache/.totp
-    # rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp' --clipboard
-    echo "Token copied"
     sleep 0.3
 }
 
 ssh() {
     set -o pipefail
     # set +o pipefail # invert
-    line_count=$(ssh-add -l | wc -l)
+    line_count=$(ssh-add -l 2> /dev/null | wc -l )
     if [ $? -eq 2 ]; then
         eval $(<~/.ssh-agent-thing) > /dev/null
-        line_count=$(ssh-add -l | wc -l)
+        line_count=$(ssh-add -l 2> /dev/null | wc -l)
         if [ $? -eq 2 ]; then
             ssh-agent > ~/.ssh-agent-thing
             eval $(<~/.ssh-agent-thing) > /dev/null
@@ -364,10 +401,7 @@ ssh() {
         return
     fi
     echo "Loading ssh keys from vault"
-    rbw unlocked
-    if [[ $? -ne 0 ]]; then
-        rbw unlock
-    fi
+    rbw unlock
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
     if [ $# -ne 0 ]; then

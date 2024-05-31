@@ -29,3 +29,9 @@ bindkey '^B' backward-word
 bindkey '^F' forward-word
 
 bindkey '^[w' kill-word
+
+zstyle ':zle:*' word-context \ 
+zstyle ':zle:transpose-words:whitespace' word-style shell
+zstyle ':zle:transpose-words:filename' word-style normal
+zstyle ':zle:transpose-words:filename' word-chars ''
+

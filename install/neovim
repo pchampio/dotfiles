@@ -20,10 +20,10 @@ python3 -m pip install --upgrade pynvim
 python3 -m pip install --upgrade litellm
 # pipx install XXX
 
-if [ ! -e $HOME/.vim/spell ]; then
+if [ ! -e ~/.config/nvim/spell ]; then
   explain "Spelling dictionary"
-  mkdir -p ~/.vim/spell
-  cd ~/.vim/spell
+  mkdir -p ~/.config/nvim/spell
+  cd ~/.config/nvim/spell
   wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.spl
   wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.sug
   wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.spl

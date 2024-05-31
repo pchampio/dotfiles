@@ -127,7 +127,7 @@
             image_overlay.background_blue = "240" 
             image_overlay.background_alpha = "210" 
             image_overlay.font = "" 
-            slideshow.delay = "5.0" 
+            slideshow.delay = "4.0" 
             slideshow.random = "false" 
             slideshow.repeat = "false" 
             collections.rectangular_selection = "true" 
@@ -407,7 +407,7 @@
         properties_window.h = "0" 
 
         tools_float = "false" 
-        tools_hidden = "false" 
+        tools_hidden = "true" 
 
         toolbar_hidden = "false" 
         show_info_pixel = "false" 
@@ -445,7 +445,7 @@
         advanced_exif_window.h = "600" 
 
         animate = "false" >
-        <bar enabled = "true" width = "1079" >
+        <bar enabled = "false" width = "250" >
             <clear/>
             <pane_histogram id = "histogram" title = "Linear Histogram on RGB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />
