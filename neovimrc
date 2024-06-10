@@ -1214,7 +1214,7 @@ vim.o.undofile = true
 vim.o.undodir = vim.fn.expand('~/.vimundo')
 
 -- Store commands in the shada file with specific settings
-vim.o.shada = "!,'1,f0,h,s100"
+vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
 -- Set the shadafile option to the specified path
 vim.o.shadafile = vim.fn.expand('~/.vim/shada')
