@@ -204,7 +204,7 @@ prompt_pure_precmd() {
     psvar[12]=
     # Check if a Conda environment is active and display its name.
     if [[ -n $CONDA_DEFAULT_ENV ]]; then
-        async_job my_async_task tmux set-option -gq "@CONDA_ENV" ${CONDA_DEFAULT_ENV}/bin/
+        async_job my_async_task tmux set-option -gq "@CONDA_ENV_$(tmux display-message -p '#S')" ${CONDA_DEFAULT_ENV}/bin/
         psvar[12]="${CONDA_DEFAULT_ENV//[$'\t\r\n']}"
     fi
     # When VIRTUAL_ENV_DISABLE_PROMPT is empty, it was unset by the user and

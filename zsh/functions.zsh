@@ -409,3 +409,14 @@ ssh() {
         return
     fi
 }
+
+_cd() {
+    # Save the current chpwd function
+    saved_chpwd=$(typeset -f chpwd)
+    # Unset the chpwd function
+    unset -f chpwd
+    # Run the desired command
+    cd $1
+    # Restore the chpwd function
+    eval "$saved_chpwd"
+}
