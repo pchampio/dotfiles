@@ -410,7 +410,7 @@ ssh() {
     fi
 }
 
-_cd() {
+__cd() {
     # Save the current chpwd function
     saved_chpwd=$(typeset -f chpwd)
     # Unset the chpwd function
