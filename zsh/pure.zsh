@@ -206,6 +206,7 @@ prompt_pure_precmd() {
     if [[ -n $CONDA_DEFAULT_ENV ]]; then
         async_job my_async_task tmux set-option -gq "@CONDA_ENV_$(tmux display-message -p '#S')" ${CONDA_DEFAULT_ENV}/bin/
         psvar[12]="${CONDA_DEFAULT_ENV//[$'\t\r\n']}"
+        export VIRTUAL_ENV_DISABLE_PROMPT=12
     fi
     # When VIRTUAL_ENV_DISABLE_PROMPT is empty, it was unset by the user and
     # Pure should take back control.
@@ -730,7 +731,8 @@ prompt_pure_system_report() {
         fi
 
         # If a virtualenv is activated, display it in grey.
-        PROMPT='%(12V.%F{$prompt_pure_colors[virtualenv]}%12v%f .)'
+        PROMPT=''
+        # PROMPT='%(12V.%F{$prompt_pure_colors[virtualenv]}%12v%f .)'
 
         # Prompt turns red if the previous command didn't exit with 0.
         local prompt_indicator='%(?.%F{$prompt_pure_colors[prompt:success]}.%F{$prompt_pure_colors[prompt:error]})${prompt_pure_state[prompt]}%f '
