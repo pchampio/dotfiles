@@ -17,6 +17,19 @@ if vim.loader then vim.loader.enable() end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+
+-- Enable backspace delete indent and newline.
+vim.opt.backspace = { 'indent', 'eol', 'start' }
+
+-- Don't redraw while executing macros (good performance config)
+vim.opt.lazyredraw = true
+
+-- Exclude = from isfilename.
+vim.opt.isfname:remove('=')
+-- Exclude : from isfilename.
+vim.opt.isfname:remove(':')
+
+
 -- Install package manager
 -- ~/.local/share/nvim/lazy
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
