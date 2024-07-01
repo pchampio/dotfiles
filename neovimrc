@@ -1113,6 +1113,17 @@ require('lazy').setup({
   },
 
   {
+    'ctrlpvim/ctrlp.vim',
+    config = function()
+      vim.g.ctrlp_custom_ignore = "\\v[\\/](node_modules|target|dist|build)|(\\.(swp|ico|git|svn))$"
+      vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
+      vim.g.cpsm_match_empty_query = 0
+      -- cpsm doesn't use 1 as a default if the variable doesn't exist.
+      vim.g.ctrlp_match_current_file = 0
+    end;
+  },
+
+  {
     -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
