@@ -17,6 +17,19 @@ if vim.loader then vim.loader.enable() end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+
+-- Enable backspace delete indent and newline.
+vim.opt.backspace = { 'indent', 'eol', 'start' }
+
+-- Don't redraw while executing macros (good performance config)
+vim.opt.lazyredraw = true
+
+-- Exclude = from isfilename.
+vim.opt.isfname:remove('=')
+-- Exclude : from isfilename.
+vim.opt.isfname:remove(':')
+
+
 -- Install package manager
 -- ~/.local/share/nvim/lazy
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -844,29 +857,29 @@ require('lazy').setup({
     end
   },
 
-  {
-    -- keep an eye on where your cursor has jumped
-    'edluffy/specs.nvim',
-    lazy = true,
-    event = "CursorMoved",
-    config = function()
-      require("specs").setup({
-        show_jumps = true,
-        min_jump = 10,
-        popup = {
-          delay_ms = 0, -- delay before popup displays
-          inc_ms = 10,  -- time increments used for fade/resize effects
-          blend = 10,   -- starting blend, between 0-100 (fully transparent), see :h winblend
-          width = 20,
-          winhl = "PmenuSbar",
-          fader = require("specs").pulse_fader,
-          resizer = require("specs").shrink_resizer,
-        },
-        ignore_filetypes = {},
-        ignore_buftypes = { nofile = true },
-      })
-    end
-  },
+--  {
+--    -- keep an eye on where your cursor has jumped
+--    'edluffy/specs.nvim',
+--   lazy = true,
+--   event = "CursorMoved",
+--   config = function()
+--     require("specs").setup({
+--       show_jumps = true,
+--       min_jump = 10,
+--       popup = {
+--         delay_ms = 0, -- delay before popup displays
+--          inc_ms = 10,  -- time increments used for fade/resize effects
+--          blend = 10,   -- starting blend, between 0-100 (fully transparent), see :h winblend
+--          width = 20,
+--          winhl = "PmenuSbar",
+--          fader = require("specs").pulse_fader,
+--          resizer = require("specs").shrink_resizer,
+--        },
+--        ignore_filetypes = {},
+--        ignore_buftypes = { nofile = true },
+--      })
+--    end
+--  },
 
   {
     -- Wilder for command line completion
@@ -877,7 +890,7 @@ require('lazy').setup({
     build = ":UpdateRemotePlugins",
     dependencies = {
       "sharkdp/fd",
-      { "ompugao/cpsm",          build = "PY3=ON bash install.sh", branch = 'feature/remove_boost_dependency'},
+      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh"},
       { "romgrk/fzy-lua-native", build = "make" },
       'ryanoasis/vim-devicons',
       'https://git.prr.re/Drakirus/my_wilder_config.nvim',
@@ -1100,6 +1113,57 @@ require('lazy').setup({
   },
 
   {
+    'ctrlpvim/ctrlp.vim',
+    dependencies = {
+      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh"},
+    },
+    config = function()
+      -- vim.g.ctrlp_cmd = 'CtrlPMixed'
+      vim.g.ctrlp_root_markers = {'pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt', 'Makefile', 'requirements.txt'}
+      vim.g.ctrlp_custom_ignore = "\\v[\\/](node_modules|target|dist|build)|(\\.(swp|ico|git|svn))$"
+      vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
+      vim.g.ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+      vim.g.ctrlp_use_caching = 0
+      vim.g.ctrlp_abbrev = { gmode = 't', abbrevs = { { pattern = ';', expanded = ':', mode = 'pfrz', }, }}
+      vim.g.ctrlp_prompt_mappings = {
+        ['AcceptSelection("v")'] = {'<c-v>', '<RightMouse>', '<c-s>'},
+        ['AcceptSelection("h")'] = {'<c-x>', '<c-cr>', '<c-i>'},
+        ['PrtCurStart()'] = {'<space>', '<c-a>'},
+      }
+      vim.g.ctrlp_status_func = {
+        main = 'CtrlP_main_status',
+        prog = 'CtrlP_progress_status'
+      }
+      vim.g.cpsm_match_empty_query = 1
+      vim.g.cpsm_query_inverting_delimiter = " "
+      vim.g.ctrlp_max_files = 0
+      vim.g.ctrlp_match_current_file = 0
+      -- Set the ctrlp_default_input option
+      vim.g.ctrlp_default_input = 1
+
+      -- Create an autocmd for StdinReadPre event
+      vim.api.nvim_create_autocmd("StdinReadPre", {
+        pattern = "*",
+        callback = function()
+          vim.g.isReadingFromStdin = 1
+        end
+      })
+
+      -- Create an autocmd for VimEnter event
+      vim.api.nvim_create_autocmd("VimEnter", {
+        pattern = "*",
+        callback = function()
+          if (vim.fn.argc() > 0 and vim.fn.isdirectory(vim.fn.argv()[0]) == 1 or vim.fn.argc() == 0)
+              and vim.fn.isdirectory(".git") == 1
+              and not vim.g.isReadingFromStdin then
+            vim.cmd('execute "CtrlP"')
+          end
+        end
+      })
+    end;
+  },
+
+  {
     -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
@@ -1107,7 +1171,7 @@ require('lazy').setup({
     keys = {
       { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = ' Find recently opened files' },
       { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
-      { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
+      -- { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
       { '<leader>sH', function() require('telescope.builtin').help_tags() end, desc = ' Search Help' },
       { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = ' Search current Word' },
       { '<leader>sg', function() require('telescope.builtin').live_grep() end, desc = ' Search by Grep' },
@@ -1433,6 +1497,27 @@ function! RenameFile() abort
   endif
 endfunction
 nnoremap <Leader>rn :call RenameFile()<cr>
+
+
+" Ctrlp statusline
+" Arguments: focus, byfname, s:regexp, prv, item, nxt, marked
+"            a:1    a:2      a:3       a:4  a:5   a:6  a:7
+fu! CtrlP_main_status(...)
+  let item = ' ' . (a:5 == 'mru files' ? 'mru' : a:5) . ' '
+  let dir = fnamemodify(getcwd(), ':~') . ' %*'
+
+  " only outputs current mode
+  retu '%7*' . item . '%4*%* ' . '%=%<' . '%6*%5*' . dir
+endf
+
+" Argument: len
+"           a:1
+fu! CtrlP_progress_status(...)
+  let len = '%#Function# '.a:1.' %*'
+  let dir = ' %=%<%#LineNr# '.getcwd().' %*'
+  retu len.dir
+endf
+
 ]])
 
 -- The line beneath this is called `modeline`. See `:help modeline`
