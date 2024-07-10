@@ -17,6 +17,7 @@ if vim.loader then vim.loader.enable() end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.keymap.set('', '<leader>gf', ':e <cfile><cr>')   -- create file under cursor
 
 -- Enable backspace delete indent and newline.
 vim.opt.backspace = { 'indent', 'eol', 'start' }
@@ -495,12 +496,16 @@ require('lazy').setup({
       { mode = { "n", "x" }, "SS", "<Plug>(operator-sandwich-add)line", desc = "󰗅  Add surrounding character line" },
       { mode = { "n" }, "ds", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Delete surrounding character" },
       { mode = { "n" }, "dss", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Delete surrounding character automatically" },
+        { mode = { "n" }, "din", "<Plug>(operator-sandwich-delete)<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Delete surrounding inside surrounding character prompt" },
+        { mode = { "n" }, "din", "<Plug>(operator-sandwich-delete)<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Delete surrounding around surrounding character prompt" },
       { mode = { "n" }, "cs", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Change surrounding character" },
       { mode = { "n" }, "css", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Change surrounding character automatically" },
       { mode = { "x", "o" }, "is", "<Plug>(textobj-sandwich-query-i)", desc = "󰗅  Select inside surrounding character" },
       { mode = { "x", "o" }, "as", "<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Select around surrounding character" },
       { mode = { "x", "o" }, "ii", "<Plug>(textobj-sandwich-auto-i)", desc = "󰗅  Select inside surrounding character automatically" },
       { mode = { "x", "o" }, "ai", "<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Select around surrounding character automatically" },
+      { mode = { "x", "o" }, "in", "<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Select inside surrounding character prompt" },
+      { mode = { "x", "o" }, "an", "<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Select around surrounding character prompt" },
     },
   },
 
@@ -807,7 +812,7 @@ require('lazy').setup({
 
 
   {
-    'NTBBloodbath/galaxyline.nvim',
+    'cleong14/galaxyline.nvim',
     dependencies = { 'kyazdani42/nvim-web-devicons', 'https://git.prr.re/Drakirus/my_galaxyline_config.nvim' },
   },
 
@@ -1078,19 +1083,19 @@ require('lazy').setup({
     end,
     keys = {
       { "<C-o>", function()
-        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }
+        require("portal.settings").update({labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }})
         require("portal.builtin").jumplist.tunnel_backward(
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
       end, desc = "󰈈 Jump Backward" },
       { "<C-i>", function()
-        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-i>", true, false, true), "j", "k", "h", "l" }
+        require("portal.settings").update({labels = { vim.api.nvim_replace_termcodes("<c-i>", true, false, true), "j", "k", "h", "l" }})
         require("portal.builtin").jumplist.tunnel_forward(
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
         end, desc = "󰈈 Jump Forward" },
       { "g;", function()
-        require('portal.settings').labels = { vim.api.nvim_replace_termcodes(";", true, false, true), "j", "k", "h", "l" }
+        require("portal.settings").update({labels = { vim.api.nvim_replace_termcodes(";", true, false, true), "j", "k", "h", "l" }})
         require("portal.builtin").changelist.tunnel(
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
@@ -1170,7 +1175,7 @@ require('lazy').setup({
     dependencies = { 'nvim-lua/plenary.nvim', "debugloop/telescope-undo.nvim", },
     keys = {
       { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = ' Find recently opened files' },
-      { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
+      -- { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
       -- { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
       { '<leader>sH', function() require('telescope.builtin').help_tags() end, desc = ' Search Help' },
       { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = ' Search current Word' },
