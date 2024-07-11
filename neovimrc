@@ -1127,7 +1127,7 @@ require('lazy').setup({
       vim.g.ctrlp_root_markers = {'pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt', 'Makefile', 'requirements.txt'}
       vim.g.ctrlp_custom_ignore = "\\v[\\/](node_modules|target|dist|build)|(\\.(swp|ico|git|svn))$"
       vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
-      vim.g.ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+      vim.g.ctrlp_user_command = 'rg %s -L --files --color=never --glob ""'
       vim.g.ctrlp_use_caching = 0
       vim.g.ctrlp_abbrev = { gmode = 't', abbrevs = { { pattern = ';', expanded = ':', mode = 'pfrz', }, }}
       vim.g.ctrlp_prompt_mappings = {

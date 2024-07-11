@@ -18,8 +18,6 @@ alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.ex
 alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.1.55:/volume1/Share /run/mount/NAS/"
 alias unas="sudo umount -l /run/mount/NAS"
 
-# prr.re
-
 alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
 alias neof="neofetch --memory_display barinfo"
