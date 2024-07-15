@@ -1090,6 +1090,32 @@ require('lazy').setup({
     end,
   },
 
+
+  {
+  "ctrlpvim/ctrlp.vim",
+      init = function()
+    vim.g.ctrlp_map = "<c-p>"
+    vim.g.ctrlp_clear_cache_on_exit = 0
+    vim.g.ctrlp_key_loop = 1
+    vim.g.ctrlp_lazy_update = 200
+    vim.g.ctrlp_line_prefix = "» "
+    vim.g.ctrlp_mruf_max = 100000
+    vim.g.ctrlp_show_hidden = 1
+    vim.g.ctrlp_use_caching = 1
+    vim.g.ctrlp_user_command_async = 1
+    vim.g.ctrlp_regexp = 1
+      vim.g.ctrlp_root_markers = { '.git', 'makefile', 'Makefile' }
+      vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
+    vim.g.cpsm_match_empty_query = 1
+    -- cpsm doesn't use 1 as a default if the variable doesn't exist.
+    vim.g.ctrlp_match_current_file = 0
+
+    if vim.fn.executable("rg") then
+      vim.g.ctrlp_grep_command = "rg -i --vimgrep --no-heading --hidden --no-ignore --regexp"
+    end
+    end,
+  },
+
   {
     -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
@@ -1098,7 +1124,7 @@ require('lazy').setup({
     keys = {
       { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = ' Find recently opened files' },
       { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
-      { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
+      -- { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
       { '<leader>sH', function() require('telescope.builtin').help_tags() end, desc = ' Search Help' },
       { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = ' Search current Word' },
       { '<leader>sg', function() require('telescope.builtin').live_grep() end, desc = ' Search by Grep' },

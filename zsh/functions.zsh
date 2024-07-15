@@ -380,7 +380,6 @@ bw_totp_1() {
         ;;
     esac
     echo "BW@:$token" > ~/.cache/.totp
-    sleep 0.3
 }
 
 ssh() {
