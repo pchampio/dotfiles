@@ -32,7 +32,7 @@ config.audible_bell = "Disabled"
 config.window_close_confirmation = 'NeverPrompt'
 -- Disable ligatures.
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
-config. selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
+config.selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
 
 local openUrl = act.QuickSelectArgs({
   label = "open url",
@@ -53,8 +53,19 @@ config.window_padding = {
   top = 0,
   bottom = 0,
 }
+local name = "/tmp/wezterm_screen"
 local to = function()
   return act.Multiple {
+  --   wezterm.action_callback(function(win, pane)
+  --       local cursor = pane:get_cursor_position()
+  -- -- skip up 2 rows to skip shell prompt
+  -- local zone = pane:get_semantic_zone_at(0, cursor.y-2)
+  --     local text = pane:get_text_from_semantic_zone(zone)
+  --     local f = io.open(name, 'w')
+  --     f:write(text)
+  --     f:flush()
+  --     f:close()
+  --   end),
     act.SpawnCommandInNewTab({
       label = 'Get Totp',
       args = { HOME .. "/.local/bin/zsh", "-ic", "bw_totp_1" },
@@ -63,7 +74,7 @@ local to = function()
       local clipboard = ""
       while (not clipboard:match "^BW@:") do
         local success, stdout, stderr = wezterm.run_child_process { "cat", HOME .. "/.cache/.totp" }
-        wezterm.log_info(stdout)
+        -- wezterm.log_info(stdout)
         clipboard = stdout
         wezterm.sleep_ms(50)
       end
@@ -73,10 +84,41 @@ local to = function()
   }
 end
 
+wezterm.on("view-last-output-in-new-pane", function(_, pane)
+  local zones = pane:get_semantic_zones("Output")
+  local last_zone = zones[#zones - 1]
+
+  if not last_zone then
+    return nil
+  end
+
+  local output = pane:get_text_from_semantic_zone(last_zone)
+
+  local tmpname = os.tmpname()
+  local f = io.open("/tmp/a", "w+")
+  if f ~= nil then
+    f:write(output)
+    f:flush()
+    f:close()
+  end
+
+  pane:split({
+    args = { os.getenv("PAGER") or "less", tmpname },
+    direction = "Bottom",
+    domain = { DomainName = "local" },
+  })
+
+  -- Without this, it would quickly close all of the process immediately.
+  wezterm.sleep_ms(1000)
+
+  -- While it isn't required, it is nice to clean it up.
+  os.remove(tmpname)
+end)
+
 config.disable_default_key_bindings = true
 config.keys = {
   -- CTRL-SHIFT-i activates the debug overlay
-  { key = 'I', mods = 'CTRL', action = act.ShowDebugOverlay },
+  { key = 'i', mods = 'CTRL|SHIFT', action = act.ShowDebugOverlay },
   -- Bitwarden like extension
   { key = "l", mods = "CTRL|SHIFT",  action = to()},
   -- zooms

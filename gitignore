@@ -2,6 +2,7 @@
 ###################
 *.com
 *.class
+zsh/priv.zsh
 *.dll
 *.o
 *.so

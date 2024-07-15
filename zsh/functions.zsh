@@ -22,15 +22,6 @@ function kkey(){
     xfconf-query -c keyboards -p /Default/KeyRepeat/Delay -s $(($delay+1))
 }
 
-function nvimux-vim() {
-    if [[ "$#" == 0 ]]; then
-        nvr -c "CtrlP `pwd`"
-        return
-    fi
-    nvr $*
-}
-
-
 function gdstst(){
     awk -vOFS='' '
     NR==FNR {
@@ -407,4 +398,35 @@ ssh() {
         command ssh $@
         return
     fi
+}
+
+__cd() {
+    # Save the current chpwd function
+    saved_chpwd=$(typeset -f chpwd)
+    # Unset the chpwd function
+    unset -f chpwd
+    # Run the desired command
+    cd $1
+    # Restore the chpwd function
+    eval "$saved_chpwd"
+}
+
+nvidia-kill() {
+
+    header=$(cat << "EOF"
+PID    GPU Memory,Command,User
+Kill nvidia-smi processes
+('alt-enter' to select-all and kill)
+EOF
+    )
+    nvidia-smi | awk '/Processes/ {p=1} p && !/^\+/{print}' | tail -n +5 | \
+    awk '{printf "%-11s %-8s %-8s %-12s\n", $2, $5, $8, $11}' | \
+    while read -r gpu pid mem user; do \
+        ps -o pid= -o user= -o comm= -p $pid | \
+        awk -v gpu=$gpu -v mem=$mem '{print $1, gpu, mem, $3, $2}'; \
+    done | \
+    sort -k2,2 -k3,3nr | \
+    column -t | \
+    fzf --bind='alt-enter:select-all+accept' --header "$header" --multi | \
+    awk '{print $1}' | xargs kill -9
 }

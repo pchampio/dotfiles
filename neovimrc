@@ -17,6 +17,20 @@ if vim.loader then vim.loader.enable() end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.keymap.set('', '<leader>gf', ':e <cfile><cr>')   -- create file under cursor
+
+-- Enable backspace delete indent and newline.
+vim.opt.backspace = { 'indent', 'eol', 'start' }
+
+-- Don't redraw while executing macros (good performance config)
+vim.opt.lazyredraw = true
+
+-- Exclude = from isfilename.
+vim.opt.isfname:remove('=')
+-- Exclude : from isfilename.
+vim.opt.isfname:remove(':')
+
+
 -- Install package manager
 -- ~/.local/share/nvim/lazy
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -228,6 +242,15 @@ require('lazy').setup({
       { '<C-Up>',    function() require('smart-splits').resize_up() end,         desc = '[k] Move cursor up pane' },
       { '<C-Right>', function() require('smart-splits').resize_right() end,      desc = '[l] Move cursor right pane' },
     },
+  },
+
+  {
+    'junegunn/vim-easy-align',
+    on = { '<Plug>(EasyAlign)', 'EasyAlign' },
+    dependencies = 'tpope/vim-repeat',
+    keys = {
+      { '<leader>ga',  '<Plug>(EasyAlign)', mode = { 'n', 'x' }, desc = 'Align' },
+    }
   },
 
   {
@@ -473,12 +496,16 @@ require('lazy').setup({
       { mode = { "n", "x" }, "SS", "<Plug>(operator-sandwich-add)line", desc = "󰗅  Add surrounding character line" },
       { mode = { "n" }, "ds", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Delete surrounding character" },
       { mode = { "n" }, "dss", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Delete surrounding character automatically" },
+        { mode = { "n" }, "din", "<Plug>(operator-sandwich-delete)<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Delete surrounding inside surrounding character prompt" },
+        { mode = { "n" }, "din", "<Plug>(operator-sandwich-delete)<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Delete surrounding around surrounding character prompt" },
       { mode = { "n" }, "cs", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Change surrounding character" },
       { mode = { "n" }, "css", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Change surrounding character automatically" },
       { mode = { "x", "o" }, "is", "<Plug>(textobj-sandwich-query-i)", desc = "󰗅  Select inside surrounding character" },
       { mode = { "x", "o" }, "as", "<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Select around surrounding character" },
       { mode = { "x", "o" }, "ii", "<Plug>(textobj-sandwich-auto-i)", desc = "󰗅  Select inside surrounding character automatically" },
       { mode = { "x", "o" }, "ai", "<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Select around surrounding character automatically" },
+      { mode = { "x", "o" }, "in", "<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Select inside surrounding character prompt" },
+      { mode = { "x", "o" }, "an", "<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Select around surrounding character prompt" },
     },
   },
 
@@ -785,7 +812,7 @@ require('lazy').setup({
 
 
   {
-    'NTBBloodbath/galaxyline.nvim',
+    'cleong14/galaxyline.nvim',
     dependencies = { 'kyazdani42/nvim-web-devicons', 'https://git.prr.re/Drakirus/my_galaxyline_config.nvim' },
   },
 
@@ -835,29 +862,29 @@ require('lazy').setup({
     end
   },
 
-  {
-    -- keep an eye on where your cursor has jumped
-    'edluffy/specs.nvim',
-    lazy = true,
-    event = "CursorMoved",
-    config = function()
-      require("specs").setup({
-        show_jumps = true,
-        min_jump = 10,
-        popup = {
-          delay_ms = 0, -- delay before popup displays
-          inc_ms = 10,  -- time increments used for fade/resize effects
-          blend = 10,   -- starting blend, between 0-100 (fully transparent), see :h winblend
-          width = 20,
-          winhl = "PmenuSbar",
-          fader = require("specs").pulse_fader,
-          resizer = require("specs").shrink_resizer,
-        },
-        ignore_filetypes = {},
-        ignore_buftypes = { nofile = true },
-      })
-    end
-  },
+ {
+   -- keep an eye on where your cursor has jumped
+   'cxwx/specs.nvim',
+  lazy = true,
+  event = "CursorMoved",
+  config = function()
+    require("specs").setup({
+      show_jumps = true,
+      min_jump = 10,
+      popup = {
+        delay_ms = 0, -- delay before popup displays
+         inc_ms = 10,  -- time increments used for fade/resize effects
+         blend = 10,   -- starting blend, between 0-100 (fully transparent), see :h winblend
+         width = 20,
+         winhl = "PmenuSbar",
+         fader = require("specs").pulse_fader,
+         resizer = require("specs").shrink_resizer,
+       },
+       ignore_filetypes = {},
+       ignore_buftypes = { nofile = true },
+     })
+   end
+ },
 
   {
     -- Wilder for command line completion
@@ -868,7 +895,7 @@ require('lazy').setup({
     build = ":UpdateRemotePlugins",
     dependencies = {
       "sharkdp/fd",
-      { "ompugao/cpsm",          build = "PY3=ON bash install.sh", branch = 'feature/remove_boost_dependency'},
+      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh"},
       { "romgrk/fzy-lua-native", build = "make" },
       'ryanoasis/vim-devicons',
       'https://git.prr.re/Drakirus/my_wilder_config.nvim',
@@ -1056,19 +1083,19 @@ require('lazy').setup({
     end,
     keys = {
       { "<C-o>", function()
-        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }
+        require("portal.settings").update({labels = { vim.api.nvim_replace_termcodes("<c-o>", true, false, true), "j", "k", "h", "l" }})
         require("portal.builtin").jumplist.tunnel_backward(
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
       end, desc = "󰈈 Jump Backward" },
       { "<C-i>", function()
-        require('portal.settings').labels = { vim.api.nvim_replace_termcodes("<c-i>", true, false, true), "j", "k", "h", "l" }
+        require("portal.settings").update({labels = { vim.api.nvim_replace_termcodes("<c-i>", true, false, true), "j", "k", "h", "l" }})
         require("portal.builtin").jumplist.tunnel_forward(
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
         end, desc = "󰈈 Jump Forward" },
       { "g;", function()
-        require('portal.settings').labels = { vim.api.nvim_replace_termcodes(";", true, false, true), "j", "k", "h", "l" }
+        require("portal.settings").update({labels = { vim.api.nvim_replace_termcodes(";", true, false, true), "j", "k", "h", "l" }})
         require("portal.builtin").changelist.tunnel(
           { filter = function(v) if v.buffer == vim.api.nvim_get_current_buf() and math.abs(v.cursor.row - vim.fn.line('.')) < 20  then return false end return true end }
         )
@@ -1117,13 +1144,64 @@ require('lazy').setup({
   },
 
   {
+    'ctrlpvim/ctrlp.vim',
+    dependencies = {
+      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh"},
+    },
+    config = function()
+      -- vim.g.ctrlp_cmd = 'CtrlPMixed'
+      vim.g.ctrlp_root_markers = {'pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt', 'Makefile', 'requirements.txt'}
+      vim.g.ctrlp_custom_ignore = "\\v[\\/](node_modules|target|dist|build)|(\\.(swp|ico|git|svn))$"
+      vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
+      vim.g.ctrlp_user_command = 'rg %s -L --files --color=never --glob ""'
+      vim.g.ctrlp_use_caching = 0
+      vim.g.ctrlp_abbrev = { gmode = 't', abbrevs = { { pattern = ';', expanded = ':', mode = 'pfrz', }, }}
+      vim.g.ctrlp_prompt_mappings = {
+        ['AcceptSelection("v")'] = {'<c-v>', '<RightMouse>', '<c-s>'},
+        ['AcceptSelection("h")'] = {'<c-x>', '<c-cr>', '<c-i>'},
+        ['PrtCurStart()'] = {'<space>', '<c-a>'},
+      }
+      vim.g.ctrlp_status_func = {
+        main = 'CtrlP_main_status',
+        prog = 'CtrlP_progress_status'
+      }
+      vim.g.cpsm_match_empty_query = 1
+      vim.g.cpsm_query_inverting_delimiter = " "
+      vim.g.ctrlp_max_files = 0
+      vim.g.ctrlp_match_current_file = 0
+      -- Set the ctrlp_default_input option
+      vim.g.ctrlp_default_input = 1
+
+      -- Create an autocmd for StdinReadPre event
+      vim.api.nvim_create_autocmd("StdinReadPre", {
+        pattern = "*",
+        callback = function()
+          vim.g.isReadingFromStdin = 1
+        end
+      })
+
+      -- Create an autocmd for VimEnter event
+      vim.api.nvim_create_autocmd("VimEnter", {
+        pattern = "*",
+        callback = function()
+          if (vim.fn.argc() > 0 and vim.fn.isdirectory(vim.fn.argv()[0]) == 1 or vim.fn.argc() == 0)
+              and vim.fn.isdirectory(".git") == 1
+              and not vim.g.isReadingFromStdin then
+            vim.cmd('execute "CtrlP"')
+          end
+        end
+      })
+    end;
+  },
+
+  {
     -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim', "debugloop/telescope-undo.nvim", },
     keys = {
       { '<leader>?', function() require('telescope.builtin').oldfiles() end, desc = ' Find recently opened files' },
-      { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
+      -- { '<leader>gf', function() require('telescope.builtin').git_files() end, desc = ' Search Git Files' },
       -- { '<c-p>', function() require('telescope.builtin').find_files() end, desc = ' Search Files' },
       { '<leader>sH', function() require('telescope.builtin').help_tags() end, desc = ' Search Help' },
       { '<leader>sw', function() require('telescope.builtin').grep_string() end, desc = ' Search current Word' },
@@ -1231,7 +1309,7 @@ vim.o.undofile = true
 vim.o.undodir = vim.fn.expand('~/.vimundo')
 
 -- Store commands in the shada file with specific settings
-vim.o.shada = "!,'1,f0,h,s100"
+vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
 -- Set the shadafile option to the specified path
 vim.o.shadafile = vim.fn.expand('~/.vim/shada')
@@ -1450,6 +1528,27 @@ function! RenameFile() abort
   endif
 endfunction
 nnoremap <Leader>rn :call RenameFile()<cr>
+
+
+" Ctrlp statusline
+" Arguments: focus, byfname, s:regexp, prv, item, nxt, marked
+"            a:1    a:2      a:3       a:4  a:5   a:6  a:7
+fu! CtrlP_main_status(...)
+  let item = ' ' . (a:5 == 'mru files' ? 'mru' : a:5) . ' '
+  let dir = fnamemodify(getcwd(), ':~') . ' %*'
+
+  " only outputs current mode
+  retu '%7*' . item . '%4*%* ' . '%=%<' . '%6*%5*' . dir
+endf
+
+" Argument: len
+"           a:1
+fu! CtrlP_progress_status(...)
+  let len = '%#Function# '.a:1.' %*'
+  let dir = ' %=%<%#LineNr# '.getcwd().' %*'
+  retu len.dir
+endf
+
 ]])
 
 -- The line beneath this is called `modeline`. See `:help modeline`

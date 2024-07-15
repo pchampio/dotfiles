@@ -18,10 +18,6 @@ alias backup-resource="rsync -avPh --cvs-exclude --exclude-from="$HOME/.rsync.ex
 alias nas="sudo mkdir -p /run/mount/NAS; sudo mount -t nfs -rw 192.168.1.55:/volume1/Share /run/mount/NAS/"
 alias unas="sudo umount -l /run/mount/NAS"
 
-# prr.re
-alias weeb_send="rsync -avPh --delete ~/Weeb/ drakirus@prr.re:APP/data/www/gif --rsh='ssh -p2242' "
-alias resume_send="test -f ~/Downloads/resume.pdf && mv ~/Downloads/resume.pdf ~/lab/resume/resume.pdf; rsync -vPh ~/lab/resume/resume.pdf drakirus@prr.re:APP/data/www/resume --rsh='ssh -p2242'"
-
 alias tri="exiftool -if '\$rating >= 1' -d './tri' '-directory<createdate' ."
 alias bt="sudo systemctl start bluetooth.service"
 alias neof="neofetch --memory_display barinfo"
@@ -57,11 +53,10 @@ alias ms="LC_ALL=en_US.UTF-8 minishift"
 
 alias tb="netcat termbin.com 9999 | xclip -selection c"
 
-alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -rr -x --exclude .git --exclude node_modules"
-alias ncdu="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
+alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -x --exclude .git --exclude node_modules"
+alias ncdu="ncdu --color dark -x --exclude .git --exclude node_modules"
 
 # ssh
-alias drak="ssh drakirus@prr.re -p 2242"
 alias atal="env TERM=tmux-256color ssh s142293@transit.univ-lemans.fr"
 alias webai="ssh dialog@172.16.250.7"
 alias g5k-all="env TERM=tmux-256color ssh -t pchampion@access.grid5000.fr ssh -t nancy "
@@ -87,7 +82,6 @@ alias sig="cat resources/sig | xsel -b --clipboard"
 
 # lychee photos
 # see ./abbreviations.zsh
-alias lychee_import="ssh -t drakirus@prr.re -p 2242 'cd APP && make lychee-import'"
 
 alias vim='nvim'
 alias vi='nvim'

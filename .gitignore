@@ -13,3 +13,6 @@ gcc*
 /bin/wezterm
 /bin/jq
 *.zwc
+zsh/priv.zsh
+/man
+/share

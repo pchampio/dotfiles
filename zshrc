@@ -102,7 +102,7 @@ zstyle :prompt:pure:prompt:success color green
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
-export FZF_DEFAULT_OPTS='--bind alt-j:down,alt-k:up,tab:down'
+export FZF_DEFAULT_OPTS='--bind ctrl-j:down,ctrl-k:up,alt-j:down,alt-k:up,tab:down,ctrl-z:toggle'
 
 # Dart
 export DART_SDK="/opt/flutter/bin/cache/dart-sdk/bin"
