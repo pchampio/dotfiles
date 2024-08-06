@@ -22,15 +22,6 @@ function kkey(){
     xfconf-query -c keyboards -p /Default/KeyRepeat/Delay -s $(($delay+1))
 }
 
-function nvimux-vim() {
-    if [[ "$#" == 0 ]]; then
-        nvr -c "CtrlP `pwd`"
-        return
-    fi
-    nvr $*
-}
-
-
 function gdstst(){
     awk -vOFS='' '
     NR==FNR {
@@ -380,7 +371,6 @@ bw_totp_1() {
         ;;
     esac
     echo "BW@:$token" > ~/.cache/.totp
-    sleep 0.3
 }
 
 ssh() {

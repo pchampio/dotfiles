@@ -1124,6 +1124,32 @@ require('lazy').setup({
     end,
   },
 
+
+  {
+  "ctrlpvim/ctrlp.vim",
+      init = function()
+    vim.g.ctrlp_map = "<c-p>"
+    vim.g.ctrlp_clear_cache_on_exit = 0
+    vim.g.ctrlp_key_loop = 1
+    vim.g.ctrlp_lazy_update = 200
+    vim.g.ctrlp_line_prefix = "» "
+    vim.g.ctrlp_mruf_max = 100000
+    vim.g.ctrlp_show_hidden = 1
+    vim.g.ctrlp_use_caching = 1
+    vim.g.ctrlp_user_command_async = 1
+    vim.g.ctrlp_regexp = 1
+      vim.g.ctrlp_root_markers = { '.git', 'makefile', 'Makefile' }
+      vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
+    vim.g.cpsm_match_empty_query = 1
+    -- cpsm doesn't use 1 as a default if the variable doesn't exist.
+    vim.g.ctrlp_match_current_file = 0
+
+    if vim.fn.executable("rg") then
+      vim.g.ctrlp_grep_command = "rg -i --vimgrep --no-heading --hidden --no-ignore --regexp"
+    end
+    end,
+  },
+
   {
     'ctrlpvim/ctrlp.vim',
     dependencies = {
