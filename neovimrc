@@ -692,7 +692,7 @@ require('lazy').setup({
   {
     'gbprod/substitute.nvim',
     event = "CursorHold",
-    dependencies = { "gbprod/yanky.nvim", },
+    dependencies = { "gbprod/yanky.nvim", "tpope/vim-abolish"},
     config = function()
 
       -- Upper Y yank to system clipboard
@@ -743,8 +743,15 @@ require('lazy').setup({
       vim.keymap.set("n", "<leader>r", require('substitute.range').operator, { noremap = true })
       vim.keymap.set("x", "<leader>r", require('substitute.range').visual, { noremap = true })
       vim.keymap.set("n", "<leader>rr", require('substitute.range').word, { noremap = true })
+      vim.keymap.set("n", "<leader>S", function ()
+          require('substitute.range').operator({ prefix = 'S' })
+      end, { noremap = true })
       vim.api.nvim_set_keymap('o', 'iE', ':exec "normal! ggVG"<cr>', { silent = true, noremap = true, desc = 'inner entire buffer' })
       vim.keymap.set({'n', 'v'}, 'R', 'r', { noremap = true }) -- map R to old r behavior
+      vim.keymap.set("n", "cx", require('substitute.exchange').operator, { noremap = true })
+      vim.keymap.set("n", "cxx", require('substitute.exchange').line, { noremap = true })
+      vim.keymap.set("x", "X", require('substitute.exchange').visual, { noremap = true })
+      vim.keymap.set("n", "cxc", require('substitute.exchange').cancel, { noremap = true })
     end
   },
 
@@ -1131,8 +1138,9 @@ require('lazy').setup({
       vim.g.ctrlp_use_caching = 0
       vim.g.ctrlp_abbrev = { gmode = 't', abbrevs = { { pattern = ';', expanded = ':', mode = 'pfrz', }, }}
       vim.g.ctrlp_prompt_mappings = {
-        ['AcceptSelection("v")'] = {'<c-v>', '<RightMouse>', '<c-s>'},
-        ['AcceptSelection("h")'] = {'<c-x>', '<c-cr>', '<c-i>'},
+        ['AcceptSelection("v")'] = {'<c-v>', '<c-s>'},
+        ['CreateNewFile()'] = {'<c-y>'},
+        ['AcceptSelection("h")'] = {'<c-x>', '<Tab>', '<c-i>'},
         ['PrtCurStart()'] = {'<space>', '<c-a>'},
       }
       vim.g.ctrlp_status_func = {
@@ -1161,6 +1169,7 @@ require('lazy').setup({
           if (vim.fn.argc() > 0 and vim.fn.isdirectory(vim.fn.argv()[0]) == 1 or vim.fn.argc() == 0)
               and vim.fn.isdirectory(".git") == 1
               and not vim.g.isReadingFromStdin then
+            vim.cmd('sleep 100m')
             vim.cmd('execute "CtrlP"')
           end
         end
