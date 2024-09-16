@@ -48,6 +48,11 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
 
+  {
+    'pteroctopus/faster.nvim',
+    opts = {behaviours = {bigfile = {features_disabled = {"illuminate", "matchparen", "lsp", "treesitter", "indent_blankline"}}}}
+  },
+
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
   {
@@ -948,8 +953,8 @@ require('lazy').setup({
             enable = true,
             include_surrounding_whitespace = false,
             keymaps = {
-              ['ih'] = { query = '@parameter.outer', desc = "󱘎 outer param" },
-              ['il'] = { query = '@parameter.inner', desc = "󱘎 inner param" },
+              ['aa'] = { query = '@parameter.outer', desc = "󱘎 outer param" },
+              ['ia'] = { query = '@parameter.inner', desc = "󱘎 inner param" },
               ['af'] = { query = '@function.outer', desc = '󱘎 all function' },
               ['if'] = { query = '@function.inner', desc = '󱘎 inner function' },
               ['am'] = { query = '@class.outer', desc = '󱘎 all class' },
@@ -962,8 +967,8 @@ require('lazy').setup({
           },
           swap = {
             enable = true,
-            swap_next = { ["<leader>a"] = "@parameter.inner" },
-            swap_previous = { ["<leader>x"] = "@parameter.inner" },
+            swap_next = { ["<A-.>"] = "@parameter.inner" },
+            swap_previous = { ["<A-,>"] = "@parameter.inner" },
           },
           move = {
             enable = true,
@@ -992,25 +997,6 @@ require('lazy').setup({
   {
     "nvim-treesitter/nvim-treesitter-context",
     opts = { max_lines = 1 },
-  },
-
-  {
-  "LunarVim/bigfile.nvim",
-  lazy=false,
-    config = function()
-      require("bigfile").setup {
-        filesize = 2, -- size of the file in MiB, the plugin round file sizes to the closest MiB
-        features = { -- features to disable
-        "indent_blankline",
-        "illuminate",
-        "lsp",
-        "treesitter",
-        "syntax",
-        "vimopts",
-        "filetype",
-      },
-    }
-    end,
   },
 
   {
@@ -1053,7 +1039,7 @@ require('lazy').setup({
     lazy = true,
     keys = {
       { "<leader>h<space>", function() require("harpoon.ui").toggle_quick_menu() end, desc = "󱕘 Edit marks" },
-      { "<leader>sh", "<cmd>Telescope harpoon marks<cr>", desc = "󱕘 Show marks" },
+      { "<leader>hp", "<cmd>Telescope harpoon marks<cr>", desc = "󱕘 Show marks" },
       { "<leader>hh", function() require("harpoon.mark").add_file() end, desc = "󱕘 Mark this file" },
       { "<A-y>", function() require("harpoon.ui").nav_file(1) end, desc = "󱕘 Navigate to file 1" },
       { "<A-u>", function() require("harpoon.ui").nav_file(2) end, desc = "󱕘 Navigate to file 2" },
@@ -1314,14 +1300,16 @@ vim.o.breakindent = true
 -- Save undo history
 vim.o.undofile = true
 
--- set a directory to store the undo history
-vim.o.undodir = vim.fn.expand('~/.vimundo')
+if vim.g.largeEnable then
+  -- set a directory to store the undo history
+  vim.o.undodir = vim.fn.expand('~/.vimundo')
 
--- Store commands in the shada file with specific settings
-vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
+  -- Store commands in the shada file with specific settings
+  vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
--- Set the shadafile option to the specified path
-vim.o.shadafile = vim.fn.expand('~/.vim/shada')
+  -- Set the shadafile option to the specified path
+  vim.o.shadafile = vim.fn.expand('~/.vim/shada')
+end
 
 vim.o.swapfile = false
 
