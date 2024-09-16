@@ -927,7 +927,8 @@ require('lazy').setup({
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    enabled = vim.g.largeEnable,
+    enabled = false,
+    -- enabled = vim.g.largeEnable,
     config = function()
       require('nvim-treesitter.configs').setup({
         ensure_installed = {
@@ -977,11 +978,13 @@ require('lazy').setup({
   },
   {'nvim-treesitter/nvim-treesitter-textobjects',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    enabled = vim.g.largeEnable,
+    -- enabled = vim.g.largeEnable,
+    enabled = false,
   },
   {
     "Wansmer/treesj",
-    enabled = vim.g.largeEnable,
+    -- enabled = vim.g.largeEnable,
+    enabled = false,
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     keys = {
       { "gJ", "<cmd>TSJToggle<cr>", desc = " Join Toggle" },

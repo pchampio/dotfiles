@@ -336,6 +336,7 @@ bw_totp_1() {
         "Homelab prr password"
         "Homelab zep password"
         "Homelab root password"
+        "JZ"
         "GH token"
         "Gitea token"
         "Master password"
@@ -364,6 +365,9 @@ bw_totp_1() {
         ;;
     "Gitea token")
         token=" $(rbw get 'a25b73d3-942c-4c8a-b424-b85c59f433fc' --field 'token')"
+        ;;
+    "JZ")
+        token=$(rbw get 'dc516b00-0221-4f0e-95f7-2a119da1bee8')
         ;;
     *)
         echo "Invalid option"
