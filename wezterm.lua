@@ -28,6 +28,8 @@ end)
 local act = wezterm.action
 local config = wezterm.config_builder()
 
+config.max_fps = 120
+
 config.audible_bell = "Disabled"
 config.window_close_confirmation = 'NeverPrompt'
 -- Disable ligatures.
