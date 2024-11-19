@@ -30,6 +30,17 @@ vim.opt.isfname:remove('=')
 -- Exclude : from isfilename.
 vim.opt.isfname:remove(':')
 
+function pick(kind)
+  return function()
+    local actions = require("CopilotChat.actions")
+    local items = actions[kind .. "_actions"]()
+    if not items then
+      vim.notify("No " .. kind .. " found on the current line", vim.log.levels.WARN)
+      return
+    end
+    require("CopilotChat.integrations.telescope").pick(items)
+  end
+end
 
 -- Install package manager
 -- ~/.local/share/nvim/lazy
@@ -299,39 +310,6 @@ require('lazy').setup({
 
 
   {
-    "dpayne/CodeGPT.nvim",
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'MunifTanjim/nui.nvim',
-      'j-hui/fidget.nvim',
-    },
-    config = function()
-      vim.g["codegpt_chat_completions_url"] = os.getenv("LLM_API_URL")
-      vim.g["codegpt_ui_commands"] = {
-        -- some default commands, you can remap the keys
-        quit = "q", -- key to quit the popup
-        use_as_output = "<c-i>", -- key to use the popup content as output and replace the original lines
-        use_as_input = "<c-n>", -- key to use the popup content as input for a new API request
-      }
-      local progress = require("fidget.progress")
-      local handle = nil
-      vim.g["codegpt_hooks"] = {
-        request_started = function()
-          handle = progress.handle.create({
-            title = "GPT ask..",
-            message = "",
-            lsp_client = { name = "GPT" },
-          })
-        end,
-        request_finished = vim.schedule_wrap(function()
-           handle:finish()
-        end)
-      }
-    end
-  },
-
-
-  {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = "InsertEnter",
@@ -367,10 +345,10 @@ require('lazy').setup({
       luasnip.config.setup {}
       cmp.setup {
         snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
-        formatting = {
-          fields = { 'abbr', 'kind' },
-          format = function(_, item) item.kind = (cmp_kinds[item.kind] or '') .. item.kind return item end,
-        },
+        -- formatting = {
+        --   fields = { 'abbr', 'kind' },
+        --   format = function(_, item) item.kind = (cmp_kinds[item.kind] or '') .. item.kind return item end,
+        -- },
         window = {
           completion = cmp.config.window.bordered(border_opts),
           documentation = cmp.config.window.bordered(border_opts),
@@ -405,22 +383,67 @@ require('lazy').setup({
         end,
   },
 
-  { "David-Kunz/gen.nvim",
-    opts = {
-      model = "codellama", -- The default model to use.
-      display_mode = "split", -- The display mode. Can be "float" or "split".
-      show_prompt = true, -- Shows the Prompt submitted to Ollama.
-      show_model = true, -- Displays which model you are using at the beginning of your chat session.
-      no_auto_close = false, -- Never closes the window automatically.
-      init = function(options) pcall(io.popen, "/home/pchampio/lab/ollama.sh serve > /dev/null 2>&1 &") end,
-      -- Function to initialize Ollama
-      command = "curl --silent --no-buffer -X POST http://localhost:11434/api/generate -d $body",
-      -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
-      -- This can also be a lua function returning a command string, with options as the input parameter.
-      -- The executed command must return a JSON object with { response, context }
-      -- (context property is optional).
-      debug = false -- Prints errors and the command which is run.
-    }
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    branch = "canary",
+    cmd = "CopilotChat",
+    opts = function()
+      local user = vim.env.USER or "User"
+      user = user:sub(1, 1):upper() .. user:sub(2)
+      return {
+        prompts = {
+          Explain = "Please explain how the following code works.",
+          Review = "Please review the following code and provide suggestions for improvement.",
+          Tests = "Please explain how the selected code works, then generate unit tests for it.",
+          Refactor = "Please refactor the following code to improve its clarity and readability.",
+          FixCode = "Please fix the following code to make it work as intended.",
+          FixError = "Please explain the error in the following text and provide a solution.",
+          BetterNamings = "Please provide better names for the following variables and functions.",
+          Documentation = "Please provide documentation for the following code.",
+          Summarize = "Please summarize the following text.",
+          Spelling = "Please correct any grammar and spelling errors in the following text.",
+          Wording = "Please improve the grammar and wording of the following text.",
+          Concise = "Please rewrite the following text to make it more concise.",
+        },
+        insert_at_end = false,
+        model = 'gpt-4o',
+        auto_follow_cursor = true,
+        question_header = "   " .. user .. " ",
+        answer_header = "   Copilot ",
+        window = { width = 0.3, layout = "horizontal" },
+        selection = function(source)
+          local select = require("CopilotChat.select")
+          return select.visual(source) or select.buffer(source)
+        end,
+        mappings = {
+          complete = { insert = "", },
+          reset = { normal = "<C-r>", insert = "<C-r>", },
+          submit_prompt = { normal = "<CR>", insert = "<C-CR>" },
+          accept_diff = { normal = "gp" },
+          yank_diff = { normal = "gy" },
+        },
+      }
+    end,
+    keys = {
+      { "<leader>ai", function() return require("CopilotChat").toggle() end, desc = "Toggle Chat", mode = { "n", "v" },      },
+      { "<leader>ax", function() return require("CopilotChat").reset() end, desc = "Clear Chat", mode = { "n", "v" }, },
+      { "<leader>al", function() local input = vim.fn.input("Quick Chat: ") if input ~= "" then require("CopilotChat").ask(input) end end, desc = "Quick Chat", mode = { "n", "v" }, },
+      { "<leader>ad", pick("help"), desc = "Diagnostic Help", mode = { "n", "v" } },
+      { "<leader>ap", pick("prompt"), desc = "Prompt Actions", mode = { "n", "v" } },
+    },
+    config = function(_, opts)
+      local chat = require("CopilotChat")
+      require("CopilotChat.integrations.cmp").setup()
+      vim.api.nvim_create_autocmd("BufEnter", {
+        pattern = { "copilot-chat", "copilot-help" },
+        callback = function()
+          vim.opt_local.number = false
+          vim.opt_local.relativenumber = false
+        end,
+      })
+
+      chat.setup(opts)
+    end,
   },
 
   {
@@ -429,64 +452,6 @@ require('lazy').setup({
       { "<leader>ts", function() require("mini.trailspace").trim() end, desc = "󱁐  Trim white space" },
     },
   },
-
-  -- {
-  --   "kylechui/nvim-surround",
-  --   event = "VeryLazy",
-  --   config = function()
-  --     vim.api.nvim_set_hl(0, "NvimSurroundHighlight", { link = "DiffChange" })
-  --     local mod_def = require("nvim-surround.config").default_opts.surrounds
-  --     mod_def["("].add = { "(", ")" }
-  --     mod_def["{"].add = { "{", "}" }
-  --     mod_def["<"].add = { "<", ">" }
-  --     mod_def["["].add = { "[", "]" }
-  --     require("nvim-surround").setup({
-  --       move_cursor = true,
-  --       highlight = {
-  --         duration = 600,
-  --       },
-  --       keymaps = {
-  --         insert = "<C-g>s",
-  --         insert_line = "<C-g>S",
-  --         normal = "S",
-  --         normal_cur = "SS",
-  --         normal_line = "_S",
-  --         normal_cur_line = "<Nop>",
-  --         visual = "S",
-  --         visual_line = "<Nop>",
-  --         delete = "ds",
-  --         change = "cs",
-  --         change_line = "cS",
-  --       },
-  --     })
-  --     require("nvim-surround").buffer_setup({
-  --       surrounds = {
-  --         -- https://github.com/kylechui/nvim-surround/discussions/53
-  --         ["l"] = {
-  --           add = function()
-  --             local clipboard = vim.fn.getreg("+"):gsub("\n", "")
-  --             return {
-  --               { "[" },
-  --               { "](" .. clipboard .. ")" },
-  --             }
-  --           end,
-  --           find = "%b[]%b()",
-  --           delete = "^(%[)().-(%]%b())()$",
-  --           change = {
-  --             target = "^()()%b[]%((.-)()%)$",
-  --             replacement = function()
-  --               local clipboard = vim.fn.getreg("+"):gsub("\n", "")
-  --               return {
-  --                 { "" },
-  --                 { clipboard },
-  --               }
-  --             end,
-  --           },
-  --         },
-  --       },
-  --     })
-  --   end,
-  -- },
 
   {
     "machakann/vim-sandwich",
@@ -639,28 +604,6 @@ require('lazy').setup({
   },
 
   {
-    -- TODO
-    "aduros/ai.vim",
-    enabled = vim.g.largeEnable,
-    init = function()
-      vim.g.ai_no_mappings = true
-      vim.g.ai_temperature = 0.7
-      vim.g.ai_indicator_text = "󱚠"
-    end,
-    keys = {
-      { mode = { "i" }, "<C-a>", "<Esc>:AI<CR>a", { silent = true } },
-      { mode = { "n" }, "<A-a>", ":AI",           { silent = true } },
-      {
-        mode = { "v" },
-        "<A-c>",
-        ":AI Corrects sentences into standard English.<CR>",
-        { desc = "Grammar check", silent = true },
-      },
-    },
-    cmd = { "AI" },
-  },
-
-  {
     'https://gitlab.com/HiPhish/resolarized.nvim',
     priority = 1000,
     init = function()
@@ -782,6 +725,18 @@ require('lazy').setup({
       { "t", "<Plug>Sneak_s", desc = "Clever-t Forward" },
       { "T", "<Plug>Sneak_S", desc = "Clever-t Backward" },
       { ":", "<Plug>Sneak_;", desc = "Clever-ft repeat" },
+    },
+  },
+
+  {
+    "chrisgrieser/nvim-spider",
+    opts = {
+      subwordMovement = false,
+    }, 
+    keys = {
+      { mode = { "n", "o", "x" }, "w", "<cmd>lua require('spider').motion('w')<cr>", desc = "spider-w" },
+      { mode = { "n", "o", "x" }, "e", "<cmd>lua require('spider').motion('e')<cr>", desc = "spider-e" },
+      { mode = { "n", "o", "x" }, "b", "<cmd>lua require('spider').motion('b')<cr>", desc = "spider-b" },
     },
   },
 
@@ -932,7 +887,7 @@ require('lazy').setup({
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    enabled = false,
+    enabled = true,
     -- enabled = vim.g.largeEnable,
     config = function()
       require('nvim-treesitter.configs').setup({
@@ -1115,48 +1070,45 @@ require('lazy').setup({
 
 
   {
-  "ctrlpvim/ctrlp.vim",
-      init = function()
-    vim.g.ctrlp_map = "<c-p>"
-    vim.g.ctrlp_clear_cache_on_exit = 0
-    vim.g.ctrlp_key_loop = 1
-    vim.g.ctrlp_lazy_update = 200
-    vim.g.ctrlp_line_prefix = "» "
-    vim.g.ctrlp_mruf_max = 100000
-    vim.g.ctrlp_show_hidden = 1
-    vim.g.ctrlp_use_caching = 1
-    vim.g.ctrlp_user_command_async = 1
-    vim.g.ctrlp_regexp = 1
+    "ctrlpvim/ctrlp.vim",
+    init = function()
+      vim.g.ctrlp_map = "<c-p>"
+      vim.g.ctrlp_clear_cache_on_exit = 0
+      vim.g.ctrlp_key_loop = 1
+      vim.g.ctrlp_lazy_update = 200
+      vim.g.ctrlp_line_prefix = "» "
+      vim.g.ctrlp_mruf_max = 100000
+      vim.g.ctrlp_show_hidden = 1
+      vim.g.ctrlp_use_caching = 1
+      vim.g.ctrlp_user_command_async = 1
+      vim.g.ctrlp_regexp = 1
       vim.g.ctrlp_root_markers = { '.git', 'makefile', 'Makefile' }
       vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
-    vim.g.cpsm_match_empty_query = 1
-    -- cpsm doesn't use 1 as a default if the variable doesn't exist.
-    vim.g.ctrlp_match_current_file = 0
+      vim.g.cpsm_match_empty_query = 1
+      -- cpsm doesn't use 1 as a default if the variable doesn't exist.
+      vim.g.ctrlp_match_current_file = 0
 
-    if vim.fn.executable("rg") then
-      vim.g.ctrlp_grep_command = "rg -i --vimgrep --no-heading --hidden --no-ignore --regexp"
-    end
+      if vim.fn.executable("rg") then
+        vim.g.ctrlp_grep_command = "rg -i --vimgrep --no-heading --hidden --no-ignore --regexp"
+      end
     end,
-  },
-
-  {
-    'ctrlpvim/ctrlp.vim',
     dependencies = {
-      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh"},
+      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh" },
     },
     config = function()
       -- vim.g.ctrlp_cmd = 'CtrlPMixed'
-      vim.g.ctrlp_root_markers = {'pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt', 'Makefile', 'requirements.txt'}
+      vim.g.ctrlp_root_markers = { 'pom.xml', '.p4ignore', 'pubspec.yaml', 'requirements.txt', 'Makefile',
+        'requirements.txt' }
       vim.g.ctrlp_custom_ignore = "\\v[\\/](node_modules|target|dist|build)|(\\.(swp|ico|git|svn))$"
       vim.g.ctrlp_match_func = { match = 'cpsm#CtrlPMatch' }
       vim.g.ctrlp_user_command = 'rg %s -L --files --color=never --glob ""'
       vim.g.ctrlp_use_caching = 0
-      vim.g.ctrlp_abbrev = { gmode = 't', abbrevs = { { pattern = ';', expanded = ':', mode = 'pfrz', }, }}
+      vim.g.ctrlp_abbrev = { gmode = 't', abbrevs = { { pattern = ';', expanded = ':', mode = 'pfrz', }, } }
       vim.g.ctrlp_prompt_mappings = {
-        ['AcceptSelection("v")'] = {'<c-v>', '<c-s>'},
-        ['CreateNewFile()'] = {'<c-y>'},
-        ['AcceptSelection("h")'] = {'<c-x>', '<Tab>', '<c-i>'},
-        ['PrtCurStart()'] = {'<space>', '<c-a>'},
+        ['AcceptSelection("v")'] = { '<c-v>', '<c-s>' },
+        ['CreateNewFile()'] = { '<c-y>' },
+        ['AcceptSelection("h")'] = { '<c-x>', '<Tab>', '<c-i>' },
+        ['PrtCurStart()'] = { '<space>', '<c-a>' },
       }
       vim.g.ctrlp_status_func = {
         main = 'CtrlP_main_status',
@@ -1184,12 +1136,12 @@ require('lazy').setup({
           if (vim.fn.argc() > 0 and vim.fn.isdirectory(vim.fn.argv()[0]) == 1 or vim.fn.argc() == 0)
               and vim.fn.isdirectory(".git") == 1
               and not vim.g.isReadingFromStdin then
-            vim.cmd('sleep 100m')
+            vim.cmd('sleep 150m')
             vim.cmd('execute "CtrlP"')
           end
         end
       })
-    end;
+    end,
   },
 
   {
