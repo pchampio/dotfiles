@@ -44,7 +44,8 @@ tmux-provider() {
 }
 
 desktop-provider() {
-  pasteboard-provider "$@" || wayland-provider "$@" || xclip-provider "$@" || osc52-provider "$@"
+  wayland-provider "$@" || xclip-provider "$@" || osc52-provider "$@"
+  # pasteboard-provider "$@" || wayland-provider "$@" || xclip-provider "$@" || osc52-provider "$@"
 }
 
 pasteboard-provider() {
@@ -55,7 +56,12 @@ pasteboard-provider() {
 }
 
 wayland-provider() {
+  [ -n "$SSH_TTY" ] && return
   [[ -n $WAYLAND_DISPLAY ]] || return
+  if ! which wl-copy &>/dev/null; then
+    echo "please install wl-clipboard" >&2
+    exit 1
+  fi
   case $1 in
     copy) type -P wl-copy &>/dev/null && spit | wl-copy --trim-newline --type=text/plain ;;
     paste) type -P wl-paste &>/dev/null && wl-paste ;;
@@ -63,7 +69,12 @@ wayland-provider() {
 }
 
 xclip-provider() {
+  [ -n "$SSH_TTY" ] && return
   [[ -n $DISPLAY ]] && type -P xclip &>/dev/null && ! xdpyinfo | grep -q Apple || return
+  if ! which xclip &>/dev/null; then
+    echo "please install xclip" >&2
+    exit 1
+  fi
   case $1 in
     copy) spit | xclip -i -selection clipboard ;;
     paste) xclip -o -selection clipboard ;;

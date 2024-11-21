@@ -1,5 +1,6 @@
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
+local io = require 'io'
 local os = require 'os'
 
 HOME = os.getenv("HOME")
@@ -57,17 +58,25 @@ config.window_padding = {
 }
 local name = "/tmp/wezterm_screen"
 local to = function()
-  return act.Multiple {
-  --   wezterm.action_callback(function(win, pane)
-  --       local cursor = pane:get_cursor_position()
-  -- -- skip up 2 rows to skip shell prompt
-  -- local zone = pane:get_semantic_zone_at(0, cursor.y-2)
-  --     local text = pane:get_text_from_semantic_zone(zone)
-  --     local f = io.open(name, 'w')
-  --     f:write(text)
-  --     f:flush()
-  --     f:close()
-  --   end),
+  local acts = act.Multiple {
+    wezterm.action_callback(function(win, pane)
+      local cursor = pane:get_cursor_position()
+      local text = pane:get_lines_as_escapes(pane:get_dimensions().scrollback_rows)
+      local lines = {}
+      for s in text:gmatch("[^\r\n]+") do
+          table.insert(lines, s)
+      end
+      local f = io.open(name, 'w+')
+      if lines[cursor.y]~=nil then
+        f:write(lines[cursor.y])
+        if lines[cursor.y+1]~=nil then f:write(lines[cursor.y+1]) end
+        if lines[cursor.y+2]~=nil then f:write(lines[cursor.y+2]) end
+      else
+        f:write(text)
+      end
+      f:flush()
+      f:close()
+    end),
     act.SpawnCommandInNewTab({
       label = 'Get Totp',
       args = { HOME .. "/.local/bin/zsh", "-ic", "bw_totp_1" },
@@ -84,38 +93,8 @@ local to = function()
       pane:send_paste(clipboard:sub(5))
     end)
   }
+  return acts
 end
-
-wezterm.on("view-last-output-in-new-pane", function(_, pane)
-  local zones = pane:get_semantic_zones("Output")
-  local last_zone = zones[#zones - 1]
-
-  if not last_zone then
-    return nil
-  end
-
-  local output = pane:get_text_from_semantic_zone(last_zone)
-
-  local tmpname = os.tmpname()
-  local f = io.open("/tmp/a", "w+")
-  if f ~= nil then
-    f:write(output)
-    f:flush()
-    f:close()
-  end
-
-  pane:split({
-    args = { os.getenv("PAGER") or "less", tmpname },
-    direction = "Bottom",
-    domain = { DomainName = "local" },
-  })
-
-  -- Without this, it would quickly close all of the process immediately.
-  wezterm.sleep_ms(1000)
-
-  -- While it isn't required, it is nice to clean it up.
-  os.remove(tmpname)
-end)
 
 config.disable_default_key_bindings = true
 config.keys = {
@@ -207,6 +186,7 @@ config.colors.selection_bg = '#aaa46d'
 config.window_decorations = "TITLE | RESIZE"
 config.adjust_window_size_when_changing_font_size = true
 config.enable_wayland = true
+
 
 -- table.insert(config.hyperlink_rules, {
 -- 	regex = [[["]?([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["]?]],

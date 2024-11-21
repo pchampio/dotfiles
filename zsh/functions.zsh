@@ -9,7 +9,7 @@ function nvim() {
         fi
         file_size=$(stat -c %s "$1")
         if [ "$file_size" -gt "$size_threshold" ]; then
-            # --startuptime vim.log 
+            # --startuptime vim.log
             large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux64/bin/nvim $* ;
         else
             large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
@@ -332,17 +332,43 @@ bw_totp_1() {
     echo "Loading bitwarden"
     declare -a options
     options=(
-        "Homelab TOTP"
-        "Homelab prr password"
-        "Homelab zep password"
-        "Homelab root password"
-        "JZ"
-        "GH token"
-        "Gitea token"
-        "Master password"
+        "Homelab TOTP" "drakirus.*prr.re.*Authentication code"
+        "Homelab zep password" "zephylac.*zep-server.*password"
+        "Homelab prr password" "drakirus.*gateway.*password|password for drakirus"
+        "Homelab root password" "root@192.168.1.110.*password"
+        "JZ" "jflsdjf"
+        "GH token" "jfldsf"
+        "Gitea token" "jfdslkf"
+        "Master password" "Unlock the local database for"
     )
-    echo "${options[@]}"
-    selected_option=$(printf "%s\n" "${options[@]}" | fzf --prompt="Select an item: " --height=20 --border --ansi)
+    sleep 0.2
+    sed -i '/^$/d' /tmp/wezterm_screen
+    auto_detect=$(tail -n 10 /tmp/wezterm_screen | tac)
+    option_name=()
+    length=${#options[@]}
+    detected=false
+    for ((i=0; i<length; i+=2)); do
+        option_name+=("${options[i+1]}")
+    done
+    while IFS= read -r line; do
+        for ((i=0; i<length; i+=2)); do
+            if grep -E -q ".*${options[i+2]}.*" <<< "$line"; then
+                selected_option="${options[i+1]}"
+                detected=true
+                echo "----"
+                echo "Found password '$selected_option' for string '$line'"
+                echo "----"
+                break
+            fi
+        done
+        if [ "$detected" = true ] ; then
+            break
+        fi
+    done <<< "$auto_detect"
+    sleep 0.2
+    if [ "$detected" = false ] ; then
+        selected_option=$(printf "%s\n" "${option_name[@]}" | fzf --prompt="Select an item: " --height=20 --border --ansi)
+    fi
     token=""
     case "$selected_option" in
     "Homelab TOTP")
@@ -371,7 +397,7 @@ bw_totp_1() {
         ;;
     *)
         echo "Invalid option"
-        sleep 10
+        sleep 1
         ;;
     esac
     echo "BW@:$token" > ~/.cache/.totp
@@ -397,7 +423,7 @@ ssh() {
     echo "Loading ssh keys from vault"
     rbw unlock
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
+    /bw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
     if [ $# -ne 0 ]; then
         command ssh $@
         return
