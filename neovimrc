@@ -60,8 +60,23 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
 
   {
-    'pteroctopus/faster.nvim',
-    opts = {behaviours = {bigfile = {features_disabled = {"illuminate", "matchparen", "lsp", "treesitter", "indent_blankline"}}}}
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      bigfile = { enabled = true },
+      notifier = {
+        enabled = true,
+        timeout = 1000,
+      },
+      quickfile = { enabled = true },
+      statuscolumn = { enabled = true },
+    },
+    keys = {
+      { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
+      { "<leader>gb", function() Snacks.git.blame_line() end, desc = "Git Blame Line" },
+      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+    }
   },
 
   -- Detect tabstop and shiftwidth automatically
@@ -229,10 +244,6 @@ require('lazy').setup({
       { '<C-j>',     function() require('smart-splits').move_cursor_down() end,  desc = '[j] Move cursor down pane' },
       { '<C-k>',     function() require('smart-splits').move_cursor_up() end,    desc = '[k] Move cursor up pane' },
       { '<C-l>',     function() require('smart-splits').move_cursor_right() end, desc = '[l] Move cursor right pane' },
-      { '<C-Left>',  function() require('smart-splits').resize_left() end,       desc = '[h] Move cursor left pane' },
-      { '<C-Down>',  function() require('smart-splits').resize_down() end,       desc = '[j] Move cursor down pane' },
-      { '<C-Up>',    function() require('smart-splits').resize_up() end,         desc = '[k] Move cursor up pane' },
-      { '<C-Right>', function() require('smart-splits').resize_right() end,      desc = '[l] Move cursor right pane' },
     },
   },
 
@@ -441,6 +452,7 @@ require('lazy').setup({
 
   {
     "machakann/vim-sandwich",
+    priority = 100,
     init = function()
       vim.cmd([[ onoremap line :normal! ^vg_<CR> ]])
       vim.g.sandwich_no_default_key_mappings = 1
@@ -452,14 +464,16 @@ require('lazy').setup({
       { mode = { "n", "x" }, "SS", "<Plug>(operator-sandwich-add)line", desc = "󰗅  Add surrounding character line" },
       { mode = { "n" }, "ds", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Delete surrounding character" },
       { mode = { "n" }, "dss", "<Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Delete surrounding character automatically" },
-        { mode = { "n" }, "din", "<Plug>(operator-sandwich-delete)<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Delete surrounding inside surrounding character prompt" },
-        { mode = { "n" }, "din", "<Plug>(operator-sandwich-delete)<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Delete surrounding around surrounding character prompt" },
+      { mode = { "n" }, "din", "d<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Delete surrounding inside surrounding character prompt" },
+      { mode = { "n" }, "dan", "d<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Delete surrounding around surrounding character prompt" },
       { mode = { "n" }, "cs", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Change surrounding character" },
       { mode = { "n" }, "css", "<Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Change surrounding character automatically" },
       { mode = { "x", "o" }, "is", "<Plug>(textobj-sandwich-query-i)", desc = "󰗅  Select inside surrounding character" },
       { mode = { "x", "o" }, "as", "<Plug>(textobj-sandwich-query-a)", desc = "󰗅  Select around surrounding character" },
       { mode = { "x", "o" }, "ii", "<Plug>(textobj-sandwich-auto-i)", desc = "󰗅  Select inside surrounding character automatically" },
       { mode = { "x", "o" }, "ai", "<Plug>(textobj-sandwich-auto-a)", desc = "󰗅  Select around surrounding character automatically" },
+      { mode = { "n" }, "cin", "c<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Select inside surrounding character prompt" },
+      { mode = { "n" }, "can", "c<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Select around surrounding character prompt" },
       { mode = { "x", "o" }, "in", "<Plug>(textobj-sandwich-literal-query-i)", desc = "󰗅  Select inside surrounding character prompt" },
       { mode = { "x", "o" }, "an", "<Plug>(textobj-sandwich-literal-query-a)", desc = "󰗅  Select around surrounding character prompt" },
     },
@@ -1331,6 +1345,12 @@ vim.cmd([[hi SpellRare gui=undercurl guifg=#6c71c4]])
 vim.cmd([[hi SpellLocal gui=undercurl guifg=#eee8d5]])
 
 vim.o.spellfile = vim.fn.expand('~/dotfiles/spell/ownSpellFile.utf-8.add')
+
+-- Resizing a window split
+vim.keymap.set('n', '<S-Left>', '<C-w>10<', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-Down>', '<C-w>5-', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-Up>', '<C-w>5+', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-Right>', '<C-w>10>', { noremap = true, silent = true })
 
 -- [ My CUSTOM viml functions ] --
 vim.cmd([[
