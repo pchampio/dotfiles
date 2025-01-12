@@ -30,18 +30,6 @@ vim.opt.isfname:remove('=')
 -- Exclude : from isfilename.
 vim.opt.isfname:remove(':')
 
-local pick = function(kind)
-  return function()
-    local actions = require("CopilotChat.actions")
-    local items = actions[kind .. "_actions"]()
-    if not items then
-      vim.notify("No " .. kind .. " found on the current line", vim.log.levels.WARN)
-      return
-    end
-    require("CopilotChat.integrations.telescope").pick(items)
-  end
-end
-
 -- Install package manager
 -- ~/.local/share/nvim/lazy
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -73,9 +61,9 @@ require('lazy').setup({
       statuscolumn = { enabled = true },
     },
     keys = {
-      { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
+      { "<leader>gB", function() Snacks.gitbrowse() end,      desc = "Git Browse" },
       { "<leader>gb", function() Snacks.git.blame_line() end, desc = "Git Blame Line" },
-      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
+      { "<leader>un", function() Snacks.notifier.hide() end,  desc = "Dismiss All Notifications" },
     }
   },
 
@@ -95,7 +83,7 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      { 'williamboman/mason.nvim', config = true, event = "VeryLazy" },
+      { 'williamboman/mason.nvim',           config = true,      event = "VeryLazy" },
       { 'williamboman/mason-lspconfig.nvim', event = "VeryLazy", },
       {
         "KostkaBrukowa/definition-or-references.nvim",
@@ -104,15 +92,15 @@ require('lazy').setup({
           require("definition-or-references").setup({
             on_references_result = function(result)
               require("telescope.pickers")
-                  .new({}, {
-                    prompt_title = "LSP References",
-                    finder = require("telescope.finders").new_table({
-                      results = vim.lsp.util.locations_to_items(result, "utf-16"),
-                      entry_maker = require("telescope.make_entry").gen_from_quickfix(),
-                    }),
-                    previewer = require("telescope.config").values.qflist_previewer({}),
-                  })
-                  :find()
+                .new({}, {
+                  prompt_title = "LSP References",
+                  finder = require("telescope.finders").new_table({
+                    results = vim.lsp.util.locations_to_items(result, "utf-16"),
+                    entry_maker = require("telescope.make_entry").gen_from_quickfix(),
+                  }),
+                  previewer = require("telescope.config").values.qflist_previewer({}),
+                })
+                :find()
             end
           })
         end
@@ -120,6 +108,7 @@ require('lazy').setup({
 
       -- Additional lua configuration, makes nvim tinkering amazing!
       'folke/neodev.nvim',
+      'saghen/blink.cmp',
     },
     config = function()
       --  This function gets run when an LSP connects to a particular buffer.
@@ -188,8 +177,8 @@ require('lazy').setup({
             },
           }
         end)
-        vim.api.nvim_buf_set_keymap(bufnr, "n", '<leader>=', 'v:lua.op_format_code()', {expr = true})
-        vim.api.nvim_buf_set_keymap(bufnr, "v", '<leader>=', 'v:lua.op_format_code()', {expr = true})
+        vim.api.nvim_buf_set_keymap(bufnr, "n", '<leader>=', 'v:lua.op_format_code()', { expr = true })
+        vim.api.nvim_buf_set_keymap(bufnr, "v", '<leader>=', 'v:lua.op_format_code()', { expr = true })
         vim.api.nvim_buf_set_keymap(bufnr, "n", '<leader>==', "v:lua.op_format_code() .. '_'", { expr = true })
       end
 
@@ -212,27 +201,24 @@ require('lazy').setup({
         },
       }
 
-      -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
       -- Ensure the servers above are installed
       local mason_lspconfig = require('mason-lspconfig')
-
-      mason_lspconfig.setup {
-        ensure_installed = vim.tbl_keys(servers),
-      }
 
       mason_lspconfig.setup_handlers {
         function(server_name)
           require('lspconfig')[server_name].setup {
-            capabilities = capabilities,
+            capabilities = require('blink.cmp').get_lsp_capabilities(),
             on_attach = on_attach,
             settings = servers[server_name],
             filetypes = (servers[server_name] or {}).filetypes,
           }
         end
       }
+
+      mason_lspconfig.setup {
+        ensure_installed = vim.tbl_keys(servers),
+      }
+
     end
   },
 
@@ -240,10 +226,10 @@ require('lazy').setup({
     'mrjones2014/smart-splits.nvim',
     opts = { default_amount = 6, disable_multiplexer_nav_when_zoomed = false, },
     keys = {
-      { '<C-h>',     function() require('smart-splits').move_cursor_left() end,  desc = '[h] Move cursor left pane' },
-      { '<C-j>',     function() require('smart-splits').move_cursor_down() end,  desc = '[j] Move cursor down pane' },
-      { '<C-k>',     function() require('smart-splits').move_cursor_up() end,    desc = '[k] Move cursor up pane' },
-      { '<C-l>',     function() require('smart-splits').move_cursor_right() end, desc = '[l] Move cursor right pane' },
+      { '<C-h>', function() require('smart-splits').move_cursor_left() end,  desc = '[h] Move cursor left pane' },
+      { '<C-j>', function() require('smart-splits').move_cursor_down() end,  desc = '[j] Move cursor down pane' },
+      { '<C-k>', function() require('smart-splits').move_cursor_up() end,    desc = '[k] Move cursor up pane' },
+      { '<C-l>', function() require('smart-splits').move_cursor_right() end, desc = '[l] Move cursor right pane' },
     },
   },
 
@@ -252,7 +238,7 @@ require('lazy').setup({
     on = { '<Plug>(EasyAlign)', 'EasyAlign' },
     dependencies = 'tpope/vim-repeat',
     keys = {
-      { '<leader>ga',  '<Plug>(EasyAlign)', mode = { 'n', 'x' }, desc = 'Align' },
+      { '<leader>ga', '<Plug>(EasyAlign)', mode = { 'n', 'x' }, desc = 'Align' },
     }
   },
 
@@ -275,13 +261,14 @@ require('lazy').setup({
       { "<leader><space>", "<Plug>(LoupeClearHighlight)", desc = "Clear Search Highlight (Loupe)" },
     },
     init = function()
-      vim.g.LoupeVeryMagicReplace=1
+      vim.g.LoupeVeryMagicReplace = 1
     end,
   },
 
   {
     event = { "CmdlineEnter", "CursorHold" },
-    'm-demare/hlargs.nvim', opts = {color = '#05a4ee',}
+    'm-demare/hlargs.nvim',
+    opts = { color = '#05a4ee', }
   },
 
   {
@@ -298,149 +285,73 @@ require('lazy').setup({
   {
     "supermaven-inc/supermaven-nvim",
     opts = {
-      -- keymaps = {
-      --   accept_suggestion = nil,
-      -- },
-      disable_inline_completion = false
+      disable_inline_completion = true, -- disables inline completion for use with cmp
+      keymaps = {
+        accept_suggestion = nil, -- handled by nvim-cmp or blink.cmp
+      },
+      ignore_filetypes = { "bigfile", "snacks_input", "snacks_notif" },
     },
   },
 
   {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    event = "InsertEnter",
+    'saghen/blink.cmp',
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-
-      -- Adds LSP completion capabilities
-      'hrsh7th/cmp-nvim-lsp',
-
-      -- other sources
-      'hrsh7th/cmp-path',
-      'hrsh7th/cmp-buffer',
-
-      -- Adds a number of user-friendly snippets
       'rafamadriz/friendly-snippets',
-
-      -- Autopairs insert `(` after select function or method item
-      'windwp/nvim-autopairs',
-      'onsails/lspkind.nvim',
-
+      "saghen/blink.compat",
+      "supermaven-inc/supermaven-nvim",
     },
-    config = function()
-      local cmp = require 'cmp'
-      local luasnip = require 'luasnip'
-      local lspkind = require 'lspkind'
-      require('luasnip.loaders.from_vscode').lazy_load()
-      local border_opts = { border = "rounded", winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None" }
-      luasnip.config.setup {}
-      cmp.setup {
-        snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
-        formatting = {
-          format = lspkind.cmp_format({
-          mode = "symbol",
-          max_width = 50,
-          symbol_map = { Supermaven = ' ', }
-          }),
+    -- use a release tag to download pre-built binaries
+    version = 'v0.*',
+    opts = {
+      keymap = { preset = 'default' },
+      -- https://github.com/roguesherlock/dotfiles/blob/a8efee0dd3a0aee9d00e94f9f2040fba2ae2367b/.config/nvim/init.bak.lua#L854
+
+      sources = {
+        providers = {
+          supermaven = {
+            kind = "Supermaven",
+            score_offset = 100,
+            async = true,
+          },
         },
-        window = {
-          completion = cmp.config.window.bordered(border_opts),
-          documentation = cmp.config.window.bordered(border_opts),
-        },
-        experimental = { ghost_text = true },
-        mapping = cmp.mapping.preset.insert {
-          ['<C-n>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Replace }),
-          ['<C-p>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Replace }),
-          ['<C-e>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-y>'] = cmp.mapping.scroll_docs(4),
-          ['<CR>'] = function(fallback) if cmp.visible() and cmp.get_active_entry() then cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }) else fallback() end end,
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-        },
-        sources = {
-          { name = 'nvim_lsp' },
-          { name = 'luasnip' },
-          { name = 'buffer' },
-          { name = 'path' },
-          { name = 'supermaven' },
-        },
-      }
-      local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-      cmp.event:on(
-        'confirm_done',
-        cmp_autopairs.on_confirm_done()
-      )
-        end,
+      },
+
+      appearance = {
+        use_nvim_cmp_as_default = true,
+        nerd_font_variant = 'mono'
+      },
+      signature = { enabled = true }
+    },
   },
 
   {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "canary",
-    cmd = "CopilotChat",
-    opts = function()
-      local user = vim.env.USER or "User"
-      user = user:sub(1, 1):upper() .. user:sub(2)
-      return {
-        prompts = {
-          Explain = "Please explain how the following code works.",
-          Review = "Please review the following code and provide suggestions for improvement.",
-          Tests = "Please explain how the selected code works, then generate unit tests for it.",
-          Refactor = "Please refactor the following code to improve its clarity and readability.",
-          FixCode = "Please fix the following code to make it work as intended.",
-          FixError = "Please explain the error in the following text and provide a solution.",
-          BetterNamings = "Please provide better names for the following variables and functions.",
-          Documentation = "Please provide documentation for the following code.",
-          Summarize = "Please summarize the following text.",
-          Spelling = "Please correct any grammar and spelling errors in the following text.",
-          Wording = "Please improve the grammar and wording of the following text.",
-          Concise = "Please rewrite the following text to make it more concise.",
-        },
-        insert_at_end = false,
-        model = 'gpt-4o',
-        auto_follow_cursor = true,
-        question_header = "   " .. user .. " ",
-        answer_header = "   Copilot ",
-        window = { width = 0.3, layout = "horizontal" },
-        selection = function(source)
-          local select = require("CopilotChat.select")
-          return select.visual(source) or select.buffer(source)
-        end,
-        mappings = {
-          complete = { insert = "", },
-          reset = { normal = "<C-r>", insert = "<C-r>", },
-          submit_prompt = { normal = "<CR>", insert = "<C-CR>" },
-          accept_diff = { normal = "gp" },
-          yank_diff = { normal = "gy" },
-        },
-      }
-    end,
-    keys = {
-      { "<leader>ai", function() return require("CopilotChat").toggle() end, desc = "Toggle Chat", mode = { "n", "v" },      },
-      { "<leader>ax", function() return require("CopilotChat").reset() end, desc = "Clear Chat", mode = { "n", "v" }, },
-      { "<leader>al", function() local input = vim.fn.input("Quick Chat: ") if input ~= "" then require("CopilotChat").ask(input) end end, desc = "Quick Chat", mode = { "n", "v" }, },
-      { "<leader>ad", pick("help"), desc = "Diagnostic Help", mode = { "n", "v" } },
-      { "<leader>ap", pick("prompt"), desc = "Prompt Actions", mode = { "n", "v" } },
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    lazy = false,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      -- add any opts here
     },
-    config = function(_, opts)
-      local chat = require("CopilotChat")
-      require("CopilotChat.integrations.cmp").setup()
-      vim.api.nvim_create_autocmd("BufEnter", {
-        pattern = { "copilot-chat", "copilot-help" },
-        callback = function()
-          vim.opt_local.number = false
-          vim.opt_local.relativenumber = false
-        end,
-      })
-
-      chat.setup(opts)
-    end,
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = "make",
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      -- "hrsh7th/nvim-cmp",          -- autocompletion for avante commands and mentions
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua",    -- for providers='copilot'
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
   },
 
   {
@@ -852,26 +763,6 @@ require('lazy').setup({
      })
    end
  },
-
-  {
-    -- Wilder for command line completion
-    "Gelio/wilder.nvim",
-    branch = "fix-last-arg-completion-for-lua",
-    event = { "CmdlineEnter", "CursorHold" },
-    enabled = true,
-    build = ":UpdateRemotePlugins",
-    dependencies = {
-      "sharkdp/fd",
-      { "https://git.prr.re/Drakirus/cpsm", build = "PY3=ON bash install.sh"},
-      { "romgrk/fzy-lua-native", build = "make" },
-      'ryanoasis/vim-devicons',
-      'https://git.prr.re/Drakirus/my_wilder_config.nvim',
-    },
-    config = function()
-      require("my_wilder_config")
-    end,
-
-  },
 
   {
     "roobert/f-string-toggle.nvim",
@@ -1429,6 +1320,7 @@ fu! CtrlP_progress_status(...)
 endf
 
 ]])
+
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et ft=lua

@@ -9,15 +9,15 @@ wezterm.GLOBALS = wezterm.GLOBALS or {}
 wezterm.GLOBALS.seen_windows = wezterm.GLOBALS.seen_windows or {}
 
 wezterm.on("window-config-reloaded", function(window)
-    local id = window:window_id()
+  local id = window:window_id()
 
-    local is_new_window = not wezterm.GLOBALS.seen_windows[id]
-    wezterm.GLOBALS.seen_windows[id] = true
+  local is_new_window = not wezterm.GLOBALS.seen_windows[id]
+  wezterm.GLOBALS.seen_windows[id] = true
 
-    if is_new_window then
-      window:maximize()
-      window:focus()
-    end
+  if is_new_window then
+    window:maximize()
+    window:focus()
+  end
 end)
 
 wezterm.on('gui-startup', function()
@@ -56,52 +56,11 @@ config.window_padding = {
   top = 0,
   bottom = 0,
 }
-local name = "/tmp/wezterm_screen"
-local to = function()
-  local acts = act.Multiple {
-    wezterm.action_callback(function(win, pane)
-      local cursor = pane:get_cursor_position()
-      local text = pane:get_lines_as_escapes(pane:get_dimensions().scrollback_rows)
-      local lines = {}
-      for s in text:gmatch("[^\r\n]+") do
-          table.insert(lines, s)
-      end
-      local f = io.open(name, 'w+')
-      if lines[cursor.y]~=nil then
-        f:write(lines[cursor.y])
-        if lines[cursor.y+1]~=nil then f:write(lines[cursor.y+1]) end
-        if lines[cursor.y+2]~=nil then f:write(lines[cursor.y+2]) end
-      else
-        f:write(text)
-      end
-      f:flush()
-      f:close()
-    end),
-    act.SpawnCommandInNewTab({
-      label = 'Get Totp',
-      args = { HOME .. "/.local/bin/zsh", "-ic", "bw_totp_1" },
-    }),
-    wezterm.action_callback(function(win, pane)
-      local clipboard = ""
-      while (not clipboard:match "^BW@:") do
-        local success, stdout, stderr = wezterm.run_child_process { "cat", HOME .. "/.cache/.totp" }
-        -- wezterm.log_info(stdout)
-        clipboard = stdout
-        wezterm.sleep_ms(50)
-      end
-      local success, stdout, stderr = wezterm.run_child_process { "truncate", "-s", "0", HOME .. "/.cache/.totp" }
-      pane:send_paste(clipboard:sub(5))
-    end)
-  }
-  return acts
-end
 
 config.disable_default_key_bindings = true
 config.keys = {
   -- CTRL-SHIFT-i activates the debug overlay
   { key = 'i', mods = 'CTRL|SHIFT', action = act.ShowDebugOverlay },
-  -- Bitwarden like extension
-  { key = "l", mods = "CTRL|SHIFT",  action = to()},
   -- zooms
   { key = "+", mods = "CTRL", action = act.IncreaseFontSize },
   { key = "-", mods = "CTRL", action = act.DecreaseFontSize },
@@ -114,6 +73,127 @@ config.keys = {
   { key = "x", mods = "SHIFT|CTRL", action = openUrl },
   -- Quit
   { key = "q", mods = "CMD", action = act.QuitApplication },
+
+  { key = 'F1', mods = 'NONE', action = 'ActivateCopyMode' },
+
+  {
+    key = 'L',
+    mods = 'CTRL|SHIFT',
+    action = wezterm.action_callback(function(window, pane)
+
+
+      local workspace = wezterm.mux.get_active_workspace()
+      for _, mw in ipairs(wezterm.mux.all_windows()) do
+        if mw:get_workspace() == workspace then
+          local window = mw:gui_window()
+          local pane = window:active_pane()
+          local cursor = pane:get_cursor_position()
+          local text = wezterm.split_by_newlines(pane:get_logical_lines_as_text())
+
+          -- for i, line in ipairs(text) do
+          --   wezterm.log_info(line)
+          -- end
+
+          wezterm.log_info("Cursor")
+          wezterm.log_info(cursor.y)
+          wezterm.log_info(pane:get_cursor_position().y - pane:get_dimensions().physical_top )
+
+          local prev_prev_line = text[cursor.y - 2] or ""
+          local prev_line = text[cursor.y - 1] or ""
+          local curr_line = text[cursor.y] or ""
+          local next_line = text[cursor.y + 1] or ""
+
+          local start_index = math.max(1, cursor.x - 60)
+
+          -- Safely handle each string.sub call
+          local prev_prev_text = string.sub(prev_prev_line, start_index) or ""
+          local prev_text = string.sub(prev_line, start_index) or ""
+          local curr_text = string.sub(curr_line, start_index) or pane:get_logical_lines_as_text()
+          local next_text = string.sub(next_line, start_index) or ""
+
+          -- Concatenate the strings
+          local text_at_cursor = prev_prev_text .. prev_text .. curr_text .. next_text
+
+          wezterm.log_info("text:")
+          wezterm.log_info(text_at_cursor)
+
+
+
+          local password_patterns = {
+            ["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
+            ["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
+            ["drakirus.*server.*password for drakirus"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
+            ["password for drakirus"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
+            ["zephylac.*zep.*server.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab zep password'",
+            ["root@192.168.1.110.*password"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7",
+            ["Master Password:"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
+          }
+
+          for pattern, cmd_get_pwd in pairs(password_patterns) do
+            wezterm.log_info(text_at_cursor)
+            wezterm.log_info(pattern)
+            wezterm.log_info(string.find(text_at_cursor, pattern))
+            if string.find(text_at_cursor, pattern) then
+              local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(cmd_get_pwd))
+              -- wezterm.log_info(success)
+              -- wezterm.log_info(stderr)
+              window:perform_action(wezterm.action.Multiple {
+                wezterm.action.SendString(password),
+                wezterm.action.SendKey { key = 'Enter' },
+              }, window:active_pane())
+              return
+            end
+          end
+
+          for pattern, cmd_get_pwd in pairs(password_patterns) do
+            if string.find(pane:get_logical_lines_as_text(), pattern) then
+              local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(cmd_get_pwd))
+              -- wezterm.log_info(success)
+              -- wezterm.log_info(stderr)
+              window:perform_action(wezterm.action.Multiple {
+                wezterm.action.SendString(password),
+                wezterm.action.SendKey { key = 'Enter' },
+              }, window:active_pane())
+              return
+            end
+          end
+
+        end
+      end
+
+      local password = {
+        { id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = 'GH Token' },
+        { id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token", label = 'Gitea Token' },
+      }
+
+      window:perform_action(
+        act.InputSelector {
+          action = wezterm.action_callback(
+            function(inner_window, inner_pane, cmd, label)
+              if not cmd and not label then
+                wezterm.log_info 'cancelled'
+              else
+                local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(cmd))
+                -- wezterm.log_info(success)
+                -- wezterm.log_info(stderr)
+                window:perform_action(wezterm.action.Multiple {
+                  wezterm.action.SendString(password),
+                  wezterm.action.SendKey { key = 'Enter' },
+                }, window:active_pane())
+              end
+            end
+          ),
+          title = 'Choose Password',
+          choices = password,
+          fuzzy = true,
+          fuzzy_description = 'Fuzzy find a password to input: ',
+        },
+        pane
+      )
+
+    end),
+  },
+
 }
 config.mouse_bindings = {
   { event = { Drag = { streak = 1, button = "Left" } }, mods = "SHIFT", action = act({ ExtendSelectionToMouseCursor = "Cell" }) },
@@ -188,10 +268,35 @@ config.adjust_window_size_when_changing_font_size = true
 config.enable_wayland = true
 
 
--- table.insert(config.hyperlink_rules, {
--- 	regex = [[["]?([\w\d]{1}[-\w\d]+)(/){1}([-\w\d\.]+)["]?]],
--- 	format = "https://github.com/$1/$3",
--- })
+config.mouse_bindings = {
+	{
+		event = { Down = { streak = 1, button = "Right" } },
+		mods = "NONE",
+		action = wezterm.action.ActivateCopyMode,
+	},
+}
 
+
+config.hyperlink_rules = {
+  -- Linkify things that look like URLs
+  -- This is actually the default if you don't specify any hyperlink_rules
+  {
+    regex = "\\b\\w+://(?:[\\w.-]+)\\.[a-z]{2,15}\\S*\\b",
+    format = "$0",
+  },
+
+  -- match the URL with a PORT
+  -- such 'http://localhost:3000/index.html'
+  {
+    regex = "\\b\\w+://(?:[\\w.-]+):\\d+\\S*\\b",
+    format = "$0",
+  },
+
+  -- file:// URI
+  {
+    regex = "\\bfile://\\S*\\b",
+    format = "$0",
+  },
+}
 -- and finally, return the configuration to wezterm
 return config

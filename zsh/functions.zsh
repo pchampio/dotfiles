@@ -328,81 +328,6 @@ fkill() {
   fi
 }
 
-bw_totp_1() {
-    echo "Loading bitwarden"
-    declare -a options
-    options=(
-        "Homelab TOTP" "drakirus.*prr.re.*Authentication code"
-        "Homelab zep password" "zephylac.*zep-server.*password"
-        "Homelab prr password" "drakirus.*gateway.*password|password for drakirus"
-        "Homelab root password" "root@192.168.1.110.*password"
-        "JZ" "jflsdjf"
-        "GH token" "jfldsf"
-        "Gitea token" "jfdslkf"
-        "Master password" "Unlock the local database for"
-    )
-    sleep 0.2
-    sed -i '/^$/d' /tmp/wezterm_screen
-    auto_detect=$(tail -n 10 /tmp/wezterm_screen | tac)
-    option_name=()
-    length=${#options[@]}
-    detected=false
-    for ((i=0; i<length; i+=2)); do
-        option_name+=("${options[i+1]}")
-    done
-    while IFS= read -r line; do
-        for ((i=0; i<length; i+=2)); do
-            if grep -E -q ".*${options[i+2]}.*" <<< "$line"; then
-                selected_option="${options[i+1]}"
-                detected=true
-                echo "----"
-                echo "Found password '$selected_option' for string '$line'"
-                echo "----"
-                break
-            fi
-        done
-        if [ "$detected" = true ] ; then
-            break
-        fi
-    done <<< "$auto_detect"
-    sleep 0.2
-    if [ "$detected" = false ] ; then
-        selected_option=$(printf "%s\n" "${option_name[@]}" | fzf --prompt="Select an item: " --height=20 --border --ansi)
-    fi
-    token=""
-    case "$selected_option" in
-    "Homelab TOTP")
-        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'totp')
-        ;;
-    "Homelab prr password")
-        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'Homelab prr password')
-        ;;
-    "Homelab zep password")
-        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7" --field 'Homelab zep password')
-        ;;
-    "Homelab root password")
-        token=$(rbw get "32d66a6f-ef01-4835-8ad1-aae19fa717a7")
-        ;;
-    "Master password")
-        token=$(rbw get "2ac8a334-7607-42b5-9198-5c31c371599e")
-        ;;
-    "GH token")
-        token=$(rbw get "242d4b24-ea36-4eb9-bea3-c4a4d4f8da63" --field "gh cli")
-        ;;
-    "Gitea token")
-        token=" $(rbw get 'a25b73d3-942c-4c8a-b424-b85c59f433fc' --field 'token')"
-        ;;
-    "JZ")
-        token=$(rbw get 'dc516b00-0221-4f0e-95f7-2a119da1bee8')
-        ;;
-    *)
-        echo "Invalid option"
-        sleep 1
-        ;;
-    esac
-    echo "BW@:$token" > ~/.cache/.totp
-}
-
 ssh() {
     set -o pipefail
     # set +o pipefail # invert
@@ -422,8 +347,8 @@ ssh() {
     fi
     echo "Loading ssh keys from vault"
     rbw unlock
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 4h  -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
     if [ $# -ne 0 ]; then
         command ssh $@
         return
