@@ -6,6 +6,7 @@
 /bin/fd
 /bin/zsh
 bin/nvim-linux64*
+bin/nvim-linux-x86_64/
 gcc*
 /bin/junest
 /bin/wezterm

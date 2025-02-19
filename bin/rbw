@@ -1,6 +1,7 @@
 #!/bin/bash
 
 bin_path=$HOME/dotfiles/bin/rbw_bin
+PATH=$PATH:$HOME/dotfiles/bin/rbw_bin
 
 if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   >&2 echo "Setting up config.."
