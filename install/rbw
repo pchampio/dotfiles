@@ -7,6 +7,9 @@ BASEDIR=$(dirname $0)
 
 
 explain "Instalation de rbw"
+~/.local/share/junest/bin/junest -f -- pacman -R yay-bin yay-bin-debug yay --noconfirm || true
+~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel
+~/.local/share/junest/bin/junest -- bash -c "\rm -rf yay || true; git clone https://aur.archlinux.org/yay.git --depth=1 && cd yay && mkdir -p /opt/go && yes | makepkg -si && \rm -rf /opt/go"
 ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
 yes | ~/.local/share/junest/bin/junest -- yay -S --noconfirm sshpass
 yes | ~/.local/share/junest/bin/junest -- yay -S --noconfirm openssl

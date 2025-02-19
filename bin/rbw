@@ -1,55 +1,54 @@
 #!/bin/bash
 
-junest=$HOME/.local/share/junest/bin/junest
-
+bin_path=$HOME/dotfiles/bin/rbw_bin
 
 if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   >&2 echo "Setting up config.."
   read -r -p 'Enter your Bitwarden login: ' email
   >&2 echo "email $email"
-  $junest rbw config set email "$email"
-  $junest rbw config set pinentry "/usr/bin/pinentry-tty"
+  $bin_path/rbw config set email "$email"
+  $bin_path/rbw config set pinentry "/usr/bin/pinentry-tty"
 
   read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
   if [[ ! -z "$self_url" ]]; then
-    $junest rbw config set base_url "$self_url"
+    $bin_path/$rbw config set base_url "$self_url"
   fi
   # read -r -p 'Enter self-hosted installation identity url, if applicable: ' self_ident_url
   # if [[ ! -z "$self_ident_url" ]]; then
-  #   $junest rbw config set identity_url "$self_ident_url"
+  #   $bin_path/rbw config set identity_url "$self_ident_url"
   # fi
-  $junest rbw register
+  $bin_path/rbw register
   >&2 echo "Set up complete. Start the agent..."
 # else
   # >&2 echo "Set up already done. Start the agent"
-  # $junest rbw-agent
+  # $bin_path/rbw-agent
 fi
 
 if [ "$1" = "unlock" ]; then
-  $junest rbw unlocked 2> /dev/null > /dev/null
+  $bin_path/rbw unlocked 2> /dev/null > /dev/null
   if [[ $? -ne 0 ]]; then
-      $junest rbw unlock
+      $bin_path/rbw unlock
   fi
 fi
 
 if [ "$1" = "unlocked" ]; then
-    $junest rbw unlocked
+    $bin_path/rbw unlocked
     exit $?
 fi
 
 if [ "$1" = "lock" ]; then
-    $junest rbw lock
+    $bin_path/rbw lock
     exit $?
 fi
 
-if ! grep -q "pinentry-tty" "$HOME/.config/rbw/config.json"; then
-  $junest rbw config set pinentry "/usr/bin/pinentry-tty"
-fi
+# if ! grep -q "pinentry-tty" "$HOME/.config/rbw/config.json"; then
+  # $bin_path/rbw config set pinentry "/usr/bin/pinentry-tty"
+# fi
 
-$junest rbw unlocked 2> /dev/null > /dev/null
+$bin_path/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -ne 0 ]]; then
-    $junest rbw unlock
+    $bin_path/rbw unlock
 fi
 
 
-$junest rbw "$@"
+$bin_path/rbw "$@"

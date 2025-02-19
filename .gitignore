@@ -5,10 +5,8 @@
 /bin/mosh-*
 /bin/fd
 /bin/zsh
-/bin/tmux
 bin/nvim-linux64*
 gcc*
-/bin/tmux_bin
 /bin/junest
 /bin/wezterm
 /bin/jq
