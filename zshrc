@@ -51,18 +51,11 @@ chpwd() {
   # fi
 }
 
-# downgrade command in manjaro
-export DOWNGRADE_FROM_ALA=1
-
-# mosh
-export LD_LIBRARY_PATH=$HOME/dotfiles/bin/mosh/lib
-PATH=$PATH:$HOME/dotfiles/bin/mosh/bin
-
 # perl
 PATH=$PATH:/usr/bin/core_perl/
 
 # junest
-export PATH=$HOME/.local/share/junest/bin:$PATH
+# export PATH=$HOME/.local/share/junest/bin:$PATH
 # export PATH="$PATH:$HOME/.junest/usr/bin_wrappers"
 
 # GO config
@@ -121,16 +114,9 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre
 export ANDROID_HOME=/opt/android-sdk
 export PATH=${PATH}:${JAVA_HOME}/bin:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
 
-# if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-#   export TERM=screen-256color
-# fi
-
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# vim ~/.ssh/config #
-# AddKeysToAgent yes
-# ForwardAgent yes
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
@@ -139,15 +125,12 @@ if [[ "$SSH_AGENT_PID" == "" ]]; then
 fi
 
 # Automatic fallback to Junest for not found commands in the native Linux system
-function command_not_found_handler(){
-    junest -f -- $@ || echo "Command not found:" + $1
-}
+# function command_not_found_handler(){
+#     junest -f -- $@ || echo "Command not found:" + $1
+# }
 
 # source all .zsh files inside of the zsh/ directory
 for config ($HOME/dotfiles/zsh/*.zsh) source $config
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 
@@ -171,3 +154,6 @@ if [ $profiling = true ]; then
   ## Per-function profiling:
   zprof
 fi
+
+# Created by `pipx` on 2025-02-20 13:37:27
+export PATH="$PATH:/home/drakirus/.local/bin"

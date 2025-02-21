@@ -26,7 +26,6 @@ alias mv="mv -iv"
 alias cp="cp -aiv"
 alias py="python"
 alias py2="python2"
-alias docker_alpine="docker run -it --rm alpine /bin/ash"
 alias music="mpv ./* --shuffle --no-video"
 alias df="df --exclude-type=tmpfs -h | grep -v loop"
 alias de="adb devices"
@@ -42,16 +41,9 @@ alias sg="colorsvn status"
 alias sc="colorsvn commit"
 alias sl="colorsvn update"
 
-alias ju="LC_ALL=en_US.UTF-8 jupyter notebook"
-
-alias goo="google-chrome"
-
 alias t="cd /tmp"
 alias tl="cd ~/Downloads"
-
-alias ms="LC_ALL=en_US.UTF-8 minishift"
-
-alias tb="netcat termbin.com 9999 | xclip -selection c"
+alias dl="cd ~/Downloads"
 
 alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -x --exclude .git --exclude node_modules"
 alias ncdu="ncdu --color dark -x --exclude .git --exclude node_modules"

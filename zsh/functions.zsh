@@ -17,40 +17,6 @@ function nvim() {
     fi
 }
 
-function kkey(){
-    delay=$(xfconf-query -c keyboards -p /Default/KeyRepeat/Delay)
-    xfconf-query -c keyboards -p /Default/KeyRepeat/Delay -s $(($delay+1))
-}
-
-function gdstst(){
-    awk -vOFS='' '
-    NR==FNR {
-        all[i++] = $0;
-        difffiles[$1] = $0;
-        next;
-    }
-    ! ($2 in difffiles) {
-        print; next;
-    }
-    {
-        gsub($2, difffiles[$2]);
-        print;
-    }
-    END {
-        if (NR != FNR) {
-            # Had diff output
-            exit;
-        }
-        # Had no diff output, just print lines from git status -sb
-        for (i in all) {
-            print all[i];
-        }
-    }
-    ' \
-        <(git diff --color --stat HEAD | sed '$d; s/^ //')\
-        <(git -c color.status=always status -sb)
-}
-
 # AUTHOR:  Sorin Ionescu (sorin.ionescu@gmail.com)
 function extract() {
     local remove_archive
@@ -233,20 +199,11 @@ net-list(){
     sudo nmap -sP $ip
 }
 
-docker-enter () {
-    docker exec -ti $1 sh
-}
-
-
 ff() { find . -name "*$1*" -ls; }
 ffrm() { find . -name "*$1*" -exec rm {} +; }
 
 function mm() {
     mpv --ytdl --loop --no-video "$@"
-}
-
-function yt-dl (){
-    youtube-dl --extract-audio --prefer-ffmpeg  --audio-format mp3  "$1"
 }
 
 function jpgg(){
@@ -258,54 +215,33 @@ function xbox() {
     echo -e "power on" | bluetoothctl
 }
 
-function juv() {
-    UUID=$(echo $(uuidgen) | cut -d"-" -f1)
-    BASE=$(basename $1)
-
-    jupyter nbconvert --to python "$1" --output "/tmp/$UUID-$BASE"
-    nvim "/tmp/$UUID-$BASE.py"
-}
-
-function drak-todo() {
-    gotify push "TODO" --title "$1" --priority="5"
-}
-
-function aspec-all() {
-    for file in *.wav; do
-        aspec $file
-    done
-}
-
-##########
-#  MOSH  #
-##########
-#
-function moshw() {
-    # Create a named pipe for communication
-    pipe=/tmp/background_pipe
-    mkfifo $pipe
-
-    command ssh -NL ${1}:localhost:${1} share@prr.re < $pipe &
-    sleep 2s
-
-    echo "4" > $pipe
-    rm /tmp/background_pipe
-}
-
-
-function mosh-relay-server() {
-    PORT="$(seq 7000 4 7050 | shuf -n 1)"
-    kill -9 $(lsof -t -i:${PORT})
-    kill -9 $(lsof -t -i:$(($PORT + 1)))
-    tcp2udp --tcp-listen  0.0.0.0:$PORT --udp-forward 0.0.0.0:$(($PORT + 1)) &
-    key=$(TMUX='' MOSH_SERVER_NETWORK_TMOUT=604800 MOSH_SERVER_SIGNAL_TMOUT=604800 LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 ~/dotfiles/bin/mosh-server new -p "$(($PORT + 1))"  -- /bin/zsh | sed -n 's/MOSH CONNECT [0-9]\+ \(.*\)$/\1/g p')
-    cmd="ssh -L $(($PORT + 2)):localhost:$(($PORT + 2)) share@prr.re &; udp2tcp --udp-listen 0.0.0.0:$(($PORT + 3)) --tcp-forward 0.0.0.0:$(($PORT + 2)) &; LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 MOSH_KEY=$key mosh-client 0.0.0.0 $(($PORT + 3))"
-    echo "Connect using $ $cmd"
-
-    # uses osc52 to copy cmd to host
-    echo -e "\033]52;c;$(base64 <<< $cmd)\a"
-    ssh -R $(($PORT + 2)):localhost:$PORT share@prr.re
-    kill $(ps -s $$ -o pid=)
+function gdstst(){
+    awk -vOFS='' '
+    NR==FNR {
+        all[i++] = $0;
+        difffiles[$1] = $0;
+        next;
+    }
+    ! ($2 in difffiles) {
+        print; next;
+    }
+    {
+        gsub($2, difffiles[$2]);
+        print;
+    }
+    END {
+        if (NR != FNR) {
+            # Had diff output
+            exit;
+        }
+        # Had no diff output, just print lines from git status -sb
+        for (i in all) {
+            print all[i];
+        }
+    }
+    ' \
+        <(git diff --color --stat HEAD | sed '$d; s/^ //')\
+        <(git -c color.status=always status -sb)
 }
 
 kill-port() {

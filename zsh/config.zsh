@@ -11,10 +11,6 @@ eval `dircolors ~/dotfiles/dircolors/solarized.dir_colors`
 # colored completion - use my LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
-# Enable completion
-# autoload -Uz compinit
-# compinit
-
 # Disable flow control commands (keeps C-s from freezing everything)
 stty start undef
 stty stop undef
