@@ -155,5 +155,9 @@ if [ $profiling = true ]; then
   zprof
 fi
 
-# Created by `pipx` on 2025-02-20 13:37:27
+# Created by `pipx`
 export PATH="$PATH:/home/drakirus/.local/bin"
+
+# Atuin shell history
+. "$HOME/.atuin/bin/env"
+eval "$(atuin init zsh --disable-up-arrow)"

@@ -1,0 +1,7 @@
+sync_address = "https://atuin.prr.re"
+# keymap_mode = "vim-normal"
+
+[keymap]
+"ctrl-k" = "up"
+"ctrl-j" = "down"
+

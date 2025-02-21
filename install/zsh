@@ -39,10 +39,6 @@ explain "Installation de zsh-autoquoter"
 #  mkdir -p ~/.oh-my-zsh/completions/
 #  curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt
 
-explain "Installation de jq"
- tell curl https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux-amd64 > ~/dotfiles/bin/jq
- chmod +x ~/dotfiles/bin/jq
-
 wherezsh="$(command -v zsh)"
 
 read -p "Local install of zsh? [y] " -n 1 -r
