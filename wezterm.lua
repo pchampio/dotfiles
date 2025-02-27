@@ -117,8 +117,6 @@ config.keys = {
           wezterm.log_info("text:")
           wezterm.log_info(text_at_cursor)
 
-
-
           local password_patterns = {
             ["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
             ["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
@@ -129,12 +127,17 @@ config.keys = {
             ["Master Password:"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
           }
 
+              -- window:perform_action(wezterm.action.Multiple {
+              --   wezterm.action.SendString("test"),
+              --   wezterm.action.SendKey { key = 'Enter' },
+              -- }, window:active_pane())
+
           for pattern, cmd_get_pwd in pairs(password_patterns) do
             wezterm.log_info(text_at_cursor)
             wezterm.log_info(pattern)
             wezterm.log_info(string.find(text_at_cursor, pattern))
             if string.find(text_at_cursor, pattern) then
-              local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(cmd_get_pwd))
+              local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "'.. cmd_get_pwd .. '"'))
               -- wezterm.log_info(success)
               -- wezterm.log_info(stderr)
               window:perform_action(wezterm.action.Multiple {
@@ -147,7 +150,7 @@ config.keys = {
 
           for pattern, cmd_get_pwd in pairs(password_patterns) do
             if string.find(pane:get_logical_lines_as_text(), pattern) then
-              local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(cmd_get_pwd))
+              local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "'.. cmd_get_pwd .. '"'))
               -- wezterm.log_info(success)
               -- wezterm.log_info(stderr)
               window:perform_action(wezterm.action.Multiple {
@@ -161,7 +164,7 @@ config.keys = {
         end
       end
 
-      local password = {
+      local passwords = {
         { id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = 'GH Token' },
         { id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token", label = 'Gitea Token' },
       }
@@ -173,7 +176,7 @@ config.keys = {
               if not cmd and not label then
                 wezterm.log_info 'cancelled'
               else
-                local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(cmd))
+                local success, password, stderr = wezterm.run_child_process(wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "'.. cmd .. '"'))
                 -- wezterm.log_info(success)
                 -- wezterm.log_info(stderr)
                 window:perform_action(wezterm.action.Multiple {
@@ -184,7 +187,7 @@ config.keys = {
             end
           ),
           title = 'Choose Password',
-          choices = password,
+          choices = passwords,
           fuzzy = true,
           fuzzy_description = 'Fuzzy find a password to input: ',
         },
