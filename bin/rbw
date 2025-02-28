@@ -8,7 +8,7 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   read -r -p 'Enter your Bitwarden login: ' email
   >&2 echo "email $email"
   $bin_path/rbw config set email "$email"
-  $bin_path/rbw config set pinentry "/usr/bin/pinentry-tty"
+  $bin_path/rbw config set pinentry "$HOME/dotfiles/bin/gnupg/bin/pinentry-tty"
 
   read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
   if [[ ! -z "$self_url" ]]; then

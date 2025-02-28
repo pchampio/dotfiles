@@ -15,3 +15,4 @@ gcc*
 zsh/priv.zsh
 /man
 /share
+bin/gnupg/

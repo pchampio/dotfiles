@@ -4,6 +4,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+$BASEDIR/pinentry-tty
 $HOME/dotfiles/bin/rbw unlock
 $BASEDIR/neovim
 $BASEDIR/zsh
