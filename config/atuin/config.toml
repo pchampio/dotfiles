@@ -8,5 +8,3 @@ ctrl_n_shortcuts = true
 [keymap]
 "ctrl-k" = "up"
 "ctrl-j" = "down"
-
-
