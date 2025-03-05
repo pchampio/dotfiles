@@ -165,6 +165,7 @@ config.keys = {
       end
 
       local passwords = {
+        { id = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e", label = 'PP' },
         { id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = 'GH Token' },
         { id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token", label = 'Gitea Token' },
       }
