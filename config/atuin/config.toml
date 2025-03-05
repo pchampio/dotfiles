@@ -1,7 +1,7 @@
 sync_address = "https://atuin.prr.re"
 # keymap_mode = "vim-normal"
 
-inline_height = 10
+inline_height = 16
 # style = "full"
 ctrl_n_shortcuts = true
 
