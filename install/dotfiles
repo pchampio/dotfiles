@@ -81,9 +81,6 @@ if [[ $? -eq 0 ]]; then
     -u $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
     -p $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \
     -k "$($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')"
-
-  # echo "export ATUIN_SESSION=$(/home/drakirus/.atuin/bin/atuin uuid)" >> $HOME/.atuin/bin/env
-
 else
  echo "" > $HOME/dotfiles/zsh/priv.zsh
 fi
