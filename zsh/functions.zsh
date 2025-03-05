@@ -264,6 +264,10 @@ fkill() {
   fi
 }
 
+sssh() {
+    command ssh $@
+}
+
 ssh() {
     set -o pipefail
     # set +o pipefail # invert
@@ -281,7 +285,7 @@ ssh() {
         command ssh $@
         return
     fi
-    echo "Loading ssh keys from vault"
+    echo "Using vault to get the ssh keys (Use sssh otherwise)"
     rbw unlock
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
