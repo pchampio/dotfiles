@@ -117,6 +117,20 @@ config.keys = {
           wezterm.log_info("text:")
           wezterm.log_info(text_at_cursor)
 
+
+          local success, _, _ = wezterm.run_child_process(wezterm.shell_split(HOME .. '/dotfiles/bin/rbw_bin/rbw' .. " unlocked"))
+
+
+          if not success then
+              window:perform_action(
+              act.SpawnCommandInNewWindow({
+                label = 'Unlock vault',
+                -- args = { HOME .. "/dotfiles/bin/rbw_bin/rbw", "unlock" },
+                args = { HOME .. "/dotfiles/bin/rbw", "unlock" },
+              }), window:active_pane()
+          )
+          end
+
           local password_patterns = {
             ["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
             ["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
