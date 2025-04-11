@@ -18,7 +18,7 @@ instant-zsh-pre "%004F${${(V)${(%):-%~}//\%/%%}//\///}%b%f"$'\n'"%002F\$~%f "
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
-export EDITOR=$HOME/dotfiles/bin/nvim-linux64/bin/nvim
+export EDITOR=$HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim
 
 setopt prompt_subst # enable command substition in prompt
 
