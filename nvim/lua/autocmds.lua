@@ -50,6 +50,7 @@ vim.api.nvim_create_autocmd('BufReadPre', {
   end,
 })
 
+-- TODO: fix this auto insert mode
 vim.cmd [[
 autocmd BufReadPost *
 \ if !(bufname("%") =~ '\(COMMIT_EDITMSG\)') &&
