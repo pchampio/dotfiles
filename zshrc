@@ -120,6 +120,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
+if [[ ! -f ~/.ssh-agent-thing ]]; then
+    ssh-agent > ~/.ssh-agent-thing
+fi
 if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing) > /dev/null
 fi
@@ -161,3 +164,10 @@ export PATH="$PATH:/home/drakirus/.local/bin"
 # Atuin shell history
 . "$HOME/.atuin/bin/env"
 eval "$(atuin init zsh --disable-up-arrow)"
+
+# Created by `pipx` on 2025-04-10 09:54:32
+export PATH="$PATH:/home/prr/.local/bin"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

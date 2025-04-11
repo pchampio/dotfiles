@@ -36,4 +36,6 @@ EOF'
 
 explain "Depending on your desktop environment, there might be a GUI configuration option available to you. For instance, I have read one report that Ubuntu has a setting in "System → Preferences → Keyboard → Layouts → Options" to specify it. In KDE, it is "Settings → Input Devices → Keyboard → Advanced → Position of Compose key." I don't have personal experience with those, though. This applies to systems running Wayland, too; the https://www.reddit.com/r/linux/comments/17xll20/the_compose_key_and_why_you_should_enable_it/ discussion for this article has some good info. "
 
+explain "Set compose key to: 'Menu key'!!!!!"
+
 success "Success"

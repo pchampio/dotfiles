@@ -30,19 +30,17 @@ vim.opt.isfname:remove('=')
 -- Exclude : from isfilename.
 vim.opt.isfname:remove(':')
 
--- Install package manager
--- ~/.local/share/nvim/lazy
+-- [[ Install `lazy.nvim` plugin manager ]]
+--    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  }
-end
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+  if vim.v.shell_error ~= 0 then
+    vim.fn.system { '/bin/rm', lazypath '-rf' }
+    error('Error cloning lazy.nvim:\n' .. out)
+  end
+end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
@@ -1075,7 +1073,7 @@ if vim.g.largeEnable then
   vim.o.shada = "'100,<50,s10,:1000,/100,@100,h"
 
   -- Set the shadafile option to the specified path
-  vim.o.shadafile = vim.fn.expand('~/.vim/shada')
+  vim.o.shadafile = vim.fn.expand('~/.vim_shada')
 end
 
 vim.o.swapfile = false

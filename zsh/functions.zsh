@@ -1,18 +1,18 @@
 size_threshold=5000000
 function nvim() {
     if [[ "$#" == 0 ]]; then
-        $HOME/dotfiles/bin/nvim-linux64/bin/nvim;
+        $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim;
     else
         if [[ ! -f "$1" ]]; then
-            $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
+            $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
             return
         fi
         file_size=$(stat -c %s "$1")
         if [ "$file_size" -gt "$size_threshold" ]; then
             # --startuptime vim.log
-            large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux64/bin/nvim $* ;
+            large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $* ;
         else
-            large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux64/bin/nvim $*;
+            large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
         fi
     fi
 }
@@ -287,8 +287,8 @@ ssh() {
     fi
     echo "Using vault to get the ssh keys (Use sssh otherwise)"
     rbw unlock
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
-    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | ~/.local/share/junest/bin/junest --  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode |  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
+    rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode |  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 6h  -
     if [ $# -ne 0 ]; then
         command ssh $@
         return

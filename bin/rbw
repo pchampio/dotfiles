@@ -12,7 +12,7 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
 
   read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
   if [[ ! -z "$self_url" ]]; then
-    $bin_path/$rbw config set base_url "$self_url"
+    $bin_path/rbw config set base_url "$self_url"
   fi
   # read -r -p 'Enter self-hosted installation identity url, if applicable: ' self_ident_url
   # if [[ ! -z "$self_ident_url" ]]; then

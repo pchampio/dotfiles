@@ -5,24 +5,7 @@ BASEDIR=$(dirname $0)
 
 cd $(dirname $0)
 
-LATEST_VERSION=$(curl -s https://nodejs.org/download/release/latest/ | grep node | grep .zip | head -1 | cut -d"-" -f 2)
 
-tar_exec=$(command -v gtar)
-if [ $? -ne 0 ]; then
-	tar_exec=$(command -v tar)
-fi
-
-download () {
-	curl -L -# -A "https://github.com/a-sync/nodejs.org" -o $2 $1
-}
-
-explain "Downloading ${LATEST_VERSION} from nodejs.org..."
-echo 
-
-echo "  linux static x64"
-download "https://nodejs.org/download/release/${LATEST_VERSION}/node-${LATEST_VERSION}-linux-x64.tar.xz" /tmp/linux-x64.tar.xz
-echo "  extracting"
-cd $HOME/dotfiles/bin
-$tar_exec -x --strip-components 2 -f /tmp/linux-x64.tar.xz --wildcards "*/bin/node"
-\rm /tmp/linux-x64.tar.xz
-cd -
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
+source ~/.zshrc
+nvm install node

@@ -6,6 +6,8 @@ BASEDIR=$(dirname $0)
 
 $BASEDIR/pinentry-tty
 $HOME/dotfiles/bin/rbw unlock
+$BASEDIR/node
+$BASEDIR/tmux
 $BASEDIR/neovim
 $BASEDIR/zsh
 $BASEDIR/dotfiles

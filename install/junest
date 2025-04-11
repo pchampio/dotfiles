@@ -22,9 +22,9 @@ BASEDIR=$(dirname $0)
 
 explain "MAJ pacman"
 ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
-~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm gnu-free-fonts
 ~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm
-~/.local/share/junest/bin/junest -f -- pacman -S --needed cmake gcc python3 --noconfirm
-~/.local/share/junest/bin/junest -f -- pacman --noconfirm -Scc
-~/.local/share/junest/bin/junest -- sudo yay -Yg
-~/.local/share/junest/bin/junest -- sudo yay --save --answerdiff None --answerclean None --removemake
+# ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm gnu-free-fonts
+# ~/.local/share/junest/bin/junest -f -- pacman -S --needed cmake gcc python3 --noconfirm
+# ~/.local/share/junest/bin/junest -f -- pacman --noconfirm -Scc
+# ~/.local/share/junest/bin/junest -- sudo yay -Yg
+# ~/.local/share/junest/bin/junest -- sudo yay --save --answerdiff None --answerclean None --removemake

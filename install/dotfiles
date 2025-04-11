@@ -26,11 +26,9 @@ explain "Create symlink for files config"
 mkdir ~/.config/nvim
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
-# tell cp -f --recursive --symbolic-link $dir/vim/* ~/.vim/
 
-explain "Symlink nvim to vim"
-tell ln -sf ~/.vim ~/.config/nvim
-tell ln -sf ~/.vimrc ~/.config/nvim/init.vim
+explain "Symlink nvim config"
+tell ln -sf ~/dotfiles/nvim ~/.config/nvim
 
 
 explain "RipGrep Install"
@@ -61,6 +59,8 @@ fi
 explain "Atuin Install"
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-installer.sh | sh
 
+explain "SSH Install"
+mkdir -p ~/.ssh
 if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   explain "Conf ssh config"
   touch "$HOME"/.ssh/config
@@ -72,12 +72,13 @@ Host *
 EOF
 fi
 
+explain "RBW Install"
 $HOME/dotfiles/bin/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -eq 0 ]]; then
   echo "export $($HOME/dotfiles/bin/rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'URL')" > $HOME/dotfiles/zsh/priv.zsh
   echo "export $($HOME/dotfiles/bin/rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'KEY')" >> $HOME/dotfiles/zsh/priv.zsh
 
-  /home/drakirus/.atuin/bin/atuin login \
+  ~/.atuin/bin/atuin login \
     -u $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
     -p $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \
     -k "$($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')"
@@ -88,7 +89,7 @@ fi
 # Custom Completion Scripts
 mkdir -p ~/.oh-my-zsh/custom/completions
 
-/home/drakirus/.atuin/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
+~/.atuin/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
 $HOME/dotfiles/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw
 
 success "Success"

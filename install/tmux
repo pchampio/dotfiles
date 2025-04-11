@@ -218,9 +218,12 @@ if [ ! -f ~/.cache/imgcat_install ]; then
   explain "Imgcat install"
   home=$(pwd)
   cd /tmp
+  [ -d "python-imgcat" ] && rm -fr "python-imgcat"
   git clone https://github.com/wookayin/python-imgcat
   cd python-imgcat
-  pip install -e .
+  python3 -m venv $HOME/.local/share/pyenv
+  . $HOME/.local/share/pyenv/bin/activate
+  python3 -m pipx install -e .
   cd $home
   touch ~/.cache/imgcat_install
 fi

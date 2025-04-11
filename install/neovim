@@ -34,6 +34,6 @@ mkdir -p ~/.config
 mkdir -p ~/.config/nvim
 mkdir -p ~/.vimundo
 
-tell ln -sf ~/.neovimrc ~/.config/nvim/init.lua
+# tell ln -sf ~/.neovimrc ~/.config/nvim/init.lua
 
 success "Success"

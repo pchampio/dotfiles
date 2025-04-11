@@ -8,23 +8,23 @@ HOME = os.getenv("HOME")
 wezterm.GLOBALS = wezterm.GLOBALS or {}
 wezterm.GLOBALS.seen_windows = wezterm.GLOBALS.seen_windows or {}
 
-wezterm.on("window-config-reloaded", function(window)
-  local id = window:window_id()
+-- wezterm.on("window-config-reloaded", function(window)
+--   local id = window:window_id()
+-- 
+--   local is_new_window = not wezterm.GLOBALS.seen_windows[id]
+--   wezterm.GLOBALS.seen_windows[id] = true
+-- 
+--   if is_new_window then
+--     window:maximize()
+--     window:focus()
+--   end
+-- end)
 
-  local is_new_window = not wezterm.GLOBALS.seen_windows[id]
-  wezterm.GLOBALS.seen_windows[id] = true
-
-  if is_new_window then
-    window:maximize()
-    window:focus()
-  end
-end)
-
-wezterm.on('gui-startup', function()
-  local tab, pane, window = wezterm.mux.spawn_window({})
-  window:gui_window():maximize()
-  window:gui_window():focus()
-end)
+-- wezterm.on('gui-startup', function()
+--   local tab, pane, window = wezterm.mux.spawn_window({})
+--   window:gui_window():maximize()
+--   window:gui_window():focus()
+-- end)
 
 local act = wezterm.action
 local config = wezterm.config_builder()
@@ -281,7 +281,7 @@ config.colors.selection_fg = '#0f0f0e'
 -- the background color of selected text
 config.colors.selection_bg = '#aaa46d'
 
-config.window_decorations = "TITLE | RESIZE"
+config.window_decorations = "RESIZE"
 config.adjust_window_size_when_changing_font_size = true
 config.enable_wayland = true
 
