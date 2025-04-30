@@ -28,7 +28,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'qf', 'help' },
+  pattern = { 'qf', 'help', 'checkhealth' },
   callback = function()
     vim.opt_local.colorcolumn = ''
   end,

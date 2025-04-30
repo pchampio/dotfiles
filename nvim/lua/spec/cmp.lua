@@ -5,14 +5,13 @@ local M = {
     --* the sources *--
     { 'iguanacucumber/mag-nvim-lsp', name = 'cmp-nvim-lsp', opts = {} },
     { 'iguanacucumber/mag-nvim-lua', name = 'cmp-nvim-lua' },
-    { 'iguanacucumber/mag-buffer',   name = 'cmp-buffer' },
-    { 'iguanacucumber/mag-cmdline',  name = 'cmp-cmdline' },
+    { 'iguanacucumber/mag-buffer', name = 'cmp-buffer' },
+    { 'iguanacucumber/mag-cmdline', name = 'cmp-cmdline' },
 
     'https://codeberg.org/FelipeLema/cmp-async-path', -- not by me, but better than cmp-path
 
-    {
-      'saadparwaiz1/cmp_luasnip',
-    },
+    { 'saadparwaiz1/cmp_luasnip' },
+    { 'dmitmel/cmp-cmdline-history' },
     {
       -- https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#install
       'L3MON4D3/LuaSnip',
@@ -59,7 +58,7 @@ local M = {
     local in_whitespace = function()
       local col = column()
       return col == 0
-          or vim.api.nvim_get_current_line():sub(col, col):match '%s'
+        or vim.api.nvim_get_current_line():sub(col, col):match '%s'
     end
 
     local in_leading_indent = function()
@@ -121,7 +120,7 @@ local M = {
             --
             -- See `:h i_CTRL-\_CTRL-O`.
             keys =
-                rhs '<C-\\><C-o>:set expandtab<CR><BS><C-\\><C-o>:set noexpandtab<CR>'
+              rhs '<C-\\><C-o>:set expandtab<CR><BS><C-\\><C-o>:set noexpandtab<CR>'
           end
         end
       end
@@ -194,8 +193,8 @@ local M = {
         if completion_item.textEdit then
           newText = completion_item.textEdit.newText
         elseif
-            type(completion_item.insertText) == 'string'
-            and completion_item.insertText ~= ''
+          type(completion_item.insertText) == 'string'
+          and completion_item.insertText ~= ''
         then
           newText = completion_item.insertText
         else
@@ -205,13 +204,13 @@ local M = {
         -- How many characters will be different after the cursor position if we
         -- replace?
         local diff_after = math.max(0, entry.replace_range['end'].character + 1)
-            - entry.context.cursor.col
+          - entry.context.cursor.col
 
         -- Does the text that will be replaced after the cursor match the suffix
         -- of the `newText` to be inserted? If not, we should `Insert` instead.
         if
-            entry.context.cursor_after_line:sub(1, diff_after)
-            ~= newText:sub(-diff_after)
+          entry.context.cursor_after_line:sub(1, diff_after)
+          ~= newText:sub(-diff_after)
         then
           behavior = cmp.ConfirmBehavior.Insert
         end
@@ -270,50 +269,39 @@ local M = {
           smart_bs()
         end, { 'i', 's' }),
 
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-
-        -- Choose a choice using vim.ui.select (ugh);
-        -- prettier would be a pop-up, but it will require a bit of config:
-        -- https://github.com/L3MON4D3/LuaSnip/wiki/Misc#choicenode-popup
-        -- ['<C-u>'] = require('luasnip.extras.select_choice'),
-
-        ['<C-e>'] = cmp.mapping(function(fallback)
+        ['<C-n>'] = cmp.mapping(function()
           if cmp.visible() then
-            cmp.close()
-          elseif luasnip.choice_active() then
-            luasnip.jump(1)
+            -- If there is only one completion candidate, use it.
+            local entries = cmp.get_entries()
+            if #entries == 1 then
+              confirm(entries[1])
+            else
+              cmp.select_next_item()
+            end
+          elseif luasnip.expand_or_locally_jumpable() then
+            luasnip.expand_or_jump()
           else
-            fallback()
+            cmp.complete()
           end
         end, { 'i', 's' }),
 
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-n>'] = cmp.mapping(select_next_item),
-        ['<Down>'] = cmp.mapping(select_next_item),
-        ['<C-p>'] = cmp.mapping(select_prev_item),
-        ['<Up>'] = cmp.mapping(select_prev_item),
-
-        ['<Enter>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            local entry = cmp.get_selected_entry()
-            confirm(entry)
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<C-y>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            local entry = cmp.get_selected_entry()
-            confirm(entry)
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
+        ['<C-p>'] = cmp.mapping(function(fallback)
           if cmp.visible() then
             cmp.select_prev_item()
           elseif in_snippet() and luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
+
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<C-e>'] = cmp.mapping.scroll_docs(1),
+        ['<C-y>'] = cmp.mapping.scroll_docs(-1),
+
+        ['<S-Tab>'] = cmp.mapping(function(fallback)
+          if in_snippet() and luasnip.jumpable(-1) then
             luasnip.jump(-1)
           elseif in_leading_indent() then
             smart_bs(true) -- true means to dedent
@@ -326,13 +314,8 @@ local M = {
 
         ['<Tab>'] = cmp.mapping(function(_fallback)
           if cmp.visible() then
-            -- If there is only one completion candidate, use it.
-            local entries = cmp.get_entries()
-            if #entries == 1 then
-              confirm(entries[1])
-            else
-              cmp.select_next_item()
-            end
+            local entry = cmp.get_selected_entry()
+            confirm(entry)
           elseif luasnip.expand_or_locally_jumpable() then
             luasnip.expand_or_jump()
           elseif in_whitespace() then
@@ -348,7 +331,7 @@ local M = {
         format = function(entry, vim_item)
           -- Kind icons
           vim_item.kind =
-              string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
+            string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
           -- Source
           vim_item.menu = ({
             buffer = '[Buffer]',
@@ -366,8 +349,8 @@ local M = {
         { name = 'luasnip' }, -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
-        { name = 'nvim_lua' },                 -- https://github.com/hrsh7th/cmp-nvim-lua?tab=readme-ov-file#setup
-        { name = 'lazydev',   group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions, https://github.com/folke/lazydev.nvim?tab=readme-ov-file#-installation
+        { name = 'nvim_lua' }, -- https://github.com/hrsh7th/cmp-nvim-lua?tab=readme-ov-file#setup
+        { name = 'lazydev', group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions, https://github.com/folke/lazydev.nvim?tab=readme-ov-file#-installation
         { name = 'async_path' },
       }, {
         { name = 'buffer' },
@@ -389,6 +372,8 @@ local M = {
     cmp.setup.cmdline(':', {
       mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({
+        { name = 'cmdline_history' },
+      }, {
         { name = 'async_path' },
       }, {
         { name = 'cmdline' },
@@ -409,10 +394,10 @@ local M = {
       local cursor_column = vim.fn.col '.'
       local current_line_contents = vim.fn.getline '.'
       local character_after_cursor =
-          current_line_contents:sub(cursor_column, cursor_column)
+        current_line_contents:sub(cursor_column, cursor_column)
 
       local should_enable_ghost_text = character_after_cursor == ''
-          or vim.fn.match(character_after_cursor, [[\k]]) == -1
+        or vim.fn.match(character_after_cursor, [[\k]]) == -1
 
       local current = config.get().experimental.ghost_text
       if current ~= should_enable_ghost_text then

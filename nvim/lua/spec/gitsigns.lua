@@ -19,7 +19,7 @@ local M = {
         if vim.wo.diff then
           vim.cmd.normal { ']c', bang = true }
         else
-          gs.nav_hunk 'next'
+          gs.nav_hunk('next', { preview = true, navigation_message = true })
         end
       end, { desc = 'Gitsigns: jump to next hunk' })
 
@@ -27,25 +27,25 @@ local M = {
         if vim.wo.diff then
           vim.cmd.normal { '[c', bang = true }
         else
-          gs.nav_hunk 'prev'
+          gs.nav_hunk('prev', { preview = true, navigation_message = true })
         end
       end, { desc = 'Gitsigns: jump to previous hunk' })
 
       -- Actions
       map('n', '<leader>ha', gs.stage_hunk, { desc = 'Gitsigns: stage hunk' })
-      map('n', '<leader>hu', gs.reset_hunk, { desc = 'Gitsigns: reset hunk' })
+      map('n', '<leader>hr', gs.reset_hunk, { desc = 'Gitsigns: reset hunk' })
 
-      map('v', '<leader>hs', function()
+      map('v', '<leader>ha', function()
         gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
       end, { desc = 'Gitsigns: stage hunk' })
 
-      map('v', '<leader>hu', function()
+      map('v', '<leader>hr', function()
         gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
       end, { desc = 'Gitsigns: reset hunk' })
 
       map(
         'n',
-        '<leader>hS',
+        '<leader>hA',
         gs.stage_buffer,
         { desc = 'Gitsigns: stage buffer' }
       )
@@ -57,7 +57,7 @@ local M = {
       )
       map(
         'n',
-        '<leader>hp',
+        '<leader>hs',
         gs.preview_hunk,
         { desc = 'Gitsigns: preview hunk' }
       )
@@ -72,14 +72,7 @@ local M = {
         gs.blame_line { full = true }
       end, { desc = 'Gitsigns: blame line' })
 
-      map(
-        'n',
-        '<leader>hd',
-        gs.diffthis,
-        { desc = 'Gitsigns: diff against the index' }
-      )
-
-      map('n', '<leader>hD', function()
+      map('n', '<leader>hd', function()
         gs.diffthis '~'
       end, { desc = 'Gitsigns: diff against the last commit' })
 

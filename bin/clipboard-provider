@@ -63,7 +63,7 @@ wayland-provider() {
     exit 1
   fi
   case $1 in
-    copy) type -P wl-copy &>/dev/null && spit | wl-copy --trim-newline --type=text/plain ;;
+    copy) type -P wl-copy &>/dev/null && spit | wl-copy -p --trim-newline --type=text/plain ; type -P wl-copy &>/dev/null && spit | wl-copy --trim-newline --type=text/plain ;;
     paste) type -P wl-paste &>/dev/null && wl-paste ;;
   esac
 }

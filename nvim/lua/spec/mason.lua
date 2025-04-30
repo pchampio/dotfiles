@@ -24,6 +24,8 @@ local M = {
         'pylint',
         'isort',
         'black',
+        'shellcheck', -- https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#dependencies
+        'shfmt', -- https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#dependencies
       }, require('commons').servers),
     }
     vim.api.nvim_create_autocmd('User', {

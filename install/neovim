@@ -22,12 +22,12 @@ if [ ! -e ~/.config/nvim/spell ]; then
   explain "Spelling dictionary"
   mkdir -p ~/.config/nvim/spell
   cd ~/.config/nvim/spell
-  wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.spl
-  wget http://ftp.vim.org/vim/runtime/spell/fr.latin1.sug
-  wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.spl
-  wget http://ftp.vim.org/vim/runtime/spell/fr.utf-8.sug
-  wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.sug
-  wget http://ftp.vim.org/vim/runtime/spell/en.utf-8.spl
+  wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.spl
+  wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.sug
+  wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.spl
+  wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.sug
+  wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.sug
+  wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.spl
 fi
 
 mkdir -p ~/.config

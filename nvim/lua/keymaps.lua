@@ -7,7 +7,7 @@ map('n', '<leader><leader>', [[:w!<CR>]])
 map('n', 'U', [[:call append(line('.'), '')<CR>j]])
 
 -- CMD remap
-map({ 'n', 'v' }, ';', ':')
+map({ 'n', 'v' }, ';', ':', { silent = false })
 vim.cmd [[
 cnoreabbrev ; :
 cnoremap <C-A> <Home>
@@ -97,5 +97,5 @@ map(
   'n',
   '<leader>cd',
   '<Esc>:lcd <C-r>=expand("%:p:h")<CR>',
-  { desc = '[d] Change current file directory' }
+  { desc = '[d] Change current file directory', silent = false }
 )

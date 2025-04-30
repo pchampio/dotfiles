@@ -9,83 +9,19 @@ local M = {
   config = function()
     -- Global mappings.
     -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-    vim.keymap.set('n', '<C-W>d', function()
-      vim.diagnostic.open_float { focusable = true } -- focus isn't allowed by default
-    end, { desc = 'LSP: diagnostic' })
-    vim.keymap.set(
-      'n',
-      '<leader>q',
-      vim.diagnostic.setloclist,
-      { desc = 'LSP: add buffer diagnostics to the location list' }
-    )
 
     vim.api.nvim_create_autocmd('LspAttach', {
       callback = function(args)
-        local function getOpts(desc)
-          return { buffer = args.buf, desc = desc }
-        end
-        vim.keymap.set(
-          'n',
-          'gD',
-          vim.lsp.buf.declaration,
-          getOpts 'LSP: go to declaration'
-        )
-        vim.keymap.set(
-          'n',
-          'gd',
-          vim.lsp.buf.definition,
-          getOpts 'LSP: go to definition'
-        )
-        vim.keymap.set(
-          'n',
-          'gi',
-          vim.lsp.buf.implementation,
-          getOpts 'LSP: go to implementation'
-        )
-        vim.keymap.set(
-          'n',
-          '<leader>wa',
-          vim.lsp.buf.add_workspace_folder,
-          getOpts 'LSP: add workspace folder'
-        )
-        vim.keymap.set(
-          'n',
-          '<leader>wr',
-          vim.lsp.buf.remove_workspace_folder,
-          getOpts 'LSP: remove workspace folder'
-        )
-        vim.keymap.set('n', '<leader>wl', function()
-          print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-        end, getOpts 'LSP: list workspace folders')
-        vim.keymap.set(
-          'n',
-          '<leader>D',
-          vim.lsp.buf.type_definition,
-          getOpts 'LSP: type definition'
-        )
-        vim.keymap.set(
-          'n',
-          '<leader>rn',
-          vim.lsp.buf.rename,
-          getOpts 'LSP: type definition'
-        )
-        vim.keymap.set(
-          { 'n', 'v' },
-          '<leader>ca',
-          vim.lsp.buf.code_action,
-          getOpts 'LSP: code action'
-        )
-        vim.keymap.set(
-          'n',
-          'gr',
-          vim.lsp.buf.references,
-          getOpts 'LSP: go to references'
-        )
-        vim.keymap.set('n', '<leader>f', function()
+        vim.keymap.set('n', '<leader>fl', function()
           vim.lsp.buf.format { async = true }
-        end, getOpts 'LSP: format buffer')
+        end, { buffer = args.buf, desc = 'LSP: format buffer' })
 
         vim.keymap.set('n', '<leader>H', function()
+          if not vim.lsp.inlay_hint.is_enabled() then
+            print 'Inlay hint enabled'
+          else
+            print 'Inlay hint disable'
+          end
           vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
         end, { desc = 'LSP: toggle inlay hint' })
       end,
@@ -120,14 +56,14 @@ local M = {
     vim.diagnostic.config {
       update_in_insert = false,
       severity_sort = true,
-      virtual_text = false,
       float = {
         border = 'rounded',
         source = true,
       },
-      virtual_lines = {
-        current_line = true,
-      },
+      virtual_text = true,
+      -- virtual_lines = {
+      --   current_line = true,
+      -- },
     }
   end,
 }
