@@ -1,39 +1,37 @@
 {
-    "workbench.colorTheme": "Solarized Light",
-    "latex-workshop.view.pdf.viewer": "tab",
-    "vscode-neovim.neovimExecutablePaths.linux": "~/dotfiles/bin/nvim-linux64/bin/nvim",
-    "keyboard.dispatch": "keyCode",
-    "vscode-neovim.mouseSelectionStartVisualMode": true,
-    "editor.cursorBlinking": "solid",
-    "ltex.diagnosticSeverity": "information",
-    "git.autofetch": true,
-    "files.autoSave": "onWindowChange",
-    "editor.minimap.enabled": false,
-    "pasteImage.showFilePathConfirmInputBox": true,
-    "explorer.confirmDragAndDrop": false,
-    "pasteImage.defaultName": "ss",
-    "ltex.dictionary": {
-
-    },
-    "grammarly.config.suggestions.InformalPronounsAcademic": true,
-    "grammarly.files.include": [
-        "**/readme.md",
-        "**/README.md",
-        "**/*.txt",
-        "**/*.tex",
-        "**/**/*.tex"
-    ],
-    "window.titleBarStyle": "custom",
-    "window.customMenuBarAltFocus": false,
-    "window.enableMenuBarMnemonics": false,
-    "git.confirmSync": false,
-    "altervista-thesaurus.key": "NGAlOlyH0Oj07rCoNj1L",
-    "deepl.apiKey": null,
-    "grammarly.config.documentDomain": "academic",
-    "grammarly.config.suggestions.ConjunctionAtStartOfSentence": true,
-    "grammarly.config.suggestions.PrepositionAtTheEndOfSentence": true,
-    "editor.wordWrap": "on",
-      "customizeUI.stylesheet": {
+  "workbench.colorTheme": "Solarized Light",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "vscode-neovim.neovimExecutablePaths.linux": "~/dotfiles/bin/nvim-linux-x86_64/bin/nvim",
+  "keyboard.dispatch": "keyCode",
+  "vscode-neovim.mouseSelectionStartVisualMode": true,
+  "editor.cursorBlinking": "solid",
+  "ltex.diagnosticSeverity": "information",
+  "git.autofetch": true,
+  "files.autoSave": "onWindowChange",
+  "editor.minimap.enabled": false,
+  "pasteImage.showFilePathConfirmInputBox": true,
+  "explorer.confirmDragAndDrop": false,
+  "pasteImage.defaultName": "ss",
+  "ltex.dictionary": {},
+  "grammarly.config.suggestions.InformalPronounsAcademic": true,
+  "grammarly.files.include": [
+    "**/readme.md",
+    "**/README.md",
+    "**/*.txt",
+    "**/*.tex",
+    "**/**/*.tex"
+  ],
+  "window.titleBarStyle": "custom",
+  "window.customMenuBarAltFocus": false,
+  "window.enableMenuBarMnemonics": false,
+  "git.confirmSync": false,
+  "altervista-thesaurus.key": "NGAlOlyH0Oj07rCoNj1L",
+  "deepl.apiKey": null,
+  "grammarly.config.documentDomain": "academic",
+  "grammarly.config.suggestions.ConjunctionAtStartOfSentence": true,
+  "grammarly.config.suggestions.PrepositionAtTheEndOfSentence": true,
+  "editor.wordWrap": "on",
+  "customizeUI.stylesheet": {
     "div.monaco-split-view2.horizontal.separator-border div.title-actions": "display: none !important;",
     ".monaco-split-view2.separator-border.horizontal>.split-view-container>.split-view-view:not(:first-child):before": "width: 0px",
     ".decorationsOverviewRuler": "display: none !important;",
@@ -53,7 +51,6 @@
     "#asvetliakov\\.vscode-neovim[aria-label=\"-- VISUAL --\"]": "background-color: #b16286 !important;",
     "#asvetliakov\\.vscode-neovim[aria-label=\"-- VISUAL LINE --\"]": "background-color: #c16286 !important;",
     "#asvetliakov\\.vscode-neovim[aria-label=\"-- VISUAL BLOCK --\"]": "background-color: #d16286 !important;"
-
   },
   "ltex.bibtex.fields": {
     "maintitle": false,
@@ -70,5 +67,5 @@
   "update.mode": "none",
   "update.showReleaseNotes": false,
   "window.zoomLevel": 1,
-  "workbench.activityBar.location": "hidden",
+  "workbench.activityBar.location": "hidden"
 }

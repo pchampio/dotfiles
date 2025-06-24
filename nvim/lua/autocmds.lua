@@ -50,11 +50,9 @@ vim.api.nvim_create_autocmd('BufReadPre', {
   end,
 })
 
--- TODO: fix this auto insert mode
-vim.cmd [[
-autocmd BufReadPost *
-\ if !(bufname("%") =~ '\(COMMIT_EDITMSG\)') &&
-\   line("'\"") > 1 && line("'\"") < line("$") && &filetype != "svn" |
-\   exe "normal! g`\"" |
-\ endif
-]]
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'gitcommit',
+  callback = function()
+    vim.cmd 'startinsert'
+  end,
+})

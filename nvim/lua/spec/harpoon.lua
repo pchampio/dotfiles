@@ -49,13 +49,6 @@ local M = {
       end,
       desc = '󱕘 Navigate to file 4',
     },
-    {
-      '<A-p>',
-      function()
-        require('harpoon'):list():select(5)
-      end,
-      desc = '󱕘 Navigate to file 5',
-    },
   },
 }
 return M

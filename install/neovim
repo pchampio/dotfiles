@@ -16,6 +16,7 @@ python3 -m pip install --upgrade pip
 python3 -m pip install pipx
 python3 -m pipx ensurepath --force
 python3 -m pipx install trash-cli --force
+python3 -m pipx install sshuttle --force
 python3 -m pip install --upgrade pynvim
 
 if [ ! -e ~/.config/nvim/spell ]; then

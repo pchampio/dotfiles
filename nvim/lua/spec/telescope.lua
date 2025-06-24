@@ -21,6 +21,12 @@ local M = {
     local builtin = require 'telescope.builtin'
     vim.keymap.set(
       'n',
+      '<c-p>',
+      builtin.find_files,
+      { desc = 'Telescope: find files' }
+    )
+    vim.keymap.set(
+      'n',
       '<leader>ff',
       builtin.find_files,
       { desc = 'Telescope: find files' }
@@ -93,6 +99,8 @@ local M = {
             ['<C-Down>'] = require('telescope.actions').cycle_history_next,
             ['<C-Up>'] = require('telescope.actions').cycle_history_prev,
             ['<ESC>'] = require('telescope.actions').close,
+            ['<C-i>'] = require('telescope.actions').select_horizontal,
+            ['<C-s>'] = require('telescope.actions').select_vertical,
           },
         },
         preview = {

@@ -132,10 +132,9 @@ config.keys = {
 				["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
 				["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
 				["drakirus.*server.*password for drakirus"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
-				["password for drakirus"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
-				["password for prr"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
 				["zephylac.*zep.*server.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab zep password'",
 				["root@192.168.1.110.*password"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7",
+				["admin@192.168.1.55"] = "rbw get 8136bc67-e189-487e-b7ec-ae9083b79986",
 				["Master Password:"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
 			}
 
@@ -328,5 +327,6 @@ config.hyperlink_rules = {
 		format = "$0",
 	},
 }
+
 -- and finally, return the configuration to wezterm
 return config

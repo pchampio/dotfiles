@@ -1,14 +1,14 @@
 local M = {
-  'iguanacucumber/magazine.nvim',
-  name = 'nvim-cmp', -- Otherwise highlighting gets messed up
+  'hrsh7th/nvim-cmp',
+  -- name = 'nvim-cmp', -- Otherwise highlighting gets messed up (to use when testing a fork)
   dependencies = {
     --* the sources *--
-    { 'iguanacucumber/mag-nvim-lsp', name = 'cmp-nvim-lsp', opts = {} },
-    { 'iguanacucumber/mag-nvim-lua', name = 'cmp-nvim-lua' },
-    { 'iguanacucumber/mag-buffer', name = 'cmp-buffer' },
-    { 'iguanacucumber/mag-cmdline', name = 'cmp-cmdline' },
+    { 'hrsh7th/cmp-nvim-lsp', name = 'cmp-nvim-lsp', opts = {} },
+    { 'hrsh7th/cmp-nvim-lua', name = 'cmp-nvim-lua' },
+    { 'hrsh7th/cmp-buffer', name = 'cmp-buffer' },
+    { 'hrsh7th/cmp-cmdline', name = 'cmp-cmdline' },
 
-    'https://codeberg.org/FelipeLema/cmp-async-path', -- not by me, but better than cmp-path
+    'https://codeberg.org/FelipeLema/cmp-async-path', -- better than cmp-path
 
     { 'saadparwaiz1/cmp_luasnip' },
     { 'dmitmel/cmp-cmdline-history' },

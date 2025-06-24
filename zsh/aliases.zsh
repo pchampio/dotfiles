@@ -75,6 +75,10 @@ alias sig="cat resources/sig | xsel -b --clipboard"
 # lychee photos
 # see ./abbreviations.zsh
 
+
+# follow symlinks by default plus line number and file on the same line
+rg () { command rg -z -L --no-heading "$@"; }
+
 alias vim='nvim'
 alias vi='nvim'
 alias v='nvim'

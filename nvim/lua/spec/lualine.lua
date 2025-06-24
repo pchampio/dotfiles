@@ -50,8 +50,7 @@ local M = {
         lualine_b = {},
         lualine_c = {
           {
-            -- mode component
-            function() -- auto change color according to neovims mode
+            function()
               return ' '
             end,
             padding = { left = 1, right = 1 },
@@ -73,9 +72,12 @@ local M = {
           },
         },
         lualine_x = { 'diff', 'diagnostics' },
-        lualine_y = { 'filetype' },
+        lualine_y = {
+          'filetype',
+        },
         lualine_z = {
           {
+            color = { fg = '#655e49', bg = '#bfb8a3' },
             function()
               local line = vim.fn.line '.'
               local col = vim.fn.col '.'

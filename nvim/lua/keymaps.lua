@@ -49,8 +49,7 @@ map('n', 'C', '"_C')
 -- Insert mode mapping for <C-l> to escape and move to the end of the line
 map('i', '<C-l>', '<Esc>A')
 
--- TODO: make this work
-map('n', '<leader>rm', '<Esc>:call RenameFile()', { desc = 'RenameFile' })
+map('n', '<leader>rm', '<Esc>:call RenameFile()<CR>', { desc = 'RenameFile' })
 
 -- Spell check correct
 vim.cmd [[
