@@ -74,8 +74,6 @@ config.keys = {
 	-- Quit
 	{ key = "q", mods = "CMD", action = act.QuitApplication },
 
-	{ key = "F1", mods = "NONE", action = "ActivateCopyMode" },
-
 	{
 		key = "L",
 		mods = "CTRL|SHIFT",
@@ -215,21 +213,57 @@ config.keys = {
 		end),
 	},
 }
+
+-- config.mouse_bindings = {
+-- 	{
+-- 		event = { Down = { streak = 1, button = "Left" } },
+-- 		mods = "SHIFT",
+-- 		action = wezterm.action_callback(function(window, pane)
+-- 			wezterm.action.ActivateCopyMode()
+-- 			-- wezterm.log_info("log_info")
+-- 		end),
+-- 	},
+-- 	{
+-- 		event = { Down = { streak = 1, button = "Left" } },
+-- 		mods = "",
+-- 		action = wezterm.action.Multiple({
+-- 			wezterm.action.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"),
+-- 			-- wezterm.action.ActivateCopyMode,
+-- 			-- wezterm.action_callback(function(window, pane)
+-- 			-- 	wezterm.log_info("Test2")
+-- 			-- end),
+-- 		}),
+-- 	},
+-- {
+-- 	event = { Drag = { streak = 1, button = "Left" } },
+-- 	mods = "SHIFT",
+-- 	action = act({ ExtendSelectionToMouseCursor = "Cell" }),
+-- },
+-- {
+-- 	event = { Drag = { streak = 2, button = "Left" } },
+-- 	mods = "SHIFT",
+-- 	action = act({ ExtendSelectionToMouseCursor = "Word" }),
+-- },
+-- {
+-- 	event = { Drag = { streak = 3, button = "Left" } },
+-- 	mods = "SHIFT",
+-- 	action = act({ ExtendSelectionToMouseCursor = "Line" }),
+-- },
+-- }
+
+config.bypass_mouse_reporting_modifiers = "SHIFT" -- ANY mapping appears without shift in wezterm when tmux is used
+
 config.mouse_bindings = {
+	-- Custom binding for Shift + Left Click to start selection and log
 	{
-		event = { Drag = { streak = 1, button = "Left" } },
-		mods = "SHIFT",
-		action = act({ ExtendSelectionToMouseCursor = "Cell" }),
-	},
-	{
-		event = { Drag = { streak = 2, button = "Left" } },
-		mods = "SHIFT",
-		action = act({ ExtendSelectionToMouseCursor = "Word" }),
-	},
-	{
-		event = { Drag = { streak = 3, button = "Left" } },
-		mods = "SHIFT",
-		action = act({ ExtendSelectionToMouseCursor = "Line" }),
+		event = { Down = { streak = 1, button = "Left" } },
+		mods = "",
+		action = act.Multiple({
+			wezterm.action_callback(function(window, pane)
+				wezterm.log_info("Test2")
+			end),
+			-- act.SelectTextAtMouseCursor("Cell"),
+		}),
 	},
 }
 
@@ -297,14 +331,6 @@ config.colors.selection_bg = "#aaa46d"
 
 config.window_decorations = "NONE"
 config.enable_wayland = true
-
-config.mouse_bindings = {
-	{
-		event = { Down = { streak = 1, button = "Right" } },
-		mods = "NONE",
-		action = wezterm.action.ActivateCopyMode,
-	},
-}
 
 config.hyperlink_rules = {
 	-- Linkify things that look like URLs

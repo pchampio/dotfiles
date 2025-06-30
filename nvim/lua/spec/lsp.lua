@@ -60,7 +60,7 @@ local M = {
         border = 'rounded',
         source = true,
       },
-      virtual_text = true,
+      virtual_text = false, -- tiny-inline-diagnostic needs this set to false
       -- virtual_lines = {
       --   current_line = true,
       -- },

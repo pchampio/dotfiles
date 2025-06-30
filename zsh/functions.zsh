@@ -213,6 +213,7 @@ function jpgg(){
 function xbox() {
     sudo systemctl start bluetooth.service
     echo -e "power on" | bluetoothctl
+    rfkill unblock all
 }
 
 function gdstst(){
