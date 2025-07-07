@@ -62,17 +62,17 @@ config.keys = {
 	-- CTRL-SHIFT-i activates the debug overlay
 	{ key = "i", mods = "CTRL|SHIFT", action = act.ShowDebugOverlay },
 	-- zooms
-	{ key = "+", mods = "CTRL",       action = act.IncreaseFontSize },
-	{ key = "-", mods = "CTRL",       action = act.DecreaseFontSize },
-	{ key = "0", mods = "CTRL",       action = act.ResetFontSize },
-	{ key = "=", mods = "CTRL",       action = act.IncreaseFontSize },
+	{ key = "+", mods = "CTRL", action = act.IncreaseFontSize },
+	{ key = "-", mods = "CTRL", action = act.DecreaseFontSize },
+	{ key = "0", mods = "CTRL", action = act.ResetFontSize },
+	{ key = "=", mods = "CTRL", action = act.IncreaseFontSize },
 	-- clipboard
 	{ key = "C", mods = "SHIFT|CTRL", action = act.CopyTo("ClipboardAndPrimarySelection") },
 	{ key = "V", mods = "SHIFT|CTRL", action = act.PasteFrom("Clipboard") }, -- Or Clipboard depending on the setting
 	-- OpenUrl
 	{ key = "x", mods = "SHIFT|CTRL", action = openUrl },
 	-- Quit
-	{ key = "q", mods = "CMD",        action = act.QuitApplication },
+	{ key = "q", mods = "CMD", action = act.QuitApplication },
 
 	{
 		key = "L",
@@ -109,7 +109,7 @@ config.keys = {
 			wezterm.log_info(text_at_cursor)
 
 			local success_unlock, _, _ =
-					wezterm.run_child_process(wezterm.shell_split(HOME .. "/dotfiles/bin/rbw_bin/rbw" .. " unlocked"))
+				wezterm.run_child_process(wezterm.shell_split(HOME .. "/dotfiles/bin/rbw_bin/rbw" .. " unlocked"))
 
 			if not success_unlock then
 				window:perform_action(
@@ -129,13 +129,10 @@ config.keys = {
 			local password_patterns = {
 				["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
 				["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
-				["drakirus.*server.*password for drakirus"] =
-				"rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
-				["zephylac.*zep.*server.*password:"] =
-				"rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab zep password'",
+				["drakirus.*server.*password for drakirus"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
+				["zephylac.*zep.*server.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab zep password'",
 				["root@192.168.1.110.*password"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7",
 				["admin@192.168.1.55"] = "rbw get 8136bc67-e189-487e-b7ec-ae9083b79986",
-				["Master Password:"] = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",
 			}
 
 			for pattern, cmd_get_pwd in pairs(password_patterns) do
@@ -179,9 +176,9 @@ config.keys = {
 			end
 
 			local passwords = {
-				{ id = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",                label = "PP" },
+				{ id = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e", label = "PP" },
 				{ id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = "GH Token" },
-				{ id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token",  label = "Gitea Token" },
+				{ id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token", label = "Gitea Token" },
 			}
 
 			window:perform_action(

@@ -9,7 +9,8 @@ cd /tmp
 curl -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C "${HOME}/dotfiles/bin" -xz
 
 explain "pynvim Install"
-python3 -m venv $HOME/.local/share/pyenv
+source $BASEDIR/python
+$bpython -m venv $HOME/.local/share/pyenv
 . $HOME/.local/share/pyenv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install pipx

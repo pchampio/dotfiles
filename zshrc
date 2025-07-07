@@ -76,10 +76,6 @@ export PATH=$HOME/dotfiles/bin:$PATH
 # Local lib (for pip usualy)
 export LD_LIBRARY_PATH=/usr/local/lib/:"${LD_LIBRARY_PATH}"
 
-# Python
-PYTHONPATH="/usr/local/lib/python3.7/site-packages/":"${PYTHONPATH}"
-export PYTHONPATH
-
 # Ruby
 ruby="/home/drakirus/.gem/ruby/2.6.0/bin"
 PATH=$PATH:$ruby

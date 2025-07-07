@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 
-BASEDIR=$(dirname $0)
-. $BASEDIR/inc/functions
+BASEDIR="$(dirname "$0")"
+. "$BASEDIR/inc/functions"
 
-$BASEDIR/pinentry-tty
-$HOME/dotfiles/bin/rbw unlock
-$BASEDIR/node
-$BASEDIR/tmux
-$BASEDIR/neovim
-$BASEDIR/zsh
-$BASEDIR/dotfiles
+"$BASEDIR/python"
+"$BASEDIR/pinentry-tty"
+"$HOME/dotfiles/bin/rbw" unlock
+"$BASEDIR/node"
+"$BASEDIR/tmux"
+"$BASEDIR/neovim"
+"$BASEDIR/zsh"
+"$BASEDIR/dotfiles"
