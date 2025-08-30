@@ -1,6 +1,6 @@
 local M = {
   'stevearc/oil.nvim',
-  dependencies = { { 'echasnovski/mini.icons', opts = {} } },
+  dependencies = { { 'nvim-mini/mini.icons', opts = {} } },
   opts = {},
   keys = { { '-', '<CMD>Oil<CR>' } },
   lazy = false,

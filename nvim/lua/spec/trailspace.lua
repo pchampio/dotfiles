@@ -1,5 +1,5 @@
 local M = {
-  'echasnovski/mini.trailspace',
+  'nvim-mini/mini.trailspace',
   keys = {
     {
       '<leader>ts',

@@ -95,6 +95,8 @@ local M = {
             ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
           },
           i = {
+            ['<C-j>'] = require('telescope.actions').move_selection_next,
+            ['<C-k>'] = require('telescope.actions').move_selection_previous,
             ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
             ['<C-Down>'] = require('telescope.actions').cycle_history_next,
             ['<C-Up>'] = require('telescope.actions').cycle_history_prev,

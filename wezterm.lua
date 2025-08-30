@@ -30,6 +30,7 @@ local act = wezterm.action
 local config = wezterm.config_builder()
 
 config.max_fps = 120
+config.front_end = "WebGpu"
 
 config.audible_bell = "Disabled"
 config.window_close_confirmation = "NeverPrompt"
@@ -68,7 +69,18 @@ config.keys = {
 	{ key = "=", mods = "CTRL", action = act.IncreaseFontSize },
 	-- clipboard
 	{ key = "C", mods = "SHIFT|CTRL", action = act.CopyTo("ClipboardAndPrimarySelection") },
-	{ key = "V", mods = "SHIFT|CTRL", action = act.PasteFrom("Clipboard") }, -- Or Clipboard depending on the setting
+	{
+		key = "V",
+		mods = "SHIFT|CTRL",
+		action = wezterm.action_callback(function(window, pane)
+			local success, stdout, stderr = wezterm.run_child_process({ "wl-paste", "--no-newline" })
+			if success then
+				pane:paste(stdout)
+			else
+				wezterm.log_error("wl-paste failed with\n" .. stderr .. stdout)
+			end
+		end),
+	}, -- Or Clipboard depending on the setting
 	-- OpenUrl
 	{ key = "x", mods = "SHIFT|CTRL", action = openUrl },
 	-- Quit
@@ -334,7 +346,7 @@ config.colors.selection_fg = "#0f0f0e"
 -- the background color of selected text
 config.colors.selection_bg = "#aaa46d"
 
-config.window_decorations = "NONE"
+-- config.window_decorations = "NONE"
 config.enable_wayland = true
 
 config.hyperlink_rules = {

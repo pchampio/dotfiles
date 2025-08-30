@@ -1,7 +1,7 @@
 local M = {
   'nvim-lualine/lualine.nvim',
   dependencies = {
-    'echasnovski/mini.icons',
+    'nvim-mini/mini.icons',
     {
       'letieu/harpoon-lualine',
       dependencies = {

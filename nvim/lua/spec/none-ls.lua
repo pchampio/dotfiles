@@ -9,7 +9,7 @@ local M = {
   config = function()
     local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
     local null_ls = require 'null-ls'
-    local auto_format_enabled = true -- Variable to track the state of auto-formatting
+    local auto_format_enabled = false -- Variable to track the state of auto-formatting
 
     -- Function to toggle auto-formatting
     function Toggle_auto_format()

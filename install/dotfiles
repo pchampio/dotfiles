@@ -27,6 +27,13 @@ mkdir ~/.config/nvim
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 
+# if [ -d ~/.var/app/org.geeqie.Geeqie/ ]; then
+#   \rm -rf ~/.var/app/org.geeqie.Geeqie/config/geeqie
+#   mkdir -p ~/.var/app/org.geeqie.Geeqie/config/geeqie
+#   tell cp -f --recursive --symbolic-link $dir/config/geeqie/* ~/.var/app/org.geeqie.Geeqie/config/geeqie
+#   flatpak override --user --filesystem=/usr/bin/exiftool org.geeqie.Geeqie
+# fi
+
 explain "Symlink nvim config"
 tell ln -sf ~/dotfiles/nvim ~/.config/nvim
 
@@ -75,9 +82,6 @@ fi
 explain "RBW Install"
 $HOME/dotfiles/bin/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -eq 0 ]]; then
-  echo "export $($HOME/dotfiles/bin/rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'URL')" > $HOME/dotfiles/zsh/priv.zsh
-  echo "export $($HOME/dotfiles/bin/rbw get '4a1ce7ee-0ee9-42fa-ba35-f00926d76718' --field 'KEY')" >> $HOME/dotfiles/zsh/priv.zsh
-
   ~/.atuin/bin/atuin login \
     -u $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
     -p $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \

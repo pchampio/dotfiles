@@ -15,7 +15,7 @@ local M = {
     'MunifTanjim/nui.nvim',
     --- The below dependencies are optional,
     -- "hrsh7th/nvim-cmp",          -- autocompletion for avante commands and mentions
-    'echasnovski/mini.icons',
+    'nvim-mini/mini.icons',
     {
       'zbirenbaum/copilot.lua',
       init = function()
