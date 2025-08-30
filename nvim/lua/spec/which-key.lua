@@ -7,9 +7,9 @@ local M = {
       -- Clue window settings
       window = {
         -- Floating window config
-        config = { anchor = 'SW', row = 'auto', col = 'auto', width = 30 },
+        config = { anchor = 'SW', row = 'auto', col = 'auto', width = 40 },
         -- Delay before showing clue window
-        delay = 1000,
+        delay = 500,
         -- Keys to scroll inside the clue window
         scroll_down = '<C-e>',
         scroll_up = '<C-y>',

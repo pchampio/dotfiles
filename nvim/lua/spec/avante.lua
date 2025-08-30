@@ -1,17 +1,49 @@
+-- Define a function to set the Avante highlights
+local function set_avante_highlights()
+  -- Link groups to standard Diff highlight groups
+  vim.api.nvim_set_hl(
+    0,
+    'AvanteToBeDeletedWOStrikethrough',
+    { link = 'DiffDelete' }
+  )
+  vim.api.nvim_set_hl(0, 'AvanteConflictIncoming', { link = 'DiffAdd' })
+  vim.api.nvim_set_hl(0, 'AvanteConflictCurrent', { link = 'DiffCurrent' })
+  vim.api.nvim_set_hl(0, 'AvanteConflictCurrentLabel', { link = 'DiffText' })
+  vim.api.nvim_set_hl(0, 'AvanteConflictIncomingLabel', { link = 'DiffText' })
+  vim.api.nvim_set_hl(0, 'AvantePromptInput', { link = 'Comment' })
+end
+
+-- Create an autocommand to reapply these settings when the colorscheme changes
+vim.api.nvim_create_autocmd('ColorScheme', {
+  pattern = '*',
+  callback = set_avante_highlights,
+})
+
+set_avante_highlights()
+
 local M = {
   'yetone/avante.nvim',
   event = 'VeryLazy',
-  lazy = false,
+  lazy = true,
   version = false, -- set this if you want to always pull the latest change
   opts = {
     provider = 'copilot',
+    behaviour = {
+      enable_token_counting = false,
+    },
+    input = {
+      provider = 'snacks',
+      provider_opts = {
+        title = 'Avante Input',
+        icon = ' ',
+      },
+    },
   },
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   build = 'make',
-  -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
   dependencies = {
-    'stevearc/dressing.nvim',
     'nvim-lua/plenary.nvim',
+    "folke/snacks.nvim",
     'MunifTanjim/nui.nvim',
     --- The below dependencies are optional,
     -- "hrsh7th/nvim-cmp",          -- autocompletion for avante commands and mentions

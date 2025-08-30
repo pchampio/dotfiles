@@ -11,7 +11,7 @@ local M = {
     'https://codeberg.org/FelipeLema/cmp-async-path', -- better than cmp-path
 
     { 'saadparwaiz1/cmp_luasnip' },
-    { 'dmitmel/cmp-cmdline-history' },
+    -- { 'dmitmel/cmp-cmdline-history' },
     {
       -- https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#install
       'L3MON4D3/LuaSnip',

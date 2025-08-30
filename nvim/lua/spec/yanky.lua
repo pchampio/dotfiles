@@ -1,22 +1,23 @@
 local M = {
   'gbprod/yanky.nvim',
   event = 'CursorHold',
+  dependencies = { 'folke/snacks.nvim' },
+  keys = {
+    {
+      '<leader>P',
+      function()
+        Snacks.picker.yanky()
+      end,
+      mode = { 'n', 'x' },
+      desc = 'Open Yank History',
+    },
+  },
   config = function()
     vim.cmd [[hi YankyPut guifg=#37afd3 gui=underline,bold]]
-    local mapping = require 'yanky.telescope.mapping'
-    local mappings = mapping.get_defaults()
-    mappings.i['<c-p>'] = nil
-    mappings.i['<cr>'] =
-      mapping.set_register(require('yanky.utils').get_default_register())
     require('yanky').setup {
       system_clipboard = { sync_with_ring = false },
       ring = { storage = 'memory' },
-      picker = {
-        telescope = {
-          use_default_mappings = false,
-          mappings = mappings,
-        },
-      },
+      picker = {},
       highlight = {
         on_put = true,
         on_yank = false,
@@ -50,7 +51,6 @@ local M = {
       '<Plug>(YankyPutIndentBeforeLinewise)',
       { desc = 'Paste G before' }
     )
-    require('telescope').load_extension 'yank_history'
   end,
 }
 

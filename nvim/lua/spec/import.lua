@@ -1,10 +1,10 @@
 local M = {
   'piersolenski/import.nvim',
   dependencies = {
-    'nvim-telescope/telescope.nvim',
+    'folke/snacks.nvim',
   },
   opts = {
-    picker = 'telescope',
+    picker = 'snacks',
     insert_at_top = true,
   },
   keys = {
