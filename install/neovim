@@ -9,13 +9,15 @@ cd /tmp
 curl -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C "${HOME}/dotfiles/bin" -xz
 
 explain "pynvim Install"
-source $BASEDIR/python
+source ~/dotfiles/install/python
 $bpython -m venv $HOME/.local/share/pyenv
 . $HOME/.local/share/pyenv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install pipx
 python3 -m pipx ensurepath --force
 python3 -m pipx install trash-cli --force
+python3 -m pipx install pylint --force
+python3 -m pipx install isort black --force
 python3 -m pipx install sshuttle --force
 python3 -m pip install --upgrade pynvim
 
@@ -34,7 +36,5 @@ fi
 mkdir -p ~/.config
 mkdir -p ~/.config/nvim
 mkdir -p ~/.vimundo
-
-# tell ln -sf ~/.neovimrc ~/.config/nvim/init.lua
 
 success "Success"

@@ -8,6 +8,16 @@ mkdir -p ~/lab/ || true
 ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf"
 dir=~/dotfiles
 
+
+explain "Create symlink for files config"
+mkdir ~/.config/nvim
+explain "Symlink nvim config"
+\rm -rf ~/.config/nvim 2> /dev/null || true
+tell ln -sf ~/dotfiles/nvim ~/.config/nvim
+explain "Symlink other configs"
+[ -d ~/.config/ ] || mkdir ~/.config/
+tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
+
 explain "Create symlink for dotfiles"
 # change to the dotfiles directory
 cd $dir
@@ -22,11 +32,6 @@ for file in $files; do
   tell ln -s $dir/$file ~/.$file
 done
 
-explain "Create symlink for files config"
-mkdir ~/.config/nvim
-[ -d ~/.config/ ] || mkdir ~/.config/
-tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
-
 # if [ -d ~/.var/app/org.geeqie.Geeqie/ ]; then
 #   \rm -rf ~/.var/app/org.geeqie.Geeqie/config/geeqie
 #   mkdir -p ~/.var/app/org.geeqie.Geeqie/config/geeqie
@@ -34,8 +39,6 @@ tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 #   flatpak override --user --filesystem=/usr/bin/exiftool org.geeqie.Geeqie
 # fi
 
-explain "Symlink nvim config"
-tell ln -sf ~/dotfiles/nvim ~/.config/nvim
 
 
 explain "RipGrep Install"

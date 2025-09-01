@@ -1,7 +1,7 @@
 vim.loader.enable()
 vim.api.nvim_set_var(
   'python3_host_prog',
-  vim.fn.expand '~' .. '/.local/share/pyenv/bin/python'
+  vim.fn.expand '~' .. '/.cache/bootstrap-python/cpython/3.13.3/bin/python'
 )
 
 -- Make sure to setup `mapleader` and `maplocalleader` before

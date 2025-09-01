@@ -1,6 +1,6 @@
 local M = {
   'dmtrKovalenko/fff.nvim',
-  enabled = true,
+  enabled = false,
   -- build = 'cargo build --release',
   build = 'mkdir -p target/release; wget https://file.prr.re/invit/libfff_nvim.so -P target/release; chmod 777 target/release/libfff_nvim.so ',
   opts = { -- (optional)

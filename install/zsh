@@ -32,6 +32,10 @@ explain "Installation de zsh-completions"
 
 explain "Installation de zsh-autoquoter"
  tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
+ 
+# Remove group/other write permissions to make oh-my-zsh happy
+chmod -R go-w ~/.oh-my-zsh 2> /dev/null || true
+chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || true
 
 # explain "Installation de git-worktree-switcher"
 #  tell curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/wt > ~/dotfiles/bin/wt
@@ -59,6 +63,13 @@ echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "[ -f $wherezsh ] && exec $wherezsh -l" >> $HOME/.profile
+fi
+
+read -p "Add exec zsh to .bash_profile ? [y] " -n 1 -r
+echo ""    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  echo "[ -f $wherezsh ] && exec $wherezsh -l" >> $HOME/.bash_profile
 fi
 
 read -p "Add exec zsh to .bashrc? [y] " -n 1 -r

@@ -52,7 +52,7 @@ local M = {
       'zbirenbaum/copilot.lua',
       init = function()
         require('copilot').setup {
-          copilot_model = 'gpt-4o-copilot',
+          -- copilot_model = 'gpt-4o-copilot',
         }
       end,
     }, -- for providers='copilot'

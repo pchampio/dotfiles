@@ -163,3 +163,9 @@ export PATH="$PATH:/home/prr/.local/bin"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Created by `pipx` on 2025-08-30 15:43:21
+export PATH="$PATH:/fsx_home/homes/pierre/.local/bin"
+
+
+export PATH="$PATH:/opt/slurm/bin"

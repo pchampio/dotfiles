@@ -9,6 +9,7 @@ read -p "Compile local tmux in junest? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+  [ ! -d ~/.junest ] && $BASEDIR/junest
   \rm -rf /tmp/tmux-pkg || true
   mkdir /tmp/tmux-pkg || true
   cd /tmp/tmux-pkg
