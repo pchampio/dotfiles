@@ -54,14 +54,6 @@ chpwd() {
 # perl
 PATH=$PATH:/usr/bin/core_perl/
 
-# GO config
-# mkdir -p ~/lab/go/{pkg,src,bin}
-export GOPATH=$HOME/lab/go
-export GOROOT=/opt/go
-export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
-# INSTALL go
-# wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
 
 # pip path
 export PATH=$PATH:$HOME/.local/bin
@@ -163,3 +155,11 @@ export PATH="$PATH:/home/prr/.local/bin"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# GoLang
+# INSTALL go
+# wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
+export GOROOT=/opt/go
+export PATH=$GOROOT/bin:$PATH
+export GOPATH=/home/prr/lab/go
+export PATH=$GOPATH/bin:$PATH
