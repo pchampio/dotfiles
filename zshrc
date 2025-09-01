@@ -54,14 +54,6 @@ chpwd() {
 # perl
 PATH=$PATH:/usr/bin/core_perl/
 
-# GO config
-# mkdir -p ~/lab/go/{pkg,src,bin}
-export GOPATH=$HOME/lab/go
-export GOROOT=/opt/go
-export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
-# INSTALL go
-# wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
 
 # pip path
 export PATH=$PATH:$HOME/.local/bin
@@ -151,21 +143,20 @@ if [ $profiling = true ]; then
 fi
 
 # Created by `pipx`
-export PATH="$PATH:/home/drakirus/.local/bin"
+export PATH="$PATH:~/.local/bin"
 
 # Atuin shell history
 . "$HOME/.atuin/bin/env"
 eval "$(atuin init zsh --disable-up-arrow)"
 
-# Created by `pipx` on 2025-04-10 09:54:32
-export PATH="$PATH:/home/prr/.local/bin"
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Created by `pipx` on 2025-08-30 15:43:21
-export PATH="$PATH:/fsx_home/homes/pierre/.local/bin"
-
-
-export PATH="$PATH:/opt/slurm/bin"
+# GoLang
+# INSTALL go
+# wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
+export GOROOT=/opt/go
+export PATH=$GOROOT/bin:$PATH
+export GOPATH=/home/prr/lab/go
+export PATH=$GOPATH/bin:$PATH

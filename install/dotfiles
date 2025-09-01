@@ -79,7 +79,17 @@ if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
 Host *
   AddKeysToAgent yes
   ForwardAgent yes
+
+  GSSAPIAuthentication no
+  PreferredAuthentications publickey
+
+  ControlMaster auto
+  ControlPath ~/.ssh/sockets/%r@%h-%p
+  ControlPersist 600
+
+  IPQoS throughput
 EOF
+chmod 600 "$HOME"/.ssh/config
 fi
 
 explain "RBW Install"
