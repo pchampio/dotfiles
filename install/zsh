@@ -61,21 +61,21 @@ read -p "Add exec zsh to .profile? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo "[ -f $wherezsh ] && exec $wherezsh -l" >> $HOME/.profile
+  echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.profile
 fi
 
 read -p "Add exec zsh to .bash_profile ? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo "[ -f $wherezsh ] && exec $wherezsh -l" >> $HOME/.bash_profile
+  echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.bash_profile
 fi
 
 read -p "Add exec zsh to .bashrc? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo "[ -f $wherezsh ] && exec $wherezsh -l" >> $HOME/.bashrc
+  echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.bashrc
 fi
 
 read -p "Add exec zsh to csh or tcsh (.login)? " -n 1 -r

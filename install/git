@@ -1,0 +1,20 @@
+#!/bin/bash
+
+BASEDIR=$(dirname $0)
+. $BASEDIR/inc/functions
+
+cd /tmp
+\rm -rf git 2> /dev/null || true
+git clone https://github.com/git/git --depth=1
+cd git
+
+# export NO_OPENSSL=1
+export NO_CURL=1
+export CFLAGS="${CFLAGS} -static"
+
+explain "Install latest git version.."
+make configure
+./configure --prefix=$HOME/.local
+make -j $(nproc)
+make install
+make clean

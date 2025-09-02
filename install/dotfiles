@@ -121,6 +121,7 @@ if [[ "$ssh_url" != "$url" ]]; then
 
     echo "Switching remote from $url to $ssh_url"
     git remote set-url origin "$ssh_url"
+    git config pull.rebase false # small config
 fi
 
 success "Success"

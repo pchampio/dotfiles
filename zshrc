@@ -59,8 +59,8 @@ chpwd() {
 PATH=$PATH:/usr/bin/core_perl/
 
 
-# pip path
-export PATH=$PATH:$HOME/.local/bin
+# local bin first
+export PATH=$HOME/.local/share/pyenv/bin:$HOME/.local/bin:$PATH
 
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
