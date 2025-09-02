@@ -108,4 +108,23 @@ mkdir -p ~/.oh-my-zsh/custom/completions
 ~/.atuin/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
 $HOME/dotfiles/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw
 
+
+# switch this remote git from http to ssh if needed
+current_url=$(git remote get-url origin)
+if [[ "$current_url" =~ ^https://([^/]+)/([^/]+)/([^/]+?)(\.git)?$ ]]; then
+  explain "Git remote $current_url conversion to ssh"
+  host="${BASH_REMATCH[1]}"
+  user="${BASH_REMATCH[2]}"
+  repo="${BASH_REMATCH[3]}"
+
+  new_url="git@${host}:${user}/${repo}.git"
+
+  echo "Switching remote from:"
+  echo "  $current_url"
+  echo "to:"
+  echo "  $new_url"
+
+  git remote set-url origin "$new_url"
+if
+
 success "Success"
