@@ -1,3 +1,7 @@
+# Add to fpath if it exists
+ZSH_FUNC_DIR="$HOME/dotfiles/share/zsh/5.8/functions"
+[[ -d "$ZSH_FUNC_DIR" ]] && fpath=("$ZSH_FUNC_DIR" $fpath)
+
 # Profiling zsh startup time
 # time  zsh -i -c exit
 profiling=false

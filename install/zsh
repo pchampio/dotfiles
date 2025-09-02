@@ -16,7 +16,6 @@ explain "Installation de oh-my-zsh"
 
 explain "Installation de instant-zsh"
   curl -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
-  zcompile ~/.config/instant-zsh.zsh
 
 explain "Installation de zsh-syntax-highlighting"
   tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
@@ -102,5 +101,8 @@ then
 else
   tell ln -s "$(command -v zsh)" ~/.local/bin/zsh || true
 fi
+
+
+$wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
 
 success "Success"
