@@ -70,7 +70,7 @@ explain "Atuin Install"
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-installer.sh | sh
 
 explain "SSH Install"
-mkdir -p ~/.ssh
+mkdir -p ~/.ssh/sockets/
 if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   explain "Conf ssh config"
   touch "$HOME"/.ssh/config
@@ -81,7 +81,6 @@ Host *
   ForwardAgent yes
 
   GSSAPIAuthentication no
-  PreferredAuthentications publickey
 
   ControlMaster auto
   ControlPath ~/.ssh/sockets/%r@%h-%p

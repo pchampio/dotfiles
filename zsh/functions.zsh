@@ -141,6 +141,42 @@ EOF
     fg
 }
 
+function proxget {
+    # Default server URL
+    SERVER_PORT="8080"
+
+    # Prompt user for server URL with prefill
+    vared -p "Enter port number: " -c SERVER_PORT <<< "$SERVER_PORT"
+    SERVER_URL="https://$SERVER_PORT.proxme.prr.re"
+
+    # Fetch the directory listing and extract href links
+    FILE_LIST=$(curl -s "$SERVER_URL" | grep -oP 'href="\K[^"]+' | grep -v '/')
+
+    # Check if any files were found
+    if [ -z "$FILE_LIST" ]; then
+        echo "No files found at $SERVER_URL"
+        exit 1
+    fi
+
+    # Use fzf to select multiple files
+    SELECTED_FILES=$(echo "$FILE_LIST" | fzf -m --prompt="Select files to download: ")
+
+    # Check if user selected any files
+    if [ -z "$SELECTED_FILES" ]; then
+        echo "No files selected."
+        exit 0
+    fi
+
+    # Download selected files
+    echo "$SELECTED_FILES" | while IFS= read -r FILE; do
+        echo "Downloading $FILE..."
+        curl -O "$SERVER_URL/$FILE"
+    done
+
+    echo "Done!"
+}
+
+
 # Share your terminal as a web application
 # https://github.com/yudai/gotty
 #
