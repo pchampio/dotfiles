@@ -8,7 +8,7 @@ cd /tmp
 git clone https://github.com/git/git --depth=1
 cd git
 
-# export NO_OPENSSL=1
+export NO_OPENSSL=1
 export NO_CURL=1
 export CFLAGS="${CFLAGS} -static"
 
@@ -18,3 +18,6 @@ make configure
 make -j $(nproc)
 make install
 make clean
+mv $HOME/.local/git $HOME/.local/ngit
+
+success "Success"
