@@ -5,8 +5,8 @@ local M = {
     --* the sources *--
     { 'hrsh7th/cmp-nvim-lsp', name = 'cmp-nvim-lsp', opts = {} },
     { 'hrsh7th/cmp-nvim-lua', name = 'cmp-nvim-lua' },
-    { 'hrsh7th/cmp-buffer', name = 'cmp-buffer' },
-    { 'hrsh7th/cmp-cmdline', name = 'cmp-cmdline' },
+    { 'hrsh7th/cmp-buffer',   name = 'cmp-buffer' },
+    { 'hrsh7th/cmp-cmdline',  name = 'cmp-cmdline' },
 
     'https://codeberg.org/FelipeLema/cmp-async-path', -- better than cmp-path
 
@@ -58,7 +58,7 @@ local M = {
     local in_whitespace = function()
       local col = column()
       return col == 0
-        or vim.api.nvim_get_current_line():sub(col, col):match '%s'
+          or vim.api.nvim_get_current_line():sub(col, col):match '%s'
     end
 
     local in_leading_indent = function()
@@ -120,7 +120,7 @@ local M = {
             --
             -- See `:h i_CTRL-\_CTRL-O`.
             keys =
-              rhs '<C-\\><C-o>:set expandtab<CR><BS><C-\\><C-o>:set noexpandtab<CR>'
+                rhs '<C-\\><C-o>:set expandtab<CR><BS><C-\\><C-o>:set noexpandtab<CR>'
           end
         end
       end
@@ -165,22 +165,6 @@ local M = {
       vim.api.nvim_feedkeys(rhs(keys), 'nt', true)
     end
 
-    local select_next_item = function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      else
-        fallback()
-      end
-    end
-
-    local select_prev_item = function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      else
-        fallback()
-      end
-    end
-
     -- Until https://github.com/hrsh7th/nvim-cmp/issues/1716
     -- (cmp.ConfirmBehavior.MatchSuffix) gets implemented, use this local wrapper
     -- to choose between `cmp.ConfirmBehavior.Insert` and
@@ -193,8 +177,8 @@ local M = {
         if completion_item.textEdit then
           newText = completion_item.textEdit.newText
         elseif
-          type(completion_item.insertText) == 'string'
-          and completion_item.insertText ~= ''
+            type(completion_item.insertText) == 'string'
+            and completion_item.insertText ~= ''
         then
           newText = completion_item.insertText
         else
@@ -204,13 +188,13 @@ local M = {
         -- How many characters will be different after the cursor position if we
         -- replace?
         local diff_after = math.max(0, entry.replace_range['end'].character + 1)
-          - entry.context.cursor.col
+            - entry.context.cursor.col
 
         -- Does the text that will be replaced after the cursor match the suffix
         -- of the `newText` to be inserted? If not, we should `Insert` instead.
         if
-          entry.context.cursor_after_line:sub(1, diff_after)
-          ~= newText:sub(-diff_after)
+            entry.context.cursor_after_line:sub(1, diff_after)
+            ~= newText:sub(-diff_after)
         then
           behavior = cmp.ConfirmBehavior.Insert
         end
@@ -331,7 +315,7 @@ local M = {
         format = function(entry, vim_item)
           -- Kind icons
           vim_item.kind =
-            string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
+              string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind) -- This concatenates the icons with the name of the item kind
           -- Source
           vim_item.menu = ({
             buffer = '[Buffer]',
@@ -349,8 +333,8 @@ local M = {
         { name = 'luasnip' }, -- For luasnip users.
         -- { name = 'ultisnips' }, -- For ultisnips users.
         -- { name = 'snippy' }, -- For snippy users.
-        { name = 'nvim_lua' }, -- https://github.com/hrsh7th/cmp-nvim-lua?tab=readme-ov-file#setup
-        { name = 'lazydev', group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions, https://github.com/folke/lazydev.nvim?tab=readme-ov-file#-installation
+        { name = 'nvim_lua' },                 -- https://github.com/hrsh7th/cmp-nvim-lua?tab=readme-ov-file#setup
+        { name = 'lazydev',   group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions, https://github.com/folke/lazydev.nvim?tab=readme-ov-file#-installation
         { name = 'async_path' },
       }, {
         { name = 'buffer' },
@@ -360,7 +344,6 @@ local M = {
       },
     }
 
-    -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
     cmp.setup.cmdline({ '/', '?' }, {
       mapping = cmp.mapping.preset.cmdline(),
       sources = {
@@ -368,12 +351,34 @@ local M = {
       },
     })
 
-    -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+    -- Simple state to track last entries for <Tab> logic
+    local last_cmdline_entries = nil
     cmp.setup.cmdline(':', {
-      mapping = cmp.mapping.preset.cmdline(),
+      mapping = cmp.mapping.preset.cmdline {
+        ['<Tab>'] = {
+          c = function()
+            local cmp = require 'cmp'
+            if cmp.visible() then
+              local entries = cmp.get_entries()
+              if #entries == 1 then
+                confirm(entries[1])
+              else
+                cmp.select_next_item()
+                -- Compare current entries to last; if not equal, select_prev_item
+                local entries_str = vim.inspect(entries)
+                local last_str = last_cmdline_entries and vim.inspect(last_cmdline_entries) or nil
+                if not last_str or last_str ~= entries_str then
+                  cmp.select_prev_item()
+                end
+                last_cmdline_entries = entries
+              end
+            else
+              cmp.complete()
+            end
+          end,
+        },
+      },
       sources = cmp.config.sources({
-        { name = 'cmdline_history' },
-      }, {
         { name = 'async_path' },
       }, {
         { name = 'cmdline' },
@@ -394,10 +399,10 @@ local M = {
       local cursor_column = vim.fn.col '.'
       local current_line_contents = vim.fn.getline '.'
       local character_after_cursor =
-        current_line_contents:sub(cursor_column, cursor_column)
+          current_line_contents:sub(cursor_column, cursor_column)
 
       local should_enable_ghost_text = character_after_cursor == ''
-        or vim.fn.match(character_after_cursor, [[\k]]) == -1
+          or vim.fn.match(character_after_cursor, [[\k]]) == -1
 
       local current = config.get().experimental.ghost_text
       if current ~= should_enable_ghost_text then
