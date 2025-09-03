@@ -226,3 +226,16 @@ sudo vim /usr/share/kservices5/plasma-runner-baloosearch.desktop
 kde gtk3 theme: https://store.kde.org/p/1181106/ Plane Gtk-3.20+
 
 https://wiki.archlinux.org/index.php/Undervolting_CPU#intel-undervolt
+
+
+# Tssh UDP maximum buffer size
+
+```
+sudo sysctl -w net.core.rmem_max=26214400 \
+                 -w net.core.rmem_default=26214400 \
+                 -w net.core.wmem_max=26214400 \
+                 -w net.core.wmem_default=26214400 \
+                 -w net.core.netdev_max_backlog=2048
+ulimit -n 65535
+
+```

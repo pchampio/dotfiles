@@ -78,7 +78,7 @@ if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   cat <<EOF >>"$HOME"/.ssh/config
 Host *
   #!! UdpMode yes
-  #!! TsshdPath ~/lab/go/bin/tsshd
+  #!! TsshdPath ~/dotfiles/bin/tsshd/tsshd
   #!! # UdpMode KCP
 
   #!! EnableOSC52 Yes
