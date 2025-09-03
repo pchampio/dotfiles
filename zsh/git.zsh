@@ -47,7 +47,7 @@ alias ga=${prefix}'git add'
 alias gaa=${prefix}'git add --all'
 alias gapa=${prefix}'git add --patch'
 alias gau=${prefix}"git add -u"
-alias gs=${prefix}"gdstst"
+alias gs="gdstst"
 alias gpatch=${prefix}"git format-patch -1 HEAD"
 alias git-size=${prefix}"git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | awk '/^blob/ {print substr($0,6)}' | sort --numeric-sort --key=2 | cut --complement --characters=13-40 | numfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=neares"
 
@@ -112,7 +112,7 @@ alias glol=${prefix}"git log --graph --pretty='%Cred%h%Creset -%C(yellow)%d%Cres
 alias glola=${prefix}"git log --graph --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all"
 alias glog=${prefix}'git log --oneline --decorate --graph'
 alias gloga=${prefix}'git log --oneline --decorate --graph --all'
-alias glp=${prefix}"_git_log_prettily"
+alias glp="_git_log_prettily"
 alias gm=${prefix}'git merge'
 alias gmom=${prefix}'git merge origin/master'
 alias gmt=${prefix}'git mergetool --no-prompt'
