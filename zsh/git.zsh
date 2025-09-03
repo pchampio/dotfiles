@@ -64,7 +64,7 @@ alias gbsg=${prefix}'git bisect good'
 alias gbsr=${prefix}'git bisect reset'
 alias gbss=${prefix}'git bisect start'
 
-alias gc=${prefix}'ssh-add -L | grep -E ssh-ed25519 || ssh-add ~/.ssh/id_ed25519 && git commit -v'
+alias gc=${prefix}'git commit -v'
 alias gc!=${prefix}'git commit -v --amend'
 alias gcn!=${prefix}'git commit -v --no-edit --amend'
 alias gca=${prefix}'git commit -v -a'
