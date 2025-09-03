@@ -105,6 +105,9 @@ export PATH=${PATH}:${JAVA_HOME}/bin:/opt/android-sdk/tools:/opt/android-sdk/pla
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# tssh
+export PATH="$HOME/dotfiles/bin/tssh:$PATH"
+
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
@@ -125,16 +128,16 @@ for config ($HOME/dotfiles/zsh/*.zsh) source $config
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 
-# Check if the specific SSH key is present
-for key in \
-    id_rsa \
-    id_ed25519
-do
-  if [[ -f ~/.ssh/$key ]]; then
-      tmux display-message "WARNING: You are still using the specific SSH key. Please consider updating your SSH configuration."
-      break
-  fi
-done
+# Created by `pipx`
+export PATH="$PATH:~/.local/bin"
+
+# Atuin shell history
+. "$HOME/.atuin/bin/env"
+eval "$(atuin init zsh --disable-up-arrow)"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 instant-zsh-post
 
@@ -146,16 +149,6 @@ if [ $profiling = true ]; then
   zprof
 fi
 
-# Created by `pipx`
-export PATH="$PATH:~/.local/bin"
-
-# Atuin shell history
-. "$HOME/.atuin/bin/env"
-eval "$(atuin init zsh --disable-up-arrow)"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # GoLang
 # INSTALL go

@@ -77,10 +77,19 @@ if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   chmod +w "$HOME"/.ssh/config
   cat <<EOF >>"$HOME"/.ssh/config
 Host *
+  #!! UdpMode yes
+  #!! TsshdPath ~/lab/go/bin/tsshd
+  #!! # UdpMode KCP
+
+  #!! EnableOSC52 Yes
   AddKeysToAgent yes
   ForwardAgent yes
 
   GSSAPIAuthentication no
+
+  IPQoS throughput
+  AddKeysToAgent yes
+  ForwardAgent yes
 
   ControlMaster auto
   ControlPath ~/.ssh/sockets/%r@%h-%p

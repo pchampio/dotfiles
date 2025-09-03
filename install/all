@@ -8,6 +8,7 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/node"
 "$BASEDIR/pinentry-tty"
 "$HOME/dotfiles/bin/rbw" unlock
+"$BASEDIR/tssh"
 "$BASEDIR/tmux"
 "$BASEDIR/neovim"
 "$BASEDIR/zsh"

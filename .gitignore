@@ -1,5 +1,7 @@
 /bin/nvim
 /bin/bw
+/bin/tsshd
+/bin/tssh
 /bin/nvtop
 /bin/rg
 /bin/mosh-*
