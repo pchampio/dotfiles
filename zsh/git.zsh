@@ -38,8 +38,8 @@ function work_in_progress() {
 # (sorted alphabetically)
 #
 
-prefix="n"
-[ -f $HOME/.local/bin/ngit ] && prefix="n"
+prefix=""
+[[ -f $HOME/.local/bin/ngit ]] && prefix="n"
 
 alias g=${prefix}'git'
 
