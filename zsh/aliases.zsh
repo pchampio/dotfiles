@@ -63,7 +63,7 @@ alias ssh-key-on-line="openssl base64 | tr -d '\n'"
 alias ssh-key-on-line-decode="openssl base64 -A -d"
 
 # alias cat="bat --theme=GitHub"
-alias ping='prettyping --nolegend'
+alias ping='prettyping'
 
 alias osc52clean='echo -e "\033]52;c;!\a"'
 alias osc52='echo -e "\033]52;c;$(base64 <<< hello)\a"'
