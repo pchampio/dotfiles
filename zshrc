@@ -108,6 +108,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # tssh
 export PATH="$HOME/dotfiles/bin/tssh:$PATH"
 
+# tailscale
+export PATH="$HOME/dotfiles/bin/tailscale:$PATH"
+
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
@@ -157,3 +160,5 @@ export GOROOT=/opt/go
 export PATH=$GOROOT/bin:$PATH
 export GOPATH=/home/prr/lab/go
 export PATH=$GOPATH/bin:$PATH
+export PYTHONPATH=/home/pierre_meaning_team/icefall/../icefall:$PYTHONPATH
+export PYTHONPATH=/home/pierre_meaning_team/lab/vall-e/icefall/../icefall:$PYTHONPATH

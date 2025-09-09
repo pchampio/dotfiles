@@ -36,7 +36,7 @@ slurp() { buffer=$(base64); }
 spit() { base64 --decode <<<"$buffer"; }
 
 tmux-provider() {
-  [[ -n $TMUX ]] || return
+  [[ -n $TMUX ]] || return 1
   case $1 in
     copy) spit | tmux load-buffer - ;;
     paste) tmux save-buffer - ;;
@@ -56,8 +56,8 @@ pasteboard-provider() {
 }
 
 wayland-provider() {
-  [ -n "$SSH_TTY" ] && return
-  [[ -n $WAYLAND_DISPLAY ]] || return
+  [ -n "$SSH_TTY" ] && return 1
+  [[ -n $WAYLAND_DISPLAY ]] || return 1
   if ! which wl-copy &>/dev/null; then
     echo "please install wl-clipboard" >&2
     exit 1
@@ -69,8 +69,8 @@ wayland-provider() {
 }
 
 xclip-provider() {
-  [ -n "$SSH_TTY" ] && return
-  [[ -n $DISPLAY ]] && type -P xclip &>/dev/null && ! xdpyinfo | grep -q Apple || return
+  [ -n "$SSH_TTY" ] && return 1
+  [[ -n $DISPLAY ]] && type -P xclip &>/dev/null && ! xdpyinfo | grep -q Apple || return 1
   if ! which xclip &>/dev/null; then
     echo "please install xclip" >&2
     exit 1
@@ -82,7 +82,7 @@ xclip-provider() {
 }
 
 osc52-provider() {
-  [[ -n "$TTY" ]] || return
+  [[ -n "$TTY" ]] || return 1
   case $1 in
     copy) printf $'\e]52;c;%s\a' "$buffer" > "$TTY" ;;
     paste) return 1 ;;
