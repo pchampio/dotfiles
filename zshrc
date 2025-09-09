@@ -133,7 +133,7 @@ export PATH="$PATH:~/.local/bin"
 
 # Atuin shell history
 . "$HOME/.atuin/bin/env"
-eval "$(atuin init zsh --disable-up-arrow)"
+atuin-setup
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

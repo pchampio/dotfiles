@@ -1,3 +1,4 @@
+update_check = false
 sync_address = "https://atuin.prr.re"
 # keymap_mode = "vim-normal"
 
