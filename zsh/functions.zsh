@@ -364,20 +364,80 @@ EOF
 }
 
 
+
 atuin-setup() {
   ! hash atuin && return
 
   export ATUIN_NOBIND="true"
-    eval "$(atuin init zsh --disable-up-arrow)"
+  eval "$(atuin init zsh --disable-up-arrow)"
   fzf-atuin-history-widget() {
     local selected num
     setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
-    selected=$(atuin search --cmd-only --limit ${ATUIN_LIMIT:-5000} | tac |
-      FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort,ctrl-z:ignore $FZF_CTRL_R_OPTS --query=${LBUFFER} +m" fzf)
+
+    local atuin_opts="--cmd-only --print0 --limit ${ATUIN_LIMIT:-5000}"
+    local fzf_opts=(
+            --height=${FZF_TMUX_HEIGHT:-80%}
+            --tac
+            "-n2..,.."
+            --tiebreak=index
+            "--query=${LBUFFER}"
+            "--read0"
+            --prompt "History> "
+            "+m"
+            "--bind" "ctrl-r:transform:
+            # Inspect current prompt and cycle to the next one
+             # Add --exit 0 if prompt starts with Success
+            exit_flag=''
+            pprompt=''
+            if [[ \"\$FZF_PROMPT\" == Success* ]]; then
+                pprompt='Success '
+                FZF_PROMPT=\${FZF_PROMPT/Success }
+                exit_flag='--exit 0'
+            fi
+
+            if [ \"\$FZF_PROMPT\" = 'History> ' ]; then
+                printf \"reload(atuin search $atuin_opts \$exit_flag -c $PWD)+change-prompt(\${pprompt}History (pwd)> )\"
+            elif [ \"\$FZF_PROMPT\" = 'History (pwd)> ' ]; then
+                printf \"reload(ATUIN_SESSION=$ATUIN_SESSION atuin search $atuin_opts \$exit_flag --filter-mode session
+)+change-prompt(\${pprompt}History (session)> )\"
+            elif [ \"\$FZF_PROMPT\" = 'History (session)> ' ]; then
+                printf \"reload(atuin search $atuin_opts \$exit_flag --filter-mode host)+change-prompt(\${pprompt}History (host)> )\"
+            else
+                printf \"reload(atuin search $atuin_opts \$exit_flag)+change-prompt(\${pprompt}History> )\"
+            fi
+            "
+            "--bind" "ctrl-y:transform:
+            # Inspect current prompt and cycle to the next one
+             # Add --exit 0 if prompt starts with Success
+            exit_flag=''
+            pprompt=''
+            if [[ \"\$FZF_PROMPT\" == Success* ]]; then
+                FZF_PROMPT=\${FZF_PROMPT/Success }
+            else
+                pprompt='Success '
+                exit_flag='--exit 0'
+            fi
+
+            if [ \"\$FZF_PROMPT\" = 'History> ' ]; then
+                printf \"reload(atuin search $atuin_opts \$exit_flag)+change-prompt(\${pprompt}History> )\"
+            elif [ \"\$FZF_PROMPT\" = 'History (pwd)> ' ]; then
+                printf \"reload(atuin search $atuin_opts \$exit_flag -c $PWD)+change-prompt(\${pprompt}History (pwd)> )\"
+            elif [ \"\$FZF_PROMPT\" = 'History (session)> ' ]; then
+                printf \"reload(ATUIN_SESSION=$ATUIN_SESSION atuin search $atuin_opts \$exit_flag --filter-mode session)+change-prompt(\${pprompt}History (session)> )\"
+            elif [ \"\$FZF_PROMPT\" = 'History (host)> ' ]; then
+                printf \"reload(atuin search $atuin_opts \$exit_flag --filter-mode host)+change-prompt(\${pprompt}History (host)> )\"
+            fi
+            "
+    )
+
+    selected=$(
+        eval "atuin search ${atuin_opts}" |
+        fzf "${fzf_opts[@]}"
+    )
     local ret=$?
     if [ -n "$selected" ]; then
-      # the += lets it insert at current pos instead of replacing
-      LBUFFER+="${selected}"
+        # the += lets it insert at current pos instead of replacing
+        LBUFFER+="${selected}"
     fi
     zle reset-prompt
     return $ret

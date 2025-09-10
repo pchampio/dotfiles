@@ -67,7 +67,7 @@ if [ ! -d ~/.fzf ]; then
 fi
 
 explain "Atuin Install"
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/atuinsh/atuin/releases/download/v18.4.0/atuin-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 
 explain "SSH Install"
 mkdir -p ~/.ssh/sockets/
