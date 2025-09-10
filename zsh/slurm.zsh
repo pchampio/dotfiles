@@ -1,6 +1,11 @@
 # Set prompt string to show time left for srun
 if [ ! -z $SLURM_JOB_ID ]; then
-    PS1='(`squeue -hj $SLURM_JOB_ID -o "%L"` left) '$PS1
+    PS1='($(t=$(squeue -hj $SLURM_JOB_ID -o "%L"); 
+       if [[ "$t" == *UNLIMITED* ]]; then 
+           echo "no limit"; 
+       else 
+           echo "$t left"; 
+       fi)) '$PS1
 fi
 
 ###############

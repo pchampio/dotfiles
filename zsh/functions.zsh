@@ -306,6 +306,12 @@ sssh() {
 }
 
 ssh() {
+    # Check if XDG_RUNTIME_DIR is set and exists
+    if [ -z "$XDG_RUNTIME_DIR" ] || [ ! -d "$XDG_RUNTIME_DIR" ]; then
+        export XDG_RUNTIME_DIR="/tmp/xdg-runtime-$(id -u)"
+        mkdir -p "$XDG_RUNTIME_DIR"
+        chmod 700 "$XDG_RUNTIME_DIR"
+    fi
     set -o pipefail
     # set +o pipefail # invert
     line_count=$(ssh-add -l 2> /dev/null | wc -l )
