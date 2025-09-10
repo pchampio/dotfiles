@@ -393,12 +393,12 @@ atuin-setup() {
             "--bind" "ctrl-r:transform:
             # Inspect current prompt and cycle to the next one
              # Add --exit 0 if prompt starts with Success
-            exit_flag=''
+            exit_flag='--exit 0'
             pprompt=''
-            if [[ \"\$FZF_PROMPT\" == Success* ]]; then
-                pprompt='Success '
-                FZF_PROMPT=\${FZF_PROMPT/Success }
-                exit_flag='--exit 0'
+            if [[ \"\$FZF_PROMPT\" == Failed* ]]; then
+                pprompt='Failed '
+                FZF_PROMPT=\${FZF_PROMPT/Failed }
+                exit_flag=''
             fi
 
             if [ \"\$FZF_PROMPT\" = 'History> ' ]; then
@@ -415,13 +415,13 @@ atuin-setup() {
             "--bind" "ctrl-y:transform:
             # Inspect current prompt and cycle to the next one
              # Add --exit 0 if prompt starts with Success
-            exit_flag=''
+            exit_flag='--exit 0'
             pprompt=''
-            if [[ \"\$FZF_PROMPT\" == Success* ]]; then
-                FZF_PROMPT=\${FZF_PROMPT/Success }
+            if [[ \"\$FZF_PROMPT\" == Failed* ]]; then
+                FZF_PROMPT=\${FZF_PROMPT/Failed }
             else
-                pprompt='Success '
-                exit_flag='--exit 0'
+                pprompt='Failed '
+                exit_flag=''
             fi
 
             if [ \"\$FZF_PROMPT\" = 'History> ' ]; then
