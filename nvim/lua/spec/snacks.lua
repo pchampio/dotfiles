@@ -183,8 +183,8 @@ local M = {
     {
       '<C-p>',
       function()
-        Snacks.picker.files { layout = 'my_ivylayout' }
-        -- N.fff()
+        -- Snacks.picker.files { layout = 'my_ivylayout' }
+        N.fff()
       end,
       desc = 'Find files',
     },
