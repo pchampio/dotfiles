@@ -4,7 +4,7 @@ ZSH_FUNC_DIR="$HOME/dotfiles/share/zsh/5.8/functions"
 
 # Profiling zsh startup time
 # time  zsh -i -c exit
-profiling=false
+profiling=true
 if [ $profiling = true ]; then
   ## Per-command profiling:
   zmodload zsh/datetime
@@ -150,7 +150,6 @@ if [ $profiling = true ]; then
   zprof
 fi
 
-
 # GoLang
 # INSTALL go
 # wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
@@ -158,5 +157,3 @@ export GOROOT=/opt/go
 export PATH=$GOROOT/bin:$PATH
 export GOPATH=/home/prr/lab/go
 export PATH=$GOPATH/bin:$PATH
-export PYTHONPATH=/home/pierre_meaning_team/icefall/../icefall:$PYTHONPATH
-export PYTHONPATH=/home/pierre_meaning_team/lab/vall-e/icefall/../icefall:$PYTHONPATH
