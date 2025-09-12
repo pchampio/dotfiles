@@ -33,10 +33,9 @@ local M = {
         },
         null_ls.builtins.formatting.stylua,
         -- Python
-        null_ls.builtins.diagnostics.pylint,
         null_ls.builtins.formatting.isort,
         null_ls.builtins.formatting.black.with {
-          extra_args = { '--line-length=80', '--skip-string-normalization' },
+          extra_args = { '--line-length=120', '--skip-string-normalization' },
         },
       },
       -- you can reuse a shared lspconfig on_attach callback here

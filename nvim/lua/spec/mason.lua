@@ -21,7 +21,6 @@ local M = {
     require('mason-tool-installer').setup {
       ensure_installed = vim.list_extend({
         'sonarlint-language-server',
-        'pylint',
         'isort',
         'black',
         'shellcheck', -- https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#dependencies

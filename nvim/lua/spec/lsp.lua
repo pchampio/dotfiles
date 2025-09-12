@@ -3,7 +3,7 @@ local M = {
   cond = not vim.g.diffmode, -- 'cond' would install but not load the plugin, whereas 'enabled' would not install the plugin at all
   dependencies = {
     {
-      { 'iguanacucumber/mag-nvim-lsp', name = 'cmp-nvim-lsp', opts = {} },
+      { 'hrsh7th/cmp-nvim-lsp', opts = {} },
     },
   },
   config = function()
@@ -16,7 +16,7 @@ local M = {
           vim.lsp.buf.format { async = true }
         end, { buffer = args.buf, desc = 'LSP: format buffer' })
 
-        vim.keymap.set('n', '<leader>H', function()
+        vim.keymap.set('n', '<leader>fh', function()
           if not vim.lsp.inlay_hint.is_enabled() then
             print 'Inlay hint enabled'
           else
@@ -24,20 +24,24 @@ local M = {
           end
           vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
         end, { desc = 'LSP: toggle inlay hint' })
+
+        vim.keymap.set("n", "<leader>fa", "<cmd>lua vim.lsp.buf.code_action()<cr>", { desc = "LSP: code actions" })
       end,
     })
 
     ----------
 
-    -- https://github.com/hrsh7th/cmp-nvim-lsp?tab=readme-ov-file#setup
     -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
-    local capabilities = require('cmp_nvim_lsp').default_capabilities()
+    local default_caps = vim.lsp.protocol.make_client_capabilities()
+    local cmp_caps = require("cmp_nvim_lsp").default_capabilities()
+    local capabilities = vim.tbl_deep_extend("force", default_caps, cmp_caps)
     for _, server in pairs(require('commons').servers) do
       local opts = {
         capabilities = capabilities,
       }
 
       local require_ok, settings = pcall(require, 'settings.' .. server)
+      print(require_ok, server)
       if require_ok then
         opts = vim.tbl_deep_extend('force', settings, opts)
       end

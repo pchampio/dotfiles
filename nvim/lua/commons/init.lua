@@ -19,6 +19,7 @@ local M = {
     'clangd',
     'bashls',
     'yamlls',
+    'ruff',
     'pyright',
     'harper_ls',
   },
