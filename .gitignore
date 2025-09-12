@@ -18,5 +18,5 @@ gcc*
 *.zwc
 zsh/priv.zsh
 /man
-/share
+/bin/zsh_share
 bin/gnupg/

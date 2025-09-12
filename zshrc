@@ -1,10 +1,13 @@
 # Add to fpath if it exists
-ZSH_FUNC_DIR="$HOME/dotfiles/share/zsh/5.8/functions"
-[[ -d "$ZSH_FUNC_DIR" ]] && fpath=("$ZSH_FUNC_DIR" $fpath)
+# Only prepend the custom zsh function dir if the system one doesn't exist
+if [[ ! -d /usr/share/zsh/functions ]]; then
+  ZSH_FUNC_DIR="$HOME/dotfiles/bin/zsh_share/zsh/5.8/functions"
+  [[ -d "$ZSH_FUNC_DIR" ]] && fpath=("$ZSH_FUNC_DIR" $fpath)
+fi
 
 # Profiling zsh startup time
 # time  zsh -i -c exit
-profiling=true
+profiling=false
 if [ $profiling = true ]; then
   ## Per-command profiling:
   zmodload zsh/datetime
