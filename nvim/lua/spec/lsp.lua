@@ -41,7 +41,6 @@ local M = {
       }
 
       local require_ok, settings = pcall(require, 'settings.' .. server)
-      print(require_ok, server)
       if require_ok then
         opts = vim.tbl_deep_extend('force', settings, opts)
       end

@@ -2,6 +2,7 @@
 /bin/bw
 /bin/tsshd
 /bin/tssh
+/bin/rbw_bin
 /bin/nvtop
 /bin/rg
 /bin/mosh-*
