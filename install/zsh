@@ -53,7 +53,6 @@ then
   mkdir /tmp/zsh-bin
   wget -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
   sh /tmp/zsh-bin/install -d ~/dotfiles -e no
-  mv $HOME/dotfiles/share/ $HOME/dotfiles/bin/zsh_share
   wherezsh=$HOME/dotfiles/bin/zsh
 fi
 

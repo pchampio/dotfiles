@@ -1,7 +1,7 @@
 # Add to fpath if it exists
 # Only prepend the custom zsh function dir if the system one doesn't exist
 if [[ ! -d /usr/share/zsh/functions ]]; then
-  ZSH_FUNC_DIR="$HOME/dotfiles/bin/zsh_share/zsh/5.8/functions"
+  ZSH_FUNC_DIR="$HOME/dotfiles/share/zsh/5.8/functions"
   [[ -d "$ZSH_FUNC_DIR" ]] && fpath=("$ZSH_FUNC_DIR" $fpath)
 fi
 
