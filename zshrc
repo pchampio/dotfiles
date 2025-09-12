@@ -107,6 +107,8 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 # tssh
 export PATH="$HOME/dotfiles/bin/tssh:$PATH"
+export PATH="$HOME/dotfiles/bin/tsshd:$PATH"
+export PATH="$HOME/dotfiles/bin/trzsz:$PATH"
 
 # tailscale
 export PATH="$HOME/dotfiles/bin/tailscale:$PATH"
