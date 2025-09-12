@@ -140,10 +140,6 @@ export PATH="$PATH:~/.local/bin"
 . "$HOME/.atuin/bin/env"
 atuin-setup
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 instant-zsh-post
 
 if [ $profiling = true ]; then

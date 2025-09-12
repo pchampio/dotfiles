@@ -325,7 +325,7 @@ ssh() {
         fi
     fi
     if [ "$line_count" -ge 2 ] && [ $# -ne 0 ]; then
-        command ssh $@
+        command tssh --download-path /tmp/  $@
         return
     fi
     echo "Using vault to get the ssh keys (Use sssh otherwise)"
@@ -333,8 +333,10 @@ ssh() {
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode |  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 12h  -
     rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode |  SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1  SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 12h  -
     if [ $# -ne 0 ]; then
-        command ssh $@
+        command tssh --download-path /tmp/  $@
         return
+    else
+        command tssh --download-path /tmp/
     fi
 }
 
@@ -374,9 +376,9 @@ EOF
 atuin-setup() {
   ! hash atuin && return
 
-  export ATUIN_NOBIND="true"
-  eval "$(atuin init zsh --disable-up-arrow)"
   fzf-atuin-history-widget() {
+    export ATUIN_NOBIND="true"
+    eval "$(atuin init zsh --disable-up-arrow)"
     local selected num
     setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
 
