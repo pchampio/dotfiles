@@ -26,7 +26,7 @@ export EDITOR=$HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim
 
 setopt prompt_subst # enable command substition in prompt
 
-plugins=(encode64 docker sudo zsh-autoquoter)
+# plugins=(encode64 docker sudo zsh-autoquoter)
 
 # faster startup
 DISABLE_AUTO_UPDATE="true"
@@ -133,7 +133,7 @@ for config ($HOME/dotfiles/zsh/*.zsh) source $config
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 
-# Created by `pipx`
+# pipx
 export PATH="$PATH:~/.local/bin"
 
 # Atuin shell history

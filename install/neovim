@@ -19,6 +19,10 @@ python3 -m pipx install trash-cli --force
 python3 -m pipx install sshuttle --force
 python3 -m pip install --upgrade pynvim
 
+# remove crap from zshrc
+sed -i '/^# Created by `pipx`/,+1d' $HOME/dotfiles/zshrc
+sed -i ':a;/^\n*$/{$d;N;ba}' $HOME/dotfiles/zshrc
+
 if [ ! -e ~/.config/nvim/spell ]; then
   explain "Spelling dictionary"
   mkdir -p ~/.config/nvim/spell

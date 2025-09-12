@@ -57,7 +57,10 @@ then
 fi
 
 
-read -p "Add exec zsh to .profile? [y] " -n 1 -r
+$wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
+
+
+read -p "Add exec zsh to .profile (you can exit here too)? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -93,16 +96,13 @@ then
 	sudo chsh -s "$wherezsh"  "${USER}"
 fi
 
-mkdir ~/.local/bin/ || true
-\rm ~/.local/bin/zsh
+[ ! -d ~/.local/bin/ ] && mkdir ~/.local/bin/
+[ ! -f ~/.local/bin/zsh ] && \rm ~/.local/bin/zsh
 if [[ -f $wherezsh ]]
 then
   tell ln -s $wherezsh ~/.local/bin/zsh || true
 else
   tell ln -s "$(command -v zsh)" ~/.local/bin/zsh || true
 fi
-
-
-$wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
 
 success "Success"

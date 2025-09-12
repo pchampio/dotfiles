@@ -8,6 +8,11 @@ cd $(dirname $0)
 
 explain "Install node with nvm"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
+
+# Remove only NVM-specific lines
+sed -i '/^export NVM_DIR=.*/d' $HOME/dotfiles/zshrc
+sed -i '/^\[.*NVM_DIR/d' $HOME/dotfiles/zshrc
+
 source ~/.nvm/nvm.sh
 nvm install node
 
