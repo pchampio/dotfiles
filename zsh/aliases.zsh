@@ -48,15 +48,6 @@ alias dl="cd ~/Downloads"
 alias ncdusys="sudo ncdu / --exclude \"/home/*\" --color dark -x --exclude .git --exclude node_modules"
 alias ncdu="ncdu --color dark -x --exclude .git --exclude node_modules"
 
-# ssh
-alias atal="env TERM=tmux-256color ssh s142293@transit.univ-lemans.fr"
-alias webai="ssh dialog@172.16.250.7"
-alias g5k-all="env TERM=tmux-256color ssh -t pchampion@access.grid5000.fr ssh -t nancy "
-alias g5k="env TERM=tmux-256color ssh pchampion@access.nancy.grid5000.fr"
-alias lst="ssh pchampi@lst1"
-alias cleps="env TERM=tmux-256color ssh -o "IdentitiesOnly=yes" -i ~/.ssh/id_ed25519 pchampio@cleps.inria.fr"
-
-
 # cat ~/.ssh/id_rsa | ssh-key-on-line
 alias ssh-key-on-line="openssl base64 | tr -d '\n'"
 # echo $ONE-LINE-KEY | ssh-key-on-line-decode

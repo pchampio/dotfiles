@@ -264,25 +264,25 @@ config.keys = {
 
 config.bypass_mouse_reporting_modifiers = "SHIFT" -- ANY mapping appears without shift in wezterm when tmux is used
 
-config.mouse_bindings = {
-	-- Custom binding for Shift + Left Click to start selection and log
-	{
-		event = { Down = { streak = 1, button = "Left" } },
-		mods = "",
-		action = act.Multiple({
-			wezterm.action.SendKey({ key = "F9" }),
-			act.SelectTextAtMouseCursor("Cell"),
-		}),
-	},
-	{
-		event = { Up = { streak = 1, button = "Left" } },
-		mods = "",
-		action = act.Multiple({
-			act.CopyTo("ClipboardAndPrimarySelection"),
-			wezterm.action.SendKey({ key = "F9" }),
-		}),
-	},
-}
+-- config.mouse_bindings = {
+-- 	-- Custom binding for Shift + Left Click to start selection and log
+-- 	{
+-- 		event = { Down = { streak = 1, button = "Left" } },
+-- 		mods = "",
+-- 		action = act.Multiple({
+-- 			wezterm.action.SendKey({ key = "F9" }),
+-- 			act.SelectTextAtMouseCursor("Cell"),
+-- 		}),
+-- 	},
+-- 	{
+-- 		event = { Up = { streak = 1, button = "Left" } },
+-- 		mods = "",
+-- 		action = act.Multiple({
+-- 			act.CopyTo("ClipboardAndPrimarySelection"),
+-- 			wezterm.action.SendKey({ key = "F9" }),
+-- 		}),
+-- 	},
+-- }
 
 -- Define the colors just once
 local solarized_colors = {

@@ -250,6 +250,24 @@ function xbox() {
     sudo systemctl start bluetooth.service
     echo -e "power on" | bluetoothctl
     rfkill unblock all
+    paired_list=$(bluetoothctl devices | while read -r line; do
+        mac=$(echo "$line" | awk '{print $2}')
+        name=$(echo "$line" | cut -d' ' -f3-)
+        if bluetoothctl info "$mac" | grep -q "Paired: yes"; then
+            echo "$mac $name"
+        fi
+    done)
+
+
+    device=$(echo "$paired_list" | fzf | awk '{print $1}')
+
+    if [ -n "$device" ]; then
+        echo "Connecting to $device..."
+        bluetoothctl disconnect
+        echo -e "connect $device" | bluetoothctl
+    else
+        echo "No device selected."
+    fi
 }
 
 function gdstst(){
@@ -452,4 +470,12 @@ atuin-setup() {
   }
   zle -N fzf-atuin-history-widget
   bindkey '^R' fzf-atuin-history-widget
+}
+
+gclouds () {
+    arr=($(gcloud compute ssh "$@" --dry-run --ssh-flag="-o ForwardAgent=yes"))
+    arr=(${arr[@]/\/usr\/bin\/ssh/tssh --download-path /tmp/})
+    echo $arr
+    eval $arr
+
 }
