@@ -95,7 +95,7 @@ function nodeenv {
 
 function audio {
     tsz "$@" -y
-    printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" wez_audio $(echo -n "$(basename $@)" | base64 -w0)
+    printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" wez_audio $(echo -n "/tmp/$(basename $@)" | base64 -w0)
 }
 
 # Show all 256 colors with color number
