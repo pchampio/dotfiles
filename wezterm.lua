@@ -49,12 +49,13 @@ local openUrl = act.QuickSelectArgs({
 
 wezterm.on('user-var-changed', function(window, pane, name, value)
   if name == 'wez_audio' then
+    -- Open a new tab and play the audio
     window:perform_action(
-      wezterm.action.SpawnCommandInNewTab{
-        args = {'mpv', value},
-      },
-      pane
-    )
+	wezterm.action.SpawnCommandInNewTab{
+	args = { HOME .. "/dotfiles/bin/wait-and-play", value },
+	},
+	pane
+	)
   end
 end)
 
