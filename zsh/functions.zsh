@@ -88,6 +88,16 @@ function extract() {
     done
 }
 
+function nodeenv {
+    export NVM_DIR="$HOME/.nvm"
+    source "$NVM_DIR/nvm.sh"
+}
+
+function audio {
+    tsz "$@" -y
+    printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" wez_audio $(echo -n "$(basename $@)" | base64 -w0)
+}
+
 # Show all 256 colors with color number
 function spectrum_ls() {
     for code in {000..255}; do

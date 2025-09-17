@@ -1,8 +1,10 @@
 local M = {
   'dmtrKovalenko/fff.nvim', -- working version: 7cdc71d5a1123a6121ec83cc63949e9916b95cb7
   enabled = true,
-  -- build = 'cargo build --release',
-  build = 'mkdir -p target/release; wget https://github.com/pchampio/pchampio.github.io/releases/download/1/release.zip -P target/release; unzip target/release/release.zip -d target/release; chmod 777 target/release/*',
+  -- build = 'mkdir -p target/release; wget https://github.com/pchampio/pchampio.github.io/releases/download/1/release.zip -P target/release; unzip target/release/release.zip -d target/release; chmod 777 target/release/*',
+  build = function()
+    require('fff.download').download_or_build_binary()
+  end,
   opts = { -- (optional)
     debug = {
       enabled = false, -- we expect your collaboration at least during the beta

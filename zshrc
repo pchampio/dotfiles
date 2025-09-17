@@ -116,14 +116,18 @@ export PATH="$HOME/dotfiles/bin/trzsz:$PATH"
 # tailscale
 export PATH="$HOME/dotfiles/bin/tailscale:$PATH"
 
-if ! pgrep -u $USER ssh-agent > /dev/null; then
-    ssh-agent > ~/.ssh-agent-thing
-fi
-if [[ ! -f ~/.ssh-agent-thing ]]; then
-    ssh-agent > ~/.ssh-agent-thing
-fi
-if [[ "$SSH_AGENT_PID" == "" ]]; then
-    eval $(<~/.ssh-agent-thing) > /dev/null
+# Path for a single, persistent agent socket
+export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
+
+# Check if the socket exists and points to a running agent
+if ! [ -S "$SSH_AUTH_SOCK" ] || ! ssh-add -l >/dev/null 2>&1; then
+    # Kill any leftover agent using that socket
+    if [ -S "$SSH_AUTH_SOCK" ]; then
+        agent_pid=$(lsof -t "$SSH_AUTH_SOCK" 2>/dev/null)
+        [ "$agent_pid" ] && kill "$agent_pid"
+    fi
+    # Start a new agent
+    eval "$(ssh-agent -a "$SSH_AUTH_SOCK" -s)" > /dev/null
 fi
 
 # Automatic fallback to Junest for not found commands in the native Linux system

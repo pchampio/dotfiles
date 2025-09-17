@@ -47,6 +47,17 @@ local openUrl = act.QuickSelectArgs({
 	end),
 })
 
+wezterm.on('user-var-changed', function(window, pane, name, value)
+  if name == 'wez_audio' then
+    window:perform_action(
+      wezterm.action.SpawnCommandInNewTab{
+        args = {'mpv', value},
+      },
+      pane
+    )
+  end
+end)
+
 -- For example, changing the color scheme:
 config.automatically_reload_config = true
 
