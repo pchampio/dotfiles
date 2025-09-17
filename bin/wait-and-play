@@ -1,0 +1,12 @@
+file=/tmp/"$1"
+
+[ -f "$file" ] && rm "$file"
+
+min_size=$((8*1024))  # wait until file is at least 8 KB
+
+# Wait until file exists and has enough data for MP3 header + initial frames
+while [ ! -f "$file" ] || [ "$(stat -c%s "$file")" -lt "$min_size" ]; do
+    sleep 0.1
+done
+
+mpv --demuxer-lavf-o=ignore_index=yes "$file"
