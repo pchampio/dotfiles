@@ -1,10 +1,13 @@
 file=/tmp/"$1"
 
-[ -f "$file" ] && rm "$file"
+if [ $# -ge 2 ] && [ "$2" != "-f" ]; then
+  [ -f "$file" ] && rm "$file"
+fi
 
-min_size=$((8*1024))  # wait until file is at least 8 KB
+min_size=$((15*1024))  # wait until file is at least 8 KB
 
-# Wait until file exists and has enough data for MP3 header + initial frames
+echo "Wait for some data to be send.."
+# Wait until file exists and has enough data
 while [ ! -f "$file" ] || [ "$(stat -c%s "$file")" -lt "$min_size" ]; do
     sleep 0.1
 done
