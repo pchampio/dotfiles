@@ -94,8 +94,35 @@ function nodeenv {
 }
 
 function audio {
-    printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" wez_audio $(echo -n "$(basename $@)" | base64 -w0)
-    tsz "$@" -B 8M -f
+    local force=0
+    local flag_f=""
+    local args=()
+    local file=""
+
+    # Parse arguments
+    for arg in "$@"; do
+        if [ "$arg" = "-f" ]; then
+            force=1
+            flag_f="-f"
+        else
+            args+=("$arg")
+            # Pick the first non-flag argument as the "file"
+            if [ -z "$file" ]; then
+                file="$arg"
+            fi
+        fi
+    done
+
+    if [ "$force" -eq 1 ]; then
+        tsz "${file}" -y -B 8M
+    fi
+
+    printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" \
+        wez_audio $(printf '{"file":"%s","flag":"%s"}' "$file" "$flag_f" | base64 -w0)
+
+    if [ "$force" -eq 0 ]; then
+        tsz "${file}" -y -B 1K -f
+    fi
 }
 
 # Show all 256 colors with color number
