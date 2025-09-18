@@ -483,9 +483,12 @@ atuin-setup() {
 }
 
 gclouds () {
-    arr=($(gcloud compute ssh "$@" --dry-run --ssh-flag="-o ForwardAgent=yes"))
+    arr=($(gcloud compute ssh "$@" --dry-run --quiet --zone us-central1-a))
+    if [ $? -ne 0 ]; then
+        gcloud auth login
+        arr=($(gcloud compute ssh "$@" --dry-run --quiet --zone us-central1-a))
+    fi
     arr=(${arr[@]/\/usr\/bin\/ssh/tssh --download-path /tmp/})
-    echo $arr
     eval $arr
 
 }
