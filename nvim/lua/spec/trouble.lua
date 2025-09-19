@@ -1,4 +1,5 @@
 local M = {
+  enabled = false,
   'folke/trouble.nvim',
   opts = {
     focus = true,
