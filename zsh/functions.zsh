@@ -391,7 +391,7 @@ ssh() {
         command tssh --download-path /tmp/  $@
         return
     else
-        command tssh --download-path /tmp/
+        # command tssh --download-path /tmp/
     fi
 }
 
