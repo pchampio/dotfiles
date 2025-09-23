@@ -45,7 +45,7 @@ local M = {
         opts = vim.tbl_deep_extend('force', settings, opts)
       end
 
-      require('lspconfig')[server].setup(opts)
+      vim.lsp.config(server, opts)
     end
 
     -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization#change-diagnostic-symbols-in-the-sign-column-gutter

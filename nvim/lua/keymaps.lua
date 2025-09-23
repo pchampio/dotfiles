@@ -92,9 +92,9 @@ map(
 )
 
 -- Leader mapping to change working directory to the current file's directory
-map(
-  'n',
-  '<leader>cd',
-  '<Esc>:lcd <C-r>=expand("%:p:h")<CR>',
-  { desc = '[d] Change current file directory', silent = false }
-)
+map('n', '<leader>cd', function()
+  local dir = vim.fn.expand '%:p:h'
+  -- Enter command-line mode and insert the lcd command
+  vim.api.nvim_feedkeys(':' .. 'lcd ' .. dir, 'n', false)
+  require('wincent.commandt').setup({ traverse = 'none' })
+end, { desc = '[d] Change current file directory', silent = false })

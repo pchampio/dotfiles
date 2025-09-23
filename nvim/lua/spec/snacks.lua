@@ -181,7 +181,7 @@ local M = {
       desc = 'Dismiss All Notifications',
     },
     {
-      '<C-p>',
+      '<C-t>',
       function()
         -- Snacks.picker.files { layout = 'my_ivylayout' }
         N.fff()
