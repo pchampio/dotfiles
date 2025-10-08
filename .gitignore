@@ -20,3 +20,4 @@ zsh/priv.zsh
 /man
 /share
 bin/gnupg/
+bin/watchman

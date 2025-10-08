@@ -8,21 +8,6 @@ explain "Download latest nvim"
 cd /tmp
 curl -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C "${HOME}/dotfiles/bin" -xz
 
-explain "pynvim Install"
-source ~/dotfiles/install/python
-$bpython -m venv $HOME/.local/share/pyenv
-. $HOME/.local/share/pyenv/bin/activate
-python3 -m pip install --upgrade pip
-python3 -m pip install pipx
-python3 -m pipx ensurepath --force
-python3 -m pipx install trash-cli --force
-python3 -m pipx install sshuttle --force
-python3 -m pip install --upgrade pynvim
-
-# remove crap from zshrc
-sed -i '/^# Created by `pipx`/,+1d' $HOME/dotfiles/zshrc
-sed -i ':a;/^\n*$/{$d;N;ba}' $HOME/dotfiles/zshrc
-
 if [ ! -e ~/.config/nvim/spell ]; then
   explain "Spelling dictionary"
   mkdir -p ~/.config/nvim/spell
@@ -35,8 +20,4 @@ if [ ! -e ~/.config/nvim/spell ]; then
   wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.spl
 fi
 
-mkdir -p ~/.config
-mkdir -p ~/.config/nvim
-mkdir -p ~/.vimundo
-
-success "Success"
+success "[NVIM] Success"

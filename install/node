@@ -16,4 +16,4 @@ sed -i '/^\[.*NVM_DIR/d' $HOME/dotfiles/zshrc
 source ~/.nvm/nvm.sh
 nvm install node
 
-success "Success"
+success "[NODE] Success"

@@ -7,7 +7,7 @@ local M = {
   keys = {
     {
       '<C-p>',
-      '<Plug>(CommandT)',
+      '<Plug>(CommandTRipgrep)',
     },
   },
   config = function()

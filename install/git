@@ -12,7 +12,7 @@ export NO_OPENSSL=1
 export NO_CURL=1
 export CFLAGS="${CFLAGS} -static"
 
-explain "Install latest git version.."
+explain "Install latest git version (without https support).."
 make configure
 ./configure --prefix=$HOME/.local
 make -j $(nproc)
@@ -20,4 +20,4 @@ make install
 make clean
 mv $HOME/.local/git $HOME/.local/ngit
 
-success "Success"
+success "[GIT] Success"

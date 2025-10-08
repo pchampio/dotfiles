@@ -16,7 +16,7 @@ if [[ $? -ne 0 ]]; then
 fi
 explain "Install wezterm-$VERSION"
 \rm wezterm-$VERSION -rf || true
-curl -LO https://github.com/wez/wezterm/releases/download/$VERSION/wezterm-${VERSION}-src.tar.gz
+curl --progress-bar -LO https://github.com/wez/wezterm/releases/download/$VERSION/wezterm-${VERSION}-src.tar.gz
 tar -xzf wezterm-$VERSION-src.tar.gz
 cd wezterm-$VERSION
 
@@ -61,4 +61,4 @@ then
   sudo update-desktop-database
 fi
 
-success "Success"
+success "[WEZTERM] Success"

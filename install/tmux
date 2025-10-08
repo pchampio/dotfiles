@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -o errexit
-
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
@@ -80,17 +78,8 @@ explain "Tmux plugins"
 [ -d ~/.tmux-last/ ] || git clone https://git.prr.re/Drakirus/tmux-last ~/.tmux-last/ --depth=1
 
 
-
-explain "imgcat Install"
-source $BASEDIR/python
-$bpython -m venv $HOME/.local/share/pyenv
-. $HOME/.local/share/pyenv/bin/activate
-python3 -m pipx install imgcat --force
-python3 -m pip install pillow
-
-
 read -p "Compile local tmux in junest? [y] " -n 1 -r
-echo ""    # (optional) move to a new line
+echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   [ ! -d ~/.junest ] && $BASEDIR/junest
@@ -145,7 +134,7 @@ build() {
   _LDFLAGS=("-Wl,--gc-sections" -flto)
   _musl() {
     if [[ ! -e musl-\${MUSL_VERSION}.tar.gz ]]; then
-      curl -LO https://www.musl-libc.org/releases/musl-\${MUSL_VERSION}.tar.gz
+      curl --progress-bar -LO https://www.musl-libc.org/releases/musl-\${MUSL_VERSION}.tar.gz
     fi
     tar zxf musl-\${MUSL_VERSION}.tar.gz --skip-old-files
     pushd .
@@ -160,7 +149,7 @@ build() {
 
   _libevent() {
     if [[ ! -e libevent-\${LIBEVENT_VERSION}-stable.tar.gz ]]; then
-      curl -LO https://github.com/libevent/libevent/releases/download/release-\${LIBEVENT_VERSION}-stable/libevent-\${LIBEVENT_VERSION}-stable.tar.gz
+      curl --progress-bar -LO https://github.com/libevent/libevent/releases/download/release-\${LIBEVENT_VERSION}-stable/libevent-\${LIBEVENT_VERSION}-stable.tar.gz
     fi
     tar zxf libevent-\${LIBEVENT_VERSION}-stable.tar.gz --skip-old-files
     pushd .
@@ -175,7 +164,7 @@ build() {
 
   _ncurses() {
     if [[ ! -e ncurses-\${NCURSES_VERSION}.tar.gz ]]; then
-      curl -LO https://ftp.gnu.org/pub/gnu/ncurses/ncurses-\${NCURSES_VERSION}.tar.gz
+      crl --progress-bar -LO https://ftp.gnu.org/pub/gnu/ncurses/ncurses-\${NCURSES_VERSION}.tar.gz
     fi
     tar zxvf ncurses-\${NCURSES_VERSION}.tar.gz --skip-old-files
     pushd .
@@ -219,8 +208,12 @@ package() {
 
 EOF
   yes | ~/.local/share/junest/bin/junest -- makepkg -Acsi
+  if [[ ! $? -eq 0 ]]; then
+    error "[TMUX-BIN] Error"
+    exit
+  fi
   yes | cp -f ~/.junest/bin/tmux ~/dotfiles/bin/tmux
 fi
 
 
-success "Success"
+success "[TMUX] Success"

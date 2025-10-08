@@ -4,6 +4,8 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
 mkdir -p ~/lab/ || true
+mkdir -p ~/.config || true
+
 
 ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf"
 dir=~/dotfiles
@@ -18,14 +20,14 @@ tell ln -sf ~/dotfiles/nvim ~/.config/nvim
 
 explain "Create symlink for dotfiles"
 # change to the dotfiles directory
-cd $dir
+pushd $dir >/dev/null 2>&1
 
 files=`find . -maxdepth 1 -type f | sed 's|./||' | egrep -v $ignoreRC`
 
 # create symlinks from the homedir to any files in the ~/dotfiles directory specified
 for file in $files; do
   if [ -f ~/.$file ]; then
-    tell rm ~/.$file
+    rm ~/.$file
   fi
   tell ln -s $dir/$file ~/.$file
 done
@@ -40,23 +42,25 @@ done
 
 
 explain "RipGrep Install"
-cd /tmp
-curl -LO 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz'
+home=$(pwd)
+pushd /tmp >/dev/null 2>&1
+curl --progress-bar -LO 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz'
 tar xf ripgrep-*.tar.gz
 yes | cp ripgrep-*/rg $HOME/dotfiles/bin/rg
 rm ripgrep-*.tar.gz
-cd -
+pushd $home >/dev/null 2>&1
 
 
 explain "FD Install"
-cd /tmp
-wget -O fd.tar.gz "https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz"
+home=$(pwd)
+pushd /tmp >/dev/null 2>&1
+curl --progress-bar -LO "https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz"
 mkdir -p fd
-tar xf fd.tar.gz -C fd --strip-components=1
-ls fd
+tar xf fd*.tar.gz -C fd --strip-components=1
 cp ./fd/fd ~/dotfiles/bin/fd
-rm fd.tar.gz
+rm fd*.tar.gz
 rm -rf ./fd
+pushd $home >/dev/null 2>&1
 
 if [ ! -d ~/.fzf ]; then
   explain "FZF Install"
@@ -65,9 +69,16 @@ if [ ! -d ~/.fzf ]; then
 fi
 
 explain "Atuin Install"
-curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+if [ ! -f "$HOME/.atuin/bin/atuin" ]; then
+  curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+  # remove crap from zshrc (added by atuin)
+  sed -i '/^eval.*atuin init zsh/d' $HOME/dotfiles/zshrc
+  sed -i ':a;/^\n*$/{$d;N;ba}' $HOME/dotfiles/zshrc # clean up empty last lines
+else
+  atuin-update
+fi
 
-explain "SSH Install"
+explain "SSH Config"
 mkdir -p ~/.ssh/sockets/
 if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   explain "Conf ssh config"
@@ -95,15 +106,13 @@ EOF
 chmod 600 "$HOME"/.ssh/config
 fi
 
-explain "RBW Install"
+explain "Setup secrets"
 $HOME/dotfiles/bin/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -eq 0 ]]; then
   ~/.atuin/bin/atuin login \
     -u $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
     -p $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \
-    -k "$($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')"
-else
- echo "" > $HOME/dotfiles/zsh/priv.zsh
+    -k "$($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')" 2> /dev/null > /dev/null
 fi
 
 # Custom Completion Scripts
@@ -123,9 +132,9 @@ if [[ "$ssh_url" != "$url" ]]; then
     # Build SSH URL
     ssh_url="git@github.com:${ssh_url}.git"
 
-    echo "Switching remote from $url to $ssh_url"
+    explain "Switching dotfile git remote from https to $ssh_url"
     git remote set-url origin "$ssh_url"
     git config pull.rebase false # small config
 fi
 
-success "Success"
+success "[DOTFILES] Success"

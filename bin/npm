@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# 1. Load NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# 2. Pass all arguments to Node
+exec npm "$@"

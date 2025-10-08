@@ -1,7 +1,8 @@
 #! /bin/bash
 
-BUILD_DATE="20250409"
-STANDALONE_PYTHON_VERSION="3.13.3"
+# https://github.com/astral-sh/python-build-standalone
+BUILD_DATE="20251007"
+STANDALONE_PYTHON_VERSION="3.12.11"
 
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
@@ -9,9 +10,9 @@ BASEDIR=$(dirname $0)
 has_python() {
   "$1" -c '' >/dev/null 2>&1
   if [ "$?" -eq 0 ]; then
-    echo 0  # ok
+    echo 0 # ok
   else
-    echo 1  # missing
+    echo 1 # missing
   fi
 }
 
@@ -21,39 +22,60 @@ install_static_python() {
 
   explain "Install python version $STANDALONE_PYTHON_VERSION compiled the $BUILD_DATE"
   dist_url="https://github.com/astral-sh/python-build-standalone/releases/download/${BUILD_DATE}/${build_tag}-install_only.tar.gz"
-  checksum_url="${dist_url}.sha256"
   cwd="$(pwd)"
   mkdir -p "${STANDALONE_PYTHON_PATH}"
   cd "${STANDALONE_PYTHON_PATH}"
-  echo "Downloading and installing static Python (${build_tag}) for bootstrapping..."
-  curl -o dist.tar.gz -L "$dist_url"
-  echo "$(curl -sL $checksum_url) *dist.tar.gz" | shasum -a 256 --check --status
-  if [ $? -ne 0 ]; then
-    echo "Failed to validate the downloaded static build of Python binary!"
-    exit 1
+  echo "Downloading and installing static Python (${build_tag})..."
+  if [ ! -f "${STANDALONE_PYTHON_PATH}/dist.tar.gz" ]; then
+    curl --progress-bar -o dist.tar.gz -L "$dist_url"
   fi
   tar xzf dist.tar.gz && rm dist.tar.gz
   mv python/* . && rmdir python
   cd "${cwd}"
-  success "Success"
+  success "[PYTHON3] Success"
 }
 
 STANDALONE_PYTHON_ARCH=$(arch)
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    STANDALONE_PYTHON_PLATFORM="unknown-linux-gnu"
+  STANDALONE_PYTHON_PLATFORM="unknown-linux-gnu"
 elif [[ "$OSTYPE" == "linux-musl"* ]]; then
-    STANDALONE_PYTHON_PLATFORM="unknown-linux-musl"
+  STANDALONE_PYTHON_PLATFORM="unknown-linux-musl"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    STANDALONE_PYTHON_PLATFORM="apple-darwin"
+  STANDALONE_PYTHON_PLATFORM="apple-darwin"
 fi
-export STANDALONE_PYTHON_PATH="$HOME/.cache/bootstrap-python/cpython/${STANDALONE_PYTHON_VERSION}"
+export STANDALONE_PYTHON_PATH="$HOME/.local/share/pytool"
 if [ "${STANDALONE_PYTHON_ARCH}" = "arm64" ]; then
   STANDALONE_PYTHON_ARCH="aarch64"
 fi
 export bpython="${STANDALONE_PYTHON_PATH}/bin/python3"
 if [ $(has_python "$bpython") -ne 0 ]; then
   install_static_python
-  $bpython -m ensurepip --upgrade
-  $bpython -c 'import sys;print(sys.version_info)'
 fi
 
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then # file executed (not sourced)
+  if [ -f "$HOME/.local/share/pytool/bin/pipx" ]; then
+    read -p "Remove previous pytool pips? [y] " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      \rm -rf "$HOME/.local/share/pytool/bin/pipx"
+    fi
+  fi
+fi
+
+if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
+  explain "pip install my tools (pytenv trash sshuttle..)"
+
+  $bpython -m ensurepip --upgrade
+  $bpython -c 'import sys;print(sys.version_info)'
+
+  $bpython -m pip install --upgrade pip pipx --force
+  $bpython -m pip install --upgrade setuptools pynvim pillow wheel
+
+  \rm "$HOME/.local/share/pipx" -rf
+  $bpython -m pipx install ensurepath imgcat sshuttle trash-cli argcomplete aider-chat --force
+
+  # remove crap from zshrc (added by pipx)
+  sed -i '/^# Created by `pipx`/,+1d' $HOME/dotfiles/zshrc
+  sed -i ':a;/^\n*$/{$d;N;ba}' $HOME/dotfiles/zshrc # clean up empty last lines
+fi

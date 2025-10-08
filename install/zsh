@@ -15,7 +15,7 @@ explain "Installation de oh-my-zsh"
   fi
 
 explain "Installation de instant-zsh"
-  curl -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
+  curl --progress-bar -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
 
 explain "Installation de zsh-syntax-highlighting"
   tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
@@ -105,4 +105,4 @@ else
   tell ln -s "$(command -v zsh)" ~/.local/bin/zsh || true
 fi
 
-success "Success"
+success "[ZSH] Success"

@@ -29,7 +29,7 @@ export EDITOR=$HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim
 
 setopt prompt_subst # enable command substition in prompt
 
-# plugins=(encode64 docker sudo zsh-autoquoter)
+plugins=(encode64 docker sudo zsh-autoquoter)
 
 # faster startup
 DISABLE_AUTO_UPDATE="true"
@@ -63,7 +63,7 @@ PATH=$PATH:/usr/bin/core_perl/
 
 
 # local bin first
-export PATH=$HOME/.local/share/pyenv/bin:$HOME/.local/bin:$PATH
+export PATH=$HOME/.local/share/pytool/bin:$HOME/.local/bin:$PATH
 
 # ADD own dotfiles/bin app to Path
 export PATH=$HOME/dotfiles/bin:$PATH
@@ -98,9 +98,6 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 export FLUTTER=/opt/flutter/bin
 export PATH=${FLUTTER}:${PATH}
 
-# JAVA_HOME
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre
-
 # Android - sdk
 export ANDROID_HOME=/opt/android-sdk
 export PATH=${PATH}:${JAVA_HOME}/bin:/opt/android-sdk/tools:/opt/android-sdk/platform-tools:/opt/android-sdk/tools/bin
@@ -112,6 +109,10 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/dotfiles/bin/tssh:$PATH"
 export PATH="$HOME/dotfiles/bin/tsshd:$PATH"
 export PATH="$HOME/dotfiles/bin/trzsz:$PATH"
+
+# watchman
+export PATH="$HOME/dotfiles/bin/watchman_bin/:$PATH"
+export LD_LIBRARY_PATH="$HOME/dotfiles/bin/watchman_bin/:${LD_LIBRARY_PATH}"
 
 # tailscale
 export PATH="$HOME/dotfiles/bin/tailscale:$PATH"

@@ -16,7 +16,7 @@ fi
 $file_path serve &
 # $file_path run $model
 
-~/.local/share/pyenv/bin/litellm --model ollama/$model --drop_params &
+~/.local/share/pytool/bin/litellm --model ollama/$model --drop_params &
 
 http-proxy-pass 8000 8001 $1
 

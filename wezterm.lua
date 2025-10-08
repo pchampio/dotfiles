@@ -150,38 +150,50 @@ config.keys = {
         wezterm.log_info(pattern)
         wezterm.log_info(string.find(text_at_cursor, pattern))
         if string.find(text_at_cursor, pattern) then
+          wezterm.log_info("FOUND")
           local success, password, stderr = wezterm.run_child_process(
             wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "' .. cmd_get_pwd .. '"')
           )
+          wezterm.log_info(success)
+          wezterm.log_info(password)
+          wezterm.log_info(stderr)
           password = password:match(".*$~[^%s]+%s(.*)") -- remove interactive colored string and PS1 prompt
           wezterm.log_info(password)
-          window:perform_action(
-            wezterm.action.Multiple({
-              wezterm.action.SendString(password),
-              wezterm.action.SendKey({ key = "Enter" }),
-            }),
-            window:active_pane()
-          )
+          if not (password == nil or password == '') then
+            window:perform_action(
+              wezterm.action.Multiple({
+                wezterm.action.SendString(password),
+                wezterm.action.SendKey({ key = "Enter" }),
+              }),
+              window:active_pane()
+            )
+            return
+          end
           return
         end
       end
 
       for pattern, cmd_get_pwd in pairs(password_patterns) do
         if string.find(pane:get_logical_lines_as_text(), pattern) then
+          wezterm.log_info("FOUND")
           local success, password, stderr = wezterm.run_child_process(
             wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "' .. cmd_get_pwd .. '"')
           )
+          wezterm.log_info(password)
           password = password:match(".*$~[^%s]+%s(.*)") -- remove interactive colored string and PS1 prompt
-          -- wezterm.log_info(success)
-          -- wezterm.log_info(stderr)
-          window:perform_action(
-            wezterm.action.Multiple({
-              wezterm.action.SendString(password),
-              wezterm.action.SendKey({ key = "Enter" }),
-            }),
-            window:active_pane()
-          )
-          return
+          wezterm.log_info(success)
+          wezterm.log_info(password)
+          wezterm.log_info(stderr)
+          if not (password == nil or password == '') then
+            window:perform_action(
+              wezterm.action.Multiple({
+                wezterm.action.SendString(password),
+                wezterm.action.SendKey({ key = "Enter" }),
+              }),
+              window:active_pane()
+            )
+            return
+          end
         end
       end
 
@@ -200,9 +212,10 @@ config.keys = {
               local success, password, stderr = wezterm.run_child_process(
                 wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "' .. cmd .. '"')
               )
+              wezterm.log_info(password)
               password = password:match(".*$~[^%s]+%s(.*)") -- remove interactive colored string and PS1 prompt
-              -- wezterm.log_info(success)
-              -- wezterm.log_info(stderr)
+              wezterm.log_info(success)
+              wezterm.log_info(stderr)
               window:perform_action(
                 wezterm.action.Multiple({
                   wezterm.action.SendString(password),

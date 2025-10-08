@@ -38,4 +38,4 @@ explain "Depending on your desktop environment, there might be a GUI configurati
 
 explain "Set compose key to: 'Menu key'!!!!!"
 
-success "Success"
+success "[KEYD] Success"

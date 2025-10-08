@@ -70,4 +70,4 @@ rm -R -f ./tmp || exit 1
 echo "$version" > ./version
 chmod a+x ./"$APP" || exit 1
 
-success "Success"
+success "[TSSH] Success"
