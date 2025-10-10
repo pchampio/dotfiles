@@ -236,8 +236,15 @@ config.keys = {
   },
 }
 
+
+wezterm.on("clear-selection-after-delay", function(window, pane)
+  -- run this after a delay
+  wezterm.sleep_ms(250)
+  window:perform_action(wezterm.action.ClearSelection, pane)
+end)
+
 config.bypass_mouse_reporting_modifiers = "SHIFT" -- ANY mapping appears without shift in wezterm when tmux is used
-config.quick_select_remove_styling = true -- make it obvious when we under select mode
+config.quick_select_remove_styling = true         -- make it obvious when we under select mode
 
 -- I hate that wezterm keeps rendering and discard the already selected text while I try to select some text.
 -- This pice of code stops wezterm from clearing out the selected text while I'm in thre process of selcting it
@@ -257,12 +264,27 @@ config.mouse_bindings = {
     }),
   },
   {
-    event = { Up = { streak = 1, button = "Left" } },
+    event = { Down = { streak = 2, button = "Left" } },
+    mods = "",
+    action = act.Multiple({
+      wezterm.action.QuickSelectArgs({
+        patterns = {
+          "jksfldjjkfdsljflflsdkfjlsdjfdsfjlsdjflksdjklf",
+        },
+      }),
+      act.SelectTextAtMouseCursor("Word"),
+      act.CopyTo("ClipboardAndPrimarySelection"),
+      wezterm.action.SendKey({ key = "Escape" }), -- escape QuickSelect
+      wezterm.action.EmitEvent("clear-selection-after-delay"),
+    }),
+  },
+  {
+    event = { Up = { streak = 1, button = "Right" } },
     mods = "",
     action = act.Multiple({
       act.CopyTo("ClipboardAndPrimarySelection"),
       wezterm.action.SendKey({ key = "Escape" }), -- escape QuickSelect
-      act.ClearSelection,
+      wezterm.action.EmitEvent("clear-selection-after-delay"),
     }),
   },
 }
