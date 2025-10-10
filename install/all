@@ -4,12 +4,11 @@
 BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
-"$BASEDIR/git"
 "$BASEDIR/python"
 "$BASEDIR/node"
 "$BASEDIR/pinentry-tty"
 "$BASEDIR/rbw"
-"$HOME/dotfiles/bin/rbw" unlock
+"$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
 "$BASEDIR/tssh"
 "$BASEDIR/tmux"
 "$BASEDIR/neovim"

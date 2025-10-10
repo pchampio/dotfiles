@@ -5,8 +5,8 @@ BASEDIR=$(dirname $0)
 
 explain "Install latest git version (without https support).."
 cd /tmp
-# \rm -rf git 2> /dev/null || true
-# git clone https://github.com/git/git --depth=1 || exit
+\rm -rf git 2> /dev/null || true
+git clone https://github.com/git/git --depth=1 || exit
 cd git
 
 export NO_OPENSSL=1

@@ -74,6 +74,7 @@ if [ ! -f "$HOME/.atuin/bin/atuin" ]; then
   # remove crap from zshrc (added by atuin)
   apply_sed_to_dotfiles '/^eval.*atuin init /d'
 else
+  . "$HOME/.atuin/bin/env"
   run_with_spinner atuin-update
 fi
 

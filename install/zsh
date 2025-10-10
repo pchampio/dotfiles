@@ -9,7 +9,11 @@ touch ~/.zsh_history
 
 explain "Installation de oh-my-zsh"
   export KEEP_ZSHRC='yes'
-  export echo exit | sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+  [ -f /tmp/.oh-my-zsh.install ] && rm /tmp/.oh-my-zsh.install
+  wget -q https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O /tmp/.oh-my-zsh.install
+  chmod +x /tmp/.oh-my-zsh.install
+  run_with_spinner "export echo exit | sh -c /tmp/.oh-my-zsh.install"
+  rm /tmp/.oh-my-zsh.install
   if [ -f ~/.zsh-update ]; then
     sudo chown $USER ~/.zsh-update
   fi
@@ -48,7 +52,7 @@ then
   explain "Installation de zsh-bin"
   rm -rf /tmp/zsh-bin
   mkdir /tmp/zsh-bin
-  run_with_spinner wget -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
+  wget -q -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
   run_with_spinner sh /tmp/zsh-bin/install -d ~/dotfiles -e no
   wherezsh=$HOME/dotfiles/bin/zsh
 fi
@@ -94,7 +98,7 @@ then
 fi
 
 [ ! -d ~/.local/bin/ ] && mkdir ~/.local/bin/
-[ ! -f ~/.local/bin/zsh ] && \rm ~/.local/bin/zsh
+[ -f ~/.local/bin/zsh ] && rm ~/.local/bin/zsh
 if [[ -f $wherezsh ]]
 then
   tell ln -s $wherezsh ~/.local/bin/zsh || true
