@@ -5,15 +5,19 @@ BASEDIR=$(dirname $0)
 
 cd $(dirname $0)
 
+# Remove dotfiles bins to avoid loop with my own define node/npm
+export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "^$HOME/dotfiles/bin\$" | paste -sd ':' -)
 
 explain "Install node with nvm"
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
+[ -d "$HOME/.nvm" ] && rm -rf "$HOME/.nvm"
+run_with_spinner "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash"
 
-# Remove only NVM-specific lines
-sed -i '/^export NVM_DIR=.*/d' $HOME/dotfiles/zshrc
-sed -i '/^\[.*NVM_DIR/d' $HOME/dotfiles/zshrc
+# Remove NVM_DIR export lines
+apply_sed_to_dotfiles '/^export NVM_DIR=.*/d'
+# Remove lines starting with [.*NVM_DIR
+apply_sed_to_dotfiles '/^\[.*NVM_DIR/d'
 
-source ~/.nvm/nvm.sh
-nvm install node
+
+run_with_spinner "source ~/.nvm/nvm.sh; nvm install node"
 
 success "[NODE] Success"

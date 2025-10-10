@@ -58,6 +58,7 @@ _fzf-compl-oar(){
 
 # Search history
 atuin-setup() {
+    . "$HOME/.atuin/bin/env"
   ! hash atuin && return
 
   fzf-atuin-history-widget() {

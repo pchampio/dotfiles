@@ -21,3 +21,4 @@ zsh/priv.zsh
 /share
 bin/gnupg/
 bin/watchman_bin
+.aider*

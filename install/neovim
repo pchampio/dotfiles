@@ -6,18 +6,18 @@ BASEDIR=$(dirname $0)
 
 explain "Download latest nvim"
 cd /tmp
-curl -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C "${HOME}/dotfiles/bin" -xz
+run_with_spinner "curl -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C $HOME/dotfiles/bin -xz"
 
 if [ ! -e ~/.config/nvim/spell ]; then
   explain "Spelling dictionary"
   mkdir -p ~/.config/nvim/spell
   cd ~/.config/nvim/spell
-  wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.spl
-  wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.sug
-  wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.spl
-  wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.sug
-  wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.sug
-  wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.spl
+  run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.spl
+  run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.sug
+  run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.spl
+  run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.sug
+  run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.sug
+  run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.spl
 fi
 
 success "[NVIM] Success"

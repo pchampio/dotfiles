@@ -25,7 +25,9 @@ vim.opt.rtp:prepend(lazypath)
 -- Load lazy
 require('lazy').setup {
   git = {
-    filter = false,
+    -- filter = false, -- In case of old git
+    -- Configure lazyvim to use ssh instead of https
+    url_format = "git@github.com:%s.git",
   },
   spec = {
     -- Import your plugins

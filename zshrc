@@ -110,10 +110,6 @@ export PATH="$HOME/dotfiles/bin/tssh:$PATH"
 export PATH="$HOME/dotfiles/bin/tsshd:$PATH"
 export PATH="$HOME/dotfiles/bin/trzsz:$PATH"
 
-# watchman
-export PATH="$HOME/dotfiles/bin/watchman_bin/:$PATH"
-export LD_LIBRARY_PATH="$HOME/dotfiles/bin/watchman_bin/:${LD_LIBRARY_PATH}"
-
 # tailscale
 export PATH="$HOME/dotfiles/bin/tailscale:$PATH"
 
@@ -145,7 +141,6 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 export PATH="$PATH:~/.local/bin"
 
 # Atuin shell history
-. "$HOME/.atuin/bin/env"
 atuin-setup
 
 instant-zsh-post

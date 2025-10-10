@@ -1,9 +1,8 @@
+local enhance_scorec_link = "'https://gist.githubusercontent.com/pchampio/dc0e5392cb534b6e33ac3c5a152d52e2/raw/82656944fb3144d187bc6306a2e7dacc2e5f6d44/commandt_score.c'"
 local M = {
   'wincent/command-t',
-  dependencies = {
-    { 'https://git.prr.re/Drakirus/cpsm', build = 'PY3=ON bash install.sh' },
-  },
-  build = 'cd lua/wincent/commandt/lib && make',
+  build = 'cd lua/wincent/commandt/lib && curl -sS ' .. enhance_scorec_link .. ' -o score.c  && make',
+
   keys = {
     {
       '<C-p>',

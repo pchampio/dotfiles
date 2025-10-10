@@ -9,22 +9,16 @@ BASEDIR=$(dirname $0)
   echo ""    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-    \rm -rf ~/.local/share/junest
-    \rm -rf ~/.junest
+    tell rm -rf ~/.local/share/junest ~/.junest
   fi
 }
 
 [ ! -f ~/.local/share/junest/bin/junest ] && {
   explain "Installation junest"
   git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
-  ~/.local/share/junest/bin/junest setup
+  run_with_spinner ~/.local/share/junest/bin/junest setup
 } 
 
 explain "MAJ pacman"
-~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
-~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm
-# ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm gnu-free-fonts
-# ~/.local/share/junest/bin/junest -f -- pacman -S --needed cmake gcc python3 --noconfirm
-# ~/.local/share/junest/bin/junest -f -- pacman --noconfirm -Scc
-# ~/.local/share/junest/bin/junest -- sudo yay -Yg
-# ~/.local/share/junest/bin/junest -- sudo yay --save --answerdiff None --answerclean None --removemake
+run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
+run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm

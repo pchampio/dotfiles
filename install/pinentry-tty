@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+
+BASEDIR="$(dirname "$0")"
+. "$BASEDIR/inc/functions"
 
 set -e
 
@@ -33,6 +36,7 @@ clean() {
 distclean() {
     clean
     rm -rf /tmp/download
+    success "[PINENTRY] Success"
 }
 
 download() {
@@ -52,9 +56,7 @@ download() {
         do
             file_name=$(basename "$url")
             if [ ! -f "$file_name" ]; then
-                wget -q --show-progress "$url"
-            else
-                echo "$file_name already exists, skipping download."
+                run_with_spinner wget -q --show-progress "$url"
             fi
         done
     )
@@ -84,12 +86,9 @@ tar -C "$WORK" -xzf /tmp/download/musl-$MUSL_VERSION.tar.gz
 (
     mkdir -p "$WORK/musl"
     cd "$WORK/musl"
-    ../musl-$MUSL_VERSION/configure \
-        --prefix="$WORK/deps" \
-        --enable-wrapper=gcc \
-        --syslibdir="$WORK/deps/lib"
-    make -kj$NJOBS
-    make install
+    run_with_spinner ../musl-$MUSL_VERSION/configure --prefix="$WORK/deps" --enable-wrapper=gcc --syslibdir="$WORK/deps/lib"
+    run_with_spinner make -kj$NJOBS
+    run_with_spinner make install
 )
 
 # tar -C "$WORK" -xjf /tmp/download/npth-$NPTH_VERSION.tar.bz2
@@ -109,7 +108,7 @@ tar -C "$WORK" -xjf /tmp/download/libgpg-error-$LIBGPGERROR_VERSION.tar.bz2
 (
     mkdir -p "$WORK/libgpg-error"
     cd "$WORK/libgpg-error"
-    ../libgpg-error-$LIBGPGERROR_VERSION/configure \
+    run_with_spinner ../libgpg-error-$LIBGPGERROR_VERSION/configure \
         MAKEFLAGS="-j$(nproc)" \
         CC="$WORK/deps/bin/musl-gcc" \
         --prefix="$WORK/deps" \
@@ -118,23 +117,23 @@ tar -C "$WORK" -xjf /tmp/download/libgpg-error-$LIBGPGERROR_VERSION.tar.bz2
         --disable-nls \
         --disable-doc \
         --disable-languages
-    make -kj$NJOBS
-    make install
+    run_with_spinner make -kj$NJOBS
+    run_with_spinner make install
 )
 
 tar -C "$WORK" -xjf /tmp/download/libassuan-$LIBASSUAN_VERSION.tar.bz2
 (
     mkdir -p "$WORK/libassuan"
     cd "$WORK/libassuan"
-    ../libassuan-$LIBASSUAN_VERSION/configure \
+    run_with_spinner ../libassuan-$LIBASSUAN_VERSION/configure \
         MAKEFLAGS="-j$(nproc)" \
         CC="$WORK/deps/bin/musl-gcc" \
         --prefix="$WORK/deps" \
         --enable-shared=no \
         --enable-static=yes \
         --with-libgpg-error-prefix="$WORK/deps"
-    make -kj$NJOBS
-    make install
+    run_with_spinner make -kj$NJOBS
+    run_with_spinner make install
 )
 
 # tar -C "$WORK" -xjf /tmp/download/libgcrypt-$LIBGCRYPT_VERSION.tar.bz2
@@ -211,10 +210,10 @@ tar -C "$WORK" -xjf /tmp/download/pinentry-$PINENTRY_VERSION.tar.bz2
 (
     mkdir -p "$WORK/pinentry"
     cd "$WORK/pinentry"
-    ../pinentry-$PINENTRY_VERSION/configure \
+    run_with_spinner ../pinentry-$PINENTRY_VERSION/configure \
         CC="$WORK/deps/bin/musl-gcc" \
         MAKEFLAGS="-j$(nproc)" \
-        LDFLAGS="-static -s" \
+        LDFLAGS="-static" \
         --prefix="$PREFIX" \
         --with-libgpg-error-prefix="$WORK/deps" \
         --with-libassuan-prefix="$WORK/deps" \
@@ -229,8 +228,8 @@ tar -C "$WORK" -xjf /tmp/download/pinentry-$PINENTRY_VERSION.tar.bz2
         --disable-pinentry-qt \
         --disable-pinentry-tqt \
         --disable-pinentry-fltk
-    make -kj$NJOBS
-    make install DESTDIR="$DESTDIR"
+    run_with_spinner make -kj$NJOBS
+    run_with_spinner make install DESTDIR="$DESTDIR"
 )
 
 rm -rf "$DESTDIR$PREFIX/sbin"

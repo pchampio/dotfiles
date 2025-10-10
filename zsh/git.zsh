@@ -26,20 +26,26 @@ function _git_log_prettily(){
         git log --pretty=$1
     fi
 }
-# Warn if the current branch is a WIP
-function work_in_progress() {
-    if $(git log -n 1 2>/dev/null | grep -q -c "\-\-wip\-\-"); then
-        echo "WIP!!"
-    fi
+function gfetchall(){
+    git branch -r | grep -v '\->' | while read remote; do
+        branch="${remote#origin/}"
+        if ! git show-ref --verify --quiet "refs/heads/$branch"; then
+            git branch --track "$branch" "$remote"
+        fi
+    done
+    git fetch --all
+    for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+        git checkout "$branch"
+        git pull
+    done
 }
-
 #
 # Aliases
 # (sorted alphabetically)
 #
 
 prefix=""
-[[ -f $HOME/.local/bin/ngit ]] && prefix="n"
+[[ -v NGIT ]] && prefix="n"
 
 alias g=${prefix}'git'
 

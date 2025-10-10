@@ -1,0 +1,64 @@
+#!/bin/bash
+
+LOGFILE=/tmp/.watchman
+
+SELF_SCRIPT="$0"
+SELF_PID=$$
+WATCHMAN_BIN="$HOME/dotfiles/bin/watchman_bin/watchman"
+
+WATCHMAN_PID=""
+
+# --- Function: kill all Watchman processes except this script ---
+kill_watchman() {
+  echo "Killing all Watchman processes..." >>"$LOGFILE"
+  for pid in $(pgrep -x "watchman"); do
+    [ "$pid" -eq "$SELF_PID" ] && continue
+    cmdline=$(tr '\0' ' ' </proc/$pid/cmdline 2>/dev/null)
+    if echo "$cmdline" | grep -qF "$SELF_SCRIPT"; then
+      continue
+    fi
+    kill -9 "$pid" 2>/dev/null
+  done
+}
+
+# --- Check for running Watchman (ignore this script) ---
+for pid in $(pgrep -x "watchman"); do
+  [ "$pid" -eq "$SELF_PID" ] && continue
+  cmdline=$(tr '\0' ' ' </proc/$pid/cmdline 2>/dev/null)
+  if echo "$cmdline" | grep -qF "$SELF_SCRIPT"; then
+    continue
+  fi
+  WATCHMAN_PID="$pid"
+  break
+done
+
+# --- Initialize Watchman if not running ---
+if [ -z "$WATCHMAN_PID" ]; then
+  echo "Starting Watchman..." >>"$LOGFILE"
+  # Increase inotify limits
+  "$HOME/.local/share/junest/bin/junest" -- sh -c 'sudo renice -n 0 -p $$; watchman' >>"$LOGFILE" 2>&1
+fi
+
+# --- Run Watchman commands if arguments are provided ---
+if [ $# -ne 0 ]; then
+  LD_LIBRARY_PATH="$HOME/dotfiles/bin/watchman_bin/:${LD_LIBRARY_PATH}"
+  echo "Running Watchman: $@" >>"$LOGFILE"
+
+  # Run Watchman and capture output
+  WATCHMAN_OUT=$("$WATCHMAN_BIN" "$@" 2>>"$LOGFILE")
+
+  # Check for inotify watch limit error
+  if [[ "$WATCHMAN_OUT" == *"limit on the total number"* ]]; then
+    echo "$WATCHMAN_OUT" >>"$LOGFILE"
+    echo "Watchman hit inotify watch limit, killing and reinitializing..." >>"$LOGFILE"
+    kill_watchman
+
+    # Re-initialize Watchman
+    "$HOME/.local/share/junest/bin/junest" -- sh -c 'sudo renice -n 0 -p $$; watchman' >>"$LOGFILE" 2>&1
+
+    # Retry the original command
+    "$WATCHMAN_BIN" "$@" 2>>"$LOGFILE"
+  else
+    echo $WATCHMAN_OUT
+  fi
+fi

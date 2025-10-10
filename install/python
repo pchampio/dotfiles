@@ -58,7 +58,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then # file executed (not sourced)
     read -p "Remove previous pytool pips? [y] " -n 1 -r
     echo ""
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-      \rm -rf "$HOME/.local/share/pytool/bin/pipx"
+      tell rm -rf "$HOME/.local/share/pytool/bin/pipx"
     fi
   fi
 fi
@@ -66,16 +66,15 @@ fi
 if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
   explain "pip install my tools (pytenv trash sshuttle..)"
 
-  $bpython -m ensurepip --upgrade
-  $bpython -c 'import sys;print(sys.version_info)'
+  run_with_spinner $bpython -m ensurepip --upgrade
+  $bpython -c 'import sys;print("    Python info:", sys.version_info)'
 
-  $bpython -m pip install --upgrade pip pipx --force
-  $bpython -m pip install --upgrade setuptools pynvim pillow wheel
+  run_with_spinner $bpython -m pip install --upgrade pip pipx --force
+  run_with_spinner $bpython -m pip install --upgrade setuptools pynvim pillow wheel ensurepath
 
   \rm "$HOME/.local/share/pipx" -rf
-  $bpython -m pipx install ensurepath imgcat sshuttle trash-cli argcomplete aider-chat --force
+  run_with_spinner $bpython -m pipx install imgcat sshuttle trash-cli argcomplete aider-chat --force
 
   # remove crap from zshrc (added by pipx)
-  sed -i '/^# Created by `pipx`/,+1d' $HOME/dotfiles/zshrc
-  sed -i ':a;/^\n*$/{$d;N;ba}' $HOME/dotfiles/zshrc # clean up empty last lines
+  apply_sed_to_dotfiles '/^# Created by `pipx`/,+1d'
 fi

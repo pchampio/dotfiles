@@ -70,12 +70,11 @@ fi
 
 explain "Atuin Install"
 if [ ! -f "$HOME/.atuin/bin/atuin" ]; then
-  curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+  run_with_spinner "curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh"
   # remove crap from zshrc (added by atuin)
-  sed -i '/^eval.*atuin init zsh/d' $HOME/dotfiles/zshrc
-  sed -i ':a;/^\n*$/{$d;N;ba}' $HOME/dotfiles/zshrc # clean up empty last lines
+  apply_sed_to_dotfiles '/^eval.*atuin init /d'
 else
-  atuin-update
+  run_with_spinner atuin-update
 fi
 
 explain "SSH Config"
@@ -119,7 +118,7 @@ fi
 mkdir -p ~/.oh-my-zsh/custom/completions
 
 ~/.atuin/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
-$HOME/dotfiles/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw
+$HOME/dotfiles/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw # doesn't work IDK
 
 
 # switch this remote git from http to ssh if needed

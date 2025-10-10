@@ -24,15 +24,8 @@ local M = {
     },
     {
       "<leader>aa",
-      function() require("sidekick.cli").toggle() end,
+      function() require("sidekick.cli").toggle({ name = "aider", focus = true }) end,
       desc = "Sidekick Toggle CLI",
-    },
-    {
-      "<leader>as",
-      function() require("sidekick.cli").select() end,
-      -- Or to select only installed tools:
-      -- require("sidekick.cli").select({ filter = { installed = true } })
-      desc = "Select CLI",
     },
     {
       "<leader>at",
@@ -57,12 +50,6 @@ local M = {
       function() require("sidekick.cli").focus() end,
       mode = { "n", "x", "i", "t" },
       desc = "Sidekick Switch Focus",
-    },
-    -- Example of a keybinding to open Claude directly
-    {
-      "<leader>ac",
-      function() require("sidekick.cli").toggle({ name = "claude", focus = true }) end,
-      desc = "Sidekick Toggle Claude",
     },
   },
 }

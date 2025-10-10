@@ -1,5 +1,5 @@
 local M = {
-  'https://git.prr.re/Drakirus/sudo.nvim',
+  'git@prr.re/Drakirus/sudo.nvim.git',
   event = 'VeryLazy',
 }
 return M

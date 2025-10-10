@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
@@ -11,6 +11,7 @@ APP=rbw_bin # dir name
 SITE="doy/rbw" # github link
 
 # CREATE DIRECTORIES
+[ -d "$HOME/dotfiles/bin/$APP" ] && rm -rf "$HOME/dotfiles/bin/$APP"
 [ -n "$APP" ] && mkdir -p "$HOME/dotfiles/bin/$APP/tmp" && cd "$HOME/dotfiles/bin/$APP/tmp" || exit 1
 
 # DOWNLOAD AND PREPARE THE APP, $version is also used for updates
@@ -24,4 +25,4 @@ if [ -d ./tmp/* 2>/dev/null ]; then mv ./tmp/*/* ./; else mv ./tmp/* ./"$APP" 2>
 rm -R -f ./tmp || exit 1
 echo "$version" > ./version
 
-success "Success"
+success "[RBW] Success"

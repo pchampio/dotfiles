@@ -71,11 +71,11 @@ screen-256color|tmux with 256 colors,
 EOF
 
 explain "Tmux plugins"
-[ -d ~/.tmux-resurrect/ ] || git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
-[ -d ~/.tmux-ssh-split/ ] || git clone https://git.prr.re/Drakirus/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
-[ -d ~/.tmux-extrakto/ ] || git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
-[ -d ~/.tmux-thumbs/ ] || git clone https://github.com/fcsonline/tmux-thumbs ~/.tmux-thumbs/ --depth=1
-[ -d ~/.tmux-last/ ] || git clone https://git.prr.re/Drakirus/tmux-last ~/.tmux-last/ --depth=1
+[ -d ~/.tmux-resurrect/ ] || run_with_spinner git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux-resurrect --depth=1
+[ -d ~/.tmux-ssh-split/ ] || run_with_spinner git clone https://git.prr.re/Drakirus/tmux-ssh-split ~/.tmux-ssh-split/ --depth=1
+[ -d ~/.tmux-extrakto/ ] || run_with_spinner git clone https://github.com/laktak/extrakto ~/.tmux-extrakto/ --depth=1
+[ -d ~/.tmux-thumbs/ ] || run_with_spinner git clone https://github.com/fcsonline/tmux-thumbs ~/.tmux-thumbs/ --depth=1
+[ -d ~/.tmux-last/ ] || run_with_spinner git clone https://git.prr.re/Drakirus/tmux-last ~/.tmux-last/ --depth=1
 
 
 read -p "Compile local tmux in junest? [y] " -n 1 -r
@@ -83,7 +83,7 @@ echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   [ ! -d ~/.junest ] && $BASEDIR/junest
-  \rm -rf /tmp/tmux-pkg || true
+  rm -rf /tmp/tmux-pkg || true
   mkdir /tmp/tmux-pkg || true
   cd /tmp/tmux-pkg
 cat <<EOF >> PKGBUILD
@@ -134,7 +134,7 @@ build() {
   _LDFLAGS=("-Wl,--gc-sections" -flto)
   _musl() {
     if [[ ! -e musl-\${MUSL_VERSION}.tar.gz ]]; then
-      curl --progress-bar -LO https://www.musl-libc.org/releases/musl-\${MUSL_VERSION}.tar.gz
+      curl -LO https://www.musl-libc.org/releases/musl-\${MUSL_VERSION}.tar.gz
     fi
     tar zxf musl-\${MUSL_VERSION}.tar.gz --skip-old-files
     pushd .
@@ -149,7 +149,7 @@ build() {
 
   _libevent() {
     if [[ ! -e libevent-\${LIBEVENT_VERSION}-stable.tar.gz ]]; then
-      curl --progress-bar -LO https://github.com/libevent/libevent/releases/download/release-\${LIBEVENT_VERSION}-stable/libevent-\${LIBEVENT_VERSION}-stable.tar.gz
+      curl -LO https://github.com/libevent/libevent/releases/download/release-\${LIBEVENT_VERSION}-stable/libevent-\${LIBEVENT_VERSION}-stable.tar.gz
     fi
     tar zxf libevent-\${LIBEVENT_VERSION}-stable.tar.gz --skip-old-files
     pushd .
@@ -164,7 +164,7 @@ build() {
 
   _ncurses() {
     if [[ ! -e ncurses-\${NCURSES_VERSION}.tar.gz ]]; then
-      crl --progress-bar -LO https://ftp.gnu.org/pub/gnu/ncurses/ncurses-\${NCURSES_VERSION}.tar.gz
+      curl -LO https://ftp.gnu.org/pub/gnu/ncurses/ncurses-\${NCURSES_VERSION}.tar.gz
     fi
     tar zxvf ncurses-\${NCURSES_VERSION}.tar.gz --skip-old-files
     pushd .
@@ -207,7 +207,7 @@ package() {
 }
 
 EOF
-  yes | ~/.local/share/junest/bin/junest -- makepkg -Acsi
+  run_with_spinner "~/.local/share/junest/bin/junest -- makepkg -Acsi --noconfirm"
   if [[ ! $? -eq 0 ]]; then
     error "[TMUX-BIN] Error"
     exit

@@ -15,22 +15,19 @@ explain "Installation de oh-my-zsh"
   fi
 
 explain "Installation de instant-zsh"
-  curl --progress-bar -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
+  run_with_spinner curl --progress-bar -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
 
 explain "Installation de zsh-syntax-highlighting"
-  tell git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
-
-  # tell wget https://raw.githubusercontent.com/zdharma/fast-syntax-highlighting/master/fast-syntax-highlighting.plugin.zsh -O ~/.oh-my-zsh/custom/fast-syntax-highlighting.plugin.zsh
-  # tell wget https://raw.githubusercontent.com/zdharma/fast-syntax-highlighting/master/fast-highlight -O ~/.oh-my-zsh/custom/fast-highlight
+  run_with_spinner git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting
 
 explain "Installation zsh-autosuggestions"
-  tell git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/zsh-autosuggestions
+  run_with_spinner git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/zsh-autosuggestions
 
 explain "Installation de zsh-completions"
-  tell git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/zsh-completions
+  run_with_spinner git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/zsh-completions
 
 explain "Installation de zsh-autoquoter"
- tell git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
+ run_with_spinner git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter
  
 # Remove group/other write permissions to make oh-my-zsh happy
 chmod -R go-w ~/.oh-my-zsh 2> /dev/null || true
@@ -51,8 +48,8 @@ then
   explain "Installation de zsh-bin"
   rm -rf /tmp/zsh-bin
   mkdir /tmp/zsh-bin
-  wget -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
-  sh /tmp/zsh-bin/install -d ~/dotfiles -e no
+  run_with_spinner wget -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
+  run_with_spinner sh /tmp/zsh-bin/install -d ~/dotfiles -e no
   wherezsh=$HOME/dotfiles/bin/zsh
 fi
 
