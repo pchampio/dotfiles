@@ -130,7 +130,7 @@ if [[ "$ssh_url" != "$url" ]]; then
     # Remove trailing slash if any
     ssh_url="${ssh_url%/}"
     # Build SSH URL
-    ssh_url="git@github.com:${ssh_url}.git"
+    ssh_url="git@github.com:${ssh_url}"
 
     explain "Switching dotfile git remote from https to $ssh_url"
     git remote set-url origin "$ssh_url"
