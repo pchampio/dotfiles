@@ -43,14 +43,9 @@ if [ "$1" = "lock" ]; then
     exit $?
 fi
 
-# if ! grep -q "pinentry-tty" "$HOME/.config/rbw/config.json"; then
-  # $bin_path/rbw config set pinentry "/usr/bin/pinentry-tty"
-# fi
-
 $bin_path/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -ne 0 ]]; then
     $bin_path/rbw unlock
 fi
-
 
 $bin_path/rbw "$@"

@@ -160,7 +160,3 @@ export GOROOT=/opt/go
 export PATH=$GOROOT/bin:$PATH
 export GOPATH=/home/prr/lab/go
 export PATH=$GOPATH/bin:$PATH
-
-. "$HOME/.atuin/bin/env"
-
-eval "$(atuin init zsh)"

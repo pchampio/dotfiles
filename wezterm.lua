@@ -1,6 +1,5 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
-local io = require("io")
 local os = require("os")
 
 HOME = os.getenv("HOME")
@@ -8,8 +7,59 @@ HOME = os.getenv("HOME")
 local act = wezterm.action
 local config = wezterm.config_builder()
 
+
+-- Plugins
+local bc = require("based_copymode")
+local tmux = require("tmux")
+local toggle_terminal = require("toggle_terminal")
+local auto_complete = require("auto_complete")
+auto_complete.apply_config({
+  shell_path = HOME .. '/dotfiles/bin/zsh',
+  log_debug = true,
+
+  -- Password patterns mapped to rbw commands
+  password_patterns = {
+    ["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
+    ["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
+    ["drakirus.*server.*password for drakirus"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
+    ["zephylac.*zep.*server.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab zep password'",
+    ["root@192.168.1.110.*password"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7",
+    ["admin@192.168.1.55"] = "rbw get 8136bc67-e189-487e-b7ec-ae9083b79986",
+  },
+
+  -- Fallback InputSelector options
+  fallback_passwords_prompt = {
+    { id = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e", label = "PP" },
+    { id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = "GH Token" },
+    { id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token", label = "Gitea Token" },
+  },
+
+  -- Vault management functions
+  is_locked = function()
+    local success = wezterm.run_child_process({ HOME .. "/dotfiles/bin/rbw", "unlocked" })
+    return not success
+  end,
+
+  unlock = function(window)
+    local old = toggle_terminal.opts.size.Cells
+    toggle_terminal.opts.size.Cells = 2
+    toggle_terminal.toggle_terminal(window, window:active_pane())
+    toggle_terminal.send_command_to_tab(window,  HOME .. "/dotfiles/bin/rbw unlock; exit" )
+
+    -- Wait until unlocked
+    auto_complete.run_cmd_until_true("rbw unlocked")
+    toggle_terminal.opts.size.Cells = old
+  end,
+})
+
 config.max_fps = 120
-config.front_end = "WebGpu"
+-- config.front_end = "WebGpu" -- Default is 'OpenGL' better characters IMO
+
+config.enable_wayland = true
+
+-- config.tiling_desktop_environments = {
+--   'Wayland' -- cosmic popos TODO: doesn't work
+-- }
 
 config.audible_bell = "Disabled"
 config.window_close_confirmation = "NeverPrompt"
@@ -29,14 +79,8 @@ local openUrl = act.QuickSelectArgs({
 wezterm.on("user-var-changed", function(window, pane, name, value)
   if name == "wez_audio" then
     local cmd_context = wezterm.json_parse(value)
-    -- Open a new tab and play the audio
-    window:perform_action(
-      wezterm.action.SpawnCommandInNewTab({
-        label = "Remote Audio Player",
-        args = { HOME .. "/dotfiles/bin/wait-and-play", cmd_context.file, cmd_context.flag },
-      }),
-      pane
-    )
+      toggle_terminal.toggle_terminal(window, pane)
+      toggle_terminal.send_command_to_tab(window,  "wait-and-play " .. cmd_context.file .. " " .. cmd_context.flag .. " ;exit")
   end
 end)
 
@@ -59,10 +103,14 @@ config.keys = {
   -- CTRL-SHIFT-i activates the debug overlay
   { key = "i", mods = "CTRL|SHIFT", action = act.ShowDebugOverlay },
   -- zooms
-  { key = "+", mods = "CTRL",       action = act.IncreaseFontSize },
-  { key = "-", mods = "CTRL",       action = act.DecreaseFontSize },
-  { key = "0", mods = "CTRL",       action = act.ResetFontSize },
-  { key = "=", mods = "CTRL",       action = act.IncreaseFontSize },
+  { key = "+", mods = "CTRL", action = act.IncreaseFontSize },
+  { key = "-", mods = "CTRL", action = act.DecreaseFontSize },
+  { key = "0", mods = "CTRL", action = act.ResetFontSize },
+  { key = "=", mods = "CTRL", action = act.IncreaseFontSize },
+  { key = "h", mods = "CTRL", action = tmux.move_or_send("Left", "h") },
+  { key = "j", mods = "CTRL", action = tmux.move_or_send("Down", "j") },
+  { key = "k", mods = "CTRL", action = tmux.move_or_send("Up", "k") },
+  { key = "l", mods = "CTRL", action = tmux.move_or_send("Right", "l") },
   -- clipboard
   { key = "C", mods = "SHIFT|CTRL", action = act.CopyTo("ClipboardAndPrimarySelection") },
   {
@@ -85,209 +133,26 @@ config.keys = {
   {
     key = "L",
     mods = "CTRL|SHIFT",
-    action = wezterm.action_callback(function(window, pane)
-      local cursor = pane:get_cursor_position()
-      local text = wezterm.split_by_newlines(pane:get_logical_lines_as_text())
-
-      -- for i, line in ipairs(text) do
-      --   wezterm.log_info(line)
-      -- end
-
-      wezterm.log_info("Cursor")
-      wezterm.log_info(cursor.y)
-      wezterm.log_info(pane:get_cursor_position().y - pane:get_dimensions().physical_top)
-
-      local prev_prev_line = text[cursor.y - 2] or ""
-      local prev_line = text[cursor.y - 1] or ""
-      local curr_line = text[cursor.y] or ""
-      local next_line = text[cursor.y + 1] or ""
-
-      local start_index = math.max(1, cursor.x - 60)
-
-      -- Safely handle each string.sub call
-      local prev_prev_text = string.sub(prev_prev_line, start_index) or ""
-      local prev_text = string.sub(prev_line, start_index) or ""
-      local curr_text = string.sub(curr_line, start_index) or pane:get_logical_lines_as_text()
-      local next_text = string.sub(next_line, start_index) or ""
-
-      -- Concatenate the strings
-      local text_at_cursor = prev_prev_text .. prev_text .. curr_text .. next_text
-
-      wezterm.log_info("text:")
-      wezterm.log_info(text_at_cursor)
-
-      local success_unlock, _, _ =
-          wezterm.run_child_process(wezterm.shell_split(HOME .. "/dotfiles/bin/rbw_bin/rbw" .. " unlocked"))
-
-      if not success_unlock then
-        window:perform_action(
-          act.SpawnCommandInNewTab({
-            label = "Unlock vault",
-            args = { HOME .. "/dotfiles/bin/rbw", "unlock" },
-          }),
-          window:active_pane()
-        )
-
-        -- Wait
-        wezterm.run_child_process(
-          wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "until rbw unlocked; do sleep 1; done"')
-        )
-      end
-
-      local password_patterns = {
-        ["drakirus.*prr.re.*Authentication code:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'totp'",
-        ["drakirus.*gateway.*password:"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
-        ["drakirus.*server.*password for drakirus"] =
-        "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab prr password'",
-        ["zephylac.*zep.*server.*password:"] =
-        "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7 --field 'Homelab zep password'",
-        ["root@192.168.1.110.*password"] = "rbw get 32d66a6f-ef01-4835-8ad1-aae19fa717a7",
-        ["admin@192.168.1.55"] = "rbw get 8136bc67-e189-487e-b7ec-ae9083b79986",
-      }
-
-      for pattern, cmd_get_pwd in pairs(password_patterns) do
-        wezterm.log_info(text_at_cursor)
-        wezterm.log_info(pattern)
-        wezterm.log_info(string.find(text_at_cursor, pattern))
-        if string.find(text_at_cursor, pattern) then
-          wezterm.log_info("FOUND")
-          local success, password, stderr = wezterm.run_child_process(
-            wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "' .. cmd_get_pwd .. '"')
-          )
-          wezterm.log_info(success)
-          wezterm.log_info(password)
-          wezterm.log_info(stderr)
-          password = password:match(".*$~[^%s]+%s(.*)") -- remove interactive colored string and PS1 prompt
-          wezterm.log_info(password)
-          if not (password == nil or password == '') then
-            window:perform_action(
-              wezterm.action.Multiple({
-                wezterm.action.SendString(password),
-                wezterm.action.SendKey({ key = "Enter" }),
-              }),
-              window:active_pane()
-            )
-            return
-          end
-          return
-        end
-      end
-
-      for pattern, cmd_get_pwd in pairs(password_patterns) do
-        if string.find(pane:get_logical_lines_as_text(), pattern) then
-          wezterm.log_info("FOUND")
-          local success, password, stderr = wezterm.run_child_process(
-            wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "' .. cmd_get_pwd .. '"')
-          )
-          wezterm.log_info(password)
-          password = password:match(".*$~[^%s]+%s(.*)") -- remove interactive colored string and PS1 prompt
-          wezterm.log_info(success)
-          wezterm.log_info(password)
-          wezterm.log_info(stderr)
-          if not (password == nil or password == '') then
-            window:perform_action(
-              wezterm.action.Multiple({
-                wezterm.action.SendString(password),
-                wezterm.action.SendKey({ key = "Enter" }),
-              }),
-              window:active_pane()
-            )
-            return
-          end
-        end
-      end
-
-      local passwords = {
-        { id = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e",                label = "PP" },
-        { id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = "GH Token" },
-        { id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token",  label = "Gitea Token" },
-      }
-
-      window:perform_action(
-        act.InputSelector({
-          action = wezterm.action_callback(function(inner_window, inner_pane, cmd, label)
-            if not cmd and not label then
-              wezterm.log_info("cancelled")
-            else
-              local success, password, stderr = wezterm.run_child_process(
-                wezterm.shell_split(HOME .. '/dotfiles/bin/zsh -ic "' .. cmd .. '"')
-              )
-              wezterm.log_info(password)
-              password = password:match(".*$~[^%s]+%s(.*)") -- remove interactive colored string and PS1 prompt
-              wezterm.log_info(success)
-              wezterm.log_info(stderr)
-              window:perform_action(
-                wezterm.action.Multiple({
-                  wezterm.action.SendString(password),
-                  wezterm.action.SendKey({ key = "Enter" }),
-                }),
-                window:active_pane()
-              )
-            end
-          end),
-          title = "Choose Password",
-          choices = passwords,
-          fuzzy = true,
-          fuzzy_description = "Fuzzy find a password to input: ",
-        }),
-        pane
-      )
-    end),
+    action = wezterm.action_callback(auto_complete.auto_complete),
   },
 }
 
 
-wezterm.on("clear-selection-after-delay", function(window, pane)
-  -- run this after a delay
-  wezterm.sleep_ms(250)
-  window:perform_action(wezterm.action.ClearSelection, pane)
-end)
 
-config.bypass_mouse_reporting_modifiers = "SHIFT" -- ANY mapping appears without shift in wezterm when tmux is used
-config.quick_select_remove_styling = true         -- make it obvious when we under select mode
+config.bypass_mouse_reporting_modifiers = "SHIFT"
+config.quick_select_remove_styling = true
 
--- I hate that wezterm keeps rendering and discard the already selected text while I try to select some text.
--- This pice of code stops wezterm from clearing out the selected text while I'm in thre process of selcting it
--- I activate it by pressing Shit-Click
 config.mouse_bindings = {
-  -- Custom binding for Shift + Left Click to start selection and log
   {
-    event = { Down = { streak = 1, button = "Left" } },
-    mods = "",
-    action = act.Multiple({
-      wezterm.action.QuickSelectArgs({
-        patterns = {
-          "jksfldjjkfdsljflflsdkfjlsdjfdsfjlsdjflksdjklf",
-        },
-      }),
-      act.SelectTextAtMouseCursor("Cell"),
-    }),
+    event = { Up = { streak = 1, button = "Left" } },
+    action = bc.single_streak_click,
   },
   {
-    event = { Down = { streak = 2, button = "Left" } },
-    mods = "",
-    action = act.Multiple({
-      wezterm.action.QuickSelectArgs({
-        patterns = {
-          "jksfldjjkfdsljflflsdkfjlsdjfdsfjlsdjflksdjklf",
-        },
-      }),
-      act.SelectTextAtMouseCursor("Word"),
-      act.CopyTo("ClipboardAndPrimarySelection"),
-      wezterm.action.SendKey({ key = "Escape" }), -- escape QuickSelect
-      wezterm.action.EmitEvent("clear-selection-after-delay"),
-    }),
-  },
-  {
-    event = { Up = { streak = 1, button = "Right" } },
-    mods = "",
-    action = act.Multiple({
-      act.CopyTo("ClipboardAndPrimarySelection"),
-      wezterm.action.SendKey({ key = "Escape" }), -- escape QuickSelect
-      wezterm.action.EmitEvent("clear-selection-after-delay"),
-    }),
+    event = { Up = { streak = 2, button = "Left" } },
+    action = bc.double_streak_click,
   },
 }
+
 
 -- Define the colors just once
 local solarized_colors = {
@@ -352,11 +217,6 @@ config.colors.selection_fg = "#0f0f0e"
 config.colors.selection_bg = "#aaa46d"
 
 -- config.window_decorations = "NONE"
-config.enable_wayland = true
-
--- config.tiling_desktop_environments = {
---   'Wayland' -- cosmic popos TODO: doesn't work
--- }
 
 
 config.hyperlink_rules = {
@@ -380,6 +240,8 @@ config.hyperlink_rules = {
     format = "$0",
   },
 }
+
+toggle_terminal.apply_to_config(config)
 
 -- and finally, return the configuration to wezterm
 return config

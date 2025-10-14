@@ -11,7 +11,7 @@ local M = {
   },
   config = function()
     require('wincent.commandt').setup {
-      height = 5, -- relative height (like 40%)
+      height = 6,
       position = 'bottom', -- ivy-style (bottom input)
       margin = 0,
       -- Keymaps adapted from snacks config
@@ -22,9 +22,11 @@ local M = {
           ['<C-k>'] = 'select_previous',
           ['<Tab>'] = 'open_split',
           ['<C-s>'] = 'open_vsplit',
-          ['<C-p>'] = 'toggle_preview',
           ['<CR>'] = 'open',
           ['<C-c>'] = '<C-c>',
+          ['<C-a>'] = '<C-c>bi',
+          ['<Space>'] = '<C-c>bi<Space><Left>',
+          ['<C-e>'] = '<End>',
         },
       },
       traverse = 'file',

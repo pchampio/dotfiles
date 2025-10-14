@@ -82,9 +82,9 @@ apply_sed_to_dotfiles() {
     for file in "${configs[@]}"; do
         fullpath="$dotfiles/.$file"
         if [[ -f "$fullpath" ]]; then
-            sed -i "$1" "$fullpath"
+            sed -i "$1" $(realpath "$fullpath")
             # clean up empty last lines
-            sed -i ':a;/^\n*$/{$d;N;ba}' "$fullpath"
+            sed -i ':a;/^\n*$/{$d;N;ba}' $(realpath "$fullpath")
         fi
     done
 }
