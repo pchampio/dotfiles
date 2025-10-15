@@ -4,7 +4,7 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
 
-explain "Tmux italics"
+explain "Tmux tic"
 cat <<EOF|tic -x -
 #	Reconstructed via infocmp from file: /usr/share/terminfo/t/tmux
 screen|tmux terminal multiplexer,
@@ -214,6 +214,5 @@ EOF
   fi
   yes | cp -f ~/.junest/bin/tmux ~/dotfiles/bin/tmux
 fi
-
 
 success "[TMUX] Success"

@@ -12,6 +12,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 return {
   init_options = {
     settings = {
+      args = { "--ignore=E501" },  -- Line too long
       lineLength = 120,
       fixAll = true,
       showSyntaxErrors = true,

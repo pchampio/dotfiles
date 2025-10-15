@@ -32,6 +32,7 @@ local M = {
         'go',
         'java',
         'yaml',
+        'sql',
       },
 
       -- Install parsers synchronously (only applied to `ensure_installed`)

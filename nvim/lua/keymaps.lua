@@ -57,39 +57,7 @@ inoremap <expr> <A-s>  pumvisible() ?  "\<C-n>" : "\<C-x>s"
 nnoremap <expr> <A-s> pumvisible() ?  "i\<C-n>" : "w[sei\<C-x>s"
 ]]
 
--- [[ Spell check ]]
-map(
-  'n',
-  '<leader>sen',
-  '<Esc>:silent setlocal spell! spelllang=en<CR>',
-  { desc = '󰓆 Toggle english spell-checking' }
-)
-map(
-  'n',
-  '<leader>sfr',
-  '<Esc>:silent setlocal spell! spelllang=fr<CR>',
-  { desc = '󰓆 Toggle french spell-checking' }
-)
-map(
-  'n',
-  '<leader>sall',
-  '<Esc>:silent setlocal spell! spelllang=fr,en<CR>',
-  { desc = '󰓆 Toggle french/english spell-checking' }
-)
--- Add word to the spelling dictionary
-map(
-  'n',
-  '<leader>sa',
-  '<Esc>zg',
-  { desc = '󰓆 Add word to the spelling dictionary' }
-)
--- Remove word from the spelling dictionary
-map(
-  'n',
-  '<leader>sr',
-  '<Esc>zug',
-  { desc = '󰓆 Remove word from the spelling dictionary' }
-)
+map('n', '<leader>ga', 'ga')
 
 -- Leader mapping to change working directory to the current file's directory
 map('n', '<leader>cd', function()

@@ -54,6 +54,9 @@ function! RenameFile() abort
   if new_name != '' && new_name !=# old_name
     exec ':saveas ' . new_name
     exec ':silent !rm ' . old_name
+    if new_name !~# '/tmp/'
+      exec ':silent lua Snacks.rename.on_rename_file(' . string(old_name) . ', ' . string(new_name) . ')'
+    endif
     redraw!
     echohl ModeMsg | echo "RenameFile: ".old_name. " -> " .new_name | echohl None
   endif

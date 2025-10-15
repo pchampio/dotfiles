@@ -9,17 +9,6 @@ local M = {
   config = function()
     local augroup = vim.api.nvim_create_augroup('LspFormatting', {})
     local null_ls = require 'null-ls'
-    local auto_format_enabled = false -- Variable to track the state of auto-formatting
-
-    -- Function to toggle auto-formatting
-    function Toggle_auto_format()
-      auto_format_enabled = not auto_format_enabled
-      if auto_format_enabled then
-        print 'Auto-formatting enabled'
-      else
-        print 'Auto-formatting disabled'
-      end
-    end
 
     null_ls.setup {
       sources = {
@@ -46,7 +35,7 @@ local M = {
             group = augroup,
             buffer = bufnr,
             callback = function()
-              if auto_format_enabled then
+              if (vim.g.toggle_auto_format or false) then
                 vim.lsp.buf.format { async = false, timeout_ms = 1000 }
               end
             end,
@@ -54,13 +43,6 @@ local M = {
         end
       end,
     }
-    -- Bind the toggle function to a key combination, e.g., <leader>tf
-    vim.api.nvim_set_keymap(
-      'n',
-      '<leader>tf',
-      ':lua Toggle_auto_format()<CR>',
-      { noremap = true, silent = true, desc = 'Toggle auto format' }
-    )
   end,
 }
 

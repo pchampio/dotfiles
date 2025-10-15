@@ -7,8 +7,8 @@ mkdir -p ~/lab/ || true
 mkdir -p ~/.config || true
 
 
-ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf"
-dir=~/dotfiles
+ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf|watchman.json"
+dir="$HOME/dotfiles"
 
 explain "Create symlink for files config"
 [ -d ~/.config/ ] || mkdir ~/.config/
@@ -16,7 +16,7 @@ tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 
 explain "Symlink nvim config"
 \rm -rf ~/.config/nvim 2> /dev/null || true
-tell ln -sf ~/dotfiles/nvim ~/.config/nvim
+tell ln -sf $dir/nvim ~/.config/nvim
 
 explain "Create symlink for dotfiles"
 # change to the dotfiles directory
@@ -32,6 +32,9 @@ for file in $files; do
   tell ln -s $dir/$file ~/.$file
 done
 
+# watchman in junest
+tell ln -sf $dir/watchman.json ~/.junest/etc/watchman.json
+
 # if [ -d ~/.var/app/org.geeqie.Geeqie/ ]; then
 #   \rm -rf ~/.var/app/org.geeqie.Geeqie/config/geeqie
 #   mkdir -p ~/.var/app/org.geeqie.Geeqie/config/geeqie
@@ -41,26 +44,26 @@ done
 
 
 
-if [ ! -f "$HOME/dotfiles/bin/rg" ]; then
+if [ ! -f "$dir/bin/rg" ]; then
   explain "RipGrep Install"
   home=$(pwd)
   pushd /tmp >/dev/null 2>&1
   curl --progress-bar -LO 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz'
   tar xf ripgrep-*.tar.gz
-  yes | cp ripgrep-*/rg $HOME/dotfiles/bin/rg
+  yes | cp ripgrep-*/rg $dir/bin/rg
   rm ripgrep-*.tar.gz
   pushd $home >/dev/null 2>&1
 fi
 
 
-if [ ! -f "$HOME/dotfiles/bin/fd" ]; then
+if [ ! -f "$dir/bin/fd" ]; then
   explain "FD Install"
   home=$(pwd)
   pushd /tmp >/dev/null 2>&1
   curl --progress-bar -LO "https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz"
   mkdir -p fd
   tar xf fd*.tar.gz -C fd --strip-components=1
-  cp ./fd/fd ~/dotfiles/bin/fd
+  cp ./fd/fd $dir/bin/fd
   rm fd*.tar.gz
   rm -rf ./fd
   pushd $home >/dev/null 2>&1
@@ -115,19 +118,19 @@ chmod 600 "$HOME"/.ssh/config
 fi
 
 explain "Setup secrets"
-$HOME/dotfiles/bin/rbw unlocked 2> /dev/null > /dev/null
+$dir/bin/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -eq 0 ]]; then
   ~/.atuin/bin/atuin login \
-    -u $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
-    -p $($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \
-    -k "$($HOME/dotfiles/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')" 2> /dev/null > /dev/null
+    -u $($dir/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
+    -p $($dir/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \
+    -k "$($dir/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')" 2> /dev/null > /dev/null
 fi
 
 # Custom Completion Scripts
 mkdir -p ~/.oh-my-zsh/custom/completions
 
 ~/.atuin/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
-$HOME/dotfiles/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw # doesn't work IDK
+$dir/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw # doesn't work IDK
 
 
 # switch this remote git from http to ssh if needed

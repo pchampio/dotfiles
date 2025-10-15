@@ -65,7 +65,7 @@ PATH=$PATH:/usr/bin/core_perl/
 # local bin first
 export PATH=$HOME/.local/share/pytool/bin:$HOME/.local/bin:$PATH
 
-# ADD own dotfiles/bin app to Path
+# ADD own dotfiles/bin app to PATH
 export PATH=$HOME/dotfiles/bin:$PATH
 
 # Local lib (for pip usualy)

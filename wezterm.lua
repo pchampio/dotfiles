@@ -13,6 +13,18 @@ local bc = require("based_copymode")
 local tmux = require("tmux")
 local toggle_terminal = require("toggle_terminal")
 local auto_complete = require("auto_complete")
+
+-- == Config plugins/personal functions ==
+wezterm.on("user-var-changed", function(window, pane, name, value)
+  -- play audio on host once downloaded with tssh
+  if name == "wez_audio" then
+    local cmd_context = wezterm.json_parse(value)
+      toggle_terminal.toggle_terminal(window, pane)
+      toggle_terminal.send_command_to_tab(window,  "wait-and-play " .. cmd_context.file .. " " .. cmd_context.flag .. " ;exit")
+  end
+end)
+
+-- RBW auto-complete/bitwarden password manager in wezterm
 auto_complete.apply_config({
   shell_path = HOME .. '/dotfiles/bin/zsh',
   log_debug = true,
@@ -54,17 +66,18 @@ auto_complete.apply_config({
 
 config.max_fps = 120
 -- config.front_end = "WebGpu" -- Default is 'OpenGL' better characters IMO
-
 config.enable_wayland = true
 
 -- config.tiling_desktop_environments = {
 --   'Wayland' -- cosmic popos TODO: doesn't work
 -- }
 
+-- config.window_decorations = "NONE"
+
 config.audible_bell = "Disabled"
 config.window_close_confirmation = "NeverPrompt"
--- Disable ligatures.
-config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" } -- Disable ligatures.
+config.warn_about_missing_glyphs = false
 config.selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
 
 local openUrl = act.QuickSelectArgs({
@@ -76,21 +89,8 @@ local openUrl = act.QuickSelectArgs({
   end),
 })
 
-wezterm.on("user-var-changed", function(window, pane, name, value)
-  if name == "wez_audio" then
-    local cmd_context = wezterm.json_parse(value)
-      toggle_terminal.toggle_terminal(window, pane)
-      toggle_terminal.send_command_to_tab(window,  "wait-and-play " .. cmd_context.file .. " " .. cmd_context.flag .. " ;exit")
-  end
-end)
-
--- For example, changing the color scheme:
-config.automatically_reload_config = true
 
 config.enable_tab_bar = false
-
-config.warn_about_missing_glyphs = false
-
 config.window_padding = {
   left = 0,
   right = 0,
@@ -137,11 +137,8 @@ config.keys = {
   },
 }
 
-
-
 config.bypass_mouse_reporting_modifiers = "SHIFT"
 config.quick_select_remove_styling = true
-
 config.mouse_bindings = {
   {
     event = { Up = { streak = 1, button = "Left" } },
@@ -216,8 +213,6 @@ config.colors.selection_fg = "#0f0f0e"
 -- the background color of selected text
 config.colors.selection_bg = "#aaa46d"
 
--- config.window_decorations = "NONE"
-
 
 config.hyperlink_rules = {
   -- Linkify things that look like URLs
@@ -226,14 +221,12 @@ config.hyperlink_rules = {
     regex = "\\b\\w+://(?:[\\w.-]+)\\.[a-z]{2,15}\\S*\\b",
     format = "$0",
   },
-
   -- match the URL with a PORT
   -- such 'http://localhost:3000/index.html'
   {
     regex = "\\b\\w+://(?:[\\w.-]+):\\d+\\S*\\b",
     format = "$0",
   },
-
   -- file:// URI
   {
     regex = "\\bfile://\\S*\\b",

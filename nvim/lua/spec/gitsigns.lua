@@ -1,7 +1,7 @@
 local M = {
   'lewis6991/gitsigns.nvim',
   opts = {
-    current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+    current_line_blame = false,
     current_line_blame_opts = {
       delay = 0,
     },
@@ -43,62 +43,15 @@ local M = {
         gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
       end, { desc = ' reset hunk' })
 
-      map(
-        'n',
-        '<leader>hA',
-        gs.stage_buffer,
-        { desc = ' stage buffer' }
-      )
-      map(
-        'n',
-        '<leader>hR',
-        gs.reset_buffer,
-        { desc = ' reset buffer' }
-      )
-      map(
-        'n',
-        '<leader>hp',
-        gs.preview_hunk,
-        { desc = ' preview hunk' }
-      )
-      map(
-        'n',
-        '<leader>hi',
-        gs.preview_hunk_inline,
-        { desc = ' preview hunk inline' }
-      )
+      map('n', '<leader>hA', gs.stage_buffer, { desc = ' stage buffer' })
+      map('n', '<leader>hR', gs.reset_buffer, { desc = ' reset buffer' })
+      map('n', '<leader>hp', gs.preview_hunk, { desc = ' preview hunk' })
+      map('n', '<leader>hi', gs.preview_hunk_inline, { desc = ' preview hunk inline' })
 
-      map('n', '<leader>hb', function()
-        gs.blame_line { full = true }
-      end, { desc = ' blame line' })
+      map('n', '<leader>hd', function() gs.diffthis '~' end, { desc = ' diff against the last commit' })
 
-      map('n', '<leader>hd', function()
-        gs.diffthis '~'
-      end, { desc = ' diff against the last commit' })
-
-      map('n', '<leader>hQ', function()
-        gs.setqflist 'all'
-      end, {
-        desc = " open qf list populated with all modified files' hunks",
-      })
-      map('n', '<leader>hq', gs.setqflist, {
-        desc = " open qf list populated with current file's hunks",
-      })
-
-      -- Toggles
-      map(
-        'n',
-        '<leader>htb',
-        gs.toggle_current_line_blame,
-        { desc = ' toggle current line blame' }
-      )
-      map(
-        'n',
-        '<leader>htw',
-        gs.toggle_word_diff,
-        { desc = ' toggle word diff' }
-      )
-
+      map('n', '<leader>hQ', function() gs.setqflist 'all' end, { desc = " open qf list populated with all modified files' hunks" })
+      map('n', '<leader>hq', gs.setqflist, { desc = " open qf list populated with current file's hunks" })
       -- Text object
       map(
         { 'o', 'x' },

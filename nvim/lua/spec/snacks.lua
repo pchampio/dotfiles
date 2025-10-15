@@ -1,195 +1,125 @@
-local N = {}
-local staged_status = {
-  staged_new = true,
-  staged_modified = true,
-  staged_deleted = true,
-  renamed = true,
-}
-
-local status_map = {
-  untracked = 'untracked',
-  modified = 'modified',
-  deleted = 'deleted',
-  renamed = 'renamed',
-  staged_new = 'added',
-  staged_modified = 'modified',
-  staged_deleted = 'deleted',
-  ignored = 'ignored',
-  -- clean = "",
-  -- clear = "",
-  unknown = 'untracked',
-}
-
----@class FFFState
----@field current_file_cache? string
-N.state = {}
-
----@type snacks.picker.finder
----@diagnostic disable-next-line: unused-local
-local function finder(opts, ctx)
-  local file_picker = require 'fff.file_picker'
-
-  if not N.state.current_file_cache then
-    local current_buf = vim.api.nvim_get_current_buf()
-    if current_buf and vim.api.nvim_buf_is_valid(current_buf) then
-      local current_file = vim.api.nvim_buf_get_name(current_buf)
-      if current_file ~= '' and vim.fn.filereadable(current_file) == 1 then
-        N.state.current_file_cache = current_file
-      else
-        N.state.current_file_cache = nil
-      end
-    end
-  end
-
-  local fff_result = file_picker.search_files(
-    ctx.filter.search,
-    100,
-    4,
-    N.state.current_file_cache,
-    false
-  )
-
-  ---@type snacks.picker.finder.Item[]
-  local items = {}
-  for _, fff_item in ipairs(fff_result) do
-    ---@type snacks.picker.finder.Item
-    local item = {
-      text = fff_item.name,
-      file = fff_item.path,
-      score = fff_item.total_frecency_score,
-      status = status_map[fff_item.git_status] and {
-        status = status_map[fff_item.git_status],
-        staged = staged_status[fff_item.git_status] or false,
-        unmerged = fff_item.git_status == 'unmerged',
-      },
-    }
-    items[#items + 1] = item
-  end
-
-  return items
+function my_toggles()
+  Snacks.toggle.inlay_hints({ name = 'Inlay Hints ' }):map '<leader>th'
+  Snacks.toggle.line_number({ name = 'Line Numbers ' }):map '<leader>tl'
+  Snacks.toggle.option('wrap', { name = 'Wrap Lines ' }):map '<leader>tw'
+  Snacks.toggle.words():map '<leader>tu'
+  Snacks.toggle.new ({
+    id = 'toggle_format', name = 'Auto format ',
+    get = function() return vim.g.toggle_auto_format or false end,
+    set = function(state)
+      vim.g.toggle_auto_format = state
+    end,
+  }):map '<leader>tf'
+  Snacks.toggle.new ({
+    id = 'blame_line', name = 'current line blame  ',
+    get = function() return vim.g.toogle_blame_line or false end,
+    set = function(state)
+      vim.g.toogle_blame_line = state
+      require 'gitsigns'.toggle_current_line_blame()
+    end,
+  }):map '<leader>tb'
+  Snacks.toggle.new ({
+    id = 'line_word_diff', name = 'word diff  ',
+    get = function() return vim.g.toogle_word_diff or false end,
+    set = function(state)
+      vim.g.toogle_word_diff = state
+      require 'gitsigns'.toggle_word_diff()
+    end,
+  }):map '<leader>td'
+  Snacks.toggle.new ({
+    id = 'spell_en', name = 'English Spelling 󰓆 ',
+    get = function() return vim.g.toogle_en_spell or false end,
+    set = function(state)
+      vim.g.toogle_en_spell = state
+      vim.cmd 'setlocal spell! spelllang=en'
+    end,
+  }):map '<leader>tse'
+  Snacks.toggle.new ({
+    id = 'spell_all', name = 'All Lang Spelling 󰓆 ',
+    get = function() return vim.g.toogle_all_spell or false end,
+    set = function(state)
+      vim.g.toogle_all_spell = state
+      vim.cmd 'setlocal spell! spelllang=en,fr'
+    end,
+  }):map '<leader>tsa'
+  Snacks.toggle.new ({
+    id = 'spell_fr', name = 'French Spelling 󰓆 ',
+    get = function() return vim.g.toogle_fr_spell or false end,
+    set = function(state)
+      vim.g.toogle_fr_spell = state
+      vim.cmd 'setlocal spell! spelllang=fr'
+    end,
+  }):map '<leader>tsf'
 end
-
-local function on_close()
-  N.state.current_file_cache = nil
-end
-
-local function format_file_git_status(item, picker)
-  local ret = {} ---@type snacks.picker.Highlight[]
-  local status = item.status
-
-  local hl = 'SnacksPickerGitStatus'
-  if status.unmerged then
-    hl = 'SnacksPickerGitStatusUnmerged'
-  elseif status.staged then
-    hl = 'SnacksPickerGitStatusStaged'
-  else
-    hl = 'SnacksPickerGitStatus'
-      .. status.status:sub(1, 1):upper()
-      .. status.status:sub(2)
-  end
-
-  local icon = picker.opts.icons.git[status.status]
-  if status.staged then
-    icon = picker.opts.icons.git.staged
-  end
-
-  local text_icon = status.status:sub(1, 1):upper()
-  text_icon = status.status == 'untracked' and '?'
-    or status.status == 'ignored' and '!'
-    or text_icon
-
-  ret[#ret + 1] = { icon, hl }
-  ret[#ret + 1] = { ' ', virtual = true }
-
-  ret[#ret + 1] = {
-    col = 0,
-    virt_text = { { text_icon, hl }, { ' ' } },
-    virt_text_pos = 'right_align',
-    hl_mode = 'combine',
-  }
-  return ret
-end
-
-local function format(item, picker)
-  ---@type snacks.picker.Highlight[]
-  local ret = {}
-
-  if item.label then
-    ret[#ret + 1] = { item.label, 'SnacksPickerLabel' }
-    ret[#ret + 1] = { ' ', virtual = true }
-  end
-
-  if item.status then
-    vim.list_extend(ret, format_file_git_status(item, picker))
-  else
-    ret[#ret + 1] = { '  ', virtual = true }
-  end
-
-  vim.list_extend(ret, require('snacks.picker.format').filename(item, picker))
-
-  if item.line then
-    Snacks.picker.highlight.format(item, item.line, ret)
-    table.insert(ret, { ' ' })
-  end
-  return ret
-end
-
-function N.fff()
-  local file_picker = require 'fff.file_picker'
-  if not file_picker.is_initialized() then
-    local setup_success = file_picker.setup()
-    if not setup_success then
-      vim.notify('Failed to initialize file picker', vim.log.levels.ERROR)
-    end
-  end
-  Snacks.picker {
-    title = 'FFFiles',
-    layout = 'my_ivylayout',
-    finder = finder,
-    on_close = on_close,
-    format = format,
-    live = true,
-  }
-end
-
-
 
 local M = {
   'folke/snacks.nvim',
-  riority = 1000,
+  dependencies = {
+    "folke/todo-comments.nvim",
+    config = function()
+      local todocomments = require 'todo-comments'
+      todocomments.setup()
+
+      vim.keymap.set('n', ']t', function()
+        todocomments.jump_next()
+      end, { desc = 'Next todo comment' })
+
+      vim.keymap.set('n', '[t', function()
+        todocomments.jump_prev()
+      end, { desc = 'Previous todo comment' })
+    end,
+  },
+  priority = 1000,
   lazy = false,
   keys = {
-    {
-      '<leader>gB',
-      function()
-        Snacks.gitbrowse()
-      end,
-      desc = 'Git Browse',
-    },
-    {
-      '<leader>gb',
-      function()
-        Snacks.git.blame_line()
-      end,
-      desc = 'Git Blame Line',
-    },
-    {
-      '<leader>un',
-      function()
-        Snacks.notifier.hide()
-      end,
-      desc = 'Dismiss All Notifications',
-    },
-    {
-      '<C-t>',
-      function()
-        -- Snacks.picker.files { layout = 'my_ivylayout' }
-        N.fff()
-      end,
-      desc = 'Find files',
-    },
+    { '<leader>hB', function() Snacks.gitbrowse() end,                    desc = ' Open Browser' },
+    { '<leader>hb', function() Snacks.git.blame_line() end,               desc = ' Blame Line' },
+    { '<leader>nd', function() Snacks.notifier.hide() end,                desc = 'Notif Dismiss All' },
+    { '<leader>np', function() Snacks.notifier.show_history() end,        desc = 'Notif Preview' },
+
+    { "gd",         function() Snacks.picker.lsp_definitions() end,       desc = "LSP: Goto Definition" },
+    { "gD",         function() Snacks.picker.lsp_declarations() end,      desc = "LSP: Goto Declaration" },
+    { "gr",         function() Snacks.picker.lsp_references() end,        nowait = true, desc = "LSP: References" },
+    { "gI",         function() Snacks.picker.lsp_implementations() end,   desc = "LSP: Goto Implementation" },
+    { "gt",         function() Snacks.picker.lsp_type_definitions() end,  desc = "LSP: Goto Type Definition" },
+    { "<leader>gs", function() Snacks.picker.lsp_symbols() end,           desc = "LSP: Symbols" },
+    { "<leader>gS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP: Workspace Symbols" },
+    { "<leader>gd", function() Snacks.picker.diagnostics_buffer() end, desc = "LSP: ⚑ Diagnostics in Buffer" },
+    { "<leader>gD", function() Snacks.picker.diagnostics() end, desc = "LSP: ⚑ Diagnostics in Project" },
+
+    { "ga", '<cmd>lua vim.lsp.buf.code_action()<cr>', desc = "LSP: code actions" },
+    { "g=", function() vim.lsp.buf.format { async = true } end, desc = "LSP: format selection or buffer", mode = { "v", "n" } },
+    { "gh", vim.lsp.buf.hover, desc = 'LSP: Hover', mode = { "v", "n" } },
+
+    { "<leader>ut", function() Snacks.picker.undo() end,                  desc = "Undo tree" },
+
+    { "]w",         function() Snacks.words.jump(vim.v.count1) end,       desc = "Next Reference",           mode = { "n", "t" } },
+    { "[w",         function() Snacks.words.jump(-vim.v.count1) end,      desc = "Prev Reference",           mode = { "n", "t" } },
+
+    { "<leader>to", function () Snacks.picker.todo_comments({ keywords = { "TODO", "HACK", "WARNING", "BUG", "NOTE", "INFO", "PERF", "ERROR" } }) end, desc = "Todo Comment Tags" },
   },
   config = function()
+
+      -- Disable the default keybinds
+      for _, bind in ipairs { 'grn', 'gra', 'gri', 'grr', 'grt' } do
+        pcall(vim.keymap.del, 'n', bind)
+      end
+
+
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'VeryLazy',
+      callback = my_toggles
+    })
+
+    vim.api.nvim_create_autocmd({ 'LspAttach' }, {
+      pattern = { '*' },
+      callback = function()
+        vim.api.nvim_set_hl(0, 'LspReferenceText', { underline = true })
+        vim.api.nvim_set_hl(0, 'LspReferenceRead', { underline = true })
+        vim.api.nvim_set_hl(0, 'LspReferenceWrite', { underline = true })
+      end,
+    })
+
     local layouts = require 'snacks.picker.config.layouts'
     layouts.my_ivylayout = {
       preview = false,
@@ -205,35 +135,68 @@ local M = {
         {
           box = 'horizontal',
           { win = 'list',    border = 'none' },
-          { win = "preview", title = "{preview}", width = 0.7, border = "left" },
+          { win = 'preview', title = '{preview}', width = 0.7, border = 'left' },
         },
-        { win = 'input', height = 1, border = 'bottom' },
+        { win = 'input', height = 1, border = 'single' },
       },
     }
 
     require('snacks').setup {
+      rename = { enabled = true },
+      toggle = {},
       bigfile = { enabled = true },
+      words = { enabled = true, debounce = 100 },
       notifier = {
         enabled = true,
         timeout = 1000,
       },
       quickfile = { enabled = true },
       statuscolumn = { enabled = true },
+
+      indent = {
+        enabled = true,
+        indent = {
+          enabled = true,
+          char = "▏",
+        },
+        scope = {
+          enabled = true,       -- enable highlighting the current scope
+          char = "▏",
+          underline = false,    -- underline the start of the scope
+          only_current = false, -- only show scope in the current window
+          hl = "SnacksIndent1", ---@type string|string[] hl group for scopes
+        },
+        animate = {
+          style = "out",
+          easing = "linear",
+          duration = {
+            step = 15,   -- ms per step
+            total = 150, -- maximum duration
+          },
+        },
+        -- filter for buffers to enable indent guides
+        filter = function(buf)
+          local excluded_filetypes = {
+            markdown = true,
+            diff = true,
+            text = true,
+          }
+          local b = vim.b[buf]
+          local bo = vim.bo[buf]
+          return vim.g.snacks_indent ~= false
+              and b.snacks_indent ~= false
+              and bo.buftype == ""
+              and not excluded_filetypes[bo.filetype]
+        end,
+      },
       picker = {
         sources = {
           files = { hidden = true },
           grep = { hidden = true },
         },
+        prompt = "> ",
+        layout = { preset = "my_ivylayout" },
         ui_select = false,
-        formatters = {
-          file = {
-            filename_first = false,
-            truncate = 40,
-            filename_only = false,
-            icon_width = 2,
-            git_status_hl = true,
-          },
-        },
         win = {
           input = {
             keys = {
@@ -247,9 +210,8 @@ local M = {
             },
           },
         },
-      },
+      }
     }
-
     vim.api.nvim_create_autocmd('User', {
       pattern = 'OilActionsPost',
       callback = function(event)
@@ -263,5 +225,4 @@ local M = {
     })
   end,
 }
-
 return M

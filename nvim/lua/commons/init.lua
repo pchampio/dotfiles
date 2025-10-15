@@ -20,7 +20,7 @@ local M = {
     'bashls',
     'yamlls',
     'ruff',
-    'pyright',
+    'basedpyright',
     'harper_ls',
   },
 }

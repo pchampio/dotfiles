@@ -1,8 +1,9 @@
 local M = {
   url = 'https://gitlab.com/schrieveslaach/sonarlint.nvim.git',
+  cond = not vim.o.diff,
   dependencies = {
     'neovim/nvim-lspconfig',
-    'williamboman/mason.nvim',
+    'mason-org/mason.nvim',
     'lewis6991/gitsigns.nvim',
   },
   config = function()

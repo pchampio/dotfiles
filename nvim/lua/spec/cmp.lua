@@ -7,17 +7,15 @@ local M = {
     { 'hrsh7th/cmp-nvim-lua', name = 'cmp-nvim-lua' },
     { 'hrsh7th/cmp-buffer',   name = 'cmp-buffer' },
     { 'hrsh7th/cmp-cmdline',  name = 'cmp-cmdline' },
+    { 'hrsh7th/cmp-nvim-lsp-signature-help', name = 'cmp-nvim-lsp-signature-help' },
 
     'https://codeberg.org/FelipeLema/cmp-async-path', -- better than cmp-path
 
     { 'saadparwaiz1/cmp_luasnip' },
-    -- { 'dmitmel/cmp-cmdline-history' },
     {
-      -- https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#install
       'L3MON4D3/LuaSnip',
       -- follow latest release.
-      version = 'v2.*', -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-      -- install jsregexp (optional!).
+      version = 'v2.*',
       build = 'make install_jsregexp',
       dependencies = {
         'rafamadriz/friendly-snippets',
@@ -328,11 +326,9 @@ local M = {
         end,
       },
       sources = cmp.config.sources({
+        { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lsp' },
-        -- { name = 'vsnip' }, -- For vsnip users.
         { name = 'luasnip' }, -- For luasnip users.
-        -- { name = 'ultisnips' }, -- For ultisnips users.
-        -- { name = 'snippy' }, -- For snippy users.
         { name = 'nvim_lua' },                 -- https://github.com/hrsh7th/cmp-nvim-lua?tab=readme-ov-file#setup
         { name = 'lazydev',   group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions, https://github.com/folke/lazydev.nvim?tab=readme-ov-file#-installation
         { name = 'async_path' },

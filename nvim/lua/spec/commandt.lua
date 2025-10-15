@@ -1,4 +1,12 @@
-local enhance_scorec_link = "'https://gist.githubusercontent.com/pchampio/dc0e5392cb534b6e33ac3c5a152d52e2/raw/82656944fb3144d187bc6306a2e7dacc2e5f6d44/commandt_score.c'"
+local enhance_scorec_link = "'https://gist.githubusercontent.com/pchampio/dc0e5392cb534b6e33ac3c5a152d52e2/raw/commandt_score.c'"
+
+local root_markers = {
+  '.git', 'install.sh',
+  'pyproject.toml', 'requirements.txt', 'setup.py', 'Pipfile',
+  'go.mod', 'go.work',
+  'CMakeLists.txt', 'Makefile', 'configure', 'build.ninja',
+}
+
 local M = {
   'wincent/command-t',
   build = 'cd lua/wincent/commandt/lib && curl -sS ' .. enhance_scorec_link .. ' -o score.c  && make',
@@ -6,7 +14,16 @@ local M = {
   keys = {
     {
       '<C-p>',
-      '<Plug>(CommandTRipgrep)',
+      function()
+        local cwd = vim.loop.cwd()
+        local project_root =
+            vim.fs.find(root_markers, { upward = true, path = cwd })[1]
+        if project_root then
+          vim.cmd 'CommandTWatchman'
+        else
+          vim.cmd 'CommandTRipgrep'
+        end
+      end,
     },
   },
   config = function()
@@ -30,24 +47,9 @@ local M = {
         },
       },
       traverse = 'file',
-      root_markers = {
-        '.git',
-        'install.sh',
-        -- Python
-        'pyproject.toml', -- modern Python projects (poetry, pdm)
-        'requirements.txt', -- classic Python projects
-        'setup.py', -- Python package
-        'Pipfile', -- pipenv
-
-        -- Go
-        'go.mod', -- Go modules
-        'go.work', -- Go workspace
-
-        -- C / C++
-        'CMakeLists.txt', -- CMake projects
-        'Makefile', -- classic build systems
-        'configure', -- autotools
-        'build.ninja', -- Ninja build
+      root_markers = root_markers,
+      match_listing = {
+        border = { '─', '─', '─', ' ', '┐', '─', '┌', ' ' },
       },
     }
   end,

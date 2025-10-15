@@ -34,7 +34,7 @@ local options = {
     nbsp = '⦸', -- CIRCLED REVERSE SOLIDUS (U+29B8, UTF-8: E2 A6 B8)
     extends = '»', -- RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK (U+00BB, UTF-8: C2 BB)
     precedes = '«', -- LEFT-POINTING DOUBLE ANGLE QUOTATION MARK (U+00AB, UTF-8: C2 AB)
-    tab = '▷⋯', -- WHITE RIGHT-POINTING TRIANGLE (U+25B7, UTF-8: E2 96 B7) + MIDLINE HORIZONTAL ELLIPSIS (U+22EF, UTF-8: E2 8B AF)
+    tab = '▸\\ ',
     trail = '·', -- BULLET
   },
   termguicolors = true,
@@ -55,15 +55,6 @@ vim.opt.isfname:remove ':'
 -- Tests with value 0 show that these do not take affect, so choose value 1
 vim.g.matchparen_timeout = 1        -- https://github.com/neovim/neovim/blob/master/runtime/plugin/matchparen.vim#L15
 vim.g.matchparen_insert_timeout = 1 -- https://github.com/neovim/neovim/blob/master/runtime/plugin/matchparen.vim#L18
-
--- Capture the diff mode flag globally because tests show that when nvim is
--- opened in diff mode (e.g. via git difftool, nvim -d, etc), a ftplugin script
--- is called as many times as the number of buffers opened for diff viewing, and
--- it seems like vim.o.diff (or vim.opt.diff:get()) returns true only on the
--- first time a ftplugin script is called, subsequent calls result in false to
--- be returned, which makes this api not appropriate to be used in ftplugin
--- scripts when nvim is in diff mode
-vim.g.diffmode = vim.o.diff
 
 -- Lower y yank to/from * by default (tmux only, not system)
 vim.o.clipboard = 'unnamed'
@@ -94,6 +85,7 @@ if is_tmux then
       .. ' paste'
 else
   clipboard_config.copy['*'] = function(lines, regtype)
+    -- Store clipboard in vim var instead of tmux var
     vim.g.prr_internal_clip_board = { lines, regtype }
   end
   clipboard_config.paste['*'] = function()
