@@ -12,7 +12,6 @@
 bin/nvim-linux64*
 bin/nvim-linux-x86_64/
 gcc*
-/bin/junest
 /bin/wezterm
 /bin/jq
 *.zwc

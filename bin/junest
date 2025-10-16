@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Collect overlay mounts excluding '/'
+binds=()
+while read -r mount_point fs_type; do
+    # Only overlay filesystems under /home
+    [[ "$fs_type" != "overlay" ]] && continue
+    [[ "$mount_point" != /home/* ]] && continue
+    # Add --bind option
+    binds+=( "-b" "$mount_point:$mount_point" )
+done < <(findmnt -n -t overlay -o TARGET,FSTYPE)
+
+echo "${binds[@]}" "${@}"
+# Run junest with all binds, command comes last
+"$HOME/.local/share/junest/bin/junest" "${binds[@]}" "${@}"
