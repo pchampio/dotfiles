@@ -4,8 +4,6 @@ LOGFILE=/tmp/.watchman
 
 SELF_SCRIPT="$0"
 SELF_PID=$$
-WATCHMAN_BIN="$HOME/dotfiles/bin/watchman_bin/watchman"
-
 WATCHMAN_PID=""
 
 
@@ -62,7 +60,6 @@ fi
 
 # --- Run Watchman commands if arguments are provided ---
 if [ $# -ne 0 ]; then
-  export LD_LIBRARY_PATH="$HOME/dotfiles/bin/watchman_bin/:${LD_LIBRARY_PATH}"
   echo "Running Watchman: $@" >>"$LOGFILE"
 
   # Run Watchman and capture output

@@ -84,8 +84,5 @@ if [[ ! $? -eq 0 ]]; then
   error "[WATCHMAN] Error"
   exit
 fi
-mkdir -p ~/dotfiles/bin/watchman_bin || true
-/bin/cp -rf ~/.junest/bin/watchman ~/dotfiles/bin/watchman_bin
-/bin/cp -rf ~/.junest/lib/watchman/* ~/dotfiles/bin/watchman_bin
 
 success "[WATCHMAN] Success"
