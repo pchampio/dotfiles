@@ -20,4 +20,9 @@ if [ ! -e ~/.config/nvim/spell ]; then
   run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.spl
 fi
 
+# add some known_hosts for later neovim package manager git clone.
+ssh-keyscan github.com >> ~/.ssh/known_hosts 2> /dev/null
+# require humain input
+ssh -T git@prr.re
+
 success "[NVIM] Success"

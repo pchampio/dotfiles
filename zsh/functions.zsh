@@ -1,9 +1,3 @@
-use_ngit(){
-cat >> $HOME/dotfiles/zsh/priv.zsh << 'EOF'
-# Alias git to ngit
-alias git='ngit'
-EOF
-}
 nvim(){
     $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
 }

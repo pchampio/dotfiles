@@ -64,7 +64,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then # file executed (not sourced)
 fi
 
 if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
-  explain "pip install my tools (pytenv trash sshuttle..)"
+  explain "pip install my tools (pipx imgcat trash sshuttle..)"
 
   run_with_spinner $bpython -m ensurepip --upgrade
   $bpython -c 'import sys;print("    Python info:", sys.version_info)'
@@ -77,4 +77,5 @@ if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
 
   # remove crap from zshrc (added by pipx)
   apply_sed_to_dotfiles '/^# Created by `pipx`/,+1d'
+  success "[PYTHON3 lib] Success"
 fi

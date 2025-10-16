@@ -10,9 +10,10 @@ touch ~/.zsh_history
 explain "Installation de oh-my-zsh"
   export KEEP_ZSHRC='yes'
   [ -f /tmp/.oh-my-zsh.install ] && rm /tmp/.oh-my-zsh.install
+  [ -d "$ZSH" ] && rm -rf "$ZSH"
   wget -q https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O /tmp/.oh-my-zsh.install
   chmod +x /tmp/.oh-my-zsh.install
-  run_with_spinner "export echo exit | sh -c /tmp/.oh-my-zsh.install"
+  run_with_spinner "export echo exit | ZSH= sh -c /tmp/.oh-my-zsh.install"
   rm /tmp/.oh-my-zsh.install
   if [ -f ~/.zsh-update ]; then
     sudo chown $USER ~/.zsh-update

@@ -15,10 +15,9 @@ BASEDIR=$(dirname $0)
 
 [ ! -f ~/.local/share/junest/bin/junest ] && {
   explain "Installation junest"
-  git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
+  tell git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
   run_with_spinner ~/.local/share/junest/bin/junest setup
 } 
 
-explain "MAJ pacman"
 run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
 run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm

@@ -29,4 +29,16 @@ run_with_spinner "make install; make clean"
 rm $HOME/.local/bin/ngit 2> /dev/null || true
 mv $HOME/.local/bin/git $HOME/.local/bin/ngit
 
+cat >> $HOME/dotfiles/zsh/priv.zsh << 'EOF'
+# Alias git to ngit
+git() {
+  # If any argument contains "http" or "https"
+  if [[ "$*" == *http* ]]; then
+    /bin/git "$@"
+  else
+    $HOME/.local/bin/ngit "$@"
+  fi
+}
+EOF
+
 success "[GIT] Success"

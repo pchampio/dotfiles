@@ -36,16 +36,16 @@ done
 if [ -z "$WATCHMAN_PID" ]; then
   echo "Starting Watchman..." >>"$LOGFILE"
   # Increase inotify limits
-  "$HOME/.local/share/junest/bin/junest" -- sh -c 'sudo renice -n 0 -p $$; watchman' >>"$LOGFILE" 2>&1
+  $HOME/dotfiles/bin/junest -- sh -c 'sudo renice -n 0 -p $$; watchman' >>"$LOGFILE" 2>&1
 fi
 
 # --- Run Watchman commands if arguments are provided ---
 if [ $# -ne 0 ]; then
-  LD_LIBRARY_PATH="$HOME/dotfiles/bin/watchman_bin/:${LD_LIBRARY_PATH}"
+  export LD_LIBRARY_PATH="$HOME/dotfiles/bin/watchman_bin/:${LD_LIBRARY_PATH}"
   echo "Running Watchman: $@" >>"$LOGFILE"
 
   # Run Watchman and capture output
-  WATCHMAN_OUT=$("$WATCHMAN_BIN" "$@" 2>>"$LOGFILE")
+  WATCHMAN_OUT=$("$HOME/dotfiles/bin/junest" -- watchman "$@")
 
   # Check for inotify watch limit error
   if [[ "$WATCHMAN_OUT" == *"limit on the total number"* ]]; then
@@ -54,10 +54,10 @@ if [ $# -ne 0 ]; then
     kill_watchman
 
     # Re-initialize Watchman
-    "$HOME/.local/share/junest/bin/junest" -- sh -c 'sudo renice -n 0 -p $$; watchman' >>"$LOGFILE" 2>&1
+    "$HOME/dotfiles/bin/junest" -- sh -c 'sudo renice -n 0 -p $$; watchman' >>"$LOGFILE" 2>&1
 
     # Retry the original command
-    "$WATCHMAN_BIN" "$@" 2>>"$LOGFILE"
+    "$HOME/dotfiles/bin/junest" -- watchman "$@" 2>>"$LOGFILE"
   else
     echo $WATCHMAN_OUT
   fi

@@ -71,13 +71,14 @@ fi
 
 if [ ! -d ~/.fzf ]; then
   explain "FZF Install"
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install --all
+  tell git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  run_with_spinner ~/.fzf/install --all
 fi
 
 if [ ! -f "$HOME/.atuin/bin/atuin" ]; then
   explain "Atuin Install"
   run_with_spinner "curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh"
+  touch "$HOME/.atuin/bin/atuin"
 fi
 if [ $(find "$HOME/.atuin/bin/atuin" -type f -mtime +30 | wc -l) -gt 0 ]; then
   explain "Atuin Update"
@@ -91,9 +92,9 @@ apply_sed_to_dotfiles '/^eval.*atuin init /d'
 
 explain "SSH Config (always overwritten)"
 mkdir -p ~/.ssh/sockets/
+touch "$HOME"/.ssh/config
 if ! grep -q "AddKeysToAgent yes" ~/.ssh/config; then
   explain "Conf ssh config"
-  touch "$HOME"/.ssh/config
   chmod +w "$HOME"/.ssh/config
   cat <<EOF >>"$HOME"/.ssh/config
 Host *
