@@ -31,13 +31,17 @@ kill_watchman() {
   done
 }
 
+root="$(git rev-parse --show-toplevel)/"
+
 # --- .watchmanconfig restart deamon or not ---
 old_config=""
-[ -f .watchmanconfig ] && old_config=$(<.watchmanconfig)
+[ -f "${root}.watchmanconfig" ] && old_config=$(<"${root}.watchmanconfig")
 new_config=$(generate_watchmanconfig)
 if [ "$old_config" != "$new_config" ]; then
-    printf "%s" "$new_config" > .watchmanconfig
-    kill_watchman
+    printf "%s" "$new_config" > "${root}.watchmanconfig"
+    echo "Rewatch $root." >>"$LOGFILE"
+    "$HOME/dotfiles/bin/junest" watchman watch-del "$root" >/dev/null 2>&1
+    "$HOME/dotfiles/bin/junest" watchman watch "$root" >/dev/null 2>&1
 fi
 
 # --- Check for running Watchman (ignore this script) ---
@@ -60,8 +64,6 @@ fi
 
 # --- Run Watchman commands if arguments are provided ---
 if [ $# -ne 0 ]; then
-  echo "Running Watchman: $@" >>"$LOGFILE"
-
   # Run Watchman and capture output
   WATCHMAN_OUT=$("$HOME/dotfiles/bin/junest" -- watchman "$@")
 

@@ -16,9 +16,9 @@ local M = {
         local project_root =
             vim.fs.find(root_markers, { upward = true, path = cwd })[1]
         if project_root then
-          vim.cmd 'CommandTWatchman'
+          require('wincent.commandt.finder')('watchman', '')
         else
-          vim.cmd 'CommandTRipgrep'
+          require('wincent.commandt.finder')('rg', '')
         end
       end,
     },
