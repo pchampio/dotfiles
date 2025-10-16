@@ -1,4 +1,5 @@
 local M = {
+  cond = vim.bo.filetype ~= "bigfile",
   'hrsh7th/nvim-cmp',
   -- name = 'nvim-cmp', -- Otherwise highlighting gets messed up (to use when testing a fork)
   dependencies = {

@@ -25,11 +25,6 @@ local M = {
   },
 }
 
-function M.utils.isBufSizeBig(buf)
-  local ok, size = pcall(vim.fn.getfsize, vim.api.nvim_buf_get_name(buf))
-  return ok and size > M.constants.big_file_size
-end
-
 function M.utils.rhs(rhs_str)
   return vim.api.nvim_replace_termcodes(rhs_str, true, true, true)
 end

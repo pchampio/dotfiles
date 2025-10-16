@@ -36,9 +36,6 @@ vim.api.nvim_create_autocmd('FileType', {
 
 vim.api.nvim_create_autocmd('BufReadPre', {
   callback = function()
-    if require('commons').utils.isBufSizeBig(0) then
-      vim.treesitter.stop()
-    end
     vim.schedule(function()
       vim.opt_local.indentexpr = ''
     end)

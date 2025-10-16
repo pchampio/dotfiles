@@ -135,16 +135,6 @@ local M = {
       },
     }
 
-    -- Mitigate high loading time on big file
-    -- https://github.com/nvim-treesitter/nvim-treesitter/issues/1100#issuecomment-1762594005
-    local isBufSizeBig = require('commons').utils.isBufSizeBig
-    vim.api.nvim_create_autocmd('BufReadPre', {
-      callback = function()
-        if isBufSizeBig(0) then
-          vim.wo.foldmethod = 'expr'
-        end
-      end,
-    })
     vim.opt.foldenable = false -- Disable folding at startup.
   end,
 }
