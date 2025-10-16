@@ -1,5 +1,3 @@
-local enhance_scorec_link = "'https://gist.githubusercontent.com/pchampio/dc0e5392cb534b6e33ac3c5a152d52e2/raw/commandt_score.c'"
-
 local root_markers = {
   '.git', 'install.sh',
   'pyproject.toml', 'requirements.txt', 'setup.py', 'Pipfile',
@@ -8,9 +6,8 @@ local root_markers = {
 }
 
 local M = {
-  'wincent/command-t',
-  build = 'cd lua/wincent/commandt/lib && curl -sS ' .. enhance_scorec_link .. ' -o score.c  && make',
-
+  'git@prr.re:Drakirus/command-t.git',
+  build = 'cd lua/wincent/commandt/lib && make',
   keys = {
     {
       '<C-p>',

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+"$HOME/.local/share/junest/bin/junest" -- java "$@"

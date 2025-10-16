@@ -1,22 +1,9 @@
-# size_threshold=5000000
-# function nvim() {
-#     if [[ "$#" == 0 ]]; then
-#         $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim;
-#     else
-#         if [[ ! -f "$1" ]]; then
-#             $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
-#             return
-#         fi
-#         file_size=$(stat -c %s "$1")
-#         if [ "$file_size" -gt "$size_threshold" ]; then
-#             # --startuptime vim.log
-#             large_file_disable_plugin=false $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $* ;
-#         else
-#             large_file_disable_plugin=true $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
-#         fi
-#     fi
-# }
-
+use_ngit(){
+cat >> $HOME/dotfiles/zsh/priv.zsh << 'EOF'
+# Alias git to ngit
+alias git='ngit'
+EOF
+}
 nvim(){
     $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
 }

@@ -33,7 +33,6 @@ local M = {
         'javascript',
         'typescript',
         'dockerfile',
-        -- Tested and working
         'python',
         'cpp',
         'java',

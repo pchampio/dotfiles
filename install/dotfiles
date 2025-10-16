@@ -50,7 +50,7 @@ if [ ! -f "$dir/bin/rg" ]; then
   pushd /tmp >/dev/null 2>&1
   curl --progress-bar -LO 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz'
   tar xf ripgrep-*.tar.gz
-  yes | cp ripgrep-*/rg $dir/bin/rg
+  /bin/cp -f ripgrep-*/rg $dir/bin/rg
   rm ripgrep-*.tar.gz
   pushd $home >/dev/null 2>&1
 fi
@@ -63,7 +63,7 @@ if [ ! -f "$dir/bin/fd" ]; then
   curl --progress-bar -LO "https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz"
   mkdir -p fd
   tar xf fd*.tar.gz -C fd --strip-components=1
-  cp ./fd/fd $dir/bin/fd
+  /bin/cp -f ./fd/fd $dir/bin/fd
   rm fd*.tar.gz
   rm -rf ./fd
   pushd $home >/dev/null 2>&1

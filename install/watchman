@@ -79,13 +79,13 @@ package() {
   install -Dt "$PKGDIR/usr/lib/watchman" lib/*
 }
 EOF
-yes | ~/.local/share/junest/bin/junest -- makepkg -Acsi
+run_with_spinner ~/.local/share/junest/bin/junest -- makepkg -Acsi  --noconfirm
 if [[ ! $? -eq 0 ]]; then
   error "[WATCHMAN] Error"
   exit
 fi
 mkdir -p ~/dotfiles/bin/watchman_bin || true
-yes | cp -f ~/.junest/bin/watchman ~/dotfiles/bin/watchman_bin
-yes | cp -f ~/.junest/lib/watchman/* ~/dotfiles/bin/watchman_bin
+/bin/cp -rf ~/.junest/bin/watchman ~/dotfiles/bin/watchman_bin
+/bin/cp -rf ~/.junest/lib/watchman/* ~/dotfiles/bin/watchman_bin
 
 success "[WATCHMAN] Success"

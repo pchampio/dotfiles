@@ -16,13 +16,12 @@ stty start undef
 stty stop undef
 
 setopt extendedglob
-# rm -- ^file.txt
 
 bindkey 'K' up-line-or-beginning-search
 bindkey 'J' down-line-or-beginning-search
 
 bindkey '^B' backward-word
-bindkey '^F' forward-word
+bindkey '^G' forward-word
 
 bindkey '^[w' kill-word
 

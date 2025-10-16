@@ -12,6 +12,16 @@ local M = {
     local default_caps = vim.lsp.protocol.make_client_capabilities()
     local cmp_caps = require('cmp_nvim_lsp').default_capabilities()
     local capabilities = vim.tbl_deep_extend('force', default_caps, cmp_caps)
+
+    --- Setup capabilities to support utf-16, since copilot.lua only works with utf-16
+    --- this is a workaround to the limitations of copilot language server
+    capabilities = vim.tbl_deep_extend('force', capabilities, {
+      offsetEncoding = { 'utf-16' },
+      general = {
+        positionEncodings = { 'utf-16' },
+      },
+    })
+
     for _, server in pairs(require('commons').servers) do
       local opts = {
         capabilities = capabilities,
@@ -27,6 +37,14 @@ local M = {
     end
 
     vim.diagnostic.config {
+      signs = {
+        text = {
+          [vim.diagnostic.severity.ERROR] = '✘',
+          [vim.diagnostic.severity.WARN] = " ",
+          [vim.diagnostic.severity.HINT] = '⚑',
+          [vim.diagnostic.severity.INFO] = "◉",
+        },
+      },
       update_in_insert = false,
       severity_sort = true,
       float = {

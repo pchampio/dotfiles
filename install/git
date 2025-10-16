@@ -3,6 +3,16 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+REQUIRED_GIT_VER="2.19.0"
+
+git_ver=$(git --version | awk '{print $3}')
+if [[ "$(printf '%s\n' "$REQUIRED_GIT_VER" "$git_ver" | sort -V | head -n1)" == "$REQUIRED_GIT_VER" ]]; then
+    explain "Git version is $git_ver skipping local install"
+    exit 0
+else
+    explain "Git version is too old < $git_ver"
+fi
+
 explain "Install latest git version (without https support).."
 cd /tmp
 \rm -rf git 2> /dev/null || true

@@ -212,7 +212,7 @@ EOF
     error "[TMUX-BIN] Error"
     exit
   fi
-  yes | cp -f ~/.junest/bin/tmux ~/dotfiles/bin/tmux
+  /bin/cp -f ~/.junest/bin/tmux ~/dotfiles/bin/tmux
 fi
 
 success "[TMUX] Success"
