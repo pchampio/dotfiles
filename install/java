@@ -5,6 +5,7 @@ BASEDIR=$(dirname $0)
 
 explain "Install java"
 
+[ ! -d ~/.junest ] && $BASEDIR/junest
 run_with_spinner "echo y | ~/.local/share/junest/bin/junest -f -- sudo yay -S jre-openjdk"
 if [[ ! $? -eq 0 ]]; then
   error "[JAVA] Error"

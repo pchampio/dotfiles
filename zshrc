@@ -124,11 +124,6 @@ if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval $(<~/.ssh-agent-thing) > /dev/null
 fi
 
-# Automatic fallback to Junest for not found commands in the native Linux system
-# function command_not_found_handler(){
-#     junest -f -- $@ || echo "Command not found:" + $1
-# }
-
 # source all .zsh files inside of the zsh/ directory
 for config ($HOME/dotfiles/zsh/*.zsh) source $config
 
