@@ -21,7 +21,7 @@ local M = {
         else
           gs.nav_hunk('next', { preview = true, navigation_message = true })
         end
-      end, { desc = ' jump to next hunk' })
+      end, { desc = ' Jump to next diff/hunk' })
 
       map('n', '[c', function()
         if vim.wo.diff then
@@ -29,36 +29,31 @@ local M = {
         else
           gs.nav_hunk('prev', { preview = true, navigation_message = true })
         end
-      end, { desc = ' jump to previous hunk' })
+      end, { desc = ' Jump to previous diff/hunk' })
 
       -- Actions
-      map('n', '<leader>ha', gs.stage_hunk, { desc = ' stage hunk' })
-      map('n', '<leader>hr', gs.reset_hunk, { desc = ' reset hunk' })
+      map('n', '<leader>ha', gs.stage_hunk, { desc = ' Stage Hunk' })
+      map('n', '<leader>hr', gs.reset_hunk, { desc = ' Reset Hunk' })
 
       map('v', '<leader>ha', function()
         gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
-      end, { desc = ' stage hunk' })
+      end, { desc = ' Stage Hunk Visual' })
 
       map('v', '<leader>hr', function()
         gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
-      end, { desc = ' reset hunk' })
+      end, { desc = ' Reset Hunk Visual' })
 
-      map('n', '<leader>hA', gs.stage_buffer, { desc = ' stage buffer' })
-      map('n', '<leader>hR', gs.reset_buffer, { desc = ' reset buffer' })
-      map('n', '<leader>hp', gs.preview_hunk, { desc = ' preview hunk' })
-      map('n', '<leader>hi', gs.preview_hunk_inline, { desc = ' preview hunk inline' })
+      map('n', '<leader>hA', gs.stage_buffer, { desc = ' Stage Buffer' })
+      map('n', '<leader>hR', gs.reset_buffer, { desc = ' Reset Buffer' })
+      map('n', '<leader>hp', gs.preview_hunk, { desc = ' Preview Hunk' })
+      map('n', '<leader>hi', gs.preview_hunk_inline, { desc = ' Preview Hunk Inline' })
 
-      map('n', '<leader>hd', function() gs.diffthis '~' end, { desc = ' diff against the last commit' })
+      map('n', '<leader>hd', function() gs.diffthis '~' end, { desc = ' Diff Against Last Commit' })
 
-      map('n', '<leader>hQ', function() gs.setqflist 'all' end, { desc = " open qf list populated with all modified files' hunks" })
-      map('n', '<leader>hq', gs.setqflist, { desc = " open qf list populated with current file's hunks" })
+      map('n', '<leader>hQ', function() gs.setqflist 'all' end, { desc = " Open QF list with all modified files" })
+      map('n', '<leader>hq', gs.setqflist, { desc = " Open QF list with current modified file" })
       -- Text object
-      map(
-        { 'o', 'x' },
-        'ih',
-        ':<C-U>Gitsigns select_hunk<CR>',
-        { desc = ' select hunk' }
-      )
+      map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = ' Select Hunk' })
     end,
   },
 }

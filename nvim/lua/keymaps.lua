@@ -1,7 +1,7 @@
 local map = require('commons').utils.map
 
 -- Save the file with leader-leader mapping
-map('n', '<leader><leader>', [[:w!<CR>]])
+map('n', '<leader><leader>', [[:w!<CR>]], { desc = '󰽃 Save file' })
 
 -- Insert new line
 map('n', 'U', [[:call append(line('.'), '')<CR>j]])
@@ -49,7 +49,7 @@ map('n', 'C', '"_C')
 -- Insert mode mapping for <C-l> to escape and move to the end of the line
 map('i', '<C-l>', '<Esc>A')
 
-map('n', '<leader>rm', '<Esc>:call RenameFile()<CR>', { desc = 'RenameFile' })
+map('n', '<leader>rm', '<Esc>:call RenameFile()<CR>', { desc = '󰑕 RenameFile' })
 
 -- Spell check correct
 vim.cmd [[
@@ -65,4 +65,4 @@ map('n', '<leader>cd', function()
   -- Enter command-line mode and insert the lcd command
   vim.api.nvim_feedkeys(':' .. 'lcd ' .. dir, 'n', false)
   require('wincent.commandt').setup({ traverse = 'none' })
-end, { desc = '[d] Change current file directory', silent = false })
+end, { desc = '  Change Directory', silent = false })
