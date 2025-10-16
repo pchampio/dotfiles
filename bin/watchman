@@ -8,6 +8,18 @@ WATCHMAN_BIN="$HOME/dotfiles/bin/watchman_bin/watchman"
 
 WATCHMAN_PID=""
 
+
+
+# --- Function: generate .watchmanconfig from Git ---
+generate_watchmanconfig() {
+    git show HEAD:.gitignore 2>/dev/null | \
+    awk 'BEGIN{print "{\n \"ignore_dirs\": ["} 
+         /^[[:space:]]*$/ || /^#/ {next} 
+         {gsub(/^\/|\/$/,""); printf (NR>1?",":"") " \"%s\"\n",$0; sep=","} 
+         END{if(sep=="") print " \".git\""; else print ",\".git\""; print " ]\n}"}'
+}
+
+
 # --- Function: kill all Watchman processes except this script ---
 kill_watchman() {
   echo "Killing all Watchman processes..." >>"$LOGFILE"
@@ -20,6 +32,15 @@ kill_watchman() {
     kill -9 "$pid" 2>/dev/null
   done
 }
+
+# --- .watchmanconfig restart deamon or not ---
+old_config=""
+[ -f .watchmanconfig ] && old_config=$(<.watchmanconfig)
+new_config=$(generate_watchmanconfig)
+if [ "$old_config" != "$new_config" ]; then
+    printf "%s" "$new_config" > .watchmanconfig
+    kill_watchman
+fi
 
 # --- Check for running Watchman (ignore this script) ---
 for pid in $(pgrep -x "watchman"); do

@@ -18,6 +18,7 @@ gcc*
 zsh/priv.zsh
 /man
 /share
+.watchmanconfig
 bin/gnupg/
 bin/watchman_bin
 .aider*
