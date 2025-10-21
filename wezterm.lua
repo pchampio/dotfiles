@@ -44,10 +44,9 @@ auto_complete.apply_config({
     { id = "rbw get 2ac8a334-7607-42b5-9198-5c31c371599e", label = "PP" },
     { id = "rbw get 242d4b24-ea36-4eb9-bea3-c4a4d4f8da63 --field gh cli", label = "GH Token" },
     { id = "rbw get a25b73d3-942c-4c8a-b424-b85c59f433fc --field token", label = "Gitea Token" },
-    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_1", label = "CONF: RBW 1" },
-    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_2", label = "CONF: RBW 2" },
-    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_3", label = "CONF: RBW 3" },
-    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_4", label = "CONF: RBW 4" },
+    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_2", label = "CONF: RBW 1" },
+    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_3", label = "CONF: RBW 2" },
+    { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field rbw_config_4", label = "CONF: RBW 3" },
     { id = "rbw get 6ed8aac4-1443-43ed-b42e-c484ca281610 --field 'clone dotfiles'", label = "CONF: clone dotfiles" },
   },
 

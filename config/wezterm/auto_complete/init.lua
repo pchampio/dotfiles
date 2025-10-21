@@ -115,7 +115,7 @@ function M.auto_complete(window, pane)
         window:perform_action(
           wezterm.action.Multiple({
             wezterm.action.SendString(password),
-            wezterm.action.SendKey({ key = "Enter" }),
+            -- wezterm.action.SendKey({ key = "Enter" }),
           }),
           window:active_pane()
         )
@@ -137,7 +137,7 @@ function M.auto_complete(window, pane)
         window:perform_action(
           wezterm.action.Multiple({
             wezterm.action.SendString(password),
-            wezterm.action.SendKey({ key = "Enter" }),
+            -- wezterm.action.SendKey({ key = "Enter" }),
           }),
           window:active_pane()
         )
@@ -160,7 +160,7 @@ function M.auto_complete(window, pane)
           inner_window:perform_action(
             wezterm.action.Multiple({
               wezterm.action.SendString(password),
-              wezterm.action.SendKey({ key = "Enter" }),
+              -- wezterm.action.SendKey({ key = "Enter" }),
             }),
             inner_pane
           )

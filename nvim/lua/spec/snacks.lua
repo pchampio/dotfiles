@@ -33,7 +33,7 @@ function my_toggles()
       vim.g.toogle_en_spell = state
       vim.cmd 'setlocal spell! spelllang=en'
     end,
-  }):map '<leader>tse'
+  }):map '<leader>tSe'
   Snacks.toggle.new ({
     id = 'spell_all', name = 'All Lang Spelling 󰓆 ',
     get = function() return vim.g.toogle_all_spell or false end,
@@ -41,7 +41,7 @@ function my_toggles()
       vim.g.toogle_all_spell = state
       vim.cmd 'setlocal spell! spelllang=en,fr'
     end,
-  }):map '<leader>tsa'
+  }):map '<leader>tSa'
   Snacks.toggle.new ({
     id = 'spell_fr', name = 'French Spelling 󰓆 ',
     get = function() return vim.g.toogle_fr_spell or false end,
@@ -49,7 +49,7 @@ function my_toggles()
       vim.g.toogle_fr_spell = state
       vim.cmd 'setlocal spell! spelllang=fr'
     end,
-  }):map '<leader>tsf'
+  }):map '<leader>tSf'
 end
 
 local M = {
