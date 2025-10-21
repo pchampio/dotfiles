@@ -1,7 +1,3 @@
-nvim(){
-    $HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim $*;
-}
-
 # AUTHOR:  Sorin Ionescu (sorin.ionescu@gmail.com)
 function extract() {
     local remove_archive

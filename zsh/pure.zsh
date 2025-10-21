@@ -205,8 +205,8 @@ prompt_pure_precmd() {
     # Check if a Conda environment is active and display its name.
     if [[ -n $CONDA_DEFAULT_ENV ]]; then
         if [ -n "$TMUX" ]; then
-            # ADD own dotfiles/bin/TMUX app to PATH
-            export PATH=$HOME/dotfiles/bin:$PATH
+            # ADD own local TMUX bin app to PATH
+            export PATH=$HOME/.local/bin:$PATH
             async_job my_async_task tmux set-option -gq "@CONDA_ENV_$(tmux display-message -p '#S')" ${CONDA_DEFAULT_ENV}/bin/
         fi
         psvar[12]="${CONDA_DEFAULT_ENV//[$'\t\r\n']}"

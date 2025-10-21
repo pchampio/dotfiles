@@ -63,7 +63,7 @@ alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one; killall '
 
 alias sig="cat resources/sig | xsel -b --clipboard"
 
-alias vpn='source <(echo "$($HOME/dotfiles/bin/rbw get cef664e1-feb8-4443-a536-2dc0c0ed1947)"); tmpfile=$(mktemp) ; echo -e "$meaning_vpn_user\n$meaning_vpn_pass" > $tmpfile ; sudo openvpn --config ~/.meaning_pierre_region-1.ovpn --auth-user-pass $tmpfile'
+alias vpn='source <(echo "$(rbw get cef664e1-feb8-4443-a536-2dc0c0ed1947)"); tmpfile=$(mktemp) ; echo -e "$meaning_vpn_user\n$meaning_vpn_pass" > $tmpfile ; sudo openvpn --config ~/.meaning_pierre_region-1.ovpn --auth-user-pass $tmpfile'
 
 # lychee photos
 # see ./abbreviations.zsh
