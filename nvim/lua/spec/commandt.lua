@@ -15,7 +15,8 @@ local M = {
         local cwd = vim.loop.cwd()
         local project_root =
             vim.fs.find(root_markers, { upward = true, path = cwd })[1]
-        if project_root then
+        local watchman_exists = vim.loop.fs_stat(vim.fn.expand("~/.junest/bin/watchman")) ~= nil
+        if project_root and watchman_exists then
           require('wincent.commandt.finder')('watchman', '')
         else
           require('wincent.commandt.finder')('rg', '')

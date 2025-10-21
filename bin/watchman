@@ -11,10 +11,25 @@ WATCHMAN_PID=""
 # --- Function: generate .watchmanconfig from Git ---
 generate_watchmanconfig() {
     git show HEAD:.gitignore 2>/dev/null | \
-    awk 'BEGIN{print "{\n \"ignore_dirs\": ["} 
-         /^[[:space:]]*$/ || /^#/ {next} 
-         {gsub(/^\/|\/$/,""); printf (NR>1?",":"") " \"%s\"\n",$0; sep=","} 
-         END{if(sep=="") print " \".git\""; else print ",\".git\""; print " ]\n}"}'
+    awk 'BEGIN {
+            print "{\n  \"ignore_dirs\": ["
+            first = 1
+        }
+        /^[[:space:]]*$/ || /^#/ || /\*/ { next }  # skip empty lines, comments, and lines with *
+        {
+            gsub(/^\/|\/$/,"")  # remove leading/trailing slashes
+            if (!first) { printf ",\n" }
+            printf "    \"%s\"", $0
+            first = 0
+        }
+        END {
+            if (first) {  # no entries found
+                print "    \".git\""
+            } else {
+                print ",\n    \".git\""
+            }
+            print "  ]\n}"
+        }'
 }
 
 
