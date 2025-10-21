@@ -7,11 +7,11 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   >&2 echo "Setting up config.."
 
   # Single read for email and self-hosted URL
-  read -r -p 'Enter your Bitwarden login and self-hosted URL (if any) separated by ; : ' input
+  read -r -p 'Enter your Bitwarden login and self-hosted URL (if any) separated by ; : ' textin
 
   # Split input on ';' and trim spaces/newlines
-  email=$(echo "$input" | cut -d';' -f1 | xargs)
-  self_url=$(echo "$input" | cut -d';' -f2 | xargs)
+  email=$(echo "$textin" | cut -d';' -f1 | xargs)
+  self_url=$(echo "$textin" | cut -d';' -f2 | xargs)
 
   >&2 echo "email $email"
   $bin_path/rbw config set email "$email"
