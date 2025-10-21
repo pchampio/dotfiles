@@ -30,6 +30,11 @@ zstyle ':zle:transpose-words:whitespace' word-style shell
 zstyle ':zle:transpose-words:filename' word-style normal
 zstyle ':zle:transpose-words:filename' word-chars ''
 
+# Show contents of directory after cd-ing into it
+chpwd() {
+  ls
+}
+
 # OSC 133, which is a control sequence that specifies where the prompt ended, and where the output of the executed program starts and ends.
 _prompt_executing=""
 function __prompt_precmd() {

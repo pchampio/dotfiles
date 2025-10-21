@@ -35,61 +35,6 @@ done
 # watchman in junest
 tell ln -sf $dir/watchman.json ~/.junest/etc/watchman.json
 
-# if [ -d ~/.var/app/org.geeqie.Geeqie/ ]; then
-#   \rm -rf ~/.var/app/org.geeqie.Geeqie/config/geeqie
-#   mkdir -p ~/.var/app/org.geeqie.Geeqie/config/geeqie
-#   tell cp -f --recursive --symbolic-link $dir/config/geeqie/* ~/.var/app/org.geeqie.Geeqie/config/geeqie
-#   flatpak override --user --filesystem=/usr/bin/exiftool org.geeqie.Geeqie
-# fi
-
-
-
-if [ ! -f "$dir/bin/rg" ]; then
-  explain "RipGrep Install"
-  home=$(pwd)
-  pushd /tmp >/dev/null 2>&1
-  curl --progress-bar -LO 'https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz'
-  tar xf ripgrep-*.tar.gz
-  /bin/cp -f ripgrep-*/rg $dir/bin/rg
-  rm ripgrep-*.tar.gz
-  pushd $home >/dev/null 2>&1
-fi
-
-
-if [ ! -f "$dir/bin/fd" ]; then
-  explain "FD Install"
-  home=$(pwd)
-  pushd /tmp >/dev/null 2>&1
-  curl --progress-bar -LO "https://github.com/sharkdp/fd/releases/download/v10.1.0/fd-v10.1.0-x86_64-unknown-linux-musl.tar.gz"
-  mkdir -p fd
-  tar xf fd*.tar.gz -C fd --strip-components=1
-  /bin/cp -f ./fd/fd $dir/bin/fd
-  rm fd*.tar.gz
-  rm -rf ./fd
-  pushd $home >/dev/null 2>&1
-fi
-
-if [ ! -d ~/.fzf ]; then
-  explain "FZF Install"
-  tell git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  run_with_spinner ~/.fzf/install --all
-fi
-
-if [ ! -f "$HOME/.atuin/bin/atuin" ]; then
-  explain "Atuin Install"
-  run_with_spinner "curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh"
-  touch "$HOME/.atuin/bin/atuin"
-fi
-if [ $(find "$HOME/.atuin/bin/atuin" -type f -mtime +30 | wc -l) -gt 0 ]; then
-  explain "Atuin Update"
-  . "$HOME/.atuin/bin/env"
-  run_with_spinner atuin-update
-  touch "$HOME/.atuin/bin/atuin"
-fi
-# remove crap from zshrc (added by atuin)
-apply_sed_to_dotfiles '/atuin\/bin\/env/d'
-apply_sed_to_dotfiles '/^eval.*atuin init /d'
-
 explain "SSH Config (always overwritten)"
 mkdir -p ~/.ssh/sockets/
 touch "$HOME"/.ssh/config
@@ -117,6 +62,11 @@ Host *
 EOF
 chmod 600 "$HOME"/.ssh/config
 fi
+
+if ! grep -q "PromptThemeLayout" "$HOME/.tssh.conf" 2>/dev/null; then
+    echo 'PromptThemeLayout = tiny' >> "$HOME/.tssh.conf"
+fi
+
 
 explain "Setup secrets"
 $dir/bin/rbw unlocked 2> /dev/null > /dev/null

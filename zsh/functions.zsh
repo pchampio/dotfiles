@@ -201,10 +201,6 @@ function proxget {
 
 # Share your terminal as a web application
 # https://github.com/yudai/gotty
-#
-# ON HOST/CLIENT
-#   GatewayPorts yes
-#   AllowTcpForwarding yes
 share() {
     cmd="tmux -2 attach-session -t `tmux display -p '#S'`"
     echo "User = pair"
@@ -257,8 +253,9 @@ net-list(){
     sudo nmap -sP $ip
 }
 
-ff() { find . -name "*$1*" -ls; }
-ffrm() { find . -name "*$1*" -exec rm {} +; }
+ff() { fd -h $@ }
+ffrm() { fd -h $@ -tf -x rm -i }
+ffrmd() { fd -h $@ -tf -x rm -i -r }
 
 function mm() {
     mpv --ytdl --loop --no-video "$@"

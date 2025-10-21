@@ -15,7 +15,7 @@ LIBKSBA_VERSION=1.6.5
 NPTH_VERSION=1.6
 PINENTRY_VERSION=1.2.1
 
-DESTDIR=$HOME/dotfiles/bin
+DESTDIR=$HOME/.local/bin
 PREFIX="/gnupg"
 WORK="/tmp/work"
 PATH="/tmp/work/deps/bin:$PATH"

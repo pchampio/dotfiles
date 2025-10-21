@@ -6,7 +6,9 @@ BASEDIR=$(dirname $0)
 
 explain "Download latest nvim"
 cd /tmp
-run_with_spinner "curl -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C $HOME/dotfiles/bin -xz"
+run_with_spinner "curl -sS -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C $HOME/.local/bin -xz"
+[ -f "$HOME/.local/bin/nvim" ] && rm "$HOME/.local/bin/nvim"
+ln -s "$HOME/.local/bin/nvim-linux-x86_64/bin/nvim" "$HOME/.local/bin/nvim"
 
 if [ ! -e ~/.config/nvim/spell ]; then
   explain "Spelling dictionary"

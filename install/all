@@ -4,17 +4,19 @@
 BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
+# Mendatory for me
+"$BASEDIR/github_app"
+"$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
 "$BASEDIR/python"
-"$BASEDIR/junest"
-"$BASEDIR/watchman"
-"$BASEDIR/java"
 "$BASEDIR/node"
-"$BASEDIR/tssh"
-"$BASEDIR/tmux"
 "$BASEDIR/neovim"
 "$BASEDIR/git"
 "$BASEDIR/pinentry-tty"
-"$BASEDIR/rbw"
-"$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
+"$BASEDIR/tmux"
 "$BASEDIR/zsh"
 "$BASEDIR/dotfiles"
+
+# Nice to have (junest bins)
+"$BASEDIR/junest"
+"$BASEDIR/watchman"
+"$BASEDIR/java"

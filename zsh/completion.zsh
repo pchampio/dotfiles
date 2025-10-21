@@ -55,15 +55,24 @@ _fzf-compl-oar(){
 }
 
 
-
 # Search history
 atuin-setup() {
-    . "$HOME/.atuin/bin/env"
+  export ATUIN_NOBIND="true"
+  eval "$(atuin init zsh)"
   ! hash atuin && return
 
+
+  # Commands to ignore entirely (even with args)
+  local ignore_full=(q less clear exit)
+
+  # Commands to ignore only when used *alone*
+  local ignore_alone=(vim nano nvim v ls la)
+
+  # Build regex patterns
+  pattern="^(${(j:|:)ignore_full})(\s|$)|^(${(j:|:)ignore_alone})$"
+
+
   fzf-atuin-history-widget() {
-    export ATUIN_NOBIND="true"
-    eval "$(atuin init zsh --disable-up-arrow)"
     local selected num
     setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
 
@@ -89,14 +98,13 @@ atuin-setup() {
             fi
 
             if [ \"\$FZF_PROMPT\" = 'History> ' ]; then
-                printf \"reload(atuin search $atuin_opts \$exit_flag -c $PWD)+change-prompt(\${pprompt}History (pwd)> )\"
+                printf \"reload(atuin search $atuin_opts \$exit_flag -c $PWD | grep -avzE '$pattern')+change-prompt(\${pprompt}History (pwd)> )\"
             elif [ \"\$FZF_PROMPT\" = 'History (pwd)> ' ]; then
-                printf \"reload(ATUIN_SESSION=$ATUIN_SESSION atuin search $atuin_opts \$exit_flag --filter-mode session
-)+change-prompt(\${pprompt}History (session)> )\"
+                printf \"reload(ATUIN_SESSION=$ATUIN_SESSION atuin search $atuin_opts \$exit_flag --filter-mode session | grep -avzE '$pattern')+change-prompt(\${pprompt}History (session)> )\"
             elif [ \"\$FZF_PROMPT\" = 'History (session)> ' ]; then
-                printf \"reload(atuin search $atuin_opts \$exit_flag --filter-mode host)+change-prompt(\${pprompt}History (host)> )\"
+                printf \"reload(atuin search $atuin_opts \$exit_flag --filter-mode host | grep -avzE '$pattern')+change-prompt(\${pprompt}History (host)> )\"
             else
-                printf \"reload(atuin search $atuin_opts \$exit_flag)+change-prompt(\${pprompt}History> )\"
+                printf \"reload(atuin search $atuin_opts \$exit_flag | grep -avzE '$pattern')+change-prompt(\${pprompt}History> )\"
             fi
             "
             "--bind" "ctrl-y:transform:
@@ -112,19 +120,19 @@ atuin-setup() {
             fi
 
             if [ \"\$FZF_PROMPT\" = 'History> ' ]; then
-                printf \"reload(atuin search $atuin_opts \$exit_flag)+change-prompt(\${pprompt}History> )\"
+                printf \"reload(atuin search $atuin_opts \$exit_flag | grep -avzE '$pattern')+change-prompt(\${pprompt}History> )\"
             elif [ \"\$FZF_PROMPT\" = 'History (pwd)> ' ]; then
-                printf \"reload(atuin search $atuin_opts \$exit_flag -c $PWD)+change-prompt(\${pprompt}History (pwd)> )\"
+                printf \"reload(atuin search $atuin_opts \$exit_flag -c $PWD | grep -avzE '$pattern')+change-prompt(\${pprompt}History (pwd)> )\"
             elif [ \"\$FZF_PROMPT\" = 'History (session)> ' ]; then
-                printf \"reload(ATUIN_SESSION=$ATUIN_SESSION atuin search $atuin_opts \$exit_flag --filter-mode session)+change-prompt(\${pprompt}History (session)> )\"
+                printf \"reload(ATUIN_SESSION=$ATUIN_SESSION atuin search $atuin_opts \$exit_flag --filter-mode session | grep -avzE '$pattern')+change-prompt(\${pprompt}History (session)> )\"
             elif [ \"\$FZF_PROMPT\" = 'History (host)> ' ]; then
-                printf \"reload(atuin search $atuin_opts \$exit_flag --filter-mode host)+change-prompt(\${pprompt}History (host)> )\"
+                printf \"reload(atuin search $atuin_opts \$exit_flag --filter-mode host | grep -avzE '$pattern')+change-prompt(\${pprompt}History (host)> )\"
             fi
             "
     )
 
     selected=$(
-        eval "atuin search ${atuin_opts}" |
+        eval "atuin search ${atuin_opts} --exit 0" | grep -avzE "$pattern" |
         fzf "${fzf_opts[@]}"
     )
     local ret=$?

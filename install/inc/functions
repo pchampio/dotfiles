@@ -88,3 +88,72 @@ apply_sed_to_dotfiles() {
         fi
     done
 }
+
+install_github_app() {
+    local APP_ALIASES="$1"
+    local SITE="$2"
+    local GREP_NAME="$3"
+
+    if [ -z "$APP_ALIASES" ] || [ -z "$SITE" ] || [ -z "$GREP_NAME" ]; then
+        echo "Usage: install_github_app <app_aliases> <repo_site> <grep_pattern>"
+        return 1
+    fi
+
+    explain "Installation of $APP_ALIASES"
+
+    # CREATE DIRECTORIES
+    local MAIN_NAME
+    MAIN_NAME=$(echo "$APP_ALIASES" | cut -d',' -f1 | xargs)  # take first alias as main folder name
+    [ -d "$HOME/.local/bin/$MAIN_NAME-bin" ] && rm -rf "$HOME/.local/bin/$MAIN_NAME-bin"
+    mkdir -p "$HOME/.local/bin/$MAIN_NAME-bin/tmp" "$HOME/.local/bin/$MAIN_NAME-bin/icons" "$HOME/.local/bin/share" || return 1
+    cd "$HOME/.local/bin/$MAIN_NAME-bin/tmp" || return 1
+
+    # DOWNLOAD AND PREPARE THE APP
+    local version
+    version=$(curl -sS -Ls "https://api.github.com/repos/$SITE/releases" \
+              | sed 's/[()",{} ]/\n/g' \
+              | grep -oi "$GREP_NAME" \
+              | head -1)
+
+    if [ -z "$version" ]; then
+        echo "Error: Could not find a release matching $GREP_NAME"
+        return 1
+    fi
+
+    wget -q --show-progress "$version" || return 1
+
+    # Extract downloaded files
+    [ -e ./*7z ] && 7z x ./*7z && rm -f ./*7z
+    [ -e ./*tar.* ] && tar fx ./*tar.* && rm -f ./*tar.*
+    [ -e ./*zip ] && unzip -qq ./*zip 1>/dev/null && rm -f ./*zip
+    [ -e ./*gz ] && gunzip ./*gz && rm -f ./*gz
+    [ -e ./*xz ] && unxz ./*xz && rm -f ./*xz
+
+    cd ..
+
+    # Move extracted files
+    if [ -d ./tmp/* 2>/dev/null ]; then 
+        mv ./tmp/*/* ./ 
+    else 
+        mv ./tmp/* ./"$MAIN_NAME" 2>/dev/null || mv ./tmp/* ./ 
+    fi
+
+    # Cleanup
+    rm -rf ./tmp || return 1
+
+    # Write version
+    echo "$version" > ./version
+
+    # Link only requested aliases
+    cd "$HOME/.local/bin" || return 1
+    IFS=',' read -ra ALIASES <<< "$APP_ALIASES"
+    for alias in "${ALIASES[@]}"; do
+        alias=$(echo "$alias" | xargs)  # trim spaces
+        target="$HOME/.local/bin/$MAIN_NAME-bin/$alias"
+        if [ -e "$alias" ]; then
+            rm -f "$alias"
+        fi
+        chmod a+x "$target" || return 1
+        ln -s "$target" "$alias"
+    done
+}

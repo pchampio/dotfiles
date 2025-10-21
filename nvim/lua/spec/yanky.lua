@@ -1,17 +1,6 @@
 local M = {
   'gbprod/yanky.nvim',
   event = 'CursorHold',
-  dependencies = { 'folke/snacks.nvim' },
-  keys = {
-    {
-      '<leader>P',
-      function()
-        Snacks.picker.yanky()
-      end,
-      mode = { 'n', 'x' },
-      desc = 'Open Yank History',
-    },
-  },
   config = function()
     vim.cmd [[hi YankyPut guifg=#37afd3 gui=underline,bold]]
     require('yanky').setup {
@@ -27,30 +16,10 @@ local M = {
     vim.keymap.set({ 'n', 'x' }, 'y', '<Plug>(YankyYank)')
     vim.keymap.set('n', '[y', '<Plug>(YankyCycleForward)')
     vim.keymap.set('n', ']y', '<Plug>(YankyCycleBackward)')
-    vim.api.nvim_set_keymap(
-      '',
-      'p',
-      '<Plug>(YankyPutAfter)',
-      { desc = 'Paste after' }
-    )
-    vim.api.nvim_set_keymap(
-      '',
-      'P',
-      '<Plug>(YankyPutBefore)',
-      { desc = 'Paste before' }
-    )
-    vim.api.nvim_set_keymap(
-      '',
-      'gp',
-      '<Plug>(YankyPutIndentAfterLinewise)',
-      { desc = 'Paste G after' }
-    )
-    vim.api.nvim_set_keymap(
-      '',
-      'gP',
-      '<Plug>(YankyPutIndentBeforeLinewise)',
-      { desc = 'Paste G before' }
-    )
+    vim.api.nvim_set_keymap('', 'p', '<Plug>(YankyPutAfter)', { desc = 'Paste after' })
+    vim.api.nvim_set_keymap('', 'P', '<Plug>(YankyPutBefore)', { desc = 'Paste before' })
+    vim.api.nvim_set_keymap('', 'gp', '<Plug>(YankyPutIndentAfterLinewise)', { desc = 'Paste G after' })
+    vim.api.nvim_set_keymap('', 'gP', '<Plug>(YankyPutIndentBeforeLinewise)', { desc = 'Paste G before' })
   end,
 }
 

@@ -92,6 +92,8 @@ local M = {
     { "gh", vim.lsp.buf.hover, desc = 'LSP: Hover', mode = { "v", "n" } },
 
     { "<leader>ut", function() Snacks.picker.undo() end,                  desc = "Undo tree" },
+    { '<leader>P', function() Snacks.picker.yanky() end, mode = { 'n', 'x' }, desc = 'Open Yank History' },
+
 
     { "]w",         function() Snacks.words.jump(vim.v.count1) end,       desc = "Next Reference",           mode = { "n", "t" } },
     { "[w",         function() Snacks.words.jump(-vim.v.count1) end,      desc = "Prev Reference",           mode = { "n", "t" } },
@@ -208,6 +210,7 @@ local M = {
               ["<C-z>"] = { "select_and_next", mode = { "i", "n", "x" } },
               ["<C-l>"] = { "toggle_preview", mode = { "i", "n", "x" } },
               ["<C-h>"] = { "toggle_preview", mode = { "i", "n", "x" } },
+              ["<C-P>"] = { "toggle_preview", mode = { "i", "n", "x" } },
               ["<C-p>"] = { "list_up", mode = { "i", "n" } },
             },
           },

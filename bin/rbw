@@ -1,14 +1,14 @@
 #!/bin/bash
 
-bin_path=$HOME/dotfiles/bin/rbw_bin
-PATH=$PATH:$HOME/dotfiles/bin/rbw_bin
+bin_path=$HOME/.local/bin/
+export PATH="$HOME/.local/bin/":$PATH # ADD RBW-AGENT TO PATH
 
 if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   >&2 echo "Setting up config.."
   read -r -p 'Enter your Bitwarden login: ' email
   >&2 echo "email $email"
   $bin_path/rbw config set email "$email"
-  $bin_path/rbw config set pinentry "$HOME/dotfiles/bin/gnupg/bin/pinentry-tty"
+  $bin_path/rbw config set pinentry "$HOME/.local/bin/gnupg/bin/pinentry-tty"
   $bin_path/rbw config set lock_timeout $((3600 * 4)) # 4 hours
 
   read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
@@ -21,9 +21,9 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   # fi
   $bin_path/rbw register
   >&2 echo "Set up complete. Start the agent..."
+
 # else
-  # >&2 echo "Set up already done. Start the agent"
-  # $bin_path/rbw-agent
+#   $bin_path/rbw config set pinentry "$HOME/.local/bin/gnupg/bin/pinentry-tty" # TODO REMOVE ME
 fi
 
 if [ "$1" = "unlock" ]; then

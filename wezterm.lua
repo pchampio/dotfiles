@@ -26,7 +26,7 @@ end)
 
 -- RBW auto-complete/bitwarden password manager in wezterm
 auto_complete.apply_config({
-  shell_path = HOME .. '/dotfiles/bin/zsh',
+  shell_path = HOME .. '/.local/bin/zsh',
   log_debug = true,
 
   -- Password patterns mapped to rbw commands
@@ -48,7 +48,7 @@ auto_complete.apply_config({
 
   -- Vault management functions
   is_locked = function()
-    local success = wezterm.run_child_process({ HOME .. "/dotfiles/bin/rbw", "unlocked" })
+    local success = wezterm.run_child_process({ HOME .. "/.local/bin/rbw", "unlocked" })
     return not success
   end,
 
@@ -56,7 +56,7 @@ auto_complete.apply_config({
     local old = toggle_terminal.opts.size.Cells
     toggle_terminal.opts.size.Cells = 2
     toggle_terminal.toggle_terminal(window, window:active_pane())
-    toggle_terminal.send_command_to_tab(window,  HOME .. "/dotfiles/bin/rbw unlock; exit" )
+    toggle_terminal.send_command_to_tab(window,  HOME .. "/.local/bin/rbw unlock; exit" )
 
     -- Wait until unlocked
     auto_complete.run_cmd_until_true("rbw unlocked")

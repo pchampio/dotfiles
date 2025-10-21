@@ -1,7 +1,7 @@
 # Add to fpath if it exists
 # Only prepend the custom zsh function dir if the system one doesn't exist
 if [[ ! -d /usr/share/zsh/functions ]]; then
-  ZSH_FUNC_DIR="$HOME/dotfiles/share/zsh/5.8/functions"
+  ZSH_FUNC_DIR="$HOME/.local/share/zsh/5.8/functions"
   [[ -d "$ZSH_FUNC_DIR" ]] && fpath=("$ZSH_FUNC_DIR" $fpath)
 fi
 
@@ -25,7 +25,10 @@ instant-zsh-pre "%004F${${(V)${(%):-%~}//\%/%%}//\///}%b%f"$'\n'"%002F\$~%f "
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
-export EDITOR=$HOME/dotfiles/bin/nvim-linux-x86_64/bin/nvim
+# User configuration
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:$HOME/.local/podman/bin"
+
+export EDITOR=$HOME/.local/bin/nvim-linux-x86_64/bin/nvim
 
 setopt prompt_subst # enable command substition in prompt
 
@@ -34,8 +37,6 @@ plugins=(encode64 docker sudo zsh-autoquoter)
 # faster startup
 DISABLE_AUTO_UPDATE="true"
 
-# User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:$HOME/.local/podman/bin"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
@@ -50,18 +51,6 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS+=(zaq)
 
 export BROWSER=/bin/firefox
 
-# Show contents of directory after cd-ing into it
-chpwd() {
-  ls
-  # if [ -f ./venv/bin/activate ]; then
-    # source ./venv/bin/activate
-  # fi
-}
-
-# perl
-PATH=$PATH:/usr/bin/core_perl/
-
-
 # local bin first
 export PATH=$HOME/.local/share/pytool/bin:$HOME/.local/bin:$PATH
 
@@ -70,10 +59,6 @@ export PATH=$HOME/dotfiles/bin:$PATH
 
 # Local lib (for pip usualy)
 export LD_LIBRARY_PATH=/usr/local/lib/:"${LD_LIBRARY_PATH}"
-
-# Ruby
-ruby="/home/drakirus/.gem/ruby/2.6.0/bin"
-PATH=$PATH:$ruby
 
 # ADD perl path
 export PATH=/usr/bin/vendor_perl:$PATH
@@ -84,7 +69,7 @@ export KEYTIMEOUT=1
 export PURE_PROMPT_SYMBOL="\$~"
 zstyle :prompt:pure:prompt:success color green
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+hash fzf && source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND='rg --files --follow --glob "!{.git,.svn,node_modules,bower_components}"'
 export FZF_DEFAULT_OPTS='--bind ctrl-j:down,ctrl-k:up,alt-j:down,alt-k:up,tab:down,ctrl-z:toggle'
 
@@ -106,14 +91,6 @@ export PATH=${PATH}:${JAVA_HOME}/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# tssh
-export PATH="$HOME/dotfiles/bin/tssh:$PATH"
-export PATH="$HOME/dotfiles/bin/tsshd:$PATH"
-export PATH="$HOME/dotfiles/bin/trzsz:$PATH"
-
-# tailscale
-export PATH="$HOME/dotfiles/bin/tailscale:$PATH"
-
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
 fi
@@ -128,9 +105,6 @@ fi
 for config ($HOME/dotfiles/zsh/*.zsh) source $config
 
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
-
-# pipx
-export PATH="$PATH:~/.local/bin"
 
 # Atuin shell history
 atuin-setup
