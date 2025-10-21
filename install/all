@@ -6,12 +6,12 @@ BASEDIR="$(dirname "$0")"
 
 # Mendatory for me
 "$BASEDIR/github_app"
+"$BASEDIR/pinentry-tty"
 "$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
 "$BASEDIR/python"
 "$BASEDIR/node"
 "$BASEDIR/neovim"
 "$BASEDIR/git"
-"$BASEDIR/pinentry-tty"
 "$BASEDIR/tmux"
 "$BASEDIR/zsh"
 "$BASEDIR/dotfiles"

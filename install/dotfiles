@@ -33,7 +33,7 @@ for file in $files; do
 done
 
 # watchman in junest
-tell ln -sf $dir/watchman.json ~/.junest/etc/watchman.json
+[ -d "$HOME/.junest/etc/" ] && tell ln -sf "$dir/watchman.json" "$HOME/.junest/etc/watchman.json"
 
 explain "SSH Config (always overwritten)"
 mkdir -p ~/.ssh/sockets/
@@ -71,7 +71,7 @@ fi
 explain "Setup secrets"
 $dir/bin/rbw unlocked 2> /dev/null > /dev/null
 if [[ $? -eq 0 ]]; then
-  ~/.atuin/bin/atuin login \
+  ~/.local/bin/atuin login \
     -u $($dir/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'username') \
     -p $($dir/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'password') \
     -k "$($dir/bin/rbw get '29feee89-3717-4aa2-8278-362f02e3e10e' --field 'key')" 2> /dev/null > /dev/null
@@ -80,8 +80,8 @@ fi
 # Custom Completion Scripts
 mkdir -p ~/.oh-my-zsh/custom/completions
 
-~/.atuin/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
-$dir/bin/rbw_bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw # doesn't work IDK
+$HOME/.local/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
+$HOME/.local/bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw # doesn't work IDK
 
 
 # switch this remote git from http to ssh if needed

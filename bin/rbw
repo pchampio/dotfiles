@@ -5,14 +5,20 @@ export PATH="$HOME/.local/bin/":$PATH # ADD RBW-AGENT TO PATH
 
 if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   >&2 echo "Setting up config.."
-  read -r -p 'Enter your Bitwarden login: ' email
+
+  # Single read for email and self-hosted URL
+  read -r -p 'Enter your Bitwarden login and self-hosted URL (if any) separated by ; : ' input
+
+  # Split input on ';' and trim spaces/newlines
+  email=$(echo "$input" | cut -d';' -f1 | xargs)
+  self_url=$(echo "$input" | cut -d';' -f2 | xargs)
+
   >&2 echo "email $email"
   $bin_path/rbw config set email "$email"
   $bin_path/rbw config set pinentry "$HOME/.local/bin/gnupg/bin/pinentry-tty"
   $bin_path/rbw config set lock_timeout $((3600 * 4)) # 4 hours
 
-  read -r -p 'Enter self-hosted installation URL, if applicable: ' self_url
-  if [[ ! -z "$self_url" ]]; then
+  if [[ -n "$self_url" ]]; then
     $bin_path/rbw config set base_url "$self_url"
   fi
   # read -r -p 'Enter self-hosted installation identity url, if applicable: ' self_ident_url

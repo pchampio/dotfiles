@@ -33,7 +33,7 @@ run_with_spinner() {
     local pid pgid
 
     explain2 "$cmd"
-    [ -f /tmp/log_install_last ] && rm /tmp/log_install_last
+    [ -f /tmp/log_install_last ] && rm -f /tmp/log_install_last
     ln -s "$logfile" /tmp/log_install_last
 
     # Run the command in a separate process group
