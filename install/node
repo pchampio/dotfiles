@@ -19,6 +19,6 @@ apply_sed_to_dotfiles '/^\[.*NVM_DIR/d'
 
 
 run_with_spinner "source ~/.nvm/nvm.sh; nvm install node"
-echo "    Node info: $(node --version)"
+echo "    Node info: $(~/dotfiles/bin/node --version)"
 
 success "[NODE] Success"

@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'rachartier/tiny-inline-diagnostic.nvim',
   event = 'VeryLazy', -- Or `LspAttach`

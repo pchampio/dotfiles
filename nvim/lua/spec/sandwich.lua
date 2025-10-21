@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'machakann/vim-sandwich',
   priority = 100,

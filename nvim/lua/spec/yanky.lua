@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'gbprod/yanky.nvim',
   event = 'CursorHold',

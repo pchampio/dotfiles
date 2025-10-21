@@ -1,6 +1,10 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   {
     'mason-org/mason.nvim',
+    ---@module 'mason'
+    ---@type MasonSettings
     opts = {
       ui = {
         icons = {
@@ -20,6 +24,8 @@ local M = {
         dependencies = {
           'neovim/nvim-lspconfig',
         },
+        ---@module 'mason-lspconfig'
+        ---@type MasonLspconfigSettings
         opts = {
           automatic_enable = false, -- enable manually via `vim.lsp.enable()`
         },

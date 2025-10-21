@@ -59,6 +59,8 @@ alias ping='prettyping'
 alias osc52clean='echo -e "\033]52;c;!\a"'
 alias osc52='echo -e "\033]52;c;$(base64 <<< hello)\a"'
 
+function catsix() { convert  $@  -geometry 800x480  sixel:- }
+
 alias inria-screen-clean="inria-screen-all; sleep 4; inria-screen-one; killall 'latte-dock'; nohup latte-dock > /dev/null 2> /dev/null &"
 
 alias sig="cat resources/sig | xsel -b --clipboard"
@@ -70,7 +72,7 @@ alias vpn='source <(echo "$(rbw get cef664e1-feb8-4443-a536-2dc0c0ed1947)"); tmp
 
 
 # follow symlinks by default plus line number and file on the same line
-rg () { command rg -z -L --no-heading "$@"; }
+function rg () { command rg -z -L --no-heading "$@"; }
 
 alias vim='nvim'
 alias vi='nvim'

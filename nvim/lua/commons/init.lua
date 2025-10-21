@@ -22,6 +22,8 @@ local M = {
     'ruff',
     'basedpyright',
     'harper_ls',
+    'copilot-language-server',
+    'stylua'
   },
 }
 

@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   -- Comment visual regions/lines
   'numToStr/Comment.nvim',

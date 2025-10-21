@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'mrjones2014/smart-splits.nvim',
   opts = { default_amount = 6, disable_multiplexer_nav_when_zoomed = false },

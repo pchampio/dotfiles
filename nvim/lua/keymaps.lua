@@ -57,7 +57,7 @@ inoremap <expr> <A-s>  pumvisible() ?  "\<C-n>" : "\<C-x>s"
 nnoremap <expr> <A-s> pumvisible() ?  "i\<C-n>" : "w[sei\<C-x>s"
 ]]
 
-map('n', '<leader>ga', 'ga')
+map({'n', 'v'}, 'gA', 'ga', { desc = 'Get Char Ascii value' })
 
 -- Leader mapping to change working directory to the current file's directory
 map('n', '<leader>cd', function()

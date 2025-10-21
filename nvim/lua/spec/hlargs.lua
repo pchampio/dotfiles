@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'm-demare/hlargs.nvim',
   event = { 'CmdlineEnter', 'CursorHold' },

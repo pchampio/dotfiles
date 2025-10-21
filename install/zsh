@@ -112,7 +112,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.bashrc
 fi
 
-read -p "Add exec '$wherezsh' to csh or tcsh (.login)? " -n 1 -r
+read -p "Add exec '$wherezsh' to csh or tcsh (.login)? [y] " -n 1 -r
 echo ""    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "if ( -f $wherezsh ) exec $wherezsh -l" >> $HOME/.login

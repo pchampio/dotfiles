@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   -- keep an eye on where your cursor has jumped
   'cxwx/specs.nvim',

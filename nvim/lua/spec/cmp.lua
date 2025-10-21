@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   cond = vim.bo.filetype ~= "bigfile",
   'hrsh7th/nvim-cmp',

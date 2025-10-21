@@ -1,4 +1,6 @@
-return {
+---@module 'lazy'
+---@type LazySpec
+local M = {
   'andrewferrier/debugprint.nvim',
 
   dependencies = {
@@ -16,3 +18,4 @@ return {
   lazy = false,
   version = '*', -- Remove if you DON'T want to use the stable version
 }
+return M

@@ -1,5 +1,9 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'lewis6991/gitsigns.nvim',
+  ---@module 'gitsigns'
+  ---@type Gitsigns.Config
   opts = {
     current_line_blame = false,
     current_line_blame_opts = {

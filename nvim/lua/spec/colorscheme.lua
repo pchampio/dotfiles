@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'https://gitlab.com/HiPhish/resolarized.nvim',
   lazy = false,

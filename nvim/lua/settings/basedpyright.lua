@@ -26,6 +26,7 @@ local function find_venv(start_path) -- Finds the venv folder required for LSP
 end
 local lsp_restarted = false
 
+---@type vim.lsp.Config
 local settings = {
   basedpyright = {
     -- use ruff-lsp for organizing imports

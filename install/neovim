@@ -27,7 +27,7 @@ fi
 ssh-keyscan github.com >> ~/.ssh/known_hosts 2> /dev/null
 # manualy add my self hosted server
 echo '|1|lRIfMUrVckQFC94Srhr/xCshUbM=|2ce5rmYGTY9LRXkru3gQ0IhlYVc= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrxfg+PBcrQUqf9AQ76ZQP3rD3x9w6lH3eQQOCbwd08' >> ~/.ssh/known_hosts
-run_with_spinner ssh -T git@prr.re
+"$HOME/.local/bin/zsh" -ic "ssh -T git@prr.re"
 
 
 success "[NVIM] Success"

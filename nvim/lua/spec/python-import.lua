@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'kiyoon/python-import.nvim',
   ft = { 'python' },

@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'gbprod/substitute.nvim',
   dependencies = { 'gbprod/yanky.nvim', 'tpope/vim-abolish' },

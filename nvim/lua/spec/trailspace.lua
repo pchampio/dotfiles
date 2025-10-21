@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'nvim-mini/mini.trailspace',
   keys = {

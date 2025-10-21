@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'pchampio/vim-edgemotion',
   config = function()

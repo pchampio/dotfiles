@@ -5,6 +5,8 @@ local root_markers = {
   'CMakeLists.txt', 'Makefile', 'configure', 'build.ninja',
 }
 
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'git@prr.re:Drakirus/command-t.git',
   build = 'cd lua/wincent/commandt/lib && make',

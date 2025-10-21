@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'git@prr.re:Drakirus/vmath.vim.git',
   config = function()

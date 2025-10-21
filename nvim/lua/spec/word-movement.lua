@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'chrisgrieser/nvim-spider',
   opts = {

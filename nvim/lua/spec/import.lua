@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'piersolenski/import.nvim',
   dependencies = {

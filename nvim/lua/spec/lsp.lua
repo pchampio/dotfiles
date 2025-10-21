@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'neovim/nvim-lspconfig',
   cond = not vim.o.diff, -- 'cond' would install but not load the plugin, whereas 'enabled' would not install the plugin at all
@@ -12,6 +14,7 @@ local M = {
     local default_caps = vim.lsp.protocol.make_client_capabilities()
     local cmp_caps = require('cmp_nvim_lsp').default_capabilities()
     local capabilities = vim.tbl_deep_extend('force', default_caps, cmp_caps)
+
 
     --- Setup capabilities to support utf-16, since copilot.lua only works with utf-16
     --- this is a workaround to the limitations of copilot language server

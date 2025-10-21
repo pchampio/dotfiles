@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   -- Show you pending keybinds.
   'nvim-mini/mini.clue',
@@ -52,7 +54,11 @@ local M = {
         { mode = 'n', keys = '[' },
       },
       clues = { -- hydra like
-        miniclue.gen_clues.g(),
+        { mode = 'n', keys = 'gR',     desc = 'Enter Virtual Replace mode' },
+        { mode = 'n', keys = 'gF',     desc = 'Edit file under cursor + jump line' },
+        { mode = 'n', keys = 'gf',     desc = 'Edit file under cursor' },
+        { mode = 'n', keys = 'g&',     desc = 'Repeat last `:s` on all lines' },
+        { mode = 'n', keys = 'g?',     desc = 'Rot13 encode (operator)' },
         miniclue.gen_clues.marks(),
         miniclue.gen_clues.registers(),
         miniclue.gen_clues.windows(),

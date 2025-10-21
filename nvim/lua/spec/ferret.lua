@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'wincent/ferret',
   keys = {
@@ -5,12 +7,12 @@ local M = {
     {
       '<leader>E',
       '<Plug>(FerretAcks)',
-      desc = '[E] Edit searched word all files',
+      desc = ' Edit Searched Word All Files',
     },
     {
       'g/',
       ':Ack<space>',
-      desc = '[/] Input word search all files',
+      desc = ' Word Search All Files',
     },
   },
   config = function()

@@ -1,3 +1,5 @@
+---@module 'lazy'
+---@type LazySpec
 local M = {
   'miallo/loupe',
   event = { 'CmdlineEnter', 'CursorHold' },
@@ -5,7 +7,7 @@ local M = {
     {
       '<leader><space>',
       '<Plug>(LoupeClearHighlight)',
-      desc = 'Clear Search Highlight (Loupe)',
+      desc = ' Clear Search Hi',
     },
   },
   init = function()

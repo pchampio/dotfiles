@@ -4,19 +4,25 @@
 BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
-# Mendatory for me
+## Mendatory for me
+"$BASEDIR/zsh"
 "$BASEDIR/github_app"
 "$BASEDIR/pinentry-tty"
 "$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
+"$BASEDIR/neovim"
+# Don't require input anymore
 "$BASEDIR/python"
 "$BASEDIR/node"
-"$BASEDIR/neovim"
-"$BASEDIR/git"
 "$BASEDIR/tmux"
-"$BASEDIR/zsh"
 "$BASEDIR/dotfiles"
+"$BASEDIR/git"
 
-# Nice to have (junest bins)
-"$BASEDIR/junest"
-"$BASEDIR/watchman"
-"$BASEDIR/java"
+
+read -p "Install optional (junest) watchman/java bins [y]" -n 1 -r
+echo ""    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  # Nice to have (junest bins)
+  "$BASEDIR/junest"
+  "$BASEDIR/watchman"
+  "$BASEDIR/java"
+fi
