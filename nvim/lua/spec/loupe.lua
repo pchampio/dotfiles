@@ -6,8 +6,14 @@ local M = {
   keys = {
     {
       '<leader><space>',
-      '<Plug>(LoupeClearHighlight)',
-      desc = ' Clear Search Hi',
+      function()
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Plug>(LoupeClearHighlight)', true, true, true), 'n', false)
+        local ok, sidekick = pcall(require, 'sidekick.nes') -- TODO: make this work, as of now only <esc> works
+        if ok and sidekick.clear then
+          sidekick.clear()
+        end
+      end,
+      desc = ' Clear Search Hi/Nes suggestions',
     },
   },
   init = function()

@@ -227,7 +227,7 @@ prompt_pure_precmd() {
     prompt_pure_preprompt_render "precmd"
 
     if [[ -n $ZSH_THEME ]]; then
-        print "WARNING: Oh My Zsh themes are enabled (ZSH_THEME='${ZSH_THEME}'). Pure might not be working correctly."
+        print "Warning: Oh My Zsh themes are enabled (ZSH_THEME='${ZSH_THEME}'). Pure might not be working correctly."
         print "For more information, see: https://github.com/sindresorhus/pure#oh-my-zsh"
         unset ZSH_THEME  # Only show this warning once.
     fi

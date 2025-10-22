@@ -15,14 +15,15 @@ local M = {
         },
         win = {
           keys = {
-            -- Make <Esc> enter normal mode in the terminal (Sidekick)
-            hide_n = { '<esc>', '<C-\\><C-n>', mode = 't' },
+            hide_ctrl_dot = { "<c-j>",            "<C-M-d>", desc         = "Scroll down", mode = "t" },
+            hide_ctrl_q   = { "<c-k>",            "<C-M-u>", desc         = "Scroll up",   mode = "t" },
+            stopinsert    = { "<leader><esc>", "stopinsert", mode = "t" },
           },
         },
       },
     }
     local function set_sidekick_hl()
-      vim.api.nvim_set_hl(0, 'SidekickDiffContext', { link = 'Comment' })
+      vim.api.nvim_set_hl(0, 'testSidekickDiffContext', { link = 'Comment' })
       vim.api.nvim_set_hl(0, 'SidekickDiffAdd', { link = 'DiffAdd' })
       vim.api.nvim_set_hl(0, 'SidekickDiffDelete', { link = 'DiffDelete' })
       vim.api.nvim_set_hl(0, 'SidekickSign', { link = 'Comment' })

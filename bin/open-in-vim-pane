@@ -19,7 +19,6 @@ sub cmdexists {
 }
 
 sub split_line {
-# TODO: don't split if this file exists on disk
   my @matches = $_[0] =~ $line;
   my $url = URI->new($matches[0]);
   if (defined $url->scheme && $url->scheme eq 'file' && $url->path ne $matches[0]) {
