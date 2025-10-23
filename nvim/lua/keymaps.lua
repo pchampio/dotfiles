@@ -1,7 +1,7 @@
 local map = require('commons').utils.map
 
 -- Save the file with leader-leader mapping
-map('n', '<leader><leader>', [[:w!<CR>]], { desc = '󰽃 Save file' })
+map('n', '<leader><leader>', [[:w!<CR>]], { desc = '󰽃  ,Save file' })
 
 -- Insert new line
 map('n', 'U', [[:call append(line('.'), '')<CR>j]])
@@ -49,7 +49,7 @@ map('n', 'C', '"_C')
 -- Insert mode mapping for <C-l> to escape and move to the end of the line
 map('i', '<C-l>', '<Esc>A')
 
-map('n', '<leader>rm', '<Esc>:call RenameFile()<CR>', { desc = '󰑕 RenameFile' })
+map('n', '<leader>r', '<Esc>:call RenameFile()<CR>', { desc = '󰑕  RenameFile' })
 
 -- Spell check correct
 vim.cmd [[

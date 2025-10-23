@@ -89,6 +89,7 @@ return {
       sign_out(bufnr, client)
     end, { desc = "Sign out Copilot with GitHub" })
 
+    vim.g.inline_completion_enabled = true
     vim.lsp.inline_completion.enable(true, { bufnr = bufnr })
   end,
 }

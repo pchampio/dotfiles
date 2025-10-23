@@ -8,7 +8,7 @@ local M = {
       function()
         require('mini.trailspace').trim()
       end,
-      desc = '󱁐  Trim white space',
+      desc = 'Trim white space',
     },
   },
 }

@@ -5,16 +5,17 @@ BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
 ## Mendatory for me
+"$BASEDIR/dotfiles"
 "$BASEDIR/zsh"
 "$BASEDIR/github_app"
 "$BASEDIR/pinentry-tty"
 "$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
+# Should not require input
 "$BASEDIR/neovim"
-# Don't require input anymore
+"$BASEDIR/secrets"
 "$BASEDIR/python"
 "$BASEDIR/node"
 "$BASEDIR/tmux"
-"$BASEDIR/dotfiles"
 "$BASEDIR/git"
 
 

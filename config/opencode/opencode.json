@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "CLAUDE.md"
+  ],
+  "theme": "solarized",
+  "autoshare": false,
+  "autoupdate": true,
+  "keybinds": {
+    "leader": "ctrl+x",
+    "session_new": "ctrl+n",
+    "messages_half_page_up": "ctrl+alt+k",
+    "messages_half_page_down": "ctrl+alt+j",
+    "messages_copy": "ctrl+y",
+    "messages_undo": "ctrl+u",
+    "messages_redo": "ctrl+r",
+    "input_newline": "<leader>enter,shift+alt+enter",
+  },
+  "lsp": {
+    "pyright": {
+			"command": ["~/.local/share/nvim/mason/bin/basedpyright"]
+		}
+  }
+}

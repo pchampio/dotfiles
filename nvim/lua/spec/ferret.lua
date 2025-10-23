@@ -3,16 +3,16 @@
 local M = {
   'wincent/ferret',
   keys = {
-    { '<leader>*', '<Plug>(FerretAckWord)', desc = '[*] Seach word all files' },
+    { '<leader>*', '<Plug>(FerretAckWord)', desc = '* Seach word all files' },
     {
       '<leader>E',
       '<Plug>(FerretAcks)',
-      desc = ' Edit Searched Word All Files',
+      desc = '  Edit Searched Word All Files',
     },
     {
       'g/',
       ':Ack<space>',
-      desc = ' Word Search All Files',
+      desc = '  Word Search All Files',
     },
   },
   config = function()

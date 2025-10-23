@@ -9,7 +9,7 @@ local M = {
     picker = 'snacks',
     insert_at_top = true,
   },
-  keys = { { '<leader>I', function() require('import').pick() end, desc = '󱙾 Import Picker' } },
+  keys = { { '<leader>I', function() require('import').pick() end, desc = '󱙾  Import Picker' } },
 }
 
 return M

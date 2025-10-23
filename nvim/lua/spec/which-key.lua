@@ -1,8 +1,7 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  -- Show you pending keybinds.
-  'nvim-mini/mini.clue',
+  'nvim-mini/mini.clue',-- Show you pending keybinds.
   config = function()
     local miniclue = require 'mini.clue'
     miniclue.setup {
@@ -54,6 +53,15 @@ local M = {
         { mode = 'n', keys = '[' },
       },
       clues = { -- hydra like
+        { mode = 'n', keys = 'g*',     desc = '* without <>' },
+        { mode = 'n', keys = '<leader>t',     desc = '[Toggle]' },
+        { mode = 'n', keys = '<leader>s',     desc = '[Spell]' },
+        { mode = 'n', keys = '<leader>n',     desc = '[Notif]' },
+        { mode = 'n', keys = '<leader>a',     desc = '[AI]' },
+        { mode = 'n', keys = '<leader>g',     desc = '[LSP]' },
+        { mode = 'n', keys = '<leader>h',     desc = '[Harpoon/Git]' },
+        { mode = 'n', keys = '<leader>c',     desc = '[Comment]' },
+        { mode = 'n', keys = '<leader>tS',     desc = '[Spell]' },
         { mode = 'n', keys = 'gR',     desc = 'Enter Virtual Replace mode' },
         { mode = 'n', keys = 'gF',     desc = 'Edit file under cursor + jump line' },
         { mode = 'n', keys = 'gf',     desc = 'Edit file under cursor' },
@@ -63,8 +71,8 @@ local M = {
         miniclue.gen_clues.registers(),
         miniclue.gen_clues.windows(),
         -- miniclue.gen_clues.z(),
-        { mode = 'n', keys = 'zl', postkeys = '4z', desc = ' Pane right' },
-        { mode = 'n', keys = 'zh', postkeys = '4z', desc = ' Pane left' },
+        { mode = 'n', keys = 'zl', postkeys = '4z', desc = '  Pane right' },
+        { mode = 'n', keys = 'zh', postkeys = '4z', desc = '  Pane left' },
         { mode = 'n', keys = ']h', postkeys = ']' },
         { mode = 'n', keys = '[h', postkeys = '[' },
         { mode = 'n', keys = '[y', postkeys = '[' },

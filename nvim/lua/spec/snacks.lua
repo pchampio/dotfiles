@@ -1,11 +1,47 @@
-function my_toggles()
-  Snacks.toggle.inlay_hints({ name = 'Inlay Hints ' }):map '<leader>th'
-  Snacks.toggle.line_number({ name = 'Line Numbers ' }):map '<leader>tl'
-  Snacks.toggle.option('wrap', { name = 'Wrap Lines ' }):map '<leader>tw'
-  Snacks.toggle.words():map '<leader>tu'
+local function my_toggles()
+  Snacks.toggle.inlay_hints({ name = '[O] Inlay Hints' }):map '<leader>th'
+  Snacks.toggle.line_number({ name = '[O] Line Numbers' }):map '<leader>tl'
+  Snacks.toggle.option('wrap', { name = '[O] Wrap Lines' }):map '<leader>tw'
+  Snacks.toggle.new({
+    id = "diagnostics",
+    name = "Diagnostics",
+    get = function()
+      local enabled = false
+      if vim.diagnostic.is_enabled then
+        enabled = vim.diagnostic.is_enabled()
+      elseif vim.diagnostic.is_disabled then
+        enabled = not vim.diagnostic.is_disabled()
+      end
+      return enabled
+    end,
+    set = function(state)
+        vim.diagnostic.enable(state)
+    end,
+  }):map '<leader>tD'
+  Snacks.toggle.new({
+    id = "words",
+    name = "[LSP] Words underline",
+    get = function() return Snacks.words.enabled end,
+    set = function(state)
+      if state then
+        Snacks.words.enable()
+      else
+        Snacks.words.disable()
+      end
+    end,
+  }):map '<leader>tu'
+  Snacks.toggle.new({
+    id = 'toggle_inline',
+    name = '[AI] Inline completion',
+    get = function() return vim.g.inline_completion_enabled or false end,
+    set = function(state)
+      vim.g.inline_completion_enabled = state
+      vim.lsp.inline_completion.enable(state, { bufnr = vim.api.nvim_get_current_buf() })
+    end,
+  }):map '<leader>ti'
   Snacks.toggle.new({
     id = 'toggle_nes',
-    name = 'Next Edit Suggestions ',
+    name = '[AI] Next Edit Suggestions',
     get = function() return not (vim.g.toggle_nes or false) end,
     set = function(state)
       vim.g.toggle_nes = state
@@ -14,7 +50,7 @@ function my_toggles()
   }):map '<leader>tn'
   Snacks.toggle.new({
     id = 'toggle_format',
-    name = 'Auto format ',
+    name = 'Auto Format',
     get = function() return vim.g.toggle_auto_format or false end,
     set = function(state)
       vim.g.toggle_auto_format = state
@@ -22,7 +58,7 @@ function my_toggles()
   }):map '<leader>tf'
   Snacks.toggle.new({
     id = 'blame_line',
-    name = 'current line blame  ',
+    name = '[GIT] Current Line Blame',
     get = function() return vim.g.toogle_blame_line or false end,
     set = function(state)
       vim.g.toogle_blame_line = state
@@ -31,7 +67,7 @@ function my_toggles()
   }):map '<leader>tb'
   Snacks.toggle.new({
     id = 'line_word_diff',
-    name = 'word diff  ',
+    name = '[GIT] Word Diff',
     get = function() return vim.g.toogle_word_diff or false end,
     set = function(state)
       vim.g.toogle_word_diff = state
@@ -40,7 +76,7 @@ function my_toggles()
   }):map '<leader>td'
   Snacks.toggle.new({
     id = 'spell_en',
-    name = 'English Spelling 󰓆 ',
+    name = '[Spell] English Spelling',
     get = function() return vim.g.toogle_en_spell or false end,
     set = function(state)
       vim.g.toogle_en_spell = state
@@ -49,7 +85,7 @@ function my_toggles()
   }):map '<leader>tSe'
   Snacks.toggle.new({
     id = 'spell_all',
-    name = 'All Lang Spelling 󰓆 ',
+    name = '[Spell] All Lang Spelling',
     get = function() return vim.g.toogle_all_spell or false end,
     set = function(state)
       vim.g.toogle_all_spell = state
@@ -58,7 +94,7 @@ function my_toggles()
   }):map '<leader>tSa'
   Snacks.toggle.new({
     id = 'spell_fr',
-    name = 'French Spelling 󰓆 ',
+    name = '[Spell] French Spelling',
     get = function() return vim.g.toogle_fr_spell or false end,
     set = function(state)
       vim.g.toogle_fr_spell = state
@@ -88,8 +124,8 @@ local M = {
     end,
   },
   keys = {
-    { '<leader>hB', function() Snacks.gitbrowse() end, desc = ' Open Browser' },
-    { '<leader>hb', function() Snacks.git.blame_line() end, desc = ' Blame Line' },
+    { '<leader>hB', function() Snacks.gitbrowse() end, desc = '  Open Browser' },
+    { '<leader>hb', function() Snacks.git.blame_line() end, desc = '  Blame Line' },
     { '<leader>nd', function() Snacks.notifier.hide() end, desc = 'Notif Dismiss All' },
     { '<leader>np', function() Snacks.notifier.show_history() end, desc = 'Notif Preview' },
 
@@ -100,22 +136,35 @@ local M = {
     { "gt", function() Snacks.picker.lsp_type_definitions() end, desc = "LSP: Goto Type Definition" },
     { "<leader>gs", function() Snacks.picker.lsp_symbols() end, desc = "LSP: Symbols" },
     { "<leader>gS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP: Workspace Symbols" },
-    { "<leader>gd", function() Snacks.picker.diagnostics_buffer() end, desc = "LSP: ⚑ Diagnostics in Buffer" },
-    { "<leader>gD", function() Snacks.picker.diagnostics() end, desc = "LSP: ⚑ Diagnostics in Project" },
+    { "<leader>gi", function() Snacks.picker.lsp_incoming_calls() end, desc = "LSP: Calls Incoming" },
+    { "<leader>go", function() Snacks.picker.lsp_outgoing_calls() end, desc = "LSP: Calls Outgoing" },
+    { "<leader>gd", function() Snacks.picker.diagnostics_buffer() end, desc = "LSP: Diagnostics in Buffer" },
+    { "<leader>gD", function() Snacks.picker.diagnostics() end, desc = "LSP: Diagnostics in Project" },
+
+    { "<leader>hg", function() Snacks.picker.git_grep() end, desc = "  Git Grep" },
 
     { "ga", '<cmd>lua vim.lsp.buf.code_action()<cr>', desc = "LSP: code actions" },
     { "gh", vim.lsp.buf.hover, desc = 'LSP: Hover', mode = { "v", "n" } },
-    { "g=", function() vim.lsp.buf.format { async = true, filter = function(client) return client.name == "null-ls" end } end, desc = "LSP: format selection or buffer", mode = { "v", "n" } },
+    { "g=", function()
+      local mode = vim.api.nvim_get_mode().mode
+      if mode == 'n' then
+        vim.lsp.buf.format { async = true, filter = function(client) return client.name == "null-ls" end }
+      else
+        vim.lsp.buf.format { async = true }
+      end
+    end, desc = "LSP: format selection or buffer", mode = { "v", "n" } },
     { "<c-l>", function() vim.lsp.inline_completion.get() end,  expr = true, replace_keycodes = true, desc = "Accept inline completion", mode = {'i'} },
     { "<c-j>", function() vim.lsp.inline_completion.select({ count = 1 }) end,  expr = true, replace_keycodes = true, desc = "Accept inline completion", mode = {'i'} },
     { "<c-k>", function() vim.lsp.inline_completion.select({ count = -1 }) end,  expr = true, replace_keycodes = true, desc = "Accept inline completion", mode = {'i'} },
 
-    { "<leader>ut", function() Snacks.picker.undo() end, desc = "Undo tree" },
+    { "<leader>u", function() Snacks.picker.undo() end, desc = "Undo tree" },
     { '<leader>P', function() Snacks.picker.yanky() end, mode = { 'n', 'x' }, desc = 'Open Yank History' },
 
 
     { "]w", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
     { "[w", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+
+    { "<leader>q", function() Snacks.picker.qflist() end, desc = "Quickfix List Search" },
 
     { "<leader>to", function() Snacks.picker.todo_comments({ keywords = { "TODO", "HACK", "WARNING", "BUG", "NOTE", "INFO", "PERF", "ERROR" } }) end, desc = "Todo Comment Tags" },
   },
@@ -143,6 +192,7 @@ local M = {
     local layouts = require 'snacks.picker.config.layouts'
     layouts.my_ivylayout = {
       preview = false,
+      reverse = true,
       layout = {
         box = 'vertical',
         backdrop = false,
@@ -163,7 +213,7 @@ local M = {
 
     require('snacks').setup {
       rename = { enabled = true },
-      toggle = {},
+      toggle = { },
       bigfile = { enabled = true },
       words = { enabled = true, debounce = 100 },
       notifier = {

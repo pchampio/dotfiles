@@ -1,7 +1,4 @@
 local M = {
-  constants = {
-    big_file_size = 50 * 1024, -- 50 KB
-  },
   utils = {
     map = function(mode, lhs, rhs, opts)
       local options = { noremap = true, silent = true }

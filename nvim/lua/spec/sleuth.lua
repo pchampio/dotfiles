@@ -4,6 +4,11 @@ local M = {
   'tpope/vim-sleuth',
   {
     'andymass/vim-matchup',
+    lazy = false,
+    keys = {
+      { '%', '<Plug>(matchup-%)', desc = 'Matchup forward' },
+      { 'g%', '<Plug>(matchup-g%)', desc = 'Matchup backward' },
+    },
     config = function()
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
       vim.g.matchup_motion_enabled = true

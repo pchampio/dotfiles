@@ -8,17 +8,22 @@ local M = {
   },
   config = function()
     require('sidekick').setup {
+      nes = {
+        trigger = {
+          -- events that trigger sidekick next edit suggestions
+          events = { 'TextChanged', 'User SidekickNesDone' },
+        },
+      },
       cli = {
         mux = {
           backend = 'tmux',
           enabled = true,
+          create = 'split',
         },
-        win = {
-          keys = {
-            hide_ctrl_dot = { "<c-j>",            "<C-M-d>", desc         = "Scroll down", mode = "t" },
-            hide_ctrl_q   = { "<c-k>",            "<C-M-u>", desc         = "Scroll up",   mode = "t" },
-            stopinsert    = { "<leader><esc>", "stopinsert", mode = "t" },
-          },
+      },
+      tools = {
+        opencode = {
+          cmd = { 'opencode' },
         },
       },
     }
@@ -38,23 +43,30 @@ local M = {
   end,
   keys = {
     {
+      '<leader><tab>',
+      function()
+        require('sidekick.nes').update()
+      end,
+      expr = true,
+      desc = '󱚤  Request new edits from the LSP server',
+    },
+    {
       '<tab>',
       function()
         if require('sidekick').nes_jump_or_apply() then
           return
         end
-        vim.notify ' Nes request'
-        require('sidekick.nes').update()
+        return '<tab>'
       end,
       expr = true,
-      desc = '󱚤 Goto/Apply Next Edit Suggestion',
+      desc = '󱚤  Goto/Apply Next Edit Suggestion',
     },
     {
       '<leader>aa',
       function()
         require('sidekick.cli').toggle { name = 'opencode', focus = true }
       end,
-      desc = '󱚤 Toggle CLI',
+      desc = '󱚤  Toggle CLI',
     },
     {
       '<leader>at',
@@ -62,7 +74,7 @@ local M = {
         require('sidekick.cli').send { msg = '{this}' }
       end,
       mode = { 'x', 'n' },
-      desc = '󱚤 Send This',
+      desc = '󱚤  Send This',
     },
     {
       '<leader>av',
@@ -70,7 +82,7 @@ local M = {
         require('sidekick.cli').send { msg = '{selection}' }
       end,
       mode = { 'x' },
-      desc = '󱚤 Send Visual Selection',
+      desc = '󱚤  Send Visual Selection',
     },
     {
       '<leader>ap',
@@ -78,7 +90,7 @@ local M = {
         require('sidekick.cli').prompt { layout = { preset = 'my_ivylayout' } }
       end,
       mode = { 'n', 'x' },
-      desc = '󱚤 Prompt (visual/normal context)',
+      desc = '󱚤  Prompt (visual/normal context)',
     },
   },
 }

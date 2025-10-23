@@ -10,6 +10,8 @@ local M = {
     },
   },
   config = function()
+    -- LSP formats / edits on type (like for auto f when typing '{' in python string)
+    vim.lsp.on_type_formatting.enable()
     -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
     local default_caps = vim.lsp.protocol.make_client_capabilities()
     local cmp_caps = require('cmp_nvim_lsp').default_capabilities()

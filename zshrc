@@ -126,3 +126,6 @@ export GOROOT=/opt/go
 export PATH=$GOROOT/bin:$PATH
 export GOPATH=/home/prr/lab/go
 export PATH=$GOPATH/bin:$PATH
+
+# opencode
+export PATH=/home/prr/.opencode/bin:$PATH

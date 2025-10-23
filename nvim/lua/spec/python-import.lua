@@ -12,7 +12,7 @@ local M = {
       end,
       mode = { 'i', 'n' },
       silent = true,
-      desc = 'Add python import',
+      desc = '󱙾  Add python import',
       ft = 'python',
     },
     {
@@ -22,7 +22,7 @@ local M = {
       end,
       mode = 'x',
       silent = true,
-      desc = 'Add python import',
+      desc = '󱙾  Add python import',
       ft = 'python',
     },
   },
