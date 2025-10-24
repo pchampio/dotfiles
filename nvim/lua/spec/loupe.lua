@@ -5,7 +5,7 @@ local M = {
   event = { 'CmdlineEnter', 'CursorHold' },
   keys = {
     {
-      'g#',
+      '<NOP>',
       '<Plug>(LoupeGOctothorpe)',
       desc = '  Search backwards word under cursor',
     },

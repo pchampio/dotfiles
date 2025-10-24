@@ -67,8 +67,9 @@ return {
           venv = vim.fn.fnamemodify(venv_path, ':t'),
         }
         vim.schedule(function()
-          vim.cmd 'LspRestart basedpyright'
           vim.notify('venv: ' .. venv_path)
+            vim.lsp.stop_client(client.id, true)
+            vim.lsp.start(client.config)
         end)
       end
     end

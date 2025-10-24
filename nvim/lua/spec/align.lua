@@ -5,7 +5,7 @@ local M = {
   on = { '<Plug>(EasyAlign)', 'EasyAlign' },
   dependencies = 'tpope/vim-repeat',
   keys = {
-    { '<leader>A', '<Plug>(EasyAlign)', mode = { 'n', 'x' }, desc = 'Align' },
+    { '<leader>A', '<Plug>(EasyAlign)', mode = { 'n', 'x' }, desc = 'EZ Align Text' },
   },
 }
 return M

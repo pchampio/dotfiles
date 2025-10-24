@@ -109,6 +109,9 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250"
 # Atuin shell history
 atuin-setup
 
+# OpenCode CLI
+export PATH=$HOME/.opencode/bin:$PATH
+
 instant-zsh-post
 
 if [ $profiling = true ]; then
@@ -124,8 +127,5 @@ fi
 # wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh | bash
 export GOROOT=/opt/go
 export PATH=$GOROOT/bin:$PATH
-export GOPATH=/home/prr/lab/go
+export GOPATH=$HOME/lab/go
 export PATH=$GOPATH/bin:$PATH
-
-# opencode
-export PATH=/home/prr/.opencode/bin:$PATH

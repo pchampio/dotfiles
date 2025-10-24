@@ -3,7 +3,7 @@
 local M = {
   'wincent/ferret',
   keys = {
-    { '<leader>*', '<Plug>(FerretAckWord)', desc = '* Seach word all files' },
+    { '<leader>*', '<Plug>(FerretAckWord)', desc = '  * Seach Word All Files' },
     {
       '<leader>E',
       '<Plug>(FerretAcks)',

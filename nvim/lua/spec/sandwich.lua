@@ -19,7 +19,7 @@ local M = {
     {
       mode = { 'n', 'x' },
       'SS',
-      '<Plug>(operator-sandwich-add)line',
+      'g^<Plug>(operator-sandwich-add)$',
       desc = '󰗅  Add S. Line',
     },
     {
@@ -62,7 +62,7 @@ local M = {
       mode = { 'x', 'o' },
       'is',
       '<Plug>(textobj-sandwich-query-i)',
-      desc = '󰗅  Select Inside S. character',
+      desc = '󰗅  Select Inside S. Character',
     },
     {
       mode = { 'x', 'o' },
@@ -74,37 +74,37 @@ local M = {
       mode = { 'x', 'o' },
       'ii',
       '<Plug>(textobj-sandwich-auto-i)',
-      desc = '󰗅  Select Inside S. Character found',
+      desc = '󰗅  Select Inside S. Found',
     },
     {
       mode = { 'x', 'o' },
       'ai',
       '<Plug>(textobj-sandwich-auto-a)',
-      desc = '󰗅  Select Around S. Character found',
+      desc = '󰗅  Select Around S. Found',
     },
     {
       mode = { 'n' },
       'cin',
       'c<Plug>(textobj-sandwich-literal-query-i)',
-      desc = '󰗅  Select Inside S. character Prompt',
+      desc = '󰗅  Select Inside S. Prompt',
     },
     {
       mode = { 'n' },
       'can',
       'c<Plug>(textobj-sandwich-literal-query-a)',
-      desc = '󰗅  Select Around S. Character prompt',
+      desc = '󰗅  Select Around S. Prompt',
     },
     {
       mode = { 'x', 'o' },
       'in',
       '<Plug>(textobj-sandwich-literal-query-i)',
-      desc = '󰗅  Select Inside S. Character Prompt',
+      desc = '󰗅  Select Inside S. Prompt',
     },
     {
       mode = { 'x', 'o' },
       'an',
       '<Plug>(textobj-sandwich-literal-query-a)',
-      desc = '󰗅  Select Around S. Character Prompt',
+      desc = '󰗅  Select Around S. Prompt',
     },
   },
 }

@@ -1,14 +1,14 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'nvim-mini/mini.clue',-- Show you pending keybinds.
+  'git@prr.re:Drakirus/mini.clue',
   config = function()
     local miniclue = require 'mini.clue'
     miniclue.setup {
       -- Clue window settings
       window = {
         -- Floating window config
-        config = { anchor = 'SW', row = 'auto', col = 'auto', width = 40 },
+        config = { anchor = 'SE', row = 'auto', col = 'auto', width = 40, border = 'rounded' },
         -- Delay before showing clue window
         delay = 500,
         -- Keys to scroll inside the clue window
@@ -61,22 +61,26 @@ local M = {
         { mode = 'n', keys = '<leader>g',     desc = '[LSP]' },
         { mode = 'n', keys = '<leader>h',     desc = '[Harpoon/Git]' },
         { mode = 'n', keys = '<leader>c',     desc = '[Comment]' },
+        { mode = 'n', keys = 'g?',     desc = '[DebugPrint]' },
         { mode = 'n', keys = '<leader>tS',     desc = '[Spell]' },
         { mode = 'n', keys = 'gR',     desc = 'Enter Virtual Replace mode' },
-        { mode = 'n', keys = 'gF',     desc = 'Edit file under cursor + jump line' },
-        { mode = 'n', keys = 'gf',     desc = 'Edit file under cursor' },
         { mode = 'n', keys = 'g&',     desc = 'Repeat last `:s` on all lines' },
-        { mode = 'n', keys = 'g?',     desc = 'Rot13 encode (operator)' },
-        miniclue.gen_clues.marks(),
+        -- miniclue.gen_clues.marks(),
         miniclue.gen_clues.registers(),
-        miniclue.gen_clues.windows(),
+        -- miniclue.gen_clues.windows(),
         -- miniclue.gen_clues.z(),
         { mode = 'n', keys = 'zl', postkeys = '4z', desc = '  Pane right' },
         { mode = 'n', keys = 'zh', postkeys = '4z', desc = '  Pane left' },
-        { mode = 'n', keys = ']h', postkeys = ']' },
-        { mode = 'n', keys = '[h', postkeys = '[' },
         { mode = 'n', keys = '[y', postkeys = '[' },
         { mode = 'n', keys = ']y', postkeys = ']' },
+        { mode = 'n', keys = ']c', postkeys = 'zt]' },
+        { mode = 'n', keys = '[c', postkeys = 'zt[' },
+        { mode = 'n', keys = '[d', postkeys = 'zt[' },
+        { mode = 'n', keys = ']d', postkeys = 'zt]' },
+        { mode = 'n', keys = '[w', postkeys = 'zt[' },
+        { mode = 'n', keys = ']w', postkeys = 'zt]' },
+        { mode = 'n', keys = '[t', postkeys = 'zt[' },
+        { mode = 'n', keys = ']t', postkeys = 'zt]' },
       },
     }
   end,

@@ -18,12 +18,7 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/tmux"
 "$BASEDIR/git"
 
-
-read -p "Install optional (junest) watchman/java bins [y]" -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  # Nice to have (junest bins)
-  "$BASEDIR/junest"
-  "$BASEDIR/watchman"
-  "$BASEDIR/java"
-fi
+# Nice to have (junest bins)
+"$BASEDIR/junest"
+"$BASEDIR/watchman"
+"$BASEDIR/java"

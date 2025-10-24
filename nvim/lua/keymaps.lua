@@ -46,10 +46,25 @@ map('o', 'L', 'g_')
 map('n', 'c', '"_c')
 map('n', 'C', '"_C')
 
--- Insert mode mapping for <C-l> to escape and move to the end of the line
-map('i', '<C-l>', '<Esc>A')
-
 map('n', '<leader>r', '<Esc>:call RenameFile()<CR>', { desc = '󰑕  RenameFile' })
+
+-- Disable the default keybinds
+for _, bind in ipairs {
+  'grn',
+  'gra',
+  'gri',
+  'grr',
+  'grt',
+  'gO',
+  '<c-w>d',
+  '<c-w><c-d>',
+} do
+  pcall(vim.keymap.del, 'n', bind)
+end
+
+map('n', '<leader>d', vim.diagnostic.open_float, { desc = '⚑  Diagnostic show' })
+map('n', '[d', function() vim.diagnostic.jump({ count = -1 }) end, { desc = '⚑  Jump To Diagnostic' })
+map('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, { desc = '⚑  Jump To Diagnostic' })
 
 -- Spell check correct
 vim.cmd [[
@@ -57,7 +72,7 @@ inoremap <expr> <A-s>  pumvisible() ?  "\<C-n>" : "\<C-x>s"
 nnoremap <expr> <A-s> pumvisible() ?  "i\<C-n>" : "w[sei\<C-x>s"
 ]]
 
-map({'n', 'v'}, 'gA', 'ga', { desc = 'Get Char Ascii value' })
+map({'n', 'v'}, 'gA', 'ga', { desc = 'Get Char Ascii Value' })
 
 -- Leader mapping to change working directory to the current file's directory
 map('n', '<leader>cd', function()

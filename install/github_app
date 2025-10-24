@@ -14,6 +14,5 @@ install_github_app fzf "junegunn/fzf" "https.*fzf.*linux.*amd64.*gz$"
 install_github_app tssh "trzsz/trzsz-ssh" "https.*tssh.*linux_x86.*gz$"
 install_github_app tsshd "trzsz/tsshd" "https.*tsshd.*linux_x86.*gz$"
 install_github_app "trzsz,trz,tsz" "trzsz/trzsz-go" "https.*trzsz.*linux_x86.*gz$"
-install_github_app "opencode" "sst/opencode" "https.*opencode.*linux.*x64.zip$"
 
 success "[Github APP] Success"

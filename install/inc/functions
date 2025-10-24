@@ -31,7 +31,12 @@ run_with_spinner() {
     local i=0
     local pid pgid
 
-    explain2 "$cmd"
+    if [ ! -z "${I_TITLE}" ]; then
+        explain2 "$I_TITLE"
+        unset I_TITLE
+    else
+        explain2 "$cmd"
+    fi
     [ -f /tmp/log_install_last ] && rm -f /tmp/log_install_last
     ln -s "$logfile" /tmp/log_install_last
 

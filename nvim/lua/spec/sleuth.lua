@@ -7,7 +7,6 @@ local M = {
     lazy = false,
     keys = {
       { '%', '<Plug>(matchup-%)', desc = 'Matchup forward' },
-      { 'g%', '<Plug>(matchup-g%)', desc = 'Matchup backward' },
     },
     config = function()
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }

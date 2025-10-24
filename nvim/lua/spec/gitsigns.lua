@@ -2,10 +2,11 @@
 ---@type LazySpec
 local M = {
   'lewis6991/gitsigns.nvim',
-  ---@module 'gitsigns'
-  ---@type Gitsigns.Config
   opts = {
     current_line_blame = false,
+    preview_config = {
+      border = 'rounded',
+    },
     current_line_blame_opts = {
       delay = 0,
     },
@@ -36,28 +37,28 @@ local M = {
       end, { desc = '  Jump to previous diff/hunk' })
 
       -- Actions
-      map('n', '<leader>ha', gs.stage_hunk, { desc = '  Stage Hunk' })
-      map('n', '<leader>hr', gs.reset_hunk, { desc = '  Reset Hunk' })
+      map('n', '<leader>ha', gs.stage_hunk, { desc = 'GIT: Stage Hunk' })
+      map('n', '<leader>hr', gs.reset_hunk, { desc = 'GIT: Reset Hunk' })
 
       map('v', '<leader>ha', function()
         gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
-      end, { desc = '  Stage Hunk Visual' })
+      end, { desc = 'GIT: Stage Hunk Visual' })
 
       map('v', '<leader>hr', function()
         gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
-      end, { desc = '  Reset Hunk Visual' })
+      end, { desc = 'GIT: Reset Hunk Visual' })
 
-      map('n', '<leader>hA', gs.stage_buffer, { desc = '  Stage Buffer' })
-      map('n', '<leader>hR', gs.reset_buffer, { desc = '  Reset Buffer' })
-      map('n', '<leader>hp', gs.preview_hunk, { desc = '  Preview Hunk' })
-      map('n', '<leader>hi', gs.preview_hunk_inline, { desc = '  Preview Hunk Inline' })
+      map('n', '<leader>hA', gs.stage_buffer, { desc = 'GIT: Stage Buffer' })
+      map('n', '<leader>hR', gs.reset_buffer, { desc = 'GIT: Reset Buffer' })
+      map('n', '<leader>hp', gs.preview_hunk, { desc = 'GIT: Preview Hunk' })
+      map('n', '<leader>hi', gs.preview_hunk_inline, { desc = 'GIT: Preview Hunk Inline' })
 
-      map('n', '<leader>hd', function() gs.diffthis '~' end, { desc = '  Diff Against Last Commit' })
+      map('n', '<leader>hd', function() gs.diffthis '~' end, { desc = 'GIT: Diff Against Last Commit' })
 
-      map('n', '<leader>hQ', function() gs.setqflist 'all' end, { desc = "  Open QF list with all modified files" })
-      map('n', '<leader>hq', gs.setqflist, { desc = "  Open QF list with current modified file" })
+      map('n', '<leader>hQ', function() gs.setqflist 'all' end, { desc = "GIT: QF modified files" })
+      map('n', '<leader>hq', gs.setqflist, { desc = "GIT: qF list this file" })
       -- Text object
-      map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = '  Select Hunk' })
+      map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'GIT: Select Hunk' })
     end,
   },
 }
