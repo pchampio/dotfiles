@@ -5,9 +5,9 @@ BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
 ## Mendatory for me
-"$BASEDIR/dotfiles"
-"$BASEDIR/zsh"
 "$BASEDIR/github_app"
+"$BASEDIR/zsh"
+"$BASEDIR/dotfiles"
 "$BASEDIR/pinentry-tty"
 "$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
 # Should not require input
