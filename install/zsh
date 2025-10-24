@@ -4,10 +4,13 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+success "[ZSH] Start"
+
 rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
 
-explain "Installation de oh-my-zsh"
+
+explain "Install oh-my-zsh"
   export KEEP_ZSHRC='yes'
   [ -f /tmp/.oh-my-zsh.install ] && rm /tmp/.oh-my-zsh.install
   [ -d "$ZSH" ] && rm -rf "$ZSH"
@@ -19,50 +22,51 @@ explain "Installation de oh-my-zsh"
     sudo chown $USER ~/.zsh-update
   fi
 
-explain "Installation de instant-zsh"
+explain "Install instant-zsh"
   run_with_spinner curl --progress-bar -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
 
-explain "Installation de zsh-syntax-highlighting"
+explain "Install zsh-syntax-highlighting"
   run_with_spinner git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting --depth 1
 
-explain "Installation zsh-autosuggestions"
+explain "Install autosuggestions"
   run_with_spinner git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/zsh-autosuggestions --depth 1
 
-explain "Installation de zsh-completions"
+explain "Install zsh-completions"
   run_with_spinner git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/zsh-completions --depth 1
 
-explain "Installation de zsh-autoquoter"
+explain "Install zsh-autoquoter"
  run_with_spinner git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter --depth 1
  
 # Remove group/other write permissions to make oh-my-zsh happy
 chmod -R go-w ~/.oh-my-zsh 2> /dev/null || true
 chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || true
 
-# explain "Installation de git-worktree-switcher"
+# explain "Install git-worktree-switcher"
 #  tell curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/wt > ~/dotfiles/bin/wt
 #  chmod +x ~/dotfiles/bin/wt
 #  mkdir -p ~/.oh-my-zsh/completions/
 #  curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt
 
-wherezsh="$(command -v zsh)"
+wherezsh="$(command -v zsh)" # default
 
 MIN_ZSH_VERSION="5.8"
 REPLY=n
 if command -v zsh >/dev/null 2>&1; then
   ZSH_VERSION=$(zsh --version | awk '{print $2}')
   if [ "$(printf '%s\n' "$ZSH_VERSION" $MIN_ZSH_VERSION | sort -V | head -n1)" = $MIN_ZSH_VERSION ]; then
-    explain "Zsh version is ($ZSH_VERSION) skipping local install"
+    explain "Zsh version is ($ZSH_VERSION): Skipping local install"
+    [ -f "$HOME/.local/bin/zsh" ] && rm "$HOME/.local/bin/zsh"
+    tell ln -s "$wherezsh" "$HOME/.local/bin/zsh" || true
   else
     explain "Zsh version is too old ($ZSH_VERSION)"
     REPLY=y
   fi
 else
-    explain "Zsh is not installed"
+    explain "Zsh is not pre-installed"
     REPLY=y
 fi
-
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  explain "Installation de zsh-bin"
+  explain "Local install of zsh-bin"
   rm -rf /tmp/zsh-bin
   mkdir /tmp/zsh-bin
   wget -q -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
@@ -70,52 +74,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   wherezsh=$HOME/.local/bin/zsh
 fi
 
-
 $wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
-
-
-read -p "chsh to zsh? " -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "$wherezsh" | sudo tee -a /etc/shells
-  sudo chsh -s "$wherezsh"  "${USER}"
-fi
-
-if [[ ! -n $wherezsh ]]; then
-  [ -f "$HOME/.local/bin/zsh" ] && rm "$HOME/.local/bin/zsh"
-  tell ln -s "$(command -v zsh)" "$HOME/.local/bin/zsh" || true
-fi
-
-
-## Fake chsh by adding executing zsh in other shells
-
-read -p "Add exec '$wherezsh' to .profile (you can exit here with *N*)? [y] " -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.profile
-fi
-
-if [[ $REPLY =~ ^N$ ]]; then
-  exit 0
-  success "[ZSH] Success"
-fi
-
-read -p "Add exec '$wherezsh' to .bash_profile ? [y] " -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.bash_profile
-fi
-
-read -p "Add exec '$wherezsh' to .bashrc? [y] " -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "[ -f $wherezsh ] && [ "${JUNEST_ENV}" != "1" ] && exec $wherezsh -l" >> $HOME/.bashrc
-fi
-
-read -p "Add exec '$wherezsh' to csh or tcsh (.login)? [y] " -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "if ( -f $wherezsh ) exec $wherezsh -l" >> $HOME/.login
-fi
 
 success "[ZSH] Success"

@@ -3,6 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+success "[TMUX] Start"
 
 explain "Tmux plugins"
 [ -d "$HOME/.tmux-resurrect/" ] && rm -rf "$HOME/.tmux-resurrect/"

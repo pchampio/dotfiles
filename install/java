@@ -3,7 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
-explain "Install java"
+success "[JAVA] Start"
 
 [ ! -d ~/.junest ] && $BASEDIR/junest
 run_with_spinner "echo y | ~/.local/share/junest/bin/junest -f -- sudo yay -S jre-openjdk"

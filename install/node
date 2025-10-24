@@ -5,6 +5,8 @@ BASEDIR=$(dirname $0)
 
 cd $(dirname $0)
 
+success "[NODE] Start"
+
 # Remove dotfiles bins to avoid loop with my own define node/npm
 export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v "^$HOME/dotfiles/bin\$" | paste -sd ':' -)
 

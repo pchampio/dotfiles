@@ -5,7 +5,9 @@ BASEDIR=$(dirname $0)
 
 PKGVER=2025.07.28.00
 
-explain "Install watchman"
+success "[WATCHMAN] Start"
+
+explain "Download And Patch Watchman"
 
 [ ! -d ~/.junest ] && $BASEDIR/junest
   \rm -rf /tmp/watchman-pkg || true

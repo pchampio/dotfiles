@@ -3,7 +3,8 @@
 BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
-explain "Install pinentry"
+success "[PINENTRY] Start"
+explain "compiling pinentry-tty"
 set -e
 
 MUSL_VERSION=1.2.4

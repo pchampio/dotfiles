@@ -3,6 +3,7 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+success "[Github APP] Start"
 
 install_github_app tmux "pchampio/build-static-tmux" "https.*tmux.*amd64.*stripped.gz$"
 install_github_app difft "Wilfred/difftastic" "https.*difft.*x86_64.*musl.*gz$"

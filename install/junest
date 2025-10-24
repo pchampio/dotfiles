@@ -4,6 +4,8 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+success "[JUNEST] Start"
+
 [ -d ~/.local/share/junest ] && {
   read -p "Delete older junest? [y] " -n 1 -r
   echo ""    # (optional) move to a new line
@@ -21,3 +23,5 @@ BASEDIR=$(dirname $0)
 
 run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
 run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm
+
+success "[JUNEST] Success"

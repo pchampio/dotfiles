@@ -22,22 +22,22 @@ if [ ! -e ~/.config/nvim/spell ]; then
   run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/en.utf-8.spl
 fi
 
-explain "Install nvim plugins"
+explain "Install Nvim Plugins"
+
+[ ! -d ~/.ssh/ ] && mkdir -p ~/.ssh/
+# add some known_hosts for later neovim package manager git clone.
+I_TITLE="[SSH] add github.com/prr.re to known_hosts" run_with_spinner "ssh-keyscan github.com >> ~/.ssh/known_hosts 2> /dev/null"
+# manualy add my self hosted server
+echo '|1|lRIfMUrVckQFC94Srhr/xCshUbM=|2ce5rmYGTY9LRXkru3gQ0IhlYVc= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrxfg+PBcrQUqf9AQ76ZQP3rD3x9w6lH3eQQOCbwd08' >> ~/.ssh/known_hosts
+"$HOME/.local/bin/zsh" -ic "ssh -T git@prr.re 2>/dev/null"
+
+I_TITLE="[Nvim] Lazy install" run_with_spinner "$HOME/.local/bin/zsh -ic '
+nvim --headless -c \"lua local lazypath = vim.fn.stdpath(\\\"data\\\") .. \\\"/lazy/lazy.nvim\\\"; if not vim.loop.fs_stat(lazypath) then vim.fn.system({\\\"git\\\",\\\"clone\\\",\\\"--filter=blob:none\\\",\\\"https://github.com/folke/lazy.nvim.git\\\",\\\"--branch=stable\\\", lazypath}) end; vim.opt.rtp:prepend(lazypath); require(\\\"lazy\\\").update()\" -c \"qa\"
+'"
 
 I_TITLE="[Tools] Opencode" run_with_spinner "PATH=$HOME/.opencode/bin:$PATH curl -fsSL https://opencode.ai/install | bash"
 # remove crap from zshrc (added by opencode install)
 apply_sed_to_dotfiles '/^# opencode$/,+1d'
 
-[ ! -d ~/.ssh/ ] && mkdir -p ~/.ssh/
-# add some known_hosts for later neovim package manager git clone.
-I_TITLE="[SSH] add github.com to known_hosts" run_with_spinner "ssh-keyscan github.com >> ~/.ssh/known_hosts 2> /dev/null"
-# manualy add my self hosted server
-echo '|1|lRIfMUrVckQFC94Srhr/xCshUbM=|2ce5rmYGTY9LRXkru3gQ0IhlYVc= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrxfg+PBcrQUqf9AQ76ZQP3rD3x9w6lH3eQQOCbwd08' >> ~/.ssh/known_hosts
-I_TITLE="[SSH] add prr.re to known_hosts" run_with_spinner "$HOME/.local/bin/zsh" -ic "ssh -T git@prr.re"
-
-I_TITLE="[Nvim] Lazy install" run_with_spinner "$HOME/.local/bin/zsh -ic '
-ssh && \
-nvim --headless -c \"lua local lazypath = vim.fn.stdpath(\\\"data\\\") .. \\\"/lazy/lazy.nvim\\\"; if not vim.loop.fs_stat(lazypath) then vim.fn.system({\\\"git\\\",\\\"clone\\\",\\\"--filter=blob:none\\\",\\\"https://github.com/folke/lazy.nvim.git\\\",\\\"--branch=stable\\\", lazypath}) end; vim.opt.rtp:prepend(lazypath); require(\\\"lazy\\\").update()\" -c \"qa\"
-'"
 
 success "[NVIM] Success"

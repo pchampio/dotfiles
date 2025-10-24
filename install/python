@@ -20,6 +20,7 @@ install_static_python() {
   local build_version="${STANDALONE_PYTHON_VERSION}"
   local build_tag="cpython-${build_version}+${BUILD_DATE}-${STANDALONE_PYTHON_ARCH}-${STANDALONE_PYTHON_PLATFORM}"
 
+  success "[PYTHON3 bin] Start"
   explain "Install python version $STANDALONE_PYTHON_VERSION compiled the $BUILD_DATE"
   dist_url="https://github.com/astral-sh/python-build-standalone/releases/download/${BUILD_DATE}/${build_tag}-install_only.tar.gz"
   cwd="$(pwd)"
@@ -32,7 +33,7 @@ install_static_python() {
   tar xzf dist.tar.gz && rm dist.tar.gz
   mv python/* . && rmdir python
   cd "${cwd}"
-  success "[PYTHON3] Success"
+  success "[PYTHON3 bin] Success"
 }
 
 STANDALONE_PYTHON_ARCH=$(arch)
@@ -64,6 +65,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then # file executed (not sourced)
 fi
 
 if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
+  success "[PYTHON3 lib] Start"
   explain "pip install my tools (pipx imgcat trash sshuttle..)"
 
   run_with_spinner $bpython -m ensurepip --upgrade

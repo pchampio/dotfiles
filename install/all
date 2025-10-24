@@ -4,13 +4,13 @@
 BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
-## Mendatory for me
+### Mendatory apps ###
 "$BASEDIR/github_app"
 "$BASEDIR/zsh"
 "$BASEDIR/dotfiles"
 "$BASEDIR/pinentry-tty"
 "$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
-# Should not require input
+# Should not require user input anymore
 "$BASEDIR/neovim"
 "$BASEDIR/secrets"
 "$BASEDIR/python"
@@ -18,7 +18,7 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/tmux"
 "$BASEDIR/git"
 
-# Nice to have (junest bins)
+### Nice to have (junest bins) ###
 "$BASEDIR/junest"
 "$BASEDIR/watchman"
 "$BASEDIR/java"
