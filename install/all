@@ -18,7 +18,7 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/tmux"
 "$BASEDIR/git"
 
-explain "CTRL-C ow to abort further optional installations."
+explain "\n\nCTRL-C now to abort optional installations."
 sleep 5
 
 ### Nice to have (junest bins) ###
