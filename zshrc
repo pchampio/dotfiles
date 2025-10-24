@@ -83,11 +83,6 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 export FLUTTER=/opt/flutter/bin
 export PATH=${FLUTTER}:${PATH}
 
-export JAVA_HOME=$HOME/dotfiles
-# Android - sdk
-export ANDROID_HOME=/opt/android-sdk
-export PATH=${PATH}:${JAVA_HOME}/bin:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools/bin
-
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -129,3 +124,10 @@ export GOROOT=/opt/go
 export PATH=$GOROOT/bin:$PATH
 export GOPATH=$HOME/lab/go
 export PATH=$GOPATH/bin:$PATH
+
+# Android - sdk (over junest java)
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export ANDROID_HOME=$HOME/lab/commandlinetools-linux-13114758_latest/cmdline-tools/
+
+export PATH="${JAVA_HOME}/bin:$PATH"
+export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/bin:$PATH"
