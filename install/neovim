@@ -29,7 +29,7 @@ explain "Install Nvim Plugins"
 I_TITLE="[SSH] add github.com/prr.re to known_hosts" run_with_spinner "ssh-keyscan github.com >> ~/.ssh/known_hosts 2> /dev/null"
 # manualy add my self hosted server
 echo '|1|lRIfMUrVckQFC94Srhr/xCshUbM=|2ce5rmYGTY9LRXkru3gQ0IhlYVc= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrxfg+PBcrQUqf9AQ76ZQP3rD3x9w6lH3eQQOCbwd08' >> ~/.ssh/known_hosts
-"$HOME/.local/bin/zsh" -ic "ssh -T git@prr.re 2>/dev/null"
+"$HOME/.local/bin/zsh" -ic "ssh -T git@prr.re" 2>/dev/null >/dev/null
 
 I_TITLE="[Nvim] Lazy install" run_with_spinner "$HOME/.local/bin/zsh -ic '
 nvim --headless -c \"lua local lazypath = vim.fn.stdpath(\\\"data\\\") .. \\\"/lazy/lazy.nvim\\\"; if not vim.loop.fs_stat(lazypath) then vim.fn.system({\\\"git\\\",\\\"clone\\\",\\\"--filter=blob:none\\\",\\\"https://github.com/folke/lazy.nvim.git\\\",\\\"--branch=stable\\\", lazypath}) end; vim.opt.rtp:prepend(lazypath); require(\\\"lazy\\\").update()\" -c \"qa\"

@@ -36,7 +36,7 @@ explain "Install zsh-completions"
 
 explain "Install zsh-autoquoter"
  run_with_spinner git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter --depth 1
- 
+
 # Remove group/other write permissions to make oh-my-zsh happy
 chmod -R go-w ~/.oh-my-zsh 2> /dev/null || true
 chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || true
@@ -47,6 +47,7 @@ chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || 
 #  mkdir -p ~/.oh-my-zsh/completions/
 #  curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt
 
+[ -f "$HOME/.local/bin/zsh" ] || [ -L "$HOME/.local/bin/zsh" ] && rm "$HOME/.local/bin/zsh"
 wherezsh="$(command -v zsh)" # default
 
 MIN_ZSH_VERSION="5.8"
@@ -55,7 +56,6 @@ if command -v zsh >/dev/null 2>&1; then
   ZSH_VERSION=$(zsh --version | awk '{print $2}')
   if [ "$(printf '%s\n' "$ZSH_VERSION" $MIN_ZSH_VERSION | sort -V | head -n1)" = $MIN_ZSH_VERSION ]; then
     explain "Zsh version is ($ZSH_VERSION): Skipping local install"
-    [ -f "$HOME/.local/bin/zsh" ] && rm "$HOME/.local/bin/zsh"
     tell ln -s "$wherezsh" "$HOME/.local/bin/zsh" || true
   else
     explain "Zsh version is too old ($ZSH_VERSION)"

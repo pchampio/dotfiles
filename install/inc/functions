@@ -70,7 +70,7 @@ run_with_spinner() {
     printf "\r"
 
     if [ $cmdstatus -ne 0 ]; then
-        error "Command failed with exit code ${status}:"
+        error "Command failed with exit code ${cmdstatus}:"
         tail -n 10 "$logfile"
         echo "Full log available at: $logfile"
     fi
@@ -160,4 +160,48 @@ install_github_app() {
         chmod a+x "$target" || return 1
         ln -s "$target" "$alias"
     done
+}
+
+get_config_for_current_shell() {
+    current_shell=$(basename "$SHELL")
+    case $current_shell in
+        fish)
+            config_files="$HOME/.config/fish/config.fish"
+        ;;
+        zsh)
+            config_files="$HOME/.zshrc $HOME/.zshenv $XDG_CONFIG_HOME/zsh/.zshrc $XDG_CONFIG_HOME/zsh/.zshenv"
+        ;;
+        bash)
+            config_files="$HOME/.bashrc $HOME/.bash_profile $HOME/.profile $XDG_CONFIG_HOME/bash/.bashrc $XDG_CONFIG_HOME/bash/.bash_profile"
+        ;;
+        ash)
+            config_files="$HOME/.ashrc $HOME/.profile"
+        ;;
+        sh)
+            config_files="$HOME/.ashrc $HOME/.profile"
+        ;;
+        tcsh)
+            config_files="$HOME/.tcshrc $HOME/.cshrc $HOME/.login"
+        ;;
+        csh)
+            config_files="$HOME/.cshrc $HOME/.login"
+        ;;
+        *)
+            # Default case if none of the above matches
+            config_files="$HOME/.login $HOME/.bashrc $HOME/.bash_profile $XDG_CONFIG_HOME/bash/.bashrc $XDG_CONFIG_HOME/bash/.bash_profile"
+        ;;
+    esac
+
+    config_file=""
+    for file in $config_files; do
+        if [[ -f $file ]]; then
+            config_file=$file
+            break
+        fi
+    done
+
+    if [[ -z $config_file ]]; then
+        echo "$HOME/.login"
+    fi
+    echo $config_file
 }

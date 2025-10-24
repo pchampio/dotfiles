@@ -15,7 +15,7 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
 
   >&2 echo "email $email"
   $bin_path/rbw config set email "$email"
-  $bin_path/rbw config set pinentry "$HOME/.local/bin/gnupg/bin/pinentry-tty"
+  $bin_path/rbw config set pinentry "$HOME/.local/bin/pinentry"
   $bin_path/rbw config set lock_timeout $((3600 * 4)) # 4 hours
 
   if [[ -n "$self_url" ]]; then
@@ -28,8 +28,6 @@ if [[ ! -f $HOME/.config/rbw/config.json ]]; then
   $bin_path/rbw register
   >&2 echo "Set up complete. Start the agent..."
 
-# else
-#   $bin_path/rbw config set pinentry "$HOME/.local/bin/gnupg/bin/pinentry-tty" # TODO REMOVE ME
 fi
 
 if [ "$1" = "unlock" ]; then
