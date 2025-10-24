@@ -9,7 +9,7 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/zsh"
 "$BASEDIR/dotfiles"
 "$BASEDIR/pinentry-tty"
-"$HOME/dotfiles/bin/rbw" unlock && success "[RBW] Unlocked"
+"$HOME/.local/bin/zsh" -ic "$HOME/dotfiles/bin/rbw unlock" && success "[RBW] Unlocked"
 # Should not require user input anymore
 "$BASEDIR/neovim"
 "$BASEDIR/secrets"
