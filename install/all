@@ -4,19 +4,20 @@
 BASEDIR="$(dirname "$0")"
 . "$BASEDIR/inc/functions"
 
-### Mendatory apps ###
-"$BASEDIR/github_app"
-"$BASEDIR/zsh"
-"$BASEDIR/dotfiles"
-"$BASEDIR/secrets"
-# Should not require user input anymore
-"$BASEDIR/neovim"
-"$BASEDIR/python"
-"$BASEDIR/node"
-"$BASEDIR/tmux"
+# ### Mendatory apps ###
+# "$BASEDIR/github_app"
+# "$BASEDIR/zsh"
+# "$BASEDIR/dotfiles"
+# "$BASEDIR/secrets"
+# # Should not require user input anymore
+# "$BASEDIR/neovim"
+# "$BASEDIR/python"
+# "$BASEDIR/node"
+# "$BASEDIR/tmux"
 "$BASEDIR/git"
 
-explain "\n\nCTRL-C now to abort optional installations."
+trap "echo -e '\nAbort optional installations.'; exit" SIGINT
+error "\n-------------------------------------------\nCTRL-C now to abort optional installations.\n-------------------------------------------"
 sleep 10
 
 ### Nice to have (junest bins) ###
