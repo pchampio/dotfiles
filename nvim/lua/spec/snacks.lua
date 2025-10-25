@@ -183,27 +183,48 @@ local M = {
     })
 
     local layouts = require 'snacks.picker.config.layouts'
-    layouts.my_ivylayout = {
-      hidden = { "preview" },
-      reverse = true,
-      layout = {
-        box = 'vertical',
-        backdrop = false,
-        row = -1,
-        width = 0,
-        min_height = 14,
-        height = 0.4,
-        border = 'top',
-        title = ' {title} {live} {flags}',
-        title_pos = 'left',
-        {
-          box = 'horizontal',
-          { win = 'list',    border = 'none' },
-          { win = 'preview', title = '{preview}', width = 0.5, border = 'left' },
-        },
-        { win = 'input', height = 1, border = 'single' },
-      },
-    }
+     layouts.my_ivylayout = {
+       hidden = { "preview" },
+       reverse = true,
+       layout = {
+         box = 'vertical',
+         backdrop = false,
+         row = -1,
+         width = 0,
+         min_height = 14,
+         height = 0.4,
+         border = 'top',
+         title = ' {title} {live} {flags}',
+         title_pos = 'left',
+         {
+           box = 'horizontal',
+           { win = 'list',    border = 'none' },
+           { win = 'preview', title = '{preview}', width = 0.5, border = 'left' },
+         },
+         { win = 'input', height = 1, border = 'single' },
+       },
+     }
+     layouts.my_ivylayout_vertical = {
+       hidden = { "preview" },
+       reverse = true,
+       layout = {
+         box = 'vertical',
+         backdrop = false,
+         row = -1,
+         width = 0,
+         min_height = 14,
+         height = 0.4,
+         border = 'top',
+         title = ' {title} {live} {flags}',
+         title_pos = 'left',
+         {
+       box = 'vertical',
+       { win = 'preview', title = '{preview}', height = 0.2, border = 'bottom' },
+       { win = 'list',    border = 'none' },
+         },
+         { win = 'input', height = 1, border = 'single' },
+       },
+     }
 
     require('snacks').setup {
       rename = { enabled = true },
@@ -263,7 +284,7 @@ local M = {
                 layout = { preset = "my_ivylayout" },
               },
               sidekick_prompt = {
-                layout = { preset = "my_ivylayout" },
+                layout = { preset = "my_ivylayout_vertical" },
               },
             },
             layout = {
