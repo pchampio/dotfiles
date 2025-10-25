@@ -8,9 +8,8 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/github_app"
 "$BASEDIR/zsh"
 "$BASEDIR/dotfiles"
-"$HOME/.local/bin/zsh" -ic "$HOME/dotfiles/bin/rbw unlock; ssh" && success "[RBW] Unlocked"
-# Should not require user input anymore
 "$BASEDIR/secrets"
+# Should not require user input anymore
 "$BASEDIR/neovim"
 "$BASEDIR/python"
 "$BASEDIR/node"
@@ -18,7 +17,7 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/git"
 
 explain "\n\nCTRL-C now to abort optional installations."
-sleep 5
+sleep 10
 
 ### Nice to have (junest bins) ###
 "$BASEDIR/junest"

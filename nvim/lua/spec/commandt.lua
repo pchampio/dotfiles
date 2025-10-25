@@ -8,7 +8,7 @@ local root_markers = {
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'git@prr.re:Drakirus/command-t.git',
+  'https://git.prr.re/Drakirus/command-t',
   build = 'cd lua/wincent/commandt/lib && make',
   keys = {
     {

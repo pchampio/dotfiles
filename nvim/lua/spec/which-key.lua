@@ -1,7 +1,7 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'git@prr.re:Drakirus/mini.clue',
+  'https://git.prr.re/Drakirus/mini.clue',
   config = function()
     local miniclue = require 'mini.clue'
     miniclue.setup {

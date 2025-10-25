@@ -1,7 +1,7 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'git@prr.re:Drakirus/vmath.vim.git',
+  'https://git.prr.re/Drakirus/vmath.vim',
   config = function()
     vim.api.nvim_set_keymap(
       'n',

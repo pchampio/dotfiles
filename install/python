@@ -63,7 +63,7 @@ fi
 if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
   success "[PYTHON3 lib] Start"
 
-  bpyversion=$($bpython -c 'import sys; vi=sys.version_info; print(f" Python: {vi.major}.{vi.minor}.{vi.micro} ({vi.releaselevel})")')
+  bpyversion=$($bpython -c 'import sys; vi=sys.version_info; print(f"Python: {vi.major}.{vi.minor}.{vi.micro} ({vi.releaselevel})")')
   explain "pip install my tools (pipx imgcat trash sshuttle..) for $bpyversion"
 
   run_with_spinner $bpython -m ensurepip --upgrade
