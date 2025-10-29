@@ -1,7 +1,9 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'tpope/vim-sleuth',
+  {
+    'tpope/vim-sleuth',
+  },
   {
     'andymass/vim-matchup',
     lazy = false,

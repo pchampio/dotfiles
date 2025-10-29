@@ -1,41 +1,41 @@
 local options = {
-  completeopt = { 'menuone', 'noselect' }, -- show popup menu even when there is only one match and no item is pre-selected
-  pumheight = 10,                          -- maximum popup menu items
-  ignorecase = true,                       -- ignore case in search patterns
-  smartcase = true,                        -- case sensitive only when there is at least one uppercase letter in search patterns
-  mouse = 'a',                             -- allow the mouse usage
-  showcmd = false,                         -- hide (partial) command in the last line of the screen (for performance)
-  showmode = false,                        -- hide things like -- INSERT --
-  splitbelow = true,                       -- force all horizontal splits to go below current window
-  splitright = true,                       -- force all vertical splits to go to the right of current window
-  swapfile = false,                        -- don't create a swapfile
-  undofile = true,                         -- enable persistent undo
+  completeopt = { 'menuone', 'noselect' }, -- Show popup menu even when there is only one match and no item is pre-selected
+  pumheight = 10,                          -- Maximum popup menu items
+  ignorecase = true,                       -- Ignore case in search patterns
+  smartcase = true,                        -- Case sensitive only when there is at least one uppercase letter in search patterns
+  mouse = 'a',                             -- Allow the mouse usage
+  showcmd = false,                         -- Hide (partial) command in the last line of the screen (for performance)
+  showmode = false,                        -- Hide things like '-- INSERT --'
+  splitbelow = true,                       -- Force all horizontal splits to go below current window
+  splitright = true,                       -- Force all vertical splits to go to the right of current window
+  swapfile = false,                        -- Don't create a swapfile
+  undofile = true,                         -- Enable persistent undo
   undodir = vim.fn.expand '~/.vim_undo',
   shada = "'100,<50,s10,:1000,/100,@100,h",
   shadafile = vim.fn.expand '~/.vim_shada',
-  expandtab = true,                         -- convert tabs to spaces
-  shiftround = true,                        -- round indent to multiple of 'shiftwidth'
-  shiftwidth = 2,                           -- number of spaces inserted for each indentation
-  tabstop = 2,                              -- number of spaces for a tab
-  cursorline = true,                        -- highlight the current line
-  number = true,                            -- show line numbers
-  relativenumber = true,                    -- show relative line numbers
-  laststatus = 3,                           -- only the last window will always have a status line
-  signcolumn = 'yes',                       -- always show the sign column, otherwise it would shift the text each time
-  linebreak = true,                         -- wrap long lines at a character in 'breakat' rather than at the last character that fits on the screen
-  scrolloff = 4,                            -- minimum number of screen lines to keep above and below the cursor
+  expandtab = true,                         -- Convert tabs to spaces
+  shiftround = true,                        -- Round indent to multiple of 'shift width'
+  shiftwidth = 2,                           -- Number of spaces inserted for each indentation
+  tabstop = 2,                              -- Number of spaces for a tab
+  cursorline = true,                        -- Highlight the current line
+  number = true,                            -- Show line numbers
+  relativenumber = true,                    -- Show relative line numbers
+  laststatus = 3,                           -- Only the last window will always have a status line
+  signcolumn = 'yes',                       -- Always show the sign column, otherwise it would shift the text each time
+  linebreak = true,                         -- Wrap long lines at a character in 'break at' rather than at the last character that fits on the screen
+  scrolloff = 4,                            -- Minimum number of screen lines to keep above and below the cursor
   sidescrolloff = 7,
-  synmaxcol = 500,                          -- limit max column for syntax highling to mitigate high loading time on big file
-  colorcolumn = '80',                       -- ruler
+  synmaxcol = 500,                          -- Limit max column for syntax highlighting to mitigate high loading time on big file
+  colorcolumn = '80',                       -- Ruler
   backspace = { 'indent', 'eol', 'start' }, -- Enable backspace delete indent and newline.
   breakindent = true,
-  list = true,                              -- display extra whitespace
+  list = true,                              -- Display extra whitespace
   listchars = {
-    nbsp = '⦸', -- CIRCLED REVERSE SOLIDUS (U+29B8, UTF-8: E2 A6 B8)
-    extends = '»', -- RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK (U+00BB, UTF-8: C2 BB)
-    precedes = '«', -- LEFT-POINTING DOUBLE ANGLE QUOTATION MARK (U+00AB, UTF-8: C2 AB)
+    nbsp = '⦸',
+    extends = '»',
+    precedes = '«',
     tab = '▸\\ ',
-    trail = '·', -- BULLET
+    trail = '·',
   },
   termguicolors = true,
 }
@@ -95,3 +95,19 @@ end
 
 -- Set the clipboard configuration
 vim.g.clipboard = clipboard_config
+
+
+-- Default severities to show for diagnostics
+vim.g.diagnostic_severities = { vim.diagnostic.severity.WARN, vim.diagnostic.severity.ERROR }
+
+-- Configure signs and text for severity (order matters for next severity)
+vim.g.diagnostic_severities_signs = {
+  {level = vim.diagnostic.severity.ERROR, sign = '✘', text = 'Error Only' },
+  {level = vim.diagnostic.severity.WARN,  sign = '', text = 'Error + Warning' },
+  {level = vim.diagnostic.severity.INFO,  sign = '◉', text = 'Error + Warning + Info' },
+  {level = vim.diagnostic.severity.HINT,  sign = '⚑', text = 'All Diagnostics' },
+}
+
+
+-- Hide some floating windows with Esc
+vim.keymap.set('n', '<esc>', require('commons').smart_hide_floating_window )

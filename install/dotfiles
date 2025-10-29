@@ -67,11 +67,8 @@ if ! grep -q "PromptThemeLayout" "$HOME/.tssh.conf" 2>/dev/null; then
     echo 'PromptThemeLayout = tiny' >> "$HOME/.tssh.conf"
 fi
 
-# Custom Completion Scripts
-mkdir -p ~/.oh-my-zsh/custom/completions
-
 $HOME/.local/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
-$HOME/.local/bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw # doesn't work IDK
+$HOME/.local/bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw
 
 
 # switch this remote git from http to ssh if needed

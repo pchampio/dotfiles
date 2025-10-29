@@ -37,6 +37,9 @@ explain "Install zsh-completions"
 explain "Install zsh-autoquoter"
  run_with_spinner git clone https://github.com/ianthehenry/zsh-autoquoter ~/.oh-my-zsh/custom/plugins/zsh-autoquoter --depth 1
 
+# Custom Completion Scripts
+mkdir -p ~/.oh-my-zsh/custom/completions
+
 # Remove group/other write permissions to make oh-my-zsh happy
 chmod -R go-w ~/.oh-my-zsh 2> /dev/null || true
 chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || true

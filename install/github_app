@@ -8,6 +8,8 @@ success "[Github APP] Start"
 install_github_app pinentry "pchampio/build-static-pinentry" "https.*pinentry.*stripped.gz$" &
 install_github_app tmux "pchampio/build-static-tmux" "https.*tmux.*amd64.*stripped.gz$" &
 install_github_app difft "Wilfred/difftastic" "https.*difft.*x86_64.*musl.*gz$" &
+install_github_app diff-so-fancy "so-fancy/diff-so-fancy" "https.*diff-so-fancy$" &
+install_github_app gotty "yudai/gotty" "https.*gotty.*linux.*amd64.*.gz" &
 install_github_app fd "sharkdp/fd" "https.*fd.*x86_64.*musl.*gz$" &
 install_github_app rg "BurntSushi/ripgrep" "https.*ripgrep.*x86_64.*musl.*gz$" &
 install_github_app atuin "atuinsh/atuin" "https.*atuin.*x86_64.*linux-musl.*gz$" &

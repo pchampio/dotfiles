@@ -49,22 +49,15 @@ map('n', 'C', '"_C')
 map('n', '<leader>r', '<Esc>:call RenameFile()<CR>', { desc = '󰑕  RenameFile' })
 
 -- Disable the default keybinds
-for _, bind in ipairs {
-  'grn',
-  'gra',
-  'gri',
-  'grr',
-  'grt',
-  'gO',
-  '<c-w>d',
-  '<c-w><c-d>',
-} do
+for _, bind in ipairs { 'grn', 'gra', 'gri', 'grr', 'grt', 'gO', '<c-w>d', '<c-w><c-d>' } do
   pcall(vim.keymap.del, 'n', bind)
 end
 
-map('n', '<leader>d', vim.diagnostic.open_float, { desc = '⚑  Diagnostic show' })
-map('n', '[d', function() vim.diagnostic.jump({ count = -1 }) end, { desc = '⚑  Jump To Diagnostic' })
-map('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, { desc = '⚑  Jump To Diagnostic' })
+map('n', '<leader>d', function() require("tiny-inline-diagnostic.override").open_float() end, { desc = '⚑  Show/Enter Diagnostic' })
+map('n', '[d', function() vim.diagnostic.jump({ count = -1, severity = vim.g.diagnostic_severities }) end, { desc = '⚑  Jump To Previous Diagnostic' })
+map('n', ']d', function() vim.diagnostic.jump({ count = 1, severity = vim.g.diagnostic_severities }) end, { desc = '⚑  Jump To Next Diagnostic' })
+map('n', '[D', function() vim.diagnostic.jump({ count = 1, severity = vim.g.diagnostic_severities }) end, { desc = '_⚑  Jump To Next Diagnostic' })
+map('n', ']D', function() vim.diagnostic.jump({ count = -1, severity = vim.g.diagnostic_severities }) end, { desc = '_⚑  Jump To Previous Diagnostic' })
 
 -- Spell check correct
 vim.cmd [[

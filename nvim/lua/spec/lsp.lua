@@ -1,6 +1,7 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
+  event = "VeryLazy",
   'neovim/nvim-lspconfig',
   cond = not vim.o.diff, -- 'cond' would install but not load the plugin, whereas 'enabled' would not install the plugin at all
   dependencies = {
@@ -10,8 +11,6 @@ local M = {
     },
   },
   config = function()
-    -- LSP formats / edits on type (like for auto f when typing '{' in python string)
-    vim.lsp.on_type_formatting.enable()
     -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
     local default_caps = vim.lsp.protocol.make_client_capabilities()
     local cmp_caps = require('cmp_nvim_lsp').default_capabilities()
@@ -41,14 +40,21 @@ local M = {
       vim.lsp.enable(server)
     end
 
+    -- LSP formats / edits on type (like for auto f when typing '{' in python string)
+    vim.lsp.on_type_formatting.enable()
+
+    local filtered_severity_signs = {}
+    for _, symbol in ipairs(vim.g.diagnostic_severities_signs) do
+      if symbol.level <= vim.g.diagnostic_severities[1] then
+        filtered_severity_signs[symbol.level] = symbol.sign
+      else
+        filtered_severity_signs[symbol.level] = ''
+      end
+    end
     vim.diagnostic.config {
+      underline = { severity = vim.diagnostic.severity.ERROR },
       signs = {
-        text = {
-          [vim.diagnostic.severity.ERROR] = '✘',
-          [vim.diagnostic.severity.WARN] = " ",
-          [vim.diagnostic.severity.HINT] = '⚑',
-          [vim.diagnostic.severity.INFO] = "◉",
-        },
+        text = filtered_severity_signs,
       },
       update_in_insert = false,
       severity_sort = true,

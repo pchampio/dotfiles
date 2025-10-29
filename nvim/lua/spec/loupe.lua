@@ -4,16 +4,8 @@ local M = {
   'miallo/loupe',
   event = { 'CmdlineEnter', 'CursorHold' },
   keys = {
-    {
-      '<NOP>',
-      '<Plug>(LoupeGOctothorpe)',
-      desc = '  Search backwards word under cursor',
-    },
-    {
-      'g*',
-      '<Plug>(LoupeGStar)',
-      desc = '  Search word under cursor',
-    },
+    { '<NOP>', '<Plug>(LoupeGOctothorpe)', desc = '  Search backwards word under cursor' },
+    { 'g*', '<Plug>(LoupeGStar)', desc = '  Search word under cursor' },
     {
       '<leader><space>',
       function()

@@ -4,15 +4,7 @@ local M = {
   'nvim-lualine/lualine.nvim',
   dependencies = {
     'nvim-mini/mini.icons',
-    {
-      'letieu/harpoon-lualine',
-      dependencies = {
-        {
-          'ThePrimeagen/harpoon',
-          branch = 'harpoon2',
-        },
-      },
-    },
+    { 'letieu/harpoon-lualine', dependencies = { { 'ThePrimeagen/harpoon', branch = 'harpoon2' } } },
   },
   init = function()
     local config = {

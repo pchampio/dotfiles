@@ -3,21 +3,22 @@ local function my_toggles()
   Snacks.toggle.line_number({ id = '[O] Line Numbers', name = '[O] Line Numbers' }):map '<leader>tl'
   Snacks.toggle.option('wrap', { id = '[O] Wrap Lines', name = '[O] Wrap Lines' }):map '<leader>tw'
   Snacks.toggle.new({
-    id = "[LSP] Show Diagnostics Hints",
-    name = "[LSP] Show Diagnostics Hints",
-    get = function()
-      local enabled = false
-      if vim.diagnostic.is_enabled then
-        enabled = vim.diagnostic.is_enabled()
-      elseif vim.diagnostic.is_disabled then
-        enabled = not vim.diagnostic.is_disabled()
-      end
-      return enabled
-    end,
+    id = "[LSP] Diagnostics Hints",
+    name = "[LSP] Diagnostics Hints",
+    get = function() return vim.diagnostic.is_enabled() end,
     set = function(state)
         vim.diagnostic.enable(state)
+        require("tiny-inline-diagnostic").toggle()
     end,
   }):map '<leader>tD'
+  Snacks.toggle.new({
+    id = "[GIT] Nav Hunks All Target",
+    name = "[GIT] Nav Hunks All Target",
+    get = function() return vim.g.gitsigns_nav_target == 'all' end,
+    set = function(state)
+      vim.g.gitsigns_nav_target = state and 'all' or 'unstaged'
+    end,
+  }):map '<leader>tc'
   Snacks.toggle.new({
     id = "[LSP] Words underline",
     name = "[LSP] Words underline",
@@ -101,6 +102,43 @@ local function my_toggles()
       vim.cmd 'setlocal spell! spelllang=fr'
     end,
   }):map '<leader>tSf'
+  Snacks.toggle.new({
+    notify = false,
+    id = '[LSP] Diagnostic Severity Cycle',
+    name = '[LSP] Diagnostic Severity Cycle',
+    get = function()
+      return (vim.g.diagnostic_current_severity or vim.g.diagnostic_severities[1]) ~= vim.g.diagnostic_severities[1]
+    end,
+    set = function()
+      local signs = vim.g.diagnostic_severities_signs
+
+      vim.g.diagnostic_current_severity = vim.g.diagnostic_current_severity or vim.g.diagnostic_severities[1]
+      local idx = 1
+      for i, sev in ipairs(signs) do
+        if sev.level == vim.g.diagnostic_current_severity then idx = i % #signs + 1 break end
+      end
+      vim.g.diagnostic_current_severity = signs[idx].level
+
+      local new_severities = {}
+      local filtered_signs = {}
+      for _, symbol in ipairs(signs) do
+        if symbol.level <= vim.g.diagnostic_current_severity then
+          filtered_signs[symbol.level] = symbol.sign
+          table.insert(new_severities, symbol.level)
+        else
+          filtered_signs[symbol.level] = ''
+        end
+      end
+      vim.g.diagnostic_severities = new_severities
+      vim.diagnostic.enable(false)
+      require("tiny-inline-diagnostic").change_severities(new_severities)
+      vim.diagnostic.config({
+        signs = { text = filtered_signs },
+      })
+      vim.diagnostic.enable(true)
+      vim.notify("Diagnostics: " .. signs[vim.g.diagnostic_current_severity].sign .. " " .. signs[vim.g.diagnostic_current_severity].text, vim.log.levels.INFO)
+    end,
+  }):map '<leader>te'
 end
 
 ---@module 'lazy'
@@ -135,15 +173,18 @@ local M = {
     { "gI", function() Snacks.picker.lsp_implementations() end, desc = "LSP: Goto Implementation" },
     { "gt", function() Snacks.picker.lsp_type_definitions() end, desc = "LSP: Goto Type Definition" },
     { "<leader>gs", function() Snacks.picker.lsp_symbols() end, desc = "LSP: Symbols" },
-    { "<leader>gS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP: Workspace Symbols" },
+    { "<leader>gS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP: Symbols in Project" },
     { "<leader>gi", function() Snacks.picker.lsp_incoming_calls() end, desc = "LSP: Calls Incoming" },
     { "<leader>go", function() Snacks.picker.lsp_outgoing_calls() end, desc = "LSP: Calls Outgoing" },
     { "<leader>gd", function() Snacks.picker.diagnostics_buffer() end, desc = "LSP: Diagnostics in Buffer" },
     { "<leader>gD", function() Snacks.picker.diagnostics() end, desc = "LSP: Diagnostics in Project" },
 
     { "<leader>hg", function() Snacks.picker.git_grep() end, desc = "GIT: Git Grep" },
+    { "<leader>hl", function() Snacks.picker.git_log({layout = "my_big_ivylayout_vertical"}) end, desc = "GIT: Log" },
 
-    { "ga", '<cmd>lua vim.lsp.buf.code_action()<cr>', desc = "LSP: Code Actions" },
+    { "ga", function() require("tiny-code-action").code_action({}) end, desc = "LSP: Code Actions" },
+    { "]A", function() require("tiny-code-action").code_action({}) end, desc = "_LSP: Code Actions" },
+    { "[A", function() require("tiny-code-action").code_action({}) end, desc = "_LSP: Code Actions" },
     { "gh", vim.lsp.buf.hover, desc = 'LSP: Hover', mode = { "v", "n" } },
     { "g=", function()
       local mode = vim.api.nvim_get_mode().mode
@@ -219,7 +260,28 @@ local M = {
          title_pos = 'left',
          {
        box = 'vertical',
-       { win = 'preview', title = '{preview}', height = 0.2, border = 'bottom' },
+       { win = 'preview', title = '{preview}', height = 0.7, border = 'bottom' },
+       { win = 'list',    border = 'none' },
+         },
+         { win = 'input', height = 1, border = 'single' },
+       },
+     }
+     layouts.my_big_ivylayout_vertical = {
+       hidden = { },
+       reverse = true,
+       layout = {
+         box = 'vertical',
+         backdrop = false,
+         row = -1,
+         width = 0,
+         min_height = 14,
+         height = 0.95,
+         border = 'top',
+         title = ' {title} {live} {flags}',
+         title_pos = 'left',
+         {
+       box = 'vertical',
+       { win = 'preview', title = '{preview}', height = 0.9, border = 'bottom' },
        { win = 'list',    border = 'none' },
          },
          { win = 'input', height = 1, border = 'single' },
@@ -308,6 +370,8 @@ local M = {
               ["<C-h>"] = { "toggle_preview", mode = { "i", "n", "x" } },
               ["<C-P>"] = { "toggle_preview", mode = { "i", "n", "x" } },
               ["<C-p>"] = { "list_up", mode = { "i", "n" } },
+              ["<c-M-k>"] = { "preview_scroll_up", mode = { "i", "n" } },
+              ["<c-M-j>"] = { "preview_scroll_down", mode = { "i", "n" } },
             },
           },
         },

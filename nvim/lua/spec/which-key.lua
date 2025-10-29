@@ -1,7 +1,7 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'https://git.prr.re/Drakirus/mini.clue',
+  'git@prr.re:Drakirus/mini.clue.git',
   config = function()
     local miniclue = require 'mini.clue'
     miniclue.setup {
@@ -69,18 +69,37 @@ local M = {
         miniclue.gen_clues.registers(),
         -- miniclue.gen_clues.windows(),
         -- miniclue.gen_clues.z(),
-        { mode = 'n', keys = 'zl', postkeys = '4z', desc = '  Pane right' },
-        { mode = 'n', keys = 'zh', postkeys = '4z', desc = '  Pane left' },
-        { mode = 'n', keys = '[y', postkeys = '[' },
-        { mode = 'n', keys = ']y', postkeys = ']' },
-        { mode = 'n', keys = ']c', postkeys = 'zt]' },
-        { mode = 'n', keys = '[c', postkeys = 'zt[' },
-        { mode = 'n', keys = '[d', postkeys = 'zt[' },
-        { mode = 'n', keys = ']d', postkeys = 'zt]' },
-        { mode = 'n', keys = '[w', postkeys = 'zt[' },
-        { mode = 'n', keys = ']w', postkeys = 'zt]' },
-        { mode = 'n', keys = '[t', postkeys = 'zt[' },
-        { mode = 'n', keys = ']t', postkeys = 'zt]' },
+        { mode = 'n', keys = 'zl', postkeys = '4z', desc = '  Pane Right' },
+        { mode = 'n', keys = 'zh', postkeys = '4z', desc = '  Pane Left' },
+        { mode = 'n', keys = 'zL', postkeys = 'z', desc = '  Pane Right More' },
+        { mode = 'n', keys = 'zH', postkeys = 'z', desc = '  Pane Left More' },
+        { mode = 'n', keys = '[y', postkeys = '[', postkeys_next_allowed = { 'y', 'Y' } },
+        { mode = 'n', keys = ']y', postkeys = ']', postkeys_next_allowed = { 'y', 'Y' } },
+        { mode = 'n', keys = '[Y', postkeys = '[', postkeys_next_allowed = { 'y', 'Y' } },
+        { mode = 'n', keys = ']Y', postkeys = ']', postkeys_next_allowed = { 'y', 'Y' } },
+        -- Gitsigns
+        { mode = 'n', keys = ']c', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- next hunk
+        { mode = 'n', keys = '[c', postkeys = '[', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- prev hunk
+        { mode = 'n', keys = ']C', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- prev hunk (same [ ] but reverse because capital letter)
+        { mode = 'n', keys = '[C', postkeys = '[', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- next hunk (same [ ] but reverse because capital letter)
+        { mode = 'n', keys = ']r', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk undo/reset
+        { mode = 'n', keys = '[r', postkeys = '[', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk undo/reset
+        { mode = 'n', keys = ']u', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk undo/reset
+        { mode = 'n', keys = '[u', postkeys = '[', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk undo/reset
+        { mode = 'n', keys = ']a', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk stage/add
+        { mode = 'n', keys = '[a', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk stage/add
+
+        { mode = 'n', keys = '[D', postkeys = '[', postkeys_next_allowed = { 'd', 'D', 'A' } },
+        { mode = 'n', keys = ']D', postkeys = ']', postkeys_next_allowed = { 'd', 'D', 'A' } },
+        { mode = 'n', keys = '[d', postkeys = '[', postkeys_next_allowed = { 'd', 'D', 'A' } },
+        { mode = 'n', keys = ']d', postkeys = ']', postkeys_next_allowed = { 'd', 'D', 'A' } },
+        { mode = 'n', keys = '[w', postkeys = '[', postkeys_next_allowed = { 'w' } },
+        { mode = 'n', keys = ']w', postkeys = ']', postkeys_next_allowed = { 'w' } },
+        { mode = 'n', keys = '[t', postkeys = '[', postkeys_next_allowed = { 't' } },
+        { mode = 'n', keys = ']t', postkeys = ']', postkeys_next_allowed = { 't' } },
+
+        { mode = 'n', keys = '<leader>d', postkeys = '<leader>', postkeys_next_allowed = { 'd' } },
+        { mode = 'n', keys = '<leader>hp', postkeys = '<leader>h', postkeys_next_allowed = { 'p' }, resolve_callback = require('commons').smart_hide_floating_window },
       },
     }
   end,

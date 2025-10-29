@@ -4,10 +4,6 @@ local M = {
   'gbprod/substitute.nvim',
   dependencies = { 'gbprod/yanky.nvim', 'tpope/vim-abolish' },
   config = function()
-    -- Upper Y yank to system clipboard
-    vim.keymap.set('n', 'YY', '"+yy', { silent = true, noremap = true, desc = "  Copy Line System" })
-    vim.keymap.set('', 'Y', '"+y', { silent = true, noremap = true, desc = "  Copy Local" })
-
     require('substitute').setup {
       on_substitute = require('yanky.integration').substitute(),
       highlight_substituted_text = {

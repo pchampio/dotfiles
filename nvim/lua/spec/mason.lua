@@ -25,7 +25,6 @@ local M = {
           'neovim/nvim-lspconfig',
         },
         ---@module 'mason-lspconfig'
-        ---@type MasonLspconfigSettings
         opts = {
           automatic_enable = false, -- enable manually via `vim.lsp.enable()`
         },
