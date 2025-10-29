@@ -38,7 +38,6 @@ local M = {
     vim.api.nvim_create_autocmd("TextYankPost", {
       pattern = "*",
       callback = function()
-        local reg = vim.v.event.regname
         local copied_content = vim.fn.getreg("\"")
         if #vim.trim(copied_content) >= 1 then
           require("yanky.history").push({
@@ -49,7 +48,7 @@ local M = {
       end,
     })
 
-    -- Modify defualt Snacks yanky picker behavior to set the enter as set_default_register instead of direclty pasting
+    -- Modify default Snacks yanky picker behavior to set the enter as set_default_register instead of directly pasting
     Snacks.picker.sources.yanky.actions.confirm = Snacks.picker.sources.yanky.actions.set_default_register
   end,
 }
