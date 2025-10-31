@@ -12,6 +12,14 @@ local function my_toggles()
     end,
   }):map '<leader>tD'
   Snacks.toggle.new({
+    id = "[FF] RipGrep > Wachtman",
+    name = "[FF] RipGrep > Wachtman",
+    get = function() return vim.g.commandt_cmd_watchman end,
+    set = function(state)
+      vim.g.commandt_cmd_watchman = state
+    end,
+  }):map '<leader>tp'
+  Snacks.toggle.new({
     id = "[GIT] Nav Hunks All Target",
     name = "[GIT] Nav Hunks All Target",
     get = function() return vim.g.gitsigns_nav_target == 'all' end,
@@ -181,6 +189,7 @@ local M = {
 
     { "<leader>hg", function() Snacks.picker.git_grep() end, desc = "GIT: Git Grep" },
     { "<leader>hl", function() Snacks.picker.git_log({layout = "my_big_ivylayout_vertical"}) end, desc = "GIT: Log" },
+    { "<leader>hf", function() Snacks.picker.git_diff({layout = "my_big_ivylayout_vertical"}) end, desc = "GIT: Log" },
 
     { "ga", function() require("tiny-code-action").code_action({}) end, desc = "LSP: Code Actions" },
     { "]A", function() require("tiny-code-action").code_action({}) end, desc = "_LSP: Code Actions" },

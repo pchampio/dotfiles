@@ -5,13 +5,13 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
 success "[NVIM] Start"
+  explain "Setup neovim plugins"
 
 I_TITLE="Download latest nvim" run_with_spinner "curl -sS -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C $HOME/.local/bin -xz"
 [ -f "$HOME/.local/bin/nvim" ] && rm "$HOME/.local/bin/nvim"
 ln -s "$HOME/.local/bin/nvim-linux-x86_64/bin/nvim" "$HOME/.local/bin/nvim"
 
 if [ ! -e ~/.config/nvim/spell ]; then
-  explain "Spelling dictionary"
   mkdir -p ~/.config/nvim/spell
   cd ~/.config/nvim/spell
   run_with_spinner wget https://ftp.nluug.nl/vim/runtime/spell/fr.latin1.spl

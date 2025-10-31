@@ -5,6 +5,8 @@ local root_markers = {
   'CMakeLists.txt', 'Makefile', 'configure', 'build.ninja',
 }
 
+vim.g.commandt_cmd_watchman = true
+
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
@@ -18,7 +20,7 @@ local M = {
         local project_root =
             vim.fs.find(root_markers, { upward = true, path = cwd })[1]
         local watchman_exists = vim.loop.fs_stat(vim.fn.expand("~/.junest/bin/watchman")) ~= nil
-        if project_root and watchman_exists then
+        if vim.g.commandt_cmd_watchman and project_root and watchman_exists then
           require('wincent.commandt.finder')('watchman', '')
         else
           require('wincent.commandt.finder')('rg', '')
