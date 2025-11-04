@@ -346,6 +346,7 @@ local M = {
         end,
       },
       picker = {
+        -- previewers = { git = { native = true }, }, -- doesn't allow to scroll in the layout
         sources = {
           files = { hidden = true },
           grep = { hidden = true },

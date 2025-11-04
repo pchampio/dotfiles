@@ -27,7 +27,7 @@ local M = {
     'rachartier/tiny-code-action.nvim',
     config = function()
       require('tiny-code-action').setup {
-        -- backend = 'diffsofancy',
+        backend = 'diffsofancy',
         picker = {
           'snacks',
           opts = {

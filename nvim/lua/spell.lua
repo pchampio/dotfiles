@@ -14,4 +14,4 @@ vim.cmd [[hi SpellCap gui=undercurl guifg=#6c71c4]]
 vim.cmd [[hi SpellRare gui=undercurl guifg=#6c71c4]]
 vim.cmd [[hi SpellLocal gui=undercurl guifg=#eee8d5]]
 
-vim.o.spellfile = vim.fn.expand '~/dotfiles/spell/ownSpellFile.utf-8.add'
+vim.o.spellfile = vim.fn.expand '~/dotfiles/nvim/ownspell/ownSpellFile.utf-8.add'

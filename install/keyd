@@ -6,11 +6,9 @@ BASEDIR=$(dirname $0)
 
 explain "Installation de keyd (Need sudo)"
 
-dir=~/dotfiles
-
 cd /tmp
 rm -rf keyd || true
-git clone https://github.com/rvaiya/keyd
+git clone https://github.com/rvaiya/keyd --depth=1
 cd keyd
 make
 sudo make uninstall || true
@@ -20,8 +18,8 @@ sudo systemctl enable keyd && sudo systemctl start keyd
 sudo rm /etc/keyd/german.conf || true
 sudo rm /etc/keyd/all.conf || true
 
-# tell sudo ln -s $dir/keyd/german.conf /etc/keyd/german.conf # disable german qwerty conf by default
-tell sudo ln -s $dir/keyd/all.conf /etc/keyd/all.conf
+# tell sudo ln -s "$HOME/dotfiles/keyd/german.conf" /etc/keyd/german.conf # disable german qwerty conf by default
+tell sudo ln -s "$HOME/dotfiles/config/keyd/all.conf" /etc/keyd/all.conf
 tell sudo keyd reload
 
 explain "XkbOptions compose:menu for unicode éèà"

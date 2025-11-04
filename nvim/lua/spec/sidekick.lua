@@ -79,12 +79,12 @@ local M = {
 
   end,
   keys = {
-    { '<leader><tab>', function() require('sidekick.nes').update() end, expr = true, desc = '󱚤  Request new edits from the LSP server' },
-    { '<tab>', function() if require('sidekick').nes_jump_or_apply() then return end return '<tab>' end, expr = true, desc = '󱚤  Goto/Apply Next Edit Suggestion' },
-    { '<leader>aa', function() require('sidekick.cli').toggle { name = 'opencode', focus = true } end, desc = '󱚤  Toggle CLI' },
-    { '<leader>at', function() require('sidekick.cli').send { msg = '{this}' } end, mode = { 'x', 'n' }, desc = '󱚤  Send This' },
-    { '<leader>av', function() require('sidekick.cli').send { msg = '{selection}' } end, mode = { 'x' }, desc = '󱚤  Send Visual Selection' },
-    { '<leader>ap', function() require('sidekick.cli').prompt { layout = { preset = 'my_ivylayout' } } end, mode = { 'n', 'x' }, desc = '󱚤  Prompt CLI' },
+    { '<leader><tab>', function() require('sidekick.nes').update() end, expr = true, desc = '󱚤   Request new edits from the LSP server' },
+    { '<tab>', function() if require('sidekick').nes_jump_or_apply() then return end return '<tab>' end, expr = true, desc = '󱚤   Goto/Apply Next Edit Suggestion' },
+    { '<leader>aa', function() require('sidekick.cli').toggle { name = 'opencode', focus = true } end, desc = '󱚤   Toggle CLI' },
+    { '<leader>at', function() require('sidekick.cli').send { msg = '{this}' } end, mode = { 'x', 'n' }, desc = '󱚤   Send This' },
+    { '<leader>av', function() require('sidekick.cli').send { msg = '{selection}' } end, mode = { 'x' }, desc = '󱚤   Send Visual Selection' },
+    { '<leader>ap', function() require('sidekick.cli').prompt { layout = { preset = 'my_ivylayout' } } end, mode = { 'n', 'x' }, desc = '󱚤   Prompt CLI' },
   },
 }
 

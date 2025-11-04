@@ -10,7 +10,7 @@ mkdir -p ~/lab/ || true
 mkdir -p ~/.config || true
 
 
-ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|dircolors|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf|watchman.json"
+ignoreRC="README.md|.gitignore|screenshot.png|LICENSE.md|riot.txt|.notags|vimium|package.list|package_all.list|logouser.txt|settings_dataGrip.jar|LSP_settings.json|urlview|settings_idea.jar|keyd.conf|watchman.json"
 dir="$HOME/dotfiles"
 
 explain "Create symlink for files config"

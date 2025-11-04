@@ -89,6 +89,11 @@ local M = {
         { mode = 'n', keys = ']a', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk stage/add
         { mode = 'n', keys = '[a', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk stage/add
 
+        { mode = 'n', keys = ']m', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } }, -- Tree-sitter-move
+        { mode = 'n', keys = '[m', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
+        { mode = 'n', keys = ']M', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
+        { mode = 'n', keys = '[M', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
+
         { mode = 'n', keys = '[D', postkeys = '[', postkeys_next_allowed = { 'd', 'D', 'A' } },
         { mode = 'n', keys = ']D', postkeys = ']', postkeys_next_allowed = { 'd', 'D', 'A' } },
         { mode = 'n', keys = '[d', postkeys = '[', postkeys_next_allowed = { 'd', 'D', 'A' } },

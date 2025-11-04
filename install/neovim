@@ -5,7 +5,7 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
 success "[NVIM] Start"
-  explain "Setup neovim plugins"
+explain "Setup neovim plugins"
 
 I_TITLE="Download latest nvim" run_with_spinner "curl -sS -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C $HOME/.local/bin -xz"
 [ -f "$HOME/.local/bin/nvim" ] && rm "$HOME/.local/bin/nvim"
@@ -24,7 +24,7 @@ fi
 
 [ -d  "$HOME/.local/share/nvim/lazy/" ] && rm -rf "$HOME/.local/share/nvim/lazy/"
 I_TITLE="[Nvim] Lazy install" run_with_spinner "$HOME/.local/bin/zsh -ic '
-ssh && nvim --headless -c \"lua local lazypath = vim.fn.stdpath(\\\"data\\\") .. \\\"/lazy/lazy.nvim\\\"; if not vim.loop.fs_stat(lazypath) then vim.fn.system({\\\"git\\\",\\\"clone\\\",\\\"--filter=blob:none\\\",\\\"https://github.com/folke/lazy.nvim.git\\\",\\\"--branch=stable\\\", lazypath}) end; vim.opt.rtp:prepend(lazypath); require(\\\"lazy\\\").install()\" -c \"qa\"
+ssh -T git@prr.re && nvim --headless -c \"lua local lazypath = vim.fn.stdpath(\\\"data\\\") .. \\\"/lazy/lazy.nvim\\\"; if not vim.loop.fs_stat(lazypath) then vim.fn.system({\\\"git\\\",\\\"clone\\\",\\\"--filter=blob:none\\\",\\\"https://github.com/folke/lazy.nvim.git\\\",\\\"--branch=stable\\\", lazypath}) end; vim.opt.rtp:prepend(lazypath); require(\\\"lazy\\\").install()\" -c \"qa\"
 '"
 
 I_TITLE="[Tools] Opencode" run_with_spinner "PATH=$HOME/.opencode/bin:$PATH curl -fsSL https://opencode.ai/install | bash"

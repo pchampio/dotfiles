@@ -50,7 +50,7 @@ local M = {
         pattern = 'MasonToolsStartingInstall',
         callback = function()
           vim.schedule(function()
-            print 'mason-tool-installer is starting'
+            vim.notify('mason-tool-installer is starting', vim.log.levels.INFO)
           end)
         end,
       })
@@ -59,9 +59,7 @@ local M = {
         callback = function(e)
           vim.schedule(function()
             if next(e.data) ~= nil then
-              print(
-                'mason-tool-installer installed/updated ' .. vim.inspect(e.data)
-              ) -- print the table that lists the programs that were installed
+              vim.notify('mason-tool-installed: ' .. vim.inspect(e.data), vim.log.levels.INFO)
             end
           end)
         end,

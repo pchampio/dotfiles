@@ -6,7 +6,7 @@ SAVEHIST=1000000
 # Disable % eof
 unsetopt prompt_cr prompt_sp
 
-eval `dircolors ~/dotfiles/dircolors/solarized.dir_colors`
+eval `dircolors ~/dotfiles/config/dircolors/solarized.dir_colors`
 
 # colored completion - use my LS_COLORS
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}

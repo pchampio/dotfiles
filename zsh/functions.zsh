@@ -10,8 +10,6 @@ function extract() {
     echo
     echo Options:
     echo "    -r, --remove    Remove archive."
-    echo
-    echo "Report bugs to <sorin.ionescu@gmail.com>."
   fi
 
   remove_archive=1
@@ -251,10 +249,10 @@ function ff() {
 }
 
 function ffrm() {
-  fd -h $@ -tf -x rm -i
+  fd $@ -tf -x rm -v
 }
 function ffrmd() {
-  fd -h $@ -tf -x rm -i -r
+  fd $@ -tf -x rm -vr
 }
 
 function mm() {

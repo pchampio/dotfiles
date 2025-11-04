@@ -18,7 +18,12 @@ install_github_app fzf "junegunn/fzf" "https.*fzf.*linux.*amd64.*gz$" &
 install_github_app tssh "trzsz/trzsz-ssh" "https.*tssh.*linux_x86.*gz$" &
 install_github_app tsshd "trzsz/tsshd" "https.*tsshd.*linux_x86.*gz$" &
 install_github_app "trzsz,trz,tsz" "trzsz/trzsz-go" "https.*trzsz.*linux_x86.*gz$" &
+install_github_app "tree-sitter-cli" "tree-sitter/tree-sitter" "https.*tree-sitter.*linux-x64.*gz$" &
 
 wait
+
+# Post download steps
+cd $HOME/.local/bin
+ln -s tree-sitter-cli tree-sitter # Expected name is tree-sitter (no -cli)
 
 success "[Github APP] Success"

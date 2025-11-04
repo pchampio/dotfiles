@@ -1,102 +1,109 @@
 ---@module 'lazy'
 ---@type LazySpec
 local M = {
-  'nvim-treesitter/nvim-treesitter',
-  dependencies = {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 1 } },
-    {
-      'Wansmer/treesj',
-      keys = {
-        { 'gJ', '<cmd>TSJToggle<cr>', desc = '  Join Toggle' },
-        { 'gS', '<cmd>TSJSplit<cr>', desc = '  Join Split' },
-      },
-      opts = { use_default_keymaps = false, max_join_length = 1000 },
-    },
+  {
+    'nvim-treesitter/nvim-treesitter',
+    lazy = false,
+    branch = 'main',
+    build = ':TSUpdate',
+    dependencies = {},
+    config = function()
+      require('nvim-treesitter').setup {
+        -- A list of parser names, or 'all' (the five listed parsers should always be installed)
+        ensure_installed = {
+          'html',
+          'css',
+          'javascript',
+          'tsx',
+          'cmake',
+          'make',
+          'cpp',
+          'bash',
+          'python',
+          'go',
+          'java',
+          'yaml',
+          'sql',
+        },
+
+        -- Install parsers synchronously (only applied to `ensure_installed`)
+        sync_install = false,
+
+        -- Automatically install missing parsers when entering buffer
+        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+        auto_install = true,
+
+        -- List of parsers to ignore installing (or 'all')
+        ignore_install = {},
+        modules = {},
+
+        highlight = {
+          enable = true,
+
+          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+          -- Using this option may slow down your editor, and you may see some duplicate highlights.
+          -- Instead of true it can also be a list of languages
+          -- additional_vim_regex_highlighting = false,
+        },
+        -- ,
+        incremental_selection = { enable = false },
+        indent = { enable = true },
+      }
+
+      vim.opt.foldenable = false -- Disable folding at startup.
+    end,
   },
-  build = function()
-    require('nvim-treesitter.install').update { with_sync = true } ()
-  end,
-  config = function()
-    local configs = require 'nvim-treesitter.configs'
-    configs.setup {
-      -- A list of parser names, or 'all' (the five listed parsers should always be installed)
-      ensure_installed = {
-        'html',
-        'css',
-        'javascript',
-        'tsx',
-        'cmake',
-        'make',
-        'cpp',
-        'bash',
-        'python',
-        'go',
-        'java',
-        'yaml',
-        'sql',
-      },
-
-      -- Install parsers synchronously (only applied to `ensure_installed`)
-      sync_install = false,
-
-      -- Automatically install missing parsers when entering buffer
-      -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-      auto_install = true,
-
-      -- List of parsers to ignore installing (or 'all')
-      ignore_install = {},
-      modules = {},
-
-      highlight = {
-        enable = true,
-
-        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-        -- Using this option may slow down your editor, and you may see some duplicate highlights.
-        -- Instead of true it can also be a list of languages
-        -- additional_vim_regex_highlighting = false,
-      },
-      textobjects = {
-        lookahead = true,
+  {
+    'Wansmer/treesj',
+    keys = {
+      { 'gJ', '<cmd>TSJToggle<cr>', desc = '  Join Toggle' },
+      { 'gS', '<cmd>TSJSplit<cr>', desc = '  Join Split' },
+    },
+    opts = { use_default_keymaps = false, max_join_length = 1000 },
+  },
+  { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 1 } },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    branch = 'main',
+    config = function()
+      require('nvim-treesitter-textobjects').setup {
         select = {
           enable = true,
           include_surrounding_whitespace = false,
-          keymaps = {
-            ['aa'] = { query = '@parameter.outer', desc = '󱘎  outer param' },
-            ['ia'] = { query = '@parameter.inner', desc = '󱘎  inner param' },
-            ['af'] = { query = '@function.outer', desc = '󱘎  all function' },
-            ['if'] = { query = '@function.inner', desc = '󱘎  inner function' },
-            ['am'] = { query = '@class.outer', desc = '󱘎  all class' },
-            ['im'] = { query = '@class.inner', desc = '󱘎  inner class' },
-            ['ac'] = { query = '@conditional.outer', desc = '󱘎  all conditional' },
-            ['ic'] = { query = '@conditional.inner', desc = '󱘎  inner conditional' },
-            ['aH'] = { query = '@assignment.lhs', desc = '󱘎  assignment lhs' },
-            ['aL'] = { query = '@assignment.rhs', desc = '󱘎  assignment rhs' },
-          },
         },
         swap = {
           enable = true,
-          swap_next = { ['<A-.>'] = '@parameter.inner' },
-          swap_previous = { ['<A-,>'] = '@parameter.inner' },
         },
         move = {
           enable = true,
           set_jumps = true,
-          goto_next_start = { [']m'] = '@function.outer', [']M'] = '@class.outer' },
-          goto_previous_start = { ['[m'] = '@function.outer', ['[M'] = '@class.outer' },
         },
-      },
-      incremental_selection = {
-        enable = false,
-      },
-      indent = {
-        enable = true,
-      },
-    }
+      }
 
-    vim.opt.foldenable = false -- Disable folding at startup.
-  end,
+      vim.keymap.set({ "x", "o" }, "af", function() require "nvim-treesitter-textobjects.select".select_textobject("@function.outer", "textobjects") end, { desc = '󱘎  around function' })
+      vim.keymap.set({ "x", "o" }, "if", function() require "nvim-treesitter-textobjects.select".select_textobject("@function.inner", "textobjects") end, { desc = '󱘎  inner function' })
+      vim.keymap.set({ "x", "o" }, "am", function() require "nvim-treesitter-textobjects.select".select_textobject("@class.outer", "textobjects") end, { desc = '󱘎  inner class' })
+      vim.keymap.set({ "x", "o" }, "im", function() require "nvim-treesitter-textobjects.select".select_textobject("@class.inner", "textobjects") end, { desc = '󱘎  inner class' })
+      vim.keymap.set({ "x", "o" }, "ia", function() require "nvim-treesitter-textobjects.select".select_textobject("@parameter.inner", "textobjects") end, { desc = '󱘎  inner param' })
+      vim.keymap.set({ "x", "o" }, "aa", function() require "nvim-treesitter-textobjects.select".select_textobject("@parameter.outer", "textobjects") end, { desc = '󱘎  around param' })
+      vim.keymap.set({ "x", "o" }, "ac", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.outer", "textobjects") end, { desc = '󱘎  around conditional' })
+      vim.keymap.set({ "x", "o" }, "ic", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.inner", "textobjects") end, { desc = '󱘎  inner conditional' })
+      -- TODO: conditional.lhs/rhs
+      vim.keymap.set({ "x", "o" }, "aH", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.lhs", "textobjects") end, { desc = '󱘎  assignment lhs' })
+      vim.keymap.set({ "x", "o" }, "aL", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.rhs", "textobjects") end, { desc = '󱘎  assignment rhs' })
+
+      vim.keymap.set({ "x", "o", "n" }, "]m", function() require "nvim-treesitter-textobjects.move".goto_next_start("@function.outer", "textobjects") end, { desc = '󱘎  Move To Next Function' })
+      vim.keymap.set({ "x", "o", "n" }, "[m", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@function.outer", "textobjects") end, { desc = '󱘎  Move To Previous Function' })
+      -- TODO: class next
+      vim.keymap.set({ "x", "o", "n" }, "]M", function() require "nvim-treesitter-textobjects.move".goto_next_start("@class.outer", "textobjects") end, { desc = '󱘎  Move To Next Method' })
+      vim.keymap.set({ "x", "o", "n" }, "[M", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@class.outer", "textobjects") end, { desc = '󱘎  Move To Previous Method' })
+
+      vim.keymap.set("n", "<A-.>", function() require("nvim-treesitter-textobjects.swap").swap_next "@parameter.inner" end)
+      vim.keymap.set("n", "<A-,>", function() require("nvim-treesitter-textobjects.swap").swap_previous "@parameter.inner" end)
+
+    end,
+  },
 }
 
 return M
