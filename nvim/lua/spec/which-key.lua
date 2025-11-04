@@ -89,11 +89,6 @@ local M = {
         { mode = 'n', keys = ']a', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk stage/add
         { mode = 'n', keys = '[a', postkeys = ']', postkeys_next_allowed = { 'c', 'C', 'a', 'r', 'u' } }, -- hunk stage/add
 
-        { mode = 'n', keys = ']m', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } }, -- Tree-sitter-move
-        { mode = 'n', keys = '[m', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
-        { mode = 'n', keys = ']M', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
-        { mode = 'n', keys = '[M', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
-
         { mode = 'n', keys = '[D', postkeys = '[', postkeys_next_allowed = { 'd', 'D', 'A' } },
         { mode = 'n', keys = ']D', postkeys = ']', postkeys_next_allowed = { 'd', 'D', 'A' } },
         { mode = 'n', keys = '[d', postkeys = '[', postkeys_next_allowed = { 'd', 'D', 'A' } },
@@ -102,6 +97,16 @@ local M = {
         { mode = 'n', keys = ']w', postkeys = ']', postkeys_next_allowed = { 'w' } },
         { mode = 'n', keys = '[t', postkeys = '[', postkeys_next_allowed = { 't' } },
         { mode = 'n', keys = ']t', postkeys = ']', postkeys_next_allowed = { 't' } },
+
+        { mode = 'n', keys = ']m', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } }, -- Tree-sitter-move
+        { mode = 'n', keys = '[m', postkeys = '[', postkeys_next_allowed = { 'm', 'M' } },
+        { mode = 'n', keys = ']M', postkeys = ']', postkeys_next_allowed = { 'm', 'M' } },
+        { mode = 'n', keys = '[M', postkeys = '[', postkeys_next_allowed = { 'm', 'M' } },
+        { mode = 'n', keys = ']f', postkeys = ']', postkeys_next_allowed = { 'f', 'F' } },
+        { mode = 'n', keys = '[f', postkeys = '[', postkeys_next_allowed = { 'f', 'F' } },
+        { mode = 'n', keys = ']F', postkeys = ']', postkeys_next_allowed = { 'f', 'F' } },
+        { mode = 'n', keys = '[F', postkeys = '[', postkeys_next_allowed = { 'f', 'F' } },
+
 
         { mode = 'n', keys = '<leader>d', postkeys = '<leader>', postkeys_next_allowed = { 'd' } },
         { mode = 'n', keys = '<leader>hp', postkeys = '<leader>h', postkeys_next_allowed = { 'p' }, resolve_callback = require('commons').smart_hide_floating_window },

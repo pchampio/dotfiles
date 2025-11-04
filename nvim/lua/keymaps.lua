@@ -53,6 +53,11 @@ for _, bind in ipairs { 'grn', 'gra', 'gri', 'grr', 'grt', 'gO', '<c-w>d', '<c-w
   pcall(vim.keymap.del, 'n', bind)
 end
 
+-- Disable ftplugin maps
+vim.g.no_python_maps = true
+vim.g.no_rust_maps = true
+
+
 map('n', '<leader>d', function() require("tiny-inline-diagnostic.override").open_float() end, { desc = '⚑  Show/Enter Diagnostic' })
 map('n', '[d', function() vim.diagnostic.jump({ count = -1, severity = vim.g.diagnostic_severities }) end, { desc = '⚑  Jump To Previous Diagnostic' })
 map('n', ']d', function() vim.diagnostic.jump({ count = 1, severity = vim.g.diagnostic_severities }) end, { desc = '⚑  Jump To Next Diagnostic' })

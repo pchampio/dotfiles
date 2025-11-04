@@ -333,6 +333,10 @@ fkill() {
   fi
 }
 
+tssh() {
+  ssh
+  command tssh --download-path /tmp/ $@
+}
 sssh() {
   command ssh $@
 }
@@ -367,8 +371,6 @@ ssh() {
   if [ $# -ne 0 ]; then
     command tssh --download-path /tmp/ $@
     return
-  else
-    # command tssh --download-path /tmp/
   fi
 }
 
