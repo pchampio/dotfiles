@@ -40,6 +40,8 @@ DISABLE_AUTO_UPDATE="true"
 
 export MANPATH="/usr/local/man:$MANPATH"
 
+# fix: compaudit: 142 unknown group
+ZSH_DISABLE_COMPFIX="true"
 # add oh-my-zsh to zsh
 source $ZSH/oh-my-zsh.sh
 source $ZSH/syntax_highlighting/zsh-syntax-highlighting.zsh

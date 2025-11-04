@@ -4,10 +4,40 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+MIN_ZSH_VERSION="5.8"
+
 success "[ZSH] Start"
 
 rm -rf ~/.oh-my-zsh/
 touch ~/.zsh_history
+
+
+[ -f "$HOME/.local/bin/zsh" ] || [ -L "$HOME/.local/bin/zsh" ] && rm "$HOME/.local/bin/zsh"
+wherezsh="$(command -v zsh)" # default
+
+REPLY=n
+if command -v zsh >/dev/null 2>&1; then
+  ZSH_VERSION=$(zsh --version | awk '{print $2}')
+  if [ "$(printf '%s\n' "$ZSH_VERSION" $MIN_ZSH_VERSION | sort -V | head -n1)" = $MIN_ZSH_VERSION ]; then
+    explain "Zsh version is ($ZSH_VERSION): Skipping local install"
+    tell ln -s "$wherezsh" "$HOME/.local/bin/zsh" || true
+  else
+    explain "Zsh version is too old ($ZSH_VERSION)"
+    REPLY=y
+  fi
+else
+    explain "Zsh is not pre-installed"
+    REPLY=y
+fi
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  explain "Local install of zsh-bin"
+  rm -rf /tmp/zsh-bin
+  mkdir /tmp/zsh-bin
+  wget -q -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
+  run_with_spinner sh /tmp/zsh-bin/install -d $HOME/.local/ -e no
+  wherezsh=$HOME/.local/bin/zsh
+  export PATH="$HOME/.local/bin:$PATH"
+fi
 
 
 explain "Install oh-my-zsh"
@@ -49,33 +79,6 @@ chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || 
 #  chmod +x ~/dotfiles/bin/wt
 #  mkdir -p ~/.oh-my-zsh/completions/
 #  curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt
-
-[ -f "$HOME/.local/bin/zsh" ] || [ -L "$HOME/.local/bin/zsh" ] && rm "$HOME/.local/bin/zsh"
-wherezsh="$(command -v zsh)" # default
-
-MIN_ZSH_VERSION="5.8"
-REPLY=n
-if command -v zsh >/dev/null 2>&1; then
-  ZSH_VERSION=$(zsh --version | awk '{print $2}')
-  if [ "$(printf '%s\n' "$ZSH_VERSION" $MIN_ZSH_VERSION | sort -V | head -n1)" = $MIN_ZSH_VERSION ]; then
-    explain "Zsh version is ($ZSH_VERSION): Skipping local install"
-    tell ln -s "$wherezsh" "$HOME/.local/bin/zsh" || true
-  else
-    explain "Zsh version is too old ($ZSH_VERSION)"
-    REPLY=y
-  fi
-else
-    explain "Zsh is not pre-installed"
-    REPLY=y
-fi
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  explain "Local install of zsh-bin"
-  rm -rf /tmp/zsh-bin
-  mkdir /tmp/zsh-bin
-  wget -q -O /tmp/zsh-bin/install https://raw.githubusercontent.com/romkatv/zsh-bin/master/install
-  run_with_spinner sh /tmp/zsh-bin/install -d $HOME/.local/ -e no
-  wherezsh=$HOME/.local/bin/zsh
-fi
 
 $wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
 

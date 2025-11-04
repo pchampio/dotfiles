@@ -6,13 +6,18 @@ BASEDIR=$(dirname $0)
 
 success "[ASK] Start"
 
-read -p "[chsh] Change shell to set zsh ? [y] " -n 1 -r
-echo ""    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "$wherezsh" | sudo tee -a /etc/shells
-  sudo chsh -s "$wherezsh"  "${USER}"
-  success "[ASK] End"
-  exit 0
+groups=$(id -nG)
+
+# Check if the user is in 'sudo' (Debian/Ubuntu) or 'wheel' (RedHat/Fedora) group
+if echo "$groups" | grep -qw "sudo" || echo "$groups" | grep -qw "wheel"; then
+  read -p "[SUDO chsh] Change shell to set zsh ? [y] " -n 1 -r
+  echo ""    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "$wherezsh" | sudo tee -a /etc/shells
+    sudo chsh -s "$wherezsh"  "${USER}"
+    success "[ASK] End"
+    exit 0
+  fi
 fi
 
 # OR
@@ -36,7 +41,7 @@ else
 fi
 
 # Prompt user
-read -p "[Fake chsh] Add exec '$wherezsh' to $target_file ? [y] " -n 1 -r
+read -p "[FAKE chsh] Add exec '$wherezsh' to $target_file ? [y] " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     [[ ! -f "$target_file" ]] && touch "$target_file"
