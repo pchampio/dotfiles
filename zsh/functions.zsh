@@ -77,16 +77,16 @@ function nodeenv {
 }
 
 function audio {
-  local force=0
-  local flag_f=""
+  local force=1
+  local flag_f="-f"
   local args=()
   local file=""
 
   # Parse arguments
   for arg in "$@"; do
-    if [ "$arg" = "-f" ]; then
-      force=1
-      flag_f="-f"
+    if [ "$arg" = "-b" ]; then
+      force=0
+      flag_f=""
     else
       args+=("$arg")
       # Pick the first non-flag argument as the "file"

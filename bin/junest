@@ -2,7 +2,7 @@
 # Collect overlay mounts under /home, excluding '/'
 binds=()
 while read -r mount_point fs_type; do
-    [[ "$fs_type" == "overlay" ]] && [[ "$mount_point" != "/" ]] && \
+    [[ "$fs_type" == "overlay" ]] && [[ "$mount_point" != *"/docker/"* ]] && [[ "$mount_point" != "/" ]] && \
     { [[ "$mount_point" == /home/* ]] \
     || [[ "$mount_point" == /opt/* ]] \
     || [[ "$mount_point" == /mnt/* ]] \
@@ -11,6 +11,10 @@ while read -r mount_point fs_type; do
     || [[ "$mount_point" == /s3/* ]] ;} \
     && binds+=( "--bind $mount_point $mount_point" )
 done < <(findmnt -l -n -t overlay -o TARGET,FSTYPE)
+
+if [[ $# -eq 0 ]]; then
+    echo "DEBUG: Detected overlay mounts to bind: '${binds[*]}'"
+fi
 
 # Run junest with binds if any, otherwise without -b
 if [[ ${#binds[@]} -gt 0 ]]; then
