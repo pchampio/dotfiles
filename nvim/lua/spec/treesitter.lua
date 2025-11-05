@@ -89,15 +89,17 @@ local M = {
       vim.keymap.set({ "x", "o" }, "aa", function() require "nvim-treesitter-textobjects.select".select_textobject("@parameter.outer", "textobjects") end, { desc = '󱘎  around param' })
       vim.keymap.set({ "x", "o" }, "ac", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.outer", "textobjects") end, { desc = '󱘎  around conditional' })
       vim.keymap.set({ "x", "o" }, "ic", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.inner", "textobjects") end, { desc = '󱘎  inner conditional' })
-      -- TODO: conditional.lhs/rhs
-      vim.keymap.set({ "x", "o" }, "aH", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.lhs", "textobjects") end, { desc = '󱘎  assignment lhs' })
-      vim.keymap.set({ "x", "o" }, "aL", function() require "nvim-treesitter-textobjects.select".select_textobject("@conditional.rhs", "textobjects") end, { desc = '󱘎  assignment rhs' })
-
-      vim.keymap.set({ "x", "o", "n" }, "]m", function() require "nvim-treesitter-textobjects.move".goto_next_start("@function.outer", "textobjects") end, { desc = '󱘎  Move To Next Function' })
-      vim.keymap.set({ "x", "o", "n" }, "[m", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@function.outer", "textobjects") end, { desc = '󱘎  Move To Previous Function' })
+      vim.keymap.set({ "x", "o" }, "il", function() require "nvim-treesitter-textobjects.select".select_textobject("@call.inner", "textobjects") end, { desc = '󱘎  inner call' })
+      vim.keymap.set({ "x", "o" }, "aH", function() require "nvim-treesitter-textobjects.select".select_textobject("@assignment.lhs", "textobjects") end, { desc = '󱘎  assignment lhs' })
+      vim.keymap.set({ "x", "o", "n" }, "]f", function() require "nvim-treesitter-textobjects.move".goto_next_start("@function.outer", "textobjects") end, { desc = '󱘎  Move To Next Function' })
+      vim.keymap.set({ "x", "o", "n" }, "[f", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@function.outer", "textobjects") end, { desc = '󱘎  Move To Previous Function' })
+      vim.keymap.set({ "x", "o", "n" }, "[F", function() require "nvim-treesitter-textobjects.move".goto_next_start("@function.outer", "textobjects") end, { desc = '_󱘎  Move To Next Function' })
+      vim.keymap.set({ "x", "o", "n" }, "]F", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@function.outer", "textobjects") end, { desc = '_󱘎  Move To Previous Function' })
       -- TODO: class next
-      vim.keymap.set({ "x", "o", "n" }, "]M", function() require "nvim-treesitter-textobjects.move".goto_next_start("@class.outer", "textobjects") end, { desc = '󱘎  Move To Next Method' })
-      vim.keymap.set({ "x", "o", "n" }, "[M", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@class.outer", "textobjects") end, { desc = '󱘎  Move To Previous Method' })
+      vim.keymap.set({ "x", "o", "n" }, "]m", function() require "nvim-treesitter-textobjects.move".goto_next_start("@class.outer", "textobjects") end, { desc = '󱘎  Move To Next Method' })
+      vim.keymap.set({ "x", "o", "n" }, "[m", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@class.outer", "textobjects") end, { desc = '󱘎  Move To Previous Method' })
+      vim.keymap.set({ "x", "o", "n" }, "[M", function() require "nvim-treesitter-textobjects.move".goto_next_start("@class.outer", "textobjects") end, { desc = '_󱘎  Move To Next Method' })
+      vim.keymap.set({ "x", "o", "n" }, "]M", function() require "nvim-treesitter-textobjects.move".goto_previous_start("@class.outer", "textobjects") end, { desc = '_󱘎  Move To Previous Method' })
 
       vim.keymap.set("n", "<A-.>", function() require("nvim-treesitter-textobjects.swap").swap_next "@parameter.inner" end)
       vim.keymap.set("n", "<A-,>", function() require("nvim-treesitter-textobjects.swap").swap_previous "@parameter.inner" end)
