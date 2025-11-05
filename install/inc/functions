@@ -204,3 +204,39 @@ get_config_for_current_shell() {
     fi
     echo $config_file
 }
+
+add_github_key() {
+    local user="$1"
+    local ssh_dir="$HOME/.ssh"
+    local auth_file="$ssh_dir/authorized_keys"
+
+    # Check if username is provided
+    if [[ -z "$user" ]]; then
+        echo "Usage: add_github_key <github-username>"
+        return 1
+    fi
+
+    # Create .ssh directory if it doesn't exist
+    mkdir -p "$ssh_dir"
+    chmod 700 "$ssh_dir"
+
+    # Fetch keys from GitHub
+    local keys
+    keys=$(curl -fsSL "https://github.com/${user}.keys") || {
+        error "Error: Failed to fetch keys for user '$user'"
+        return 1
+    }
+
+    if [[ -z "$keys" ]]; then
+        error "No keys found for GitHub user '$user'."
+        return 1
+    fi
+
+    # Append keys to authorized_keys (avoid duplicates)
+    echo "$keys" | while read -r key; do
+        grep -qxF "$key" "$auth_file" 2>/dev/null || echo "$key" >> "$auth_file"
+    done
+
+    chmod 600 "$auth_file"
+    explain2 "Keys from GitHub user '$user' added to $auth_file"
+}
