@@ -238,5 +238,5 @@ add_github_key() {
     done
 
     chmod 600 "$auth_file"
-    explain2 "Keys from GitHub user '$user' added to $auth_file"
+    explain2 "[SSH] Keys from GitHub user '$user' added to $auth_file"
 }
