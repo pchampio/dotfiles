@@ -129,6 +129,7 @@ function M.auto_complete(window, pane)
   local pane_text = pane:get_logical_lines_as_text(pane:get_dimensions().scrollback_rows)
   for pattern, cmd_get_pwd in pairs(M.config.password_patterns) do
     M.log_info("Checking pattern:", pattern)
+    M.log_info("In pane text:", pane_text)
     if string.find(pane_text, pattern) then
       M.log_info("FOUND pattern in pane:", pattern)
       local success, password, stderr = M.run_cmd(cmd_get_pwd)

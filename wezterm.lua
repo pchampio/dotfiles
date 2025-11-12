@@ -17,6 +17,9 @@ local auto_complete = require("auto_complete")
 -- == Config plugins/personal functions ==
 wezterm.on("user-var-changed", function(window, pane, name, value)
   -- play audio on host once downloaded with tssh
+  if name == "wez_notif" then
+    window:toast_notification('wezterm', value, nil, 1000)
+  end
   if name == "wez_audio" then
     local cmd_context = wezterm.json_parse(value)
       toggle_terminal.toggle_terminal(window, pane)
