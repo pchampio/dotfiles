@@ -66,10 +66,6 @@ local M = {
       }
     end,
   },
-  {
-    'hinell/lsp-timeout.nvim',
-    dependencies = { 'neovim/nvim-lspconfig' },
-  },
 }
 
 return M
