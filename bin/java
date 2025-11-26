@@ -1,19 +1,33 @@
 #!/bin/bash
 
-# Prevent infinite recursion by checking if we're already in this wrapper
+# Prevent recursion
 if [ "$JAVA_WRAPPER_RUNNING" = "1" ]; then
     echo "Error: Detected recursive call to java wrapper!" >&2
     exit 1
 fi
-
 export JAVA_WRAPPER_RUNNING=1
 
-# Check if Java is available in the PATH
-java_bin=$(command -v java 2>/dev/null)
+# The wrapper's own path
+wrapper_path="$0"
 
-# Ensure we don't call this wrapper itself
-if [ $? -eq 0 ] && [ "$java_bin" != "$0" ]; then
-    exec "$java_bin" "$@"
+# Function to find the first "real" java binary in PATH
+find_real_java() {
+    IFS=':' read -ra dirs <<< "$PATH"
+    for dir in "${dirs[@]}"; do
+        candidate="$dir/java"
+        if [ -x "$candidate" ] && [ "$candidate" != "$wrapper_path" ]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Try to find real java
+real_java=$(find_real_java)
+
+if [ -n "$real_java" ]; then
+    exec "$real_java" "$@"
 else
     # Fallback to junest Java
     exec "$HOME/dotfiles/bin/junest" -- java "$@"
