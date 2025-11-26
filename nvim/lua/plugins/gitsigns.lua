@@ -40,10 +40,10 @@ return {
     local function nav_with_conditional_preview(direction)
       local startline = vim.api.nvim_win_get_cursor(0)[1]
       gs.nav_hunk(direction, { preview = false, target = vim.g.gitsigns_nav_target, navigation_message = true })
+      vim.cmd('redraw!')
       vim.defer_fn(function()
-        vim.cmd('redraw!')
         if vim.api.nvim_win_get_cursor(0)[1] ~= startline then
-        vim.notify(vim.inspect(get_hunk_under_cursor()))
+        -- vim.notify(vim.inspect(get_hunk_under_cursor()))
           -- gs.preview_hunk()
       end  
       end, 200)

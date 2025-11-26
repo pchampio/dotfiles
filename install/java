@@ -3,13 +3,22 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+
+# Check if Java is available in the PATH
+java_bin=$(command -v java 2>/dev/null)
+if [ $? -eq 0 ]; then
+  java_ver=$(exec "$java_bin" "--version" | head -n1)
+  explain "Java version is ($java_ver): Skipping local install"
+  exit 0
+fi
+
 success "[JAVA] Start"
 
 [ ! -d ~/.junest ] && $BASEDIR/junest
 run_with_spinner "echo y | ~/.local/share/junest/bin/junest -f -- sudo yay -S jre-openjdk"
 if [[ ! $? -eq 0 ]]; then
   error "[JAVA] Error"
-  exit
+  exit 0
 fi
 
 success "[JAVA] Success"
