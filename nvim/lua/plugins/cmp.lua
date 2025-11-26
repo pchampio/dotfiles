@@ -4,7 +4,7 @@ return {
   {
     event = "VeryLazy",
     'hrsh7th/nvim-cmp',
-    -- name = 'nvim-cmp', -- Otherwise highlighting gets messed up (to use when testing a fork)
+    priority = 100,
     dependencies = {
       --* the sources *--
       { 'hrsh7th/cmp-nvim-lsp', name = 'cmp-nvim-lsp', opts = {} },
