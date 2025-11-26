@@ -45,7 +45,7 @@ return {
 
     set_sidekick_hl()
 
-    vim.api.nvim_create_autocmd('BufReadPost', {
+    vim.api.nvim_create_autocmd('InsertEnter', {
       desc = 'Sidekick highlight adjustments',
       callback = set_sidekick_hl,
     })
