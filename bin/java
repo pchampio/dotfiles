@@ -7,16 +7,14 @@ if [ "$JAVA_WRAPPER_RUNNING" = "1" ]; then
 fi
 export JAVA_WRAPPER_RUNNING=1
 
-# The wrapper's own path
-wrapper_path="$0"
-
 # Function to find the first "real" java binary in PATH
 find_real_java() {
     IFS=':' read -ra dirs <<< "$PATH"
     for dir in "${dirs[@]}"; do
         candidate="$dir/java"
-        if [ -x "$candidate" ] && [ "$candidate" != "$wrapper_path" ]; then
-            echo "$candidate"
+        candidate_path=$(realpath "$candidate" 2>/dev/null)
+        if [ -x "$candidate_path" ] && [[ "$candidate_path" == /usr/* || "$candidate_path" == /bin/* ]]; then
+            echo "$candidate_path"
             return 0
         fi
     done
