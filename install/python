@@ -71,7 +71,7 @@ if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
   run_with_spinner $bpython -m pip install --upgrade setuptools pynvim pillow wheel ensurepath
 
   \rm "$HOME/.local/share/pipx" -rf
-  run_with_spinner $bpython -m pipx install pyright imgcat sshuttle trash-cli argcomplete --force
+  run_with_spinner $bpython -m pipx install pyright beads-mcp imgcat sshuttle trash-cli argcomplete --force
 
   # remove crap from zshrc (added by pipx)
   apply_sed_to_dotfiles '/^# Created by `pipx`/,+1d'

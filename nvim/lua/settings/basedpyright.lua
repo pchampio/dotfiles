@@ -26,35 +26,56 @@ local function find_venv(start_path) -- Finds the venv folder required for LSP
 end
 local lsp_restarted = false
 
+local root_dir_basedpyright = function(bufnr, cb)
+  local root = vim.fs.root(bufnr, {
+    'pyproject.toml',
+    'pyrightconfig.json',
+    '.git',
+  }) or vim.fn.expand '%:p:h'
+  cb(root)
+end
+
 ---@type vim.lsp.Config
 local settings = {
   basedpyright = {
-    -- use ruff-lsp for organizing imports
+    -- use ruff for organizing imports
     disableOrganizeImports = true,
     disableTaggedHints = true,
     typeCheckingMode = 'basic',
-    -- disable pyright's built-in analysis
     analysis = {
+      autoImportCompletions = true,
+      autoSearchPaths = true, -- auto serach command paths like 'src'
       diagnosticMode = 'openFilesOnly',
+      useLibraryCodeForTypes = true,
       diagnosticSeverityOverrides = {
-        reportUnusedExpression = 'none',
-        reportUnusedVariable = 'none',
-        reportUnusedFunction = false,
-        reportInvalidStringEscapeSequence = 'none',
-        reportUnusedClass = false,
-        reportPrivateImportUsage = 'none',
-        reportMissingImports = 'none',
-        reportUndefinedVariable = 'none',
-        reportUnusedImport = 'none',
-        reportUnusedParameter = 'none',
-        reportFunctionMemberAccess = false,
-        reportArgumentType = false,
+      --   reportInvalidStubStatement = 'none',
+      --   reportUnusedExpression = 'none',
+      --   reportUnusedVariable = 'none',
+      --   reportInvalidStringEscapeSequence = 'none',
+      --   reportPrivateImportUsage = 'none',
+      --   reportMissingImports = 'none',
+      --   reportUndefinedVariable = 'none',
+        reportUnusedImport = 'warning',
+        reportUnusedClass = 'warning',
+        reportUnusedFunction = 'warning',
+      --   reportUnusedParameter = 'none',
+      --   reportFunctionMemberAccess = false,
+      --   reportArgumentType = false,
       },
     },
   },
 }
 
 return {
+  filetypes = { 'python' },
+  root_dir = root_dir_basedpyright,
+  on_attach = function(client, _)
+    client.server_capabilities.completionProvider = false -- use pyrefly for fast response
+    client.server_capabilities.definitionProvider = false
+    client.server_capabilities.documentHighlightProvider = false
+    client.server_capabilities.renameProvider = false -- use pyrefly as I think it is stable
+    client.server_capabilities.semanticTokensProvider = false -- use pyrefly it is more rich
+  end,
   on_init = function(client)
     if not lsp_restarted then
       local cwd = vim.fn.getcwd()
@@ -68,8 +89,8 @@ return {
         }
         vim.schedule(function()
           vim.notify('venv: ' .. venv_path)
-            vim.lsp.stop_client(client.id, true)
-            vim.lsp.start(client.config)
+          vim.lsp.stop_client(client.id, true)
+          vim.lsp.start(client.config)
         end)
       end
     end

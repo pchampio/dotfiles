@@ -1,3 +1,10 @@
 #!/bin/bash
 
-"$HOME/dotfiles/bin/junest" -- java "$@"
+# Check if Java is available in the PATH
+if command -v java >/dev/null 2>&1; then
+    # Use system Java
+    java "$@"
+else
+    # Fallback to junest Java
+    "$HOME/dotfiles/bin/junest" -- java "$@"
+fi

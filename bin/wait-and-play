@@ -1,4 +1,5 @@
-file=/tmp/"$1"
+file=/tmp/$(basename "$1")
+echo $file
 
 if [ $# -ge 2 ] && [ "$2" != "-f" ]; then
   [ -f "$file" ] && rm "$file"

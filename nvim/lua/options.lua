@@ -18,8 +18,11 @@ local options = {
   shiftwidth = 2,                           -- Number of spaces inserted for each indentation
   tabstop = 2,                              -- Number of spaces for a tab
   cursorline = true,                        -- Highlight the current line
+  -- comfy line number
+  statuscolumn = "  ",                      -- Empty to avoid number from being modified during startup
   number = true,                            -- Show line numbers
-  relativenumber = true,                    -- Show relative line numbers
+  relativenumber = false,                   -- Show relative line numbers
+  numberwidth = 5,                          -- This avoid a visual distraction when loading
   laststatus = 3,                           -- Only the last window will always have a status line
   signcolumn = 'yes',                       -- Always show the sign column, otherwise it would shift the text each time
   linebreak = true,                         -- Wrap long lines at a character in 'break at' rather than at the last character that fits on the screen
@@ -38,6 +41,8 @@ local options = {
     trail = '·',
   },
   termguicolors = true,
+  foldenable = false, -- Disable folding at startup.
+  statusline = "%#Visual#%<    %t", -- Mimic lualine statusline, avoid flicker at startup
 }
 
 for k, v in pairs(options) do
@@ -45,6 +50,9 @@ for k, v in pairs(options) do
 end
 
 vim.wo.wrap = false
+
+vim.g.mapleader = ','
+vim.gmaplocalleader = ','
 
 -- Exclude = from isfilename.
 vim.opt.isfname:remove '='
@@ -111,3 +119,12 @@ vim.g.diagnostic_severities_signs = {
 
 -- Hide some floating windows with Esc
 vim.keymap.set('n', '<esc>', require('commons').smart_hide_floating_window )
+
+-- Experimental: highlight cmdline, messages in a real buffer.
+-- See https://github.com/neovim/neovim/pull/27811 and :help vim._extui
+-- NOTE: Use 'g<' to see more messages!
+vim.schedule(function()
+  require('vim._extui').enable {
+    enable = true,
+  }
+end)

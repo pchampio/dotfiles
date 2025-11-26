@@ -1,0 +1,12 @@
+---@module 'lazy'
+---@type LazySpec
+return {
+  'm-demare/hlargs.nvim',
+  opts = {
+    color = '#05a4ee',
+    hl_priority = 200,
+    disable = function(_, bufnr)
+      return vim.bo.filetype == "bigfile"
+    end,
+  },
+}

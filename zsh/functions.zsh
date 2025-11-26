@@ -374,6 +374,77 @@ ssh() {
   fi
 }
 
+
+forti() {
+  VPN_NAME="$(rbw get 9cff1f6d-6731-4d00-a75b-84666d9b0482 --field name)"
+  VPN_USER="$(rbw get 9cff1f6d-6731-4d00-a75b-84666d9b0482 --field username)"
+
+  # --- Ask for sudo upfront to cache credentials ---
+  echo "[+] Requesting sudo access to start fctsched..."
+  sudo -v   # Ask for password, cache credentials
+
+  # --- Start fctsched if not running ---
+  if ! pgrep -x fctsched > /dev/null; then
+      echo "[+] Starting FortiClient scheduler in background..."
+      sudo nohup /opt/forticlient/fctsched >/dev/null 2>&1 &
+      FCTSCHED_PID=$!         # capture the PID of the last background process
+      disown
+      echo "[+] fctsched started with PID $FCTSCHED_PID"
+      sleep 6  # give it a moment to start
+  else
+      FCTSCHED_PID=$(pgrep -x fctsched)
+      echo "[+] FortiClient scheduler already running with PID(s): $FCTSCHED_PID"
+  fi
+
+
+  echo "[+] Connecting to VPN: $VPN_NAME"
+  /opt/forticlient/forticlient-cli vpn connect "$VPN_NAME" \
+      --username "$VPN_USER" \
+      --save-password
+
+    # --- Disable IPv6 in case ---
+    echo "[+] IPv6 enabled — disabling..."
+    sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+}
+
+
+forti-down() {
+  # --- Ask for sudo upfront to cache credentials ---
+  echo "[+] Requesting sudo access to start fctsched..."
+  sudo -v   # Ask for password, cache credentials
+
+  # --- Disconnect VPN ---
+  echo "[+] Disconnecting VPN: $VPN_NAME"
+  /opt/forticlient/forticlient-cli vpn disconnect "$VPN_NAME"
+
+  # --- Stop fctsched if running ---
+  FCTSCHED_PID=$(pgrep -x fctsched)
+  if [ -n "$FCTSCHED_PID" ]; then
+      echo "[+] Stopping FortiClient scheduler with PID(s): $FCTSCHED_PID"
+      sudo kill "$FCTSCHED_PID"
+      sleep 1
+      # confirm stopped
+      if ! pgrep -x fctsched > /dev/null; then
+          echo "[+] FortiClient scheduler stopped"
+      else
+          echo "[-] Failed to stop fctsched, trying force kill..."
+          sudo kill -9 "$FCTSCHED_PID"
+      fi
+  else
+      echo "[+] FortiClient scheduler not running"
+  fi
+
+  # --- Optional: Re-enable IPv6 if you want ---
+  IPV6_STATUS=$(sysctl -n net.ipv6.conf.all.disable_ipv6)
+  if [ "$IPV6_STATUS" -eq 1 ]; then
+      echo "[+] Re-enabling IPv6..."
+      sudo sysctl -w net.ipv6.conf.all.disable_ipv6=0
+  else
+      echo "[+] IPv6 already enabled"
+  fi
+}
+
+
 __cd() {
   # Save the current chpwd function
   saved_chpwd=$(typeset -f chpwd)

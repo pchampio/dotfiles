@@ -1,9 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
     "autoupdate": false,
-    "instructions": [
-      "CLAUDE.md"
-    ],
     "theme": "solarized",
     "autoshare": false,
     "autoupdate": true,
@@ -17,9 +14,18 @@
       "messages_redo": "ctrl+r",
       "input_newline": "<leader>enter,shift+alt+enter",
     },
-    "lsp": {
-      "pyright": {
-        "command": ["~/.local/share/nvim/mason/bin/basedpyright-langserver", "--stdio"],
+    "mcp": {
+      "beads-mcp": {
+        "enabled": true,
+        "type": "local",
+        "command": [
+          "beads-mcp"
+        ]
+      },
+      "context7": {
+        "type": "remote",
+        "enabled": true,
+        "url": "https://mcp.context7.com/mcp"
       }
-    }
+  }
 }

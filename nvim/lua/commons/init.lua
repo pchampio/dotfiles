@@ -18,16 +18,16 @@ local M = {
     'yamlls',
     'ruff',
     'basedpyright',
+    'pyrefly',
     'harper_ls',
     'copilot-language-server',
-    'stylua'
+    'stylua',
   },
 }
 
 function M.utils.rhs(rhs_str)
   return vim.api.nvim_replace_termcodes(rhs_str, true, true, true)
 end
-
 
 function M.smart_hide_floating_window()
   for _, id in ipairs(vim.api.nvim_list_wins()) do

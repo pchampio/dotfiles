@@ -17,7 +17,7 @@ local function sign_in(bufnr, client)
         vim.fn.setreg("*", code)
         local continue = vim.fn.confirm(
           "Copied your one-time code to clipboard.\n" .. "Open the browser to complete the sign-in process?",
-          "&Yes\n&No"
+          "https://github.com/login/device/select_account " .. "&Yes\n&No"
         )
         if continue == 1 then
           client:exec_cmd(command, { bufnr = bufnr }, function(cmd_err, cmd_result)
