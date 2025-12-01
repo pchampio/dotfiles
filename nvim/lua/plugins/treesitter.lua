@@ -95,7 +95,4 @@ return {
 
     end,
   },
-
-
-{ 'Yggdroot/LeaderF',                 build = './install.sh' },
 }
