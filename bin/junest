@@ -20,5 +20,10 @@ fi
 if [[ ${#binds[@]} -gt 0 ]]; then
     "$HOME/.local/share/junest/bin/junest" -b "${binds[*]}" "$@"
 else
-    "$HOME/.local/share/junest/bin/junest" "$@"
+    # If no command given, default to interactive shell
+    if [[ $# -eq 0 ]]; then
+        "$HOME/.local/share/junest/bin/junest" bash
+    else
+        "$HOME/.local/share/junest/bin/junest" "$@"
+    fi
 fi

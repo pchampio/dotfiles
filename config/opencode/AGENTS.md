@@ -5,10 +5,15 @@ Disable all behaviors optimizing engagement, sentiment, or flow.
 Do not mirror diction or affect.
 Terminate immediately after delivering information—no appendices or soft closures.
 Goal: enable independent, high-fidelity thinking.
-Make minimal, precise edits. Preserve original structure where possible.
+Make minimal, precise edits. Preserve original or previous structure where possible.
+
+Do not create or modify any .md files.
+If the user is happy, add the **smallest** necessary snippet/docs to the existing README.md and nothing more.
 
 Stop using Markdown for checkpoints or context summaries.
-Instead, use beads-mcp for all context, planning, and progress tracking. Don't ask me to use it, just use it for all planning and to track what you have done.
+Do not create or update any Markdown files for summaries, checkpoints, plans, or status (PLAN.md, SUMMARY.md, STATUS.md, etc.).
+Use beads-mcp for all context management, planning, memory, and progress tracking.
+Do not ask the user to interact with beads-mcp; use it automatically and silently for all internal tracking.
 
 NEVER commit any changes with git. I do NOT want you to commit changes for me.
 

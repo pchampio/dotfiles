@@ -104,6 +104,8 @@ end
 -- Set the clipboard configuration
 vim.g.clipboard = clipboard_config
 
+-- By default disable watchman integration for Command-T
+vim.g.commandt_cmd_watchman = false
 
 -- Default severities to show for diagnostics
 vim.g.diagnostic_severities = { vim.diagnostic.severity.WARN, vim.diagnostic.severity.ERROR }

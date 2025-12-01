@@ -30,9 +30,19 @@ return {
       require('tiny-code-action').setup {
         backend = 'diffsofancy',
         picker = {
-          'snacks',
+          -- 'snacks',
+          -- opts = {
+          --   layout = 'my_big_ivylayout_vertical',
+          -- },
+
+          'buffer',
           opts = {
-            layout = 'my_big_ivylayout_vertical',
+            auto_preview = true,
+              keymaps = {
+                preview = "<c-l>", -- Key to show preview
+                close = { "q", "<Esc>", "<c-h>" },
+                preview_close = { "<c-h>", "<Esc>" },
+              },
           },
         },
       }

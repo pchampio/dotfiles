@@ -50,7 +50,7 @@ return {
     },
     opts = { use_default_keymaps = false, max_join_length = 1000 },
   },
-  { event = 'VeryLazy', 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 3 } },
+  { event = 'VeryLazy', 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 2 } },
   {
     'nvim-treesitter/nvim-treesitter-textobjects',
     event = 'VeryLazy',
@@ -95,4 +95,7 @@ return {
 
     end,
   },
+
+
+{ 'Yggdroot/LeaderF',                 build = './install.sh' },
 }

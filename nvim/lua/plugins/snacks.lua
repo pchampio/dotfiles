@@ -12,8 +12,8 @@ local function my_toggles()
     end,
   }):map '<leader>tD'
   Snacks.toggle.new({
-    id = "[FF] RipGrep > Wachtman",
-    name = "[FF] RipGrep > Wachtman",
+    id = "[FF] RipGrep > Watchman",
+    name = "[FF] RipGrep > Watchman",
     get = function() return vim.g.commandt_cmd_watchman end,
     set = function(state)
       vim.g.commandt_cmd_watchman = state
@@ -300,6 +300,17 @@ return {
      }
 
     require('snacks').setup {
+      styles = {
+        notification_history = {
+          width = 0.8,
+          height = 0.8,
+        },
+        notification = {
+          ft = "markdown",
+          zindex = 10,
+          bo = { filetype = "snacks_notif" },
+        },
+      },
       rename = { enabled = true },
       toggle = { },
       bigfile = { enabled = true },
@@ -307,6 +318,7 @@ return {
       notifier = {
         enabled = true,
         timeout = 1000,
+        margin = { right = 1, },
       },
       quickfile = { enabled = true },
       -- statuscolumn = { enabled = true, left = { "sign" }, },

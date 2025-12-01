@@ -12,7 +12,7 @@ return {
         -- Floating window config
         config = { anchor = 'SE', row = 'auto', col = 'auto', width = 40, border = 'rounded' },
         -- Delay before showing clue window
-        delay = 100,
+        delay = 400,
         -- Keys to scroll inside the clue window
         scroll_down = '<C-e>',
         scroll_up = '<C-y>',

@@ -5,13 +5,12 @@ local root_markers = {
   'CMakeLists.txt', 'Makefile', 'configure', 'build.ninja',
 }
 
-vim.g.commandt_cmd_watchman = true
-
 ---@module 'lazy'
 ---@type LazySpec
 return {
   'git@prr.re:Drakirus/command-t.git',
   build = 'cd lua/wincent/commandt/lib && make',
+  -- dir = "/home/prr/lab/git-commant-t",
   keys = {
     {
       '<C-p>',

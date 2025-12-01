@@ -26,9 +26,9 @@ instant-zsh-pre "%004F${${(V)${(%):-%~}//\%/%%}//\///}%b%f"$'\n'"%002F\$~%f "
 export ZSH=~/.oh-my-zsh
 
 # User configuration
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:$HOME/.local/podman/bin"
+export PATH="$HOME/.local/share/nvim/mason/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:$HOME/.local/podman/bin"
 
-export EDITOR=$HOME/.local/bin/nvim-linux-x86_64/bin/nvim
+export EDITOR=$HOME/.local/bin/nvim
 
 setopt prompt_subst # enable command substition in prompt
 
