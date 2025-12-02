@@ -1,7 +1,9 @@
+#!/bin/bash
+
 file=/tmp/$(basename "$1")
 echo $file
 
-if [ $# -ge 2 ] && [ "$2" != "-f" ]; then
+if [ $# -ge 2 ] && [ "$2" = "-f" ]; then
   [ -f "$file" ] && rm "$file"
 fi
 

@@ -23,7 +23,7 @@ wezterm.on("user-var-changed", function(window, pane, name, value)
   if name == "wez_audio" then
     local cmd_context = wezterm.json_parse(value)
       toggle_terminal.toggle_terminal(window, pane)
-      toggle_terminal.send_command_to_tab(window,  "wait-and-play " .. cmd_context.file .. " " .. cmd_context.flag .. " ;exit")
+      toggle_terminal.send_command_to_tab(window,  "wait-and-play " .. cmd_context.file .. " " .. cmd_context.flag .. "")
   end
 end)
 
