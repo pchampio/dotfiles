@@ -405,6 +405,7 @@ forti() {
     # --- Disable IPv6 in case ---
     echo "[+] IPv6 enabled — disabling..."
     sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+    \rm $HOME/.ssh/sockets/*themama* 2>/dev/null || true
 }
 
 
