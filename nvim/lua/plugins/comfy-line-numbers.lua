@@ -1,6 +1,7 @@
 return {
   -- show line number with only left side(1~5) number to convenient manipulate
-  'mluders/comfy-line-numbers.nvim',
+  'pchampio/comfy-line-numbers.nvim',
+  branch = "gitsigns.nvim",
 --   init = function() 
 --   local comfy = require 'comfy-line-numbers'
 --   local function strip_padding(str)

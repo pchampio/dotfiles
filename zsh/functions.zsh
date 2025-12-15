@@ -78,33 +78,70 @@ function nodeenv {
 
 function audio {
   local force=1
-  local flag_f="-f"
+  local flag_f=""
   local args=()
   local file=""
+  local range=""
+  local start=""
+  local end=""
+  local tmpfile=""
+  local state_file="${TMPDIR:-/tmp}/wez_audio_last.tmp"
+
+  # Clean up previous temp file (if any)
+  if [ -f "$state_file" ]; then
+    old_tmp=$(cat "$state_file")
+    if [ -n "$old_tmp" ] && [ -f "$old_tmp" ]; then
+      \rm -f "$old_tmp"
+    fi
+    \rm -f "$state_file"
+  fi
+
+  # Detect range like "00:00:44.729 --> 00:00:53.509"
+  is_range() {
+    [[ "$1" =~ ^[0-9:.]+[[:space:]]*--\>[[:space:]]*[0-9:.]+$ ]]
+  }
 
   # Parse arguments
   for arg in "$@"; do
     if [ "$arg" = "-b" ]; then
       force=0
-      flag_f=""
-    else
-      args+=("$arg")
-      # Pick the first non-flag argument as the "file"
-      if [ -z "$file" ]; then
-        file="$arg"
-      fi
+      flag_f="-f"
+      continue
+    fi
+    if is_range "$arg"; then
+      range="$arg"
+      continue
+    fi
+    args+=("$arg")
+    if [ -z "$file" ]; then
+      file="$arg"
     fi
   done
 
+  # Clip the audio if a range is given
+  if [ -n "$range" ]; then
+    start=$(echo "$range" | awk -F'-->' '{print $1}' | xargs)
+    end=$(echo "$range"   | awk -F'-->' '{print $2}' | xargs)
+
+    tmpfile=$(mktemp --suffix ".mp3")
+    ffmpeg -nostdin -y -i "$file" -ss "$start" -to "$end" -acodec mp3 "$tmpfile" &>/dev/null
+    file="$tmpfile"
+
+    echo "$tmpfile" > "$state_file"
+  fi
+
+  # Transfer before play (blocking)
   if [ "$force" -eq 1 ]; then
-    tsz "${file}" -y -B 8M
+    tsz "$file" -y -B 8M
   fi
 
   printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" \
-    wez_audio $(printf '{"file":"%s","flag":"%s"}' "$file" "$flag_f" | base64 -w0)
+    wez_audio "$(printf '{"file":"%s","flag":"%s"}' "$file" "$flag_f" | base64 -w0)"
 
+  # Play + transfer (non-blocking)
   if [ "$force" -eq 0 ]; then
-    tsz "${file}" -y -B 1K -f
+    sleep 2
+    tsz "$file" -y -B 1K -f
   fi
 }
 
