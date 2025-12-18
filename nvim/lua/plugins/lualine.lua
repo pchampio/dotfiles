@@ -1,7 +1,7 @@
 ---@module 'lazy'
 ---@type LazySpec
 return {
-  event = "VeryLazy",
+  event = "CursorMoved",
   'nvim-lualine/lualine.nvim',
   dependencies = {
     'nvim-mini/mini.icons',
@@ -25,41 +25,6 @@ return {
         'avante',
         'symbols-outline',
         'trouble',
-        {
-          sections = {
-            lualine_c = {
-            {
-              function()
-                return ' '
-              end,
-              padding = { left = 1, right = 1 },
-            }, {
-              function()
-                  local buf_name = vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf())
-                  local adapter_url, path = require("oil.util").parse_url(buf_name)
-                  assert(adapter_url ~= nil and path ~= nil, "invalid oil url")
-                  local adapter_name = require("oil.config").adapters[adapter_url]
-                  if adapter_name:upper() == "FILES" then
-                    return vim.fn.fnamemodify(path, ":~")
-                  end
-                  return ("%s: %s"):format(adapter_name:upper(), vim.fn.fnamemodify(path, ":~"))
-              end,
-              },
-              },
-              lualine_d = {
-              },
-              lualine_x = {},
-              lualine_y = {
-                "oil_git_signs_diff",
-              },
-              lualine_z = {{
-                color = { fg = '#655e49', bg = '#bfb8a3' },
-                "branch",
-                }
-              },
-          },
-          filetypes = { "oil" },
-        },
       },
       inactive_sections = {
         lualine_a = {},
@@ -103,7 +68,7 @@ return {
             color_active = { gui = 'bold', fg = '#23333c' },
           },
         },
-        lualine_x = { 'diff', 'diagnostics' },
+        lualine_x = { 'diagnostics' },
         lualine_y = {
           'filetype',
         },

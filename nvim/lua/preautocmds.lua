@@ -5,6 +5,16 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+if vim.env.TMUX then
+  vim.api.nvim_create_autocmd("ModeChanged", {
+    pattern = "*",
+    callback = function()
+      local m = vim.fn.mode()
+      os.execute(string.format('tmux set-option -gq @nvimmode "%s"', m))
+    end
+  })
+end
+
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'gitcommit' },
   callback = function()

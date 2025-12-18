@@ -4,11 +4,18 @@
     "theme": "solarized",
     "autoshare": false,
     "autoupdate": true,
+    "formatter": false,
+    "tui": {
+    "scroll_speed": 5,
+    "scroll_acceleration": {
+      "enabled": false
+      }
+    },
     "keybinds": {
       "leader": "ctrl+x",
       "session_new": "ctrl+n",
-      "messages_half_page_up": "ctrl+alt+k",
-      "messages_half_page_down": "ctrl+alt+j",
+      "messages_page_up": "alt+k",
+      "messages_page_down": "alt+j",
       "messages_copy": "ctrl+y",
       "messages_undo": "ctrl+u",
       "messages_redo": "ctrl+r",

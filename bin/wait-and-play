@@ -1,7 +1,7 @@
 #!/bin/bash
 
 file=/tmp/$(basename "$1")
-echo $file
+# echo $file
 
 if [ $# -ge 2 ] && [ "$2" = "-f" ]; then
   [ -f "$file" ] && rm "$file"
@@ -9,7 +9,7 @@ fi
 
 min_size=$((15*1024))  # wait until file is at least 8 KB
 
-echo "Wait for some data to be send.."
+# echo "Wait for some data to be send.."
 # Wait until file exists and has enough data
 while [ ! -f "$file" ] || [ "$(stat -c%s "$file")" -lt "$min_size" ]; do
     sleep 0.1
