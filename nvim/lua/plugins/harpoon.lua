@@ -1,11 +1,10 @@
 ---@module 'lazy'
 ---@type LazySpec
 return {
-	event = "VeryLazy",
+  event = "VeryLazy",
   'ThePrimeagen/harpoon',
   branch = 'harpoon2',
   dependencies = { 'nvim-lua/plenary.nvim' },
-  lazy = true,
   opts = {},
   keys = {
     {

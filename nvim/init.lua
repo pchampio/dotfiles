@@ -19,7 +19,7 @@ local function bootstrap(author, name, opts)
   end
   vim.opt.runtimepath:prepend(path)
 end
-bootstrap('jake-stewart', 'lazier', { branch = 'stable-v2' })
+bootstrap('jake-stewart', 'lazier', { branch = 'main' })
 
 require('lazier').setup('plugins', {
   lazier = {

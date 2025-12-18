@@ -79,3 +79,13 @@ map('n', '<leader>cd', function()
   vim.api.nvim_feedkeys(':' .. 'lcd ' .. dir, 'n', false)
   require('wincent.commandt').setup({ traverse = 'none' })
 end, { desc = '  Change Directory', silent = false })
+
+vim.keymap.set('n', '<leader>.', function()
+  local path = vim.fn.expand('%:p')
+  if vim.env.TMUX then
+    vim.fn.setreg('*', path)
+  else
+    vim.fn.setreg('+', path)
+  end
+  print('Copied realpath: ' .. path)
+end, { noremap = true, silent = true, desc = '󰈞  Copy File Path' })

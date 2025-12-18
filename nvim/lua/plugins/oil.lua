@@ -34,34 +34,5 @@ return {{
   -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
   -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
   lazy = false,
-  },
-  {
-    -- I recommend not installing this a dependency of oil as it isn't required
-    -- until you open an oil buffer
-    "FerretDetective/oil-git-signs.nvim",
-    ft = "oil",
-    ---@module "oil_git_signs"
-    ---@type oil_git_signs.Config
-        opts = {
-        skip_confirm_for_simple_git_operations = true,
-        keymaps = {
-            {
-                { "n", "v" },
-                "<leader>ha",
-                function()
-                    require("oil-git-signs").stage_selected()
-                end,
-                { desc = "Stage selected entries" },
-            },
-            {
-                { "n", "v" },
-                "<leader>hu",
-                function()
-                    require("oil-git-signs").unstage_selected()
-                end,
-                { desc = "Unstage selected entries" },
-            },
-        },
-    },
-  },
+  }
 }

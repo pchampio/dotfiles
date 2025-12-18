@@ -3,9 +3,7 @@
 return {
   event = { 'CursorHold' },
   'folke/sidekick.nvim',
-  dependencies = {
-    'folke/snacks.nvim',
-  },
+  dependencies = { 'folke/snacks.nvim' },
   init = function()
     require('sidekick').setup {
       nes = {
@@ -31,25 +29,6 @@ return {
         },
       },
     }
-    local new_bg = vim.api.nvim_get_hl(0, { name = "FoldColumn" }).bg
-    local diffadd = vim.api.nvim_get_hl(0, { name = "DiffAdd" })
-    local diffdelete = vim.api.nvim_get_hl(0, { name = "DiffDelete" })
-    diffadd.bg = new_bg
-    diffdelete.bg = new_bg
-    local function set_sidekick_hl()
-      vim.api.nvim_set_hl(0, 'SidekickDiffContext', { link = 'NONE' })
-      vim.api.nvim_set_hl(0, 'SidekickDiffAdd', diffadd)
-      vim.api.nvim_set_hl(0, 'SidekickDiffDelete', diffdelete)
-      vim.api.nvim_set_hl(0, 'SidekickSign', { link = 'Comment' })
-    end
-
-    set_sidekick_hl()
-
-    vim.api.nvim_create_autocmd('InsertEnter', {
-      desc = 'Sidekick highlight adjustments',
-      callback = set_sidekick_hl,
-    })
-
     -- Automatically disable diagnostics when the sidekick NES is shown
     local disabled = false
     local was_enable_hint = false

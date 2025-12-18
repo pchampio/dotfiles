@@ -69,13 +69,6 @@ local settings = {
 return {
   filetypes = { 'python' },
   root_dir = root_dir_basedpyright,
-  on_attach = function(client, _)
-    client.server_capabilities.completionProvider = false -- use pyrefly for fast response
-    client.server_capabilities.definitionProvider = false
-    client.server_capabilities.documentHighlightProvider = false
-    client.server_capabilities.renameProvider = false -- use pyrefly as I think it is stable
-    client.server_capabilities.semanticTokensProvider = false -- use pyrefly it is more rich
-  end,
   on_init = function(client)
     if not lsp_restarted then
       local cwd = vim.fn.getcwd()

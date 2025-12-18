@@ -23,7 +23,4 @@ install_github_app jq "jqlang/jq" "https.*jq.*linux-amd64$" &
 
 wait
 
-# Post download steps
-cd $HOME/.local/bin
-
 success "[Github APP] Success"

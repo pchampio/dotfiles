@@ -27,4 +27,18 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+vim.api.nvim_set_hl(0, 'VisualNonText', { fg = '#bebebe', bg = '#d5cdb6' })
 
+local new_bg = vim.api.nvim_get_hl(0, { name = "FoldColumn" }).bg
+local diffadd = vim.api.nvim_get_hl(0, { name = "DiffAdd" })
+local diffdelete = vim.api.nvim_get_hl(0, { name = "DiffDelete" })
+diffadd.bg = new_bg
+diffdelete.bg = new_bg
+local function set_sidekick_hl()
+  vim.api.nvim_set_hl(0, 'SidekickDiffContext', { link = 'NONE' })
+  vim.api.nvim_set_hl(0, 'SidekickDiffAdd', diffadd)
+  vim.api.nvim_set_hl(0, 'SidekickDiffDelete', diffdelete)
+  vim.api.nvim_set_hl(0, 'SidekickSign', { link = 'Comment' })
+end
+
+set_sidekick_hl()
