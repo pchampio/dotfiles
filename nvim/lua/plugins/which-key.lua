@@ -2,7 +2,8 @@
 ---@type LazySpec
 return {
   'git@prr.re:Drakirus/mini.clue.git',
-  event = 'VeryLazy',
+  priority = 1001,
+  lazy = false,
   config = function()
     local miniclue = require 'mini.clue'
     miniclue.setup {

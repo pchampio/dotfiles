@@ -16,8 +16,10 @@ run_with_spinner git clone https://github.com/laktak/extrakto "$HOME/.tmux-extra
 run_with_spinner git clone https://github.com/fcsonline/tmux-thumbs "$HOME/.tmux-thumbs/" --depth=1
 [ -d "$HOME/.tmux-last/" ] && rm -rf "$HOME/.tmux-last/"
 run_with_spinner git clone https://git.prr.re/Drakirus/tmux-last "$HOME/.tmux-last/" --depth=1
+# This is to get the pscheck
 [ -d "$HOME/.tmux-scroll/" ] && rm -rf "$HOME/.tmux-scroll/"
 run_with_spinner git clone https://github.com/noscript/tmux-mighty-scroll "$HOME/.tmux-scroll/" --depth=1
+sh ~/.tmux-scroll/mighty-scroll.tmux
 
 
 explain "Tmux tic"
