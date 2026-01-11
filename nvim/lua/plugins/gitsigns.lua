@@ -31,6 +31,7 @@ end
 ---@type LazySpec
 return {
   'lewis6991/gitsigns.nvim',
+  event = { 'BufReadPre', 'BufNewFile' },
   config = function()
     ---@module 'gitsigns.gh'
     local gs = require 'gitsigns'

@@ -300,19 +300,28 @@ function jpgg() {
   cp -as $(ls -d -1 $PWD/**/tri/**/* | grep jpg) ./jpg
 }
 
-function xbox() {
-  sudo systemctl start bluetooth.service
-  echo -e "power on" | bluetoothctl
-  rfkill unblock all
-  paired_list=$(bluetoothctl devices | while read -r line; do
-    mac=$(echo "$line" | awk '{print $2}')
-    name=$(echo "$line" | cut -d' ' -f3-)
-    if bluetoothctl info "$mac" | grep -q "Paired: yes"; then
-      echo "$mac $name"
-    fi
-  done)
+function bt_connect() {
+    rfkill unblock bluetooth
+    sudo systemctl start bluetooth.service
 
-  device=$(echo "$paired_list" | fzf | awk '{print $1}')
+    until bluetoothctl show >/dev/null 2>&1; do sleep 0.5; done
+
+    paired_list=$(bluetoothctl devices | while read -r _ mac name; do
+        if bluetoothctl info "$mac" | grep -q "Paired: yes"; then
+            echo "$mac $name"
+        fi
+    done)
+
+    if [ -z "$paired_list" ]; then
+        echo "No paired devices found."
+        return
+    fi
+
+    device=$(echo "$paired_list" | fzf --prompt="Select a device: " | awk '{print $1}')
+    if [ -z "$device" ]; then
+        echo "No device selected."
+        return
+    fi
 
   if [ -n "$device" ]; then
     echo "Connecting to $device..."

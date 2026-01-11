@@ -15,7 +15,7 @@ local mux = wezterm.mux
 M.opts = {
   key = ";",                               -- Key for the toggle action
   mods = "CTRL",                           -- Modifier keys for the toggle action
-  direction = "Up",                        -- Direction to split the pane
+  direction = "Down",                        -- Direction to split the pane
   size = { Cells = 5 },                    -- Size of the split pane
   change_invoker_id_everytime = false,     -- Change invoker pane on every toggle
   zoom = {

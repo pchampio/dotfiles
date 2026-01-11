@@ -19,7 +19,7 @@
       "messages_copy": "ctrl+y",
       "messages_undo": "ctrl+u",
       "messages_redo": "ctrl+r",
-      "input_newline": "<leader>enter,shift+alt+enter",
+      "input_newline": "<leader>enter,shift+alt+enter,shift+alt+enter",
     },
     "mcp": {
       "beads-mcp": {
