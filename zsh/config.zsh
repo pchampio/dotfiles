@@ -37,6 +37,7 @@ chpwd() {
 
 # OSC 133, which is a control sequence that specifies where the prompt ended, and where the output of the executed program starts and ends.
 _prompt_executing=""
+_prompt_cmd_count=0
 function __prompt_precmd() {
     local ret="$?"
     if test "$_prompt_executing" != "0"
@@ -52,12 +53,32 @@ function __prompt_precmd() {
     fi
     printf "\033]133;A;cl=m;aid=%s\007" "$$"
     _prompt_executing=0
+
+    # Increment command count for tmux tracking (actual position recorded in preexec)
+    if [[ -n "$TMUX" ]]; then
+        (( _prompt_cmd_count++ ))
+        tmux set -p @prompt_total "$_prompt_cmd_count" 2>/dev/null
+    fi
 }
 function __prompt_preexec() {
     PS1="$_PROMPT_SAVE_PS1"
     PS2="$_PROMPT_SAVE_PS2"
     printf "\033]133;C;\007"
     _prompt_executing=1
+
+    # Record prompt position when command executes (prompt is now fully rendered)
+    if [[ -n "$TMUX" ]]; then
+        local line
+        # history_size + cursor_y gives absolute line from top
+        line=$(tmux display-message -p '#{e|+|:#{history_size},#{cursor_y}}' 2>/dev/null) || return
+        local prev
+        prev=$(tmux show -pqv @prompt_map 2>/dev/null)
+        if [[ -n "$prev" ]]; then
+            tmux set -p @prompt_map "$prev $line:$_prompt_cmd_count" 2>/dev/null
+        else
+            tmux set -p @prompt_map "$line:$_prompt_cmd_count" 2>/dev/null
+        fi
+    fi
 }
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
