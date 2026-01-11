@@ -18,7 +18,6 @@ local M = {
     'yamlls',
     'ruff',
     'basedpyright',
-    'pyrefly',
     'harper_ls',
     'copilot-language-server',
     'stylua',

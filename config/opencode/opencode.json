@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-    "autoupdate": false,
+    "plugin": ["opencode-anthropic-auth"],
     "theme": "solarized",
     "autoshare": false,
     "autoupdate": true,

@@ -43,6 +43,7 @@ local options = {
   termguicolors = true,
   foldenable = false, -- Disable folding at startup.
   statusline = "%#Visual#%<    %t", -- Mimic lualine statusline, avoid flicker at startup
+  splitkeep = "screen", -- Keep text on screen at the same place when splitting
 }
 
 for k, v in pairs(options) do

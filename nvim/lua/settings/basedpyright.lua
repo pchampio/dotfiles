@@ -69,6 +69,10 @@ local settings = {
 return {
   filetypes = { 'python' },
   root_dir = root_dir_basedpyright,
+  on_attach = function(client, bufnr)
+    -- Opt out of semantic token highlighting.
+    client.server_capabilities.semanticTokensProvider = nil
+  end,
   on_init = function(client)
     if not lsp_restarted then
       local cwd = vim.fn.getcwd()
