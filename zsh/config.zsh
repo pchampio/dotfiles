@@ -38,6 +38,18 @@ chpwd() {
 # OSC 133, which is a control sequence that specifies where the prompt ended, and where the output of the executed program starts and ends.
 _prompt_executing=""
 _prompt_cmd_count=0
+_prompt_lookup_max=0
+
+_prompt_generate_lookup_fmt() {
+    local n=$1
+    local cur='#{e|+|:#{e|-|:#{history_size},#{scroll_position}},#{copy_cursor_y}}'
+    local result="0"
+    for ((i=1; i<=n; i++)); do
+        result="#{?#{&&:#{@prompt_line_$i},#{e|<=|:#{@prompt_line_$i},$cur}},$i,$result}"
+    done
+    echo "$result"
+}
+
 function __prompt_precmd() {
     local ret="$?"
     if test "$_prompt_executing" != "0"
@@ -54,7 +66,6 @@ function __prompt_precmd() {
     printf "\033]133;A;cl=m;aid=%s\007" "$$"
     _prompt_executing=0
 
-    # Increment command count for tmux tracking (actual position recorded in preexec)
     if [[ -n "$TMUX" ]]; then
         (( _prompt_cmd_count++ ))
         tmux set -p @prompt_total "$_prompt_cmd_count" 2>/dev/null
@@ -66,17 +77,14 @@ function __prompt_preexec() {
     printf "\033]133;C;\007"
     _prompt_executing=1
 
-    # Record prompt position when command executes (prompt is now fully rendered)
     if [[ -n "$TMUX" ]]; then
         local line
-        # history_size + cursor_y gives absolute line from top
-        line=$(tmux display-message -p '#{e|+|:#{history_size},#{cursor_y}}' 2>/dev/null) || return
-        local prev
-        prev=$(tmux show -pqv @prompt_map 2>/dev/null)
-        if [[ -n "$prev" ]]; then
-            tmux set -p @prompt_map "$prev $line:$_prompt_cmd_count" 2>/dev/null
-        else
-            tmux set -p @prompt_map "$line:$_prompt_cmd_count" 2>/dev/null
+        line=$(tmux display-message -p '#{e|-|:#{e|+|:#{history_size},#{cursor_y}},2}' 2>/dev/null) || return
+        tmux set -p "@prompt_line_$_prompt_cmd_count" "$line" 2>/dev/null
+        if (( _prompt_cmd_count > _prompt_lookup_max )); then
+            local new_max=$(( (_prompt_cmd_count / 50 + 1) * 50 ))
+            tmux set -p @prompt_lookup_fmt "$(_prompt_generate_lookup_fmt $new_max)" 2>/dev/null
+            _prompt_lookup_max=$new_max
         fi
     fi
 }
