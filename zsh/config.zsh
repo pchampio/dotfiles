@@ -68,7 +68,17 @@ function __prompt_precmd() {
 
     if [[ -n "$TMUX" ]]; then
         (( _prompt_cmd_count++ ))
-        tmux set -p @prompt_total "$_prompt_cmd_count" 2>/dev/null
+        local line
+        line=$(tmux display-message -p '#{e|+|:#{e|+|:#{history_size},#{cursor_y}},1}' 2>/dev/null)
+        if [[ -n "$line" ]]; then
+            tmux set -p "@prompt_line_$_prompt_cmd_count" "$line" 2>/dev/null
+            tmux set -p @prompt_total "$_prompt_cmd_count" 2>/dev/null
+            if (( _prompt_cmd_count > _prompt_lookup_max )); then
+                local new_max=$(( (_prompt_cmd_count / 50 + 1) * 50 ))
+                tmux set -p @prompt_lookup_fmt "$(_prompt_generate_lookup_fmt $new_max)" 2>/dev/null
+                _prompt_lookup_max=$new_max
+            fi
+        fi
     fi
 }
 function __prompt_preexec() {
@@ -76,17 +86,6 @@ function __prompt_preexec() {
     PS2="$_PROMPT_SAVE_PS2"
     printf "\033]133;C;\007"
     _prompt_executing=1
-
-    if [[ -n "$TMUX" ]]; then
-        local line
-        line=$(tmux display-message -p '#{e|-|:#{e|+|:#{history_size},#{cursor_y}},2}' 2>/dev/null) || return
-        tmux set -p "@prompt_line_$_prompt_cmd_count" "$line" 2>/dev/null
-        if (( _prompt_cmd_count > _prompt_lookup_max )); then
-            local new_max=$(( (_prompt_cmd_count / 50 + 1) * 50 ))
-            tmux set -p @prompt_lookup_fmt "$(_prompt_generate_lookup_fmt $new_max)" 2>/dev/null
-            _prompt_lookup_max=$new_max
-        fi
-    fi
 }
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
