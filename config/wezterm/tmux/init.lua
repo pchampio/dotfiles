@@ -12,9 +12,10 @@ local function last_line_matches(pane, pattern)
 end
 
 local function is_inside_tmux(pane)
-  return last_line_matches(pane, "──────────") -- always in my tmux config (bottom line)
+  return last_line_matches(pane, "──  1") -- always in my tmux config (bottom line)
 end
 
+M.is_inside_tmux = is_inside_tmux
 
 -- timestamp of last keypress (used for changing tmux/wezterm pane)
 local last_fallback_time = 0
@@ -34,6 +35,14 @@ end
 
 function M.move_or_send(direction, key)
   return wezterm.action_callback(function(window, pane)
+
+  -- hack
+  -- Even if an app sends DECSCUSR requesting a blinking cursor, WezTerm won't animate it.
+  --Seems like it needs to be triggerd on events rather than set globaly to work
+    local overrides = window:get_config_overrides() or {}
+    overrides.cursor_blink_rate = 0
+    window:set_config_overrides(overrides)
+
     if is_inside_tmux(pane) then
       -- send Ctrl+key to tmux
       window:perform_action(act.SendKey({ key = key, mods = "CTRL" }), pane)

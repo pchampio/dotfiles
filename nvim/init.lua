@@ -23,7 +23,7 @@ bootstrap('jake-stewart', 'lazier', { branch = 'main' })
 
 require('lazier').setup('plugins', {
   lazier = {
-    enabled = false,
+    enabled = true,
     detect_changes = true,
     before = function()
       -- function to run before the ui renders.

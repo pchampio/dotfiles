@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Stable
+# NVIM_RELEASE_URL=https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz
+# Nightly
+NVIM_RELEASE_URL=https://github.com/neovim/neovim/releases/download/nightly/nvim-linux-x86_64.tar.gz
 
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
@@ -7,7 +11,7 @@ BASEDIR=$(dirname $0)
 success "[NVIM] Start"
 explain "Setup neovim plugins"
 
-I_TITLE="Download latest nvim" run_with_spinner "curl -sS -L https://github.com/neovim/neovim-releases/releases/download/nightly/nvim-linux-x86_64.tar.gz | tar -C $HOME/.local/bin -xz"
+I_TITLE="Downloading nvim" run_with_spinner "curl -sS -L $NVIM_RELEASE_URL | tar -C $HOME/.local/bin -xz"
 [ -f "$HOME/.local/bin/nvim" ] && rm "$HOME/.local/bin/nvim"
 ln -s "$HOME/.local/bin/nvim-linux-x86_64/bin/nvim" "$HOME/.local/bin/nvim"
 

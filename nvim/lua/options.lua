@@ -126,8 +126,8 @@ vim.keymap.set('n', '<esc>', require('commons').smart_hide_floating_window )
 -- Experimental: highlight cmdline, messages in a real buffer.
 -- See https://github.com/neovim/neovim/pull/27811 and :help vim._extui
 -- NOTE: Use 'g<' to see more messages!
-vim.schedule(function()
-  require('vim._extui').enable {
-    enable = true,
-  }
-end)
+-- vim.schedule(function()
+--   require('vim._extui').enable {
+--     enable = true,
+--   }
+-- end)

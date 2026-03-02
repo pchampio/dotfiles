@@ -1,4 +1,5 @@
 return {
+  enabled = true,
   -- show line number with only left side(1~5) number to convenient manipulate
   'pchampio/comfy-line-numbers.nvim',
   branch = "gitsigns.nvim",

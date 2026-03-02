@@ -422,37 +422,50 @@ ssh() {
 
 
 forti() {
+  autoload -U colors && colors
+  ok()   { print -P "%F{green}[✔]%f $*"; }
+  warn() { print -P "%F{yellow}[!]%f $*"; }
+  err()  { print -P "%F{red}[✘]%f $*" >&2; }
+  info() { print -P "%F{cyan}[+]%f $*"; }
+
   VPN_NAME="$(rbw get 9cff1f6d-6731-4d00-a75b-84666d9b0482 --field name)"
   VPN_USER="$(rbw get 9cff1f6d-6731-4d00-a75b-84666d9b0482 --field username)"
 
-  # --- Ask for sudo upfront to cache credentials ---
-  echo "[+] Requesting sudo access to start fctsched..."
-  sudo -v   # Ask for password, cache credentials
+  info "Requesting sudo access"
+  sudo -v || { err "sudo authentication failed"; return 1 }
 
-  # --- Start fctsched if not running ---
-  if ! pgrep -x fctsched > /dev/null; then
-      echo "[+] Starting FortiClient scheduler in background..."
-      sudo nohup /opt/forticlient/fctsched >/dev/null 2>&1 &
-      FCTSCHED_PID=$!         # capture the PID of the last background process
-      disown
-      echo "[+] fctsched started with PID $FCTSCHED_PID"
-      sleep 6  # give it a moment to start
+  if ! pgrep -x fctsched >/dev/null; then
+    info "Starting FortiClient scheduler"
+    sudo nohup /opt/forticlient/fctsched >/dev/null 2>&1 &
+    disown
+    sleep 6
   else
-      FCTSCHED_PID=$(pgrep -x fctsched)
-      echo "[+] FortiClient scheduler already running with PID(s): $FCTSCHED_PID"
+    info "FortiClient scheduler already running"
   fi
 
+  info "Connecting to VPN: $VPN_NAME"
 
-  echo "[+] Connecting to VPN: $VPN_NAME"
-  /opt/forticlient/forticlient-cli vpn connect "$VPN_NAME" \
+  forti_output=$(
+    /opt/forticlient/forticlient-cli vpn connect "$VPN_NAME" \
       --username "$VPN_USER" \
-      --save-password
+      --save-password \
+      2> >(sed 's/^/\x1b[31m/' >&2; sed 's/$/\x1b[0m/' >&2)
+  )
+  fc_status=$?
 
-    # --- Disable IPv6 in case ---
-    echo "[+] IPv6 enabled — disabling..."
-    sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
-    \rm $HOME/.ssh/sockets/*themama* 2>/dev/null || true
+  if (( fc_status == 0 )); then
+    ok "VPN connected"
+  else
+    err "VPN connection failed"
+  fi
+
+  info "Disabling IPv6"
+  sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null
+
+  \rm $HOME/.ssh/sockets/*themama* 2>/dev/null || true
 }
+
+
 
 
 forti-down() {

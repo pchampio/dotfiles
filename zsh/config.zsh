@@ -51,7 +51,7 @@ _prompt_generate_lookup_fmt() {
 }
 
 function __prompt_precmd() {
-    local ret="$?"
+    local ret="$status"
     if test "$_prompt_executing" != "0"
     then
       _PROMPT_SAVE_PS1="$PS1"
@@ -89,3 +89,28 @@ function __prompt_preexec() {
 }
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
+
+# TRAPINT to handle Ctrl-C with OSC 133 sequences
+# Such that on incomplete (but with text) cmdline ctrl-c I still get the cmdline up/down navigation
+_PROMPT_INTERRUPTED_BUFFER=""
+function TRAPINT() {
+    if [[ -n "${BUFFER//[[:space:]]/}" ]]; then
+        _PROMPT_INTERRUPTED_BUFFER="$BUFFER"
+        # Move to new line first, then OSC 133 sequences
+        print
+        printf "\033]133;C;\007"
+        printf "\033]133;D;130;aid=%s\007" "$$"
+        printf "\033]133;A;cl=m;aid=%s\007" "$$"
+    fi
+    return $(( 128 + $1 ))
+}
+
+# Widget to paste interrupted command
+function _prompt_paste_interrupted() {
+    if [[ -n "$_PROMPT_INTERRUPTED_BUFFER" ]]; then
+        BUFFER="$_PROMPT_INTERRUPTED_BUFFER"
+        CURSOR=${#BUFFER}
+    fi
+}
+zle -N _prompt_paste_interrupted
+bindkey '\e\C-k' _prompt_paste_interrupted

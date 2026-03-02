@@ -1,17 +1,15 @@
 ---@module 'lazy'
 ---@type LazySpec
-return {
-  event = "VeryLazy",
-  'windwp/nvim-autopairs',
-  dependencies = {
-    'hrsh7th/nvim-cmp',
-  },
-  config = function()
-    local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-    local cmp = require 'cmp'
-    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-
-    local npairs = require 'nvim-autopairs'
-    npairs.setup()
-  end,
+return
+{
+    'altermo/ultimate-autopair.nvim',
+    event={'InsertEnter','CmdlineEnter'},
+    branch='v0.6', --recommended as each new version will have breaking changes
+    opts={
+    fastwarp={
+        multi=true,
+        {},
+        {faster=true,map='<C-A-y>',cmap='<C-A-y>'},
+      }
+    },
 }

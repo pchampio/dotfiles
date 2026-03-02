@@ -149,11 +149,27 @@ config.quick_select_remove_styling = true
 config.mouse_bindings = {
   {
     event = { Up = { streak = 1, button = "Left" } },
-    action = bc.single_streak_click,
+    action = wezterm.action_callback(function(window, pane)
+      if tmux.is_inside_tmux(pane) then
+        window:perform_action(bc.single_streak_click, pane)
+      else
+        window:perform_action(act.CompleteSelection("ClipboardAndPrimarySelection"), pane)
+        wezterm.sleep_ms(250)
+        window:perform_action(act.ClearSelection, pane)
+      end
+    end),
   },
   {
     event = { Up = { streak = 2, button = "Left" } },
-    action = bc.double_streak_click,
+    action = wezterm.action_callback(function(window, pane)
+      if tmux.is_inside_tmux(pane) then
+        window:perform_action(bc.double_streak_click, pane)
+      else
+        window:perform_action(act.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"), pane)
+        wezterm.sleep_ms(250)
+        window:perform_action(act.ClearSelection, pane)
+      end
+    end),
   },
 }
 
@@ -242,6 +258,18 @@ config.hyperlink_rules = {
 }
 
 toggle_terminal.apply_to_config(config)
+
+
+local function kill_blink(window)
+  local overrides = window:get_config_overrides() or {}
+  overrides.cursor_blink_rate = 0
+  window:set_config_overrides(overrides)
+end
+
+-- Window gains/loses focus
+wezterm.on('window-focus-changed', function(window, pane)
+  kill_blink(window)
+end)
 
 -- and finally, return the configuration to wezterm
 return config
