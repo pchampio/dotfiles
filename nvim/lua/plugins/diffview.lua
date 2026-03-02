@@ -24,6 +24,7 @@ return {
           view = {
             quit = "q",                    -- Close diff tab
             toggle_explorer = "<leader>b",  -- Toggle explorer visibility (explorer mode only)
+            focus_explorer = "<leader>e",
             next_hunk = "]c",   -- Jump to next change
             prev_hunk = "[c",   -- Jump to previous change
             next_file = "<Down>",   -- Next file in explorer mode
@@ -37,15 +38,51 @@ return {
       vim.api.nvim_create_autocmd("User", {
         pattern = "CodeDiffOpen",
         callback = function()
-          -- Hide tabline while CodeDiff is open
           vim.o.showtabline = 0
-          -- Disable cursorline in diff windows
-          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+
+          local diff_tab = vim.api.nvim_get_current_tabpage()
+          local diff_wins = {}
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(diff_tab)) do
             local buf = vim.api.nvim_win_get_buf(win)
-            if vim.bo[buf].filetype ~= "codediff-explorer" then 
+            if vim.bo[buf].filetype ~= "codediff-explorer" then
+              diff_wins[win] = true
               vim.wo[win].cursorline = false
             end
           end
+
+          local group = vim.api.nvim_create_augroup("CodeDiffCursorline", { clear = true })
+
+          vim.api.nvim_create_autocmd({"WinEnter", "BufEnter"}, {
+            group = group,
+            callback = function()
+              if not vim.api.nvim_tabpage_is_valid(diff_tab) then
+                return true
+              end
+              if diff_wins[vim.api.nvim_get_current_win()] then
+                vim.wo.cursorline = false
+              else
+                vim.wo.cursorline = true
+              end
+            end,
+          })
+
+          vim.api.nvim_create_autocmd("User", {
+            pattern = "CodeDiffFileSelect",
+            group = group,
+            callback = function()
+              if not vim.api.nvim_tabpage_is_valid(diff_tab) then
+                return true
+              end
+              diff_wins = {}
+              for _, win in ipairs(vim.api.nvim_tabpage_list_wins(diff_tab)) do
+                local buf = vim.api.nvim_win_get_buf(win)
+                if vim.bo[buf].filetype ~= "codediff-explorer" then
+                  diff_wins[win] = true
+                  vim.wo[win].cursorline = false
+                end
+              end
+            end,
+          })
         end,
       })
 
