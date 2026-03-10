@@ -62,6 +62,7 @@ return {
                 vim.wo.cursorline = false
               else
                 vim.wo.cursorline = true
+                vim.opt.scrollbind = false
               end
             end,
           })
