@@ -12,7 +12,7 @@ local function last_line_matches(pane, pattern)
 end
 
 local function is_inside_tmux(pane)
-  return last_line_matches(pane, "──  1") -- always in my tmux config (bottom line)
+  return last_line_matches(pane, "──  1") or last_line_matches(pane, "─────  COPY") -- always in my tmux config (bottom line)
 end
 
 M.is_inside_tmux = is_inside_tmux
