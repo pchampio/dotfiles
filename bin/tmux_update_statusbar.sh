@@ -30,8 +30,8 @@ NAME_FG_A="colour59"
 NAME_BG_A="colour188"
 
 # --- Single tmux call for both queries (-a = all panes across all windows) ---
-data=$(tmux list-windows -F "W	#{window_index}	#{window_name}	#{window_zoomed_flag}	#{pane_synchronized}" \; \
-       list-panes -a -F "P	#{pane_id}	#{pane_at_bottom}	#{pane_width}	#{pane_left}	#{window_id}" 2>/dev/null)
+data=$(tmux list-windows -F "W	#{window_index}	#{window_name}	#{window_zoomed_flag}	#{pane_synchronized}	#{window_id}" \; \
+       list-panes -a -F "P	#{pane_id}	#{pane_at_bottom}	#{pane_width}	#{pane_left}	#{window_id}	#{pane_active}" 2>/dev/null)
 
 [[ -z "$data" ]] && exit 0
 
@@ -40,23 +40,31 @@ win_idx=()
 win_name=()
 win_zoomed=()
 win_synced=()
+win_wids=()
 
 pane_ids=()
 pane_at_bottom=()
 pane_widths=()
 pane_lefts=()
 pane_win_ids=()
+pane_active=()
 
-while IFS=$'\t' read -r type f1 f2 f3 f4 f5; do
+while IFS=$'\t' read -r type f1 f2 f3 f4 f5 f6; do
     case "$type" in
-        W) win_idx+=("$f1"); win_name+=("$f2"); win_zoomed+=("$f3"); win_synced+=("$f4") ;;
-        P) pane_ids+=("$f1"); pane_at_bottom+=("$f2"); pane_widths+=("$f3"); pane_lefts+=("$f4"); pane_win_ids+=("$f5") ;;
+        W) win_idx+=("$f1"); win_name+=("$f2"); win_zoomed+=("$f3"); win_synced+=("$f4"); win_wids+=("$f5") ;;
+        P) pane_ids+=("$f1"); pane_at_bottom+=("$f2"); pane_widths+=("$f3"); pane_lefts+=("$f4"); pane_win_ids+=("$f5"); pane_active+=("$f6") ;;
     esac
 done <<< "$data"
 
 total_tabs=${#win_idx[@]}
 total_panes=${#pane_ids[@]}
 [[ $total_tabs -eq 0 || $total_panes -eq 0 ]] && exit 0
+
+# --- Map window_id -> zoomed flag ---
+declare -A zoomed_map
+for ((i = 0; i < total_tabs; i++)); do
+    zoomed_map["${win_wids[$i]}"]="${win_zoomed[$i]}"
+done
 
 # --- Compute visible width and format string for each tab ---
 # #, = escaped comma inside #{?...} branches so tmux doesn't split on them.
@@ -69,8 +77,8 @@ for ((i = 0; i < total_tabs; i++)); do
 
     flags=""
     flags_w=0
-    [[ "${win_zoomed[$i]}" == "1" ]] && { flags+="Z "; flags_w=$((flags_w + 2)); }
-    [[ "${win_synced[$i]}" == "1" ]] && { flags+="S "; flags_w=$((flags_w + 2)); }
+    [[ "${win_zoomed[$i]}" == "1" ]] && { flags+="🔍 "; flags_w=$((flags_w + 3)); }
+    [[ "${win_synced[$i]}" == "1" ]] && { flags+="⇔ "; flags_w=$((flags_w + 2)); }
 
     tab_width+=("$((5 + ${#idx} + ${#name} + flags_w))")
 
@@ -121,6 +129,29 @@ queue_set() {
 
 # --- For each window, distribute tabs across its bottom panes ---
 for wid in "${window_ids[@]}"; do
+
+    # Zoomed window: active pane fills the screen, assign all tabs to it
+    if [[ "${zoomed_map[$wid]}" == "1" ]]; then
+        for ((i = 0; i < total_panes; i++)); do
+            [[ "${pane_win_ids[$i]}" != "$wid" ]] && continue
+            if [[ "${pane_active[$i]}" == "1" ]]; then
+                remaining=$((pane_widths[i] - BORDER_OVERHEAD))
+                content=""
+                for ((t = 0; t < total_tabs; t++)); do
+                    tw=${tab_width[$t]}
+                    [[ $tw -gt $remaining ]] && break
+                    content+="${tab_str[$t]}"
+                    remaining=$((remaining - tw))
+                done
+                [[ -n "$content" ]] && content+="#[bg=${BG}]#[default]"
+                queue_set "${pane_ids[$i]}" "$content"
+            else
+                queue_set "${pane_ids[$i]}" ""
+            fi
+        done
+        continue
+    fi
+
     bottom=()
     non_bottom=()
     for ((i = 0; i < total_panes; i++)); do
