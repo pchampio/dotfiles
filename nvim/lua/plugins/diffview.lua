@@ -77,6 +77,9 @@ return {
               diff_wins = {}
               for _, win in ipairs(vim.api.nvim_tabpage_list_wins(diff_tab)) do
                 local buf = vim.api.nvim_win_get_buf(win)
+                if vim.bo[buf].filetype == "codediff-explorer" then
+                  vim.diagnostic.enable(false, { bufnr = buf })
+                end
                 if vim.bo[buf].filetype ~= "codediff-explorer" then
                   diff_wins[win] = true
                   vim.wo[win].cursorline = false
