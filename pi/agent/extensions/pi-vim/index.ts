@@ -25,7 +25,8 @@
  * - s: substitute char (delete char + insert mode)
  * - d{motion}: delete with motion (`w/b/e` + `W/B/E`, `$`, `0`, `^`, `dd`/`d_`, `f/t/F/T{char}`)
  * - c{motion}: change with same motion set as `d` (then enter insert mode)
- * - y{motion}: yank with same motion set as `d` (no text mutation)
+ * - y{motion}: yank to internal register (accessible via p/P/r, no system clipboard)
+ * - Y{motion}: yank to internal register + system clipboard (e.g. Yiw, YY, Y$)
  * - f{char}: jump to next {char} on line
  * - F{char}: jump to previous {char} on line
  * - t{char}: jump to just before next {char} on line
@@ -42,6 +43,7 @@
  * - Shift+Alt+I: go to start of line (insert mode shortcut)
  * - Alt+o: open new line below (insert mode shortcut)
  * - Alt+Shift+o: open new line above (insert mode shortcut)
+ * - .: repeat last change (dot repeat); supports count prefix
  * - u: undo (normal mode, sends ctrl+_ to underlying readline editor)
  * - ctrl+c, ctrl+d, etc. work in both modes
  *
@@ -167,10 +169,15 @@ export class ModalEditor extends CustomEditor {
   private readonly redoStack: EditorSnapshot[] = [];
   private currentTransition: TransitionState = "none";
   private onChangeHooked: boolean = false;
+  private dotBuffer: string[] = [];
+  private lastDotChange: string[] = [];
+  private dotRecordingInsert: boolean = false;
+  private isReplayingDot: boolean = false;
   private readonly labelColorizers: { insert: (s: string) => string; normal: (s: string) => string; visual?: (s: string) => string } | null;
 
   // Unnamed register
   private unnamedRegister: string = "";
+  private pendingClipboardYank: boolean = false;
   private clipboardFn: (text: string) => Promise<void> = async (text: string) => {
     await copyToClipboard(text);
   };
@@ -379,6 +386,29 @@ export class ModalEditor extends CustomEditor {
     editor.tui?.requestRender?.();
   }
 
+  private finalizeDotRepeat(): void {
+    if (this.dotBuffer.length > 0) {
+      this.lastDotChange = [...this.dotBuffer];
+    }
+    this.dotBuffer = [];
+    this.dotRecordingInsert = false;
+  }
+
+  private executeDotRepeat(count: number): void {
+    if (this.lastDotChange.length === 0) return;
+    const times = Math.max(1, Math.min(MAX_COUNT, count));
+    this.isReplayingDot = true;
+    try {
+      for (let i = 0; i < times; i++) {
+        for (const key of this.lastDotChange) {
+          this.handleInput(key);
+        }
+      }
+    } finally {
+      this.isReplayingDot = false;
+    }
+  }
+
   private clearPendingState(): void {
     this.pendingMotion = null;
     this.pendingTextObject = null;
@@ -387,6 +417,7 @@ export class ModalEditor extends CustomEditor {
     this.operatorCount = "";
     this.pendingG = false;
     this.pendingGCount = "";
+    this.pendingClipboardYank = false;
   }
 
   private isEscapeLikeInput(data: string): boolean {
@@ -465,6 +496,9 @@ export class ModalEditor extends CustomEditor {
   }
 
   handleInput(data: string): void {
+    let modeBeforeInput: Mode = this.mode;
+    let textBeforeInput: string | null = null;
+    const isDotKey = !this.isReplayingDot && this.mode === "normal" && data === ".";
     try {
     this.ensureOnChangeHook();
 
@@ -502,6 +536,23 @@ export class ModalEditor extends CustomEditor {
       }
       if (filtered === null) return;
       data = filtered;
+    }
+
+    // Dot repeat: capture state and record key
+    modeBeforeInput = this.mode;
+    if (!this.isReplayingDot && !isDotKey && modeBeforeInput === "normal") {
+      textBeforeInput = this.getText();
+    }
+    if (!this.isReplayingDot && !isDotKey) {
+      const shouldRecord =
+        (this.mode === "normal" && !this.dotRecordingInsert) ||
+        (this.mode === "insert" && this.dotRecordingInsert);
+      if (shouldRecord) {
+        if (!this.dotRecordingInsert && !this.hasPendingState()) {
+          this.dotBuffer = [];
+        }
+        this.dotBuffer.push(data);
+      }
     }
 
     if (this.isEscapeLikeInput(data)) {
@@ -569,6 +620,22 @@ export class ModalEditor extends CustomEditor {
     } finally {
       this.clampCursorForNormalMode();
       this.emitCursorShape();
+
+      // Dot repeat finalization
+      if (!this.isReplayingDot && !isDotKey && this.dotBuffer.length > 0) {
+        if (this.dotRecordingInsert && this.mode !== "insert") {
+          // Left insert mode after recording → finalize
+          this.finalizeDotRepeat();
+        } else if (!this.dotRecordingInsert && modeBeforeInput === "normal" && this.mode === "insert") {
+          // Entered insert mode from normal → start insert recording
+          this.dotRecordingInsert = true;
+        } else if (!this.dotRecordingInsert && modeBeforeInput === "normal" && this.mode === "normal") {
+          // Stayed in normal mode → finalize if text changed and no pending state
+          if (!this.hasPendingState() && textBeforeInput !== null && this.getText() !== textBeforeInput) {
+            this.finalizeDotRepeat();
+          }
+        }
+      }
     }
   }
 
@@ -669,6 +736,7 @@ export class ModalEditor extends CustomEditor {
     this.pendingOperator = null;
     this.prefixCount = "";
     this.operatorCount = "";
+    this.pendingClipboardYank = false;
     if (!this.isPrintableChunk(data)) {
       super.handleInput(data);
     }
@@ -994,8 +1062,9 @@ export class ModalEditor extends CustomEditor {
         return;
       }
 
-      if (data === "d" || data === "y") {
-        this.pendingOperator = data;
+      if (data === "d" || data === "y" || data === "Y") {
+        if (data === "Y") this.pendingClipboardYank = true;
+        this.pendingOperator = data === "d" ? "d" : "y";
         return;
       }
 
@@ -1024,12 +1093,12 @@ export class ModalEditor extends CustomEditor {
         || data === "C"
         || data === "p"
         || data === "P"
-        || data === "Y"
         || data === "u"
         || data === CTRL_UNDERSCORE
         || matchesKey(data, "ctrl+_")
         || data === CTRL_R
         || matchesKey(data, "ctrl+r")
+        || data === "."
       );
       const supportsCountedCharMotion = (
         CHAR_MOTION_KEYS.has(data)
@@ -1149,9 +1218,14 @@ export class ModalEditor extends CustomEditor {
       return;
     }
 
+    if (data === ".") {
+      this.executeDotRepeat(this.takeTotalCount(1));
+      return;
+    }
+
     if (data === "Y") {
-      const count = this.takeTotalCount(1);
-      this.yankLinewiseByDelta(count - 1);
+      this.pendingClipboardYank = true;
+      this.pendingOperator = "y";
       return;
     }
 
@@ -1874,7 +1948,10 @@ export class ModalEditor extends CustomEditor {
     this.unnamedRegister = text;
     if (!text) return;
 
-    void this.clipboardFn(text).catch(() => {});
+    if (this.pendingClipboardYank) {
+      this.pendingClipboardYank = false;
+      void this.clipboardFn(text).catch(() => {});
+    }
   }
 
   private getCurrentLineAndCol(): { line: string; col: number } {
@@ -2125,7 +2202,7 @@ export class ModalEditor extends CustomEditor {
       }
     }
 
-    if (data === "y") {
+    if (data === "y" || data === "Y") {
       const count = this.takeTotalCount(1);
       this.yankLinewiseByDelta(count - 1);
       this.pendingOperator = null;
@@ -2594,7 +2671,8 @@ export class ModalEditor extends CustomEditor {
       return;
     }
 
-    if (data === "y") {
+    if (data === "y" || data === "Y") {
+      if (data === "Y") this.pendingClipboardYank = true;
       if (isLinewise) {
         this.yankLineRange(start.line, end.line);
       } else {
