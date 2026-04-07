@@ -1,0 +1,17 @@
+{
+  "lastChangelogVersion": "0.65.0",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-6",
+  "theme": "light",
+  "defaultThinkingLevel": "medium",
+  "showHardwareCursor": true,
+  "packages": [
+    "npm:@justram/pi-undo-redo"
+  ],
+  "extensions": [
+    "-extensions/borderless-cursor.ts",
+    "+extensions/footer.ts",
+    "-extensions/pi-vim-editor/index.ts",
+    "-extensions/escape-cancel.ts"
+  ]
+}
