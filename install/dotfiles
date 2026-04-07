@@ -21,6 +21,11 @@ explain "Symlink nvim config"
 \rm -rf ~/.config/nvim 2> /dev/null || true
 tell ln -sf $dir/nvim ~/.config/nvim
 
+tell ln -sf $dir/pi/agent/settings.json ~/.pi/agent/settings.json
+tell ln -sf $dir/pi/agent/keybindings.json ~/.pi/agent/keybindings.json
+\rm -rf ~/.pi/agent/extensions 2> /dev/null || true
+tell ln -sf $dir/pi/agent/extensions ~/.pi/agent/extensions
+
 explain "Create symlink for dotfiles"
 # change to the dotfiles directory
 pushd $dir >/dev/null 2>&1

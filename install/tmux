@@ -20,6 +20,10 @@ run_with_spinner git clone https://git.prr.re/Drakirus/tmux-last "$HOME/.tmux-la
 [ -d "$HOME/.tmux-scroll/" ] && rm -rf "$HOME/.tmux-scroll/"
 run_with_spinner git clone https://github.com/noscript/tmux-mighty-scroll "$HOME/.tmux-scroll/" --depth=1
 sh ~/.tmux-scroll/mighty-scroll.tmux # compile pscheck
+
+explain "Compile tmux_update_statusbar"
+cc -O2 -Wall -Wextra -Wno-format-truncation -Wno-stringop-truncation -o ~/dotfiles/bin/tmux_update_statusbar ~/dotfiles/bin/tmux_update_statusbar.c
+
 # This is to get the smooth-scroll utility
 [ -d "$HOME/.tmux-smooth-scroll/" ] && rm -rf "$HOME/.tmux-smooth-scroll/"
 run_with_spinner git clone https://github.com/azorng/tmux-smooth-scroll "$HOME/.tmux-smooth-scroll/" --depth=1

@@ -15,6 +15,7 @@ gcc*
 /bin/wezterm
 /bin/jq
 *.zwc
+/bin/tmux_update_statusbar
 zsh/priv.zsh
 /man
 /share
