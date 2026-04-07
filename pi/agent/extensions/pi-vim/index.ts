@@ -1294,6 +1294,7 @@ export class ModalEditor extends CustomEditor {
         this.moveCursorVertically(-1);
         break;
       default:
+        this.preferredDisplayCol = null;
         if (seq) super.handleInput(seq);
     }
   }
@@ -1354,6 +1355,7 @@ export class ModalEditor extends CustomEditor {
   private moveCursorBy(delta: number): void {
     if (delta === 0) return;
 
+    this.preferredDisplayCol = null;
     if (this.tryMoveCursorByState(delta)) return;
 
     const seq = delta > 0 ? ESC_RIGHT : ESC_LEFT;
@@ -1484,6 +1486,7 @@ export class ModalEditor extends CustomEditor {
     state.cursorLine = line;
     state.cursorCol = col;
     editor.preferredVisualCol = col;
+    this.preferredDisplayCol = null;
     editor.tui?.requestRender?.();
   }
 
@@ -1506,6 +1509,7 @@ export class ModalEditor extends CustomEditor {
     state.cursorLine = targetLine;
     state.cursorCol = 0;
     editor.preferredVisualCol = null;
+    this.preferredDisplayCol = null;
     editor.tui?.requestRender?.();
   }
 
@@ -1517,7 +1521,12 @@ export class ModalEditor extends CustomEditor {
 
   private moveCursorToBufferEnd(): void {
     const lines = this.getLines();
-    this.moveCursorToLineStart(Math.max(0, lines.length - 1));
+    const lastLine = Math.max(0, lines.length - 1);
+    const lastLineText = lines[lastLine] ?? "";
+    this.moveCursorToLineStart(lastLine);
+    if (lastLineText.length > 0) {
+      this.moveCursorToCol(Math.max(0, lastLineText.length - 1));
+    }
   }
 
   private joinLines(normalize: boolean): void {
@@ -2539,8 +2548,8 @@ export class ModalEditor extends CustomEditor {
     if (data === "W") { this.moveWord("forward", "start", this.takeTotalCount(1), "WORD"); return; }
     if (data === "B") { this.moveWord("backward", "start", this.takeTotalCount(1), "WORD"); return; }
     if (data === "E") { this.moveWord("forward", "end", this.takeTotalCount(1), "WORD"); return; }
-    if (data === "0") { this.moveCursorToCol(0); return; }
-    if (data === "$") { const line = this.getLines()[this.getCursor().line] ?? ""; this.moveCursorToCol(Math.max(0, line.length - 1)); return; }
+    if (data === "0" || data === "H") { this.moveCursorToCol(0); return; }
+    if (data === "$" || data === "L") { const line = this.getLines()[this.getCursor().line] ?? ""; this.moveCursorToCol(Math.max(0, line.length - 1)); return; }
     if (data === "^") { this.moveCursorToFirstNonWhitespace(); return; }
     if (data === "G") { this.moveCursorToBufferEnd(); return; }
     if (data === "{" || data === "}") { this.executeParagraphMotion(data === "}" ? "forward" : "backward"); return; }
