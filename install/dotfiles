@@ -27,6 +27,7 @@ tell ln -sf $dir/pi/agent/models.json ~/.pi/agent/models.json
 tell ln -sf $dir/pi/agent/SYSTEM.md ~/.pi/agent/SYSTEM.md
 \rm -rf ~/.pi/agent/extensions 2> /dev/null || true
 tell ln -sf $dir/pi/agent/extensions ~/.pi/agent/extensions
+tell ln -sf $dir/pi/agent/themes ~/.pi/agent/themes
 
 explain "Create symlink for dotfiles"
 # change to the dotfiles directory
