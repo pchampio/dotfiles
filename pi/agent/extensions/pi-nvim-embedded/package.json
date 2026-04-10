@@ -1,0 +1,38 @@
+{
+  "name": "pi-nvim-embedded",
+  "version": "1.0.0",
+  "description": "Embedded neovim editor for pi — full vim keybindings in the pi prompt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pchampio/pi-nvim-embedded"
+  },
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src/",
+    "config.example.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "neovim",
+    "nvim",
+    "vim"
+  ],
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": ">=0.51.0",
+    "@mariozechner/pi-tui": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.63.0",
+  },
+  "license": "MIT"
+}

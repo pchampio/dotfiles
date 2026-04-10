@@ -1,0 +1,30 @@
+{
+  "nvimBinary": "nvim",
+  "nvimExtraArgs": [],
+  "timeoutlen": 5,
+  "doubleTapEscTimeout": 400,
+  "disabledKeys": [":", "/", "?", "q:", "q/", "q?", "Q", "gQ", "q"],
+  "enterOnEmptyLineSubmits": true,
+  "enterInNormalSubmits": true,
+  "historyNavigation": true,
+  "tabTogglesPlanMode": true,
+  "tmux": {
+    "clipboard": true,
+    "binary": "tmux",
+    "paneKeys": {
+      "ctrl+h": ["select-pane", "-L"],
+      "ctrl+j": ["select-pane", "-D"],
+      "ctrl+k": ["select-pane", "-U"],
+      "ctrl+l": ["select-pane", "-R"]
+    },
+    "extraKeys": {
+      "alt+k": ["copy-mode", "-H"]
+    }
+  },
+  "cursor": {
+    "insert": "\u001b[6 q",
+    "normal": "\u001b[2 q"
+  },
+  "nvimInitLua": [],
+  "borderChar": "-"
+}
