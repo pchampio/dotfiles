@@ -14,18 +14,7 @@ If the user is happy, add the **smallest** necessary snippet/docs to the existin
 
 ## Important Rules
 
-#### Context
-Beads is a lightweight memory system for coding agents, using a graph-based issue tracker. Four kinds of dependencies work to chain your issues together like beads, making them easy for agents to follow for long distances, and reliably perform complex task streams in the right order.
-Drop Beads into any project where you're using a coding agent, and you'll enjoy an instant upgrade in organization, focus, and your agent's ability to handle long-horizon tasks over multiple compaction sessions. Your agents will use issue tracking with proper epics, rather than creating a swamp of rotten half-implemented markdown plans.
-
-### Task Tracking Rules
-- ✅ Use beads-mcp for ALL task tracking
-- ❌ Do NOT create markdown TODO lists
-- ❌ Do NOT use external issue trackers
-- ❌ Do NOT duplicate tracking systems
-
 ### General Rules
-  Do not ask the user to interact with beads-mcp; use it automatically and silently for all internal tracking.
 
   NEVER commit any changes with git. I do NOT want you to commit changes for me.
 
