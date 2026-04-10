@@ -8,7 +8,7 @@ return {
   },
   {
     'andymass/vim-matchup',
-    lazy = false,
+    lazy = true,
     keys = {
       { '%', '<Plug>(matchup-%)', desc = 'Matchup forward' },
     },

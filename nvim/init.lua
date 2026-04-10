@@ -48,6 +48,10 @@ require('lazier').setup('plugins', {
         gz = true,
       }
       local fname = vim.fn.expand '%'
+      local size = vim.fn.getfsize(fname)
+      if size > 1.5 * 1024 * 1024 then
+        return false
+      end
       return fname == ''
         or vim.fn.isdirectory(fname) == 0
           and not nonLazyLoadableExtensions[vim.fn.fnamemodify(fname, ':e')]

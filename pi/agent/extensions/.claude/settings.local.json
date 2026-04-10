@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(nvim --version)",
+      "Bash(tmux load-buffer:*)",
+      "Bash(tmux show-buffer:*)",
+      "Bash(nvim --embed --clean -n +'lua vim.fn.system\\({\"tmux\", \"set-buffer\", \"-w\", \"nvim-test\"}\\)' +'q')",
+      "Bash(tmux set-buffer:*)",
+      "Bash(sed -i '/^\\\\s*log\\(/d' pi-vim/index.ts)",
+      "Bash(sed -i '/^\\\\s*console\\\\.error\\(/d' pi-vim/index.ts)",
+      "Bash(grep -E \"^d|^-.*\\\\.ts$\")",
+      "Bash(find:*)"
+    ]
+  }
+}

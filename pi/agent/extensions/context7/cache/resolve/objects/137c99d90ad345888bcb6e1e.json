@@ -1,0 +1,82 @@
+{
+  "kind": "resolve",
+  "cacheKey": "pi::color scheme theme customization",
+  "objectKey": "137c99d90ad345888bcb6e1e",
+  "libraryName": "pi",
+  "normalizedLibraryName": "pi",
+  "query": "color scheme theme customization",
+  "createdAt": "2026-04-10T11:53:18.915Z",
+  "expiresAt": "2026-04-17T11:53:18.915Z",
+  "results": [
+    {
+      "id": "/badlogic/pi-mono",
+      "title": "Pi",
+      "description": "A monorepo containing a collection of tools designed for managing large language model (LLM) deployments and building AI agents, featuring a unified LLM API, web UI components, and a CLI.",
+      "branch": "main",
+      "lastUpdateDate": "2026-04-04T01:02:29.362Z",
+      "state": "finalized",
+      "totalTokens": 201152,
+      "totalSnippets": 1288,
+      "stars": 149,
+      "trustScore": 9.1,
+      "benchmarkScore": 85.8,
+      "versions": []
+    },
+    {
+      "id": "/websites/pi_dev",
+      "title": "Pi",
+      "description": "Pi is a minimal terminal coding harness that enables developers to build extensible AI coding agents with customizable workflows, multiple model providers, and a plugin-based architecture.",
+      "branch": "main",
+      "lastUpdateDate": "2026-04-07T15:12:12.702Z",
+      "state": "finalized",
+      "totalTokens": 535,
+      "totalSnippets": 9,
+      "stars": -1,
+      "trustScore": 7.9,
+      "benchmarkScore": 40.2,
+      "versions": []
+    },
+    {
+      "id": "/websites/shittycodingagent_ai",
+      "title": "Pi",
+      "description": "Pi is a minimal terminal coding harness that enables developers to build AI-powered workflows with TypeScript extensions, skills, and packages.",
+      "branch": "main",
+      "lastUpdateDate": "2026-04-07T21:24:26.946Z",
+      "state": "finalized",
+      "totalTokens": 599,
+      "totalSnippets": 11,
+      "stars": -1,
+      "trustScore": 7.3,
+      "benchmarkScore": 51.7,
+      "versions": []
+    },
+    {
+      "id": "/cegersdoerfer/pi-ptc",
+      "title": "PI PTC",
+      "description": "PI PTC is an extension for pi-coding-agent that enables Python code execution with async tool calling, reducing token usage and latency for multi-tool workflows.",
+      "branch": "main",
+      "lastUpdateDate": "2026-03-30T19:22:26.546Z",
+      "state": "finalized",
+      "totalTokens": 9213,
+      "totalSnippets": 67,
+      "stars": 18,
+      "trustScore": 6.9,
+      "benchmarkScore": 81.3,
+      "versions": []
+    },
+    {
+      "id": "/nicobailon/pi-messenger",
+      "title": "Pi Messenger",
+      "description": "Pi Messenger enables multiple AI agents in different terminals to coordinate and communicate through a shared folder, featuring task orchestration, file reservations, activity tracking, and a chat overlay interface.",
+      "branch": "main",
+      "lastUpdateDate": "2026-02-06T16:23:56.470Z",
+      "state": "finalized",
+      "totalTokens": 17233,
+      "totalSnippets": 139,
+      "stars": 92,
+      "trustScore": 9.1,
+      "benchmarkScore": 74.12,
+      "versions": []
+    }
+  ]
+}

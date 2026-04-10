@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 $(ffmpeg --help 2> /dev/null > /dev/null)
 
@@ -85,7 +85,7 @@ if [[ "$#" -eq 1  ]]; then
   OUTPUT=$filename
 fi
 
-if [[ "$RESOLUTION" -eq ""  ]]; then
+if [[ -z "$RESOLUTION" ]]; then
   eval $(ffprobe -v error -of flat=s=_ -select_streams v:0 -show_entries stream=width "$1")
   RESOLUTION=${streams_stream_0_width}
 fi

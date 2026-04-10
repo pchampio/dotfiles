@@ -23,6 +23,8 @@ tell ln -sf $dir/nvim ~/.config/nvim
 
 tell ln -sf $dir/pi/agent/settings.json ~/.pi/agent/settings.json
 tell ln -sf $dir/pi/agent/keybindings.json ~/.pi/agent/keybindings.json
+tell ln -sf $dir/pi/agent/models.json ~/.pi/agent/models.json
+tell ln -sf $dir/pi/agent/SYSTEM.md ~/.pi/agent/SYSTEM.md
 \rm -rf ~/.pi/agent/extensions 2> /dev/null || true
 tell ln -sf $dir/pi/agent/extensions ~/.pi/agent/extensions
 

@@ -12,10 +12,6 @@ return {
       },
     },
     config = function()
-      -- if vim.bo.filetype == 'bigfile' then
-      --   return
-      -- end
-
       -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
       local default_caps = vim.lsp.protocol.make_client_capabilities()
       local cmp_caps = require('cmp_nvim_lsp').default_capabilities()

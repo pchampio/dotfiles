@@ -102,6 +102,16 @@ install_github_app() {
         return 1
     fi
 
+    # If FILTER is set, only install matching apps
+    if [ -n "$FILTER" ]; then
+        local _match=false
+        IFS=',' read -ra _ALIASES <<< "$APP_ALIASES"
+        for _alias in "${_ALIASES[@]}"; do
+            [ "$(echo "$_alias" | xargs)" = "$FILTER" ] && _match=true
+        done
+        $_match || return 0
+    fi
+
     explain "Installation of $APP_ALIASES"
 
     # CREATE DIRECTORIES

@@ -1,0 +1,43 @@
+{
+  "name": "pi-plan-mode",
+  "version": "0.4.8",
+  "description": "Plan mode extension for pi - read-only exploration with plan file editing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qmx/pi-plan-mode"
+  },
+  "type": "module",
+  "main": "./plan-mode.ts",
+  "types": "./plan-mode.ts",
+  "files": [
+    "plan-mode.ts",
+    "README.md"
+  ],
+  "keywords": [
+    "pi",
+    "pi-package",
+    "extension",
+    "plan-mode"
+  ],
+  "pi": {
+    "extensions": [
+      "./plan-mode.ts"
+    ]
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "prepublishOnly": "npm run typecheck"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-ai": "*",
+    "@mariozechner/pi-coding-agent": "^0.63.0"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "^0.63.0",
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.2"
+  },
+  "license": "MIT"
+}

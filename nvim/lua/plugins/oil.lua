@@ -28,7 +28,10 @@ return {{
         ["_"] = { "actions.open_cwd", mode = "n" },
     },
   },
-  keys = { { '-', '<CMD>Oil<CR>' } },
+  keys = { { '-', function()
+    local oil = require("oil")
+    vim.keymap.set("n", "-", oil.open)
+  end } },
   -- Optional dependencies
   dependencies = { { "nvim-mini/mini.icons", opts = {} } },
   -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons

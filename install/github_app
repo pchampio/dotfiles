@@ -3,7 +3,13 @@
 BASEDIR=$(dirname $0)
 . $BASEDIR/inc/functions
 
+FILTER="${1:-$FILTER}"
+
 success "[Github APP] Start"
+
+if [ -n "$FILTER" ]; then
+    explain "Filtering for app: $FILTER"
+fi
 
 install_github_app pinentry "pchampio/build-static-pinentry" "https.*pinentry.*stripped.gz$" &
 install_github_app tmux "pchampio/build-static-tmux" "https.*tmux.*amd64.*stripped.gz$" &

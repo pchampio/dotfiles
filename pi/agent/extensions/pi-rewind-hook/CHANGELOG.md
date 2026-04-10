@@ -1,0 +1,167 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+## [1.8.2] - 2026-04-05
+
+### Changed
+- Dropped `npx pi-rewind-hook` installer support; package install path is now `pi install npm:pi-rewind-hook`
+
+## [1.8.1] - 2026-04-05
+
+### Fixed
+- Migrated lifecycle handling to pi v0.65+ by replacing removed `session_switch`/`session_fork` usage with `session_start` reason-based handling
+- Persisted fork rewind state through `session_start` (`reason: "fork"`) using hidden `rewind-fork-pending` entries so undo/current state is restored in the child session after extension reload
+- Fixed install completion hint to use `/fork` (not deprecated `/branch`)
+- Fixed installer cleanup for Windows-style extension paths when removing explicit rewind entries from `settings.json`
+- Added explicit installer error for redirect responses missing a `location` header
+- Preserved non-`Error` failure messages in installer warning/fatal error output
+
+### Changed
+- Updated README minimum supported pi version to v0.65.0+
+- Clarified README installation flow around auto-discovery and optional legacy settings cleanup
+
+## [1.8.0] - 2026-04-03
+
+### Changed
+- Replaced the old git-ref checkpoint ledger with session-native `rewind-turn` and `rewind-op` records
+- Rewind points are now aligned to visible session nodes: the triggering user node and each assistant step captured at `turn_end`
+- Snapshot commits are now kept reachable through a single `refs/pi-rewind/store` keepalive ref instead of one ref per checkpoint
+- Removed the fixed 100-checkpoint per-session pruning model; exact mode now has no cap by default
+- `/fork` and `/tree` now persist resulting exact file state through `rewind-op.current`, including keep-current-files flows
+- Undo snapshots now persist with the resulting session state instead of depending on old before-restore refs
+
+### Added
+- Lineage-aware exact snapshot lookup through `parentSession`
+- Exact assistant-node rewind for v2 captures
+- Compaction and branch-summary snapshot aliasing without creating fresh snapshots when files did not change
+- Optional retention over unique snapshot commits via `rewind.retention.maxSnapshots`, `rewind.retention.maxAgeDays`, and `rewind.retention.pinLabeledEntries`
+- Retention discovery mode setting via `rewind.retention.scanMode` (`ancestor-only` default, optional `repo-sessions`)
+- Startup retention sweep budget setting via `rewind.retention.startupBudgetMs`
+
+### Fixed
+- Restore now deletes files absent from the target snapshot before worktree-only restore, producing exact restore for tracked and untracked non-ignored files in the snapshot domain without staging the repo index
+- Rewind bookkeeping for reconstruction, capture, migration, and retention no longer depends on UI availability
+- `/tree` restore options now match actual exact rewind availability: user, assistant, compaction, and branch-summary nodes only
+- Critical rewind handlers now fail closed with user-facing errors instead of bubbling git/storage exceptions through `/fork` and `/tree`
+- Turn capture/finalization now warns and recovers when snapshot writes fail, avoiding stale collector state
+
+## [1.7.0] - 2026-01-15
+
+### Fixed
+- **Critical**: Checkpoints now scoped per-session to prevent cross-session interference
+  - Multiple pi sessions in the same git repo no longer prune each other's checkpoints
+  - "Undo last file rewind" now only restores YOUR session's pre-restore state, not another session's
+- **Critical**: Fixed event name `session_before_branch` → `session_before_fork` (fork handler was never being called!)
+- Checkpoint ref format now includes session ID: `checkpoint-{sessionId}-{timestamp}-{entryId}`
+- Before-restore ref format now includes session ID: `before-restore-{sessionId}-{timestamp}`
+
+### Changed
+- `rebuildCheckpointsMap()` now filters by current session ID (with backward compat for old format)
+- `pruneCheckpoints()` now only prunes checkpoints from current session
+- `findBeforeRestoreRef()` now only finds refs from current session
+
+### Backward Compatibility
+- Old-format checkpoints (`checkpoint-{timestamp}-{entryId}`) are still loaded for resumed sessions
+- Old-format checkpoints are not pruned (to avoid cross-session interference)
+- New checkpoints are created in the new session-scoped format
+
+## [1.6.0] - 2026-01-13
+
+### Added
+- `rewind.silentCheckpoints` setting to hide checkpoint status and notifications
+
+## [1.5.0] - 2026-01-10
+
+### Changed
+- Replaced noisy stderr logging with clean TUI output
+- Footer now shows checkpoint count (`◆ X checkpoints`)
+- "Checkpoint X saved" notification appears when checkpoint is created
+- Pruning now happens before status update to ensure accurate count
+
+### Fixed
+- State not reset on `/new` or `/resume` (added `session_switch` handler)
+- Checkpoints map not cleared before rebuild (could have stale entries)
+- `findBeforeRestoreRef` now validates git output format
+- Status count now accurate after pruning old checkpoints
+
+### Removed
+- All `console.error` debug logging (cleaner output)
+- Temporary "capturing..." and "restoring..." status messages (too noisy)
+
+## [1.4.0] - 2026-01-08
+
+### Fixed
+- **Critical**: Checkpoints now persist across session resumes - entry IDs are embedded in git ref names and rebuilt on session start
+- **Critical**: Fixed checkpoint being associated with wrong entry ID (was using previous assistant entry instead of current user entry)
+- **Critical**: Pruning no longer incorrectly removes Map entries for newer checkpoints when deleting older ones for same entry
+- Tree navigation now always shows options menu (even when no checkpoint available)
+- Branch now offers "Conversation only" option even when no checkpoint is available
+
+### Changed
+- Checkpoint ref format now includes entry ID: `checkpoint-{timestamp}-{entryId}`
+- Added `rebuildCheckpointsMap()` to reconstruct entry→checkpoint mappings from git refs
+- Use leaf entry at `turn_start` (the user message) instead of tracking via `tool_result`
+- Added `--sort=creatordate` to `for-each-ref` calls for consistent ordering
+- Removed unused `tool_result` handler
+
+## [1.3.0] - 2026-01-05
+
+### Breaking Changes
+- Requires pi v0.35.0+ (unified extensions system)
+- Install location changed from `hooks/rewind` to `extensions/rewind`
+
+### Changed
+- Migrated from hooks to unified extensions system
+- Settings key changed from `hooks` to `extensions`
+- Install script now migrates old hooks config and cleans up old directory
+- Renamed "Hook" to "Extension" throughout codebase and docs
+
+## [1.2.0] - 2026-01-03
+
+### Added
+- Tree navigation support (`session_before_tree`) - restore files when navigating session tree
+- Entry-based checkpoint mapping (uses entry IDs instead of turn indices)
+
+### Changed
+- Migrated to granular session events API (pi-coding-agent v0.31+)
+- Use `pi.exec` instead of `ctx.exec` per updated hooks API
+
+### Fixed
+- Removed `agent_end` handler that was clearing checkpoints after each turn
+- "Undo last file rewind" now cancels branch instead of creating unwanted branch
+
+## [1.1.1] - 2025-12-27
+
+### Fixed
+- Use `before_branch` event instead of `branch` for proper hook timing (thanks @badlogic)
+- Cancel branch when user dismisses restore options menu
+
+## [1.1.0] - 2025-12-27
+
+### Added
+- "Undo last file rewind" option - restore files to state before last rewind
+- Checkpoints now capture uncommitted and untracked files (not just HEAD)
+- Git repo detection - hook gracefully skips in non-git directories
+
+### Changed
+- Checkpoints use `git write-tree` with temp index to capture working directory state
+- Pruning excludes before-restore ref and current session's resume checkpoint
+
+### Fixed
+- Code-only restore options now properly skip conversation restore
+
+## [1.0.0] - 2025-12-19
+
+### Added
+- Initial release
+- Automatic checkpoints at session start and each turn
+- `/branch` integration with restore options:
+  - Restore all (files + conversation)
+  - Conversation only (keep current files)
+  - Code only (restore files, keep conversation)
+- Resume checkpoint for pre-session messages
+- Automatic pruning (keeps last 100 checkpoints)
+- Cross-platform installation via `npx pi-rewind-hook`

@@ -81,9 +81,11 @@ function setupFooter(pi: ExtensionAPI, ctx: any, onUnsub: (unsub: () => void) =>
 
 				const dir = shortDir(ctx.cwd);
 				const thinking = thinkingIndicator(pi.getThinkingLevel?.(), theme);
-				const sep = theme.fg("dim", " | ");
+				const sep = theme.fg("muted", " | ");
 				const modelStr = theme.fg("accent", theme.bold(model));
-				const leftContent = ` ` + modelStr + sep + theme.fg("dim", usageStr) + sep + theme.fg("dim", dir);
+				const g = globalThis as any;
+				const modeTag = g.__piPlanMode ? theme.fg("warning", theme.bold(" PLAN")) + sep : " ";
+				const leftContent = modeTag + modelStr + sep + theme.fg("text", usageStr) + sep + theme.fg("text", dir);
 				const rightContent = thinking + ` `;
 
 				const leftWidth = visibleWidth(leftContent);

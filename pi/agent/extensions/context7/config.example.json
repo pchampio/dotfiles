@@ -1,0 +1,7 @@
+{
+  "apiKey": "ctx7sk-...",
+  "cache": {
+    "resolveTtlHours": 168,
+    "docsTtlHours": 24
+  }
+}
