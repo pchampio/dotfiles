@@ -22,7 +22,7 @@
 		"terminal"
 	],
 	"dependencies": {
-		"diff": "^7.0.0",
+		"diff": "^8.0.3",
 		"@shikijs/cli": "^4.0.2"
 	},
 	"peerDependencies": {
