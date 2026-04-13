@@ -15,16 +15,15 @@
       "ctrl+h": ["select-pane", "-L"],
       "ctrl+j": ["select-pane", "-D"],
       "ctrl+k": ["select-pane", "-U"],
-      "ctrl+l": ["select-pane", "-R"]
-    },
-    "extraKeys": {
-      "alt+k": ["copy-mode", "-H"]
+      "ctrl+l": ["select-pane", "-R"],
+      "alt+k": ["copy-mode", "-H", ";", "send-keys", "-X", "cursor-up"]
     }
   },
   "cursor": {
     "insert": "\u001b[6 q",
     "normal": "\u001b[2 q"
   },
+  "piKeys": ["ctrl+d", "ctrl+o", "alt+up", "alt+return", "ctrl+t", "ctrl+\\"],
   "nvimInitLua": [],
   "borderChar": "-",
   "maxCompletionItems": 5

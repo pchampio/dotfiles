@@ -38,19 +38,11 @@ Spawns `nvim --embed` as a subprocess, forwards all keystrokes via msgpack-RPC, 
 
 ## Installation
 
-### From GitHub (recommended)
-
-```
-pi install git:github.com/pchampio/pi-nvim-embedded
-```
-
-### Test without installing
-
-```
-pi -e git:github.com/pchampio/pi-nvim-embedded
-```
-
 ### Manual install via git clone
+
+This is the recommended way to install the plugin,
+as you will want to customize the internal of it (with your favorite
+LLM of course).
 
 Clone the repo into your pi agent directory and add it to `packages` in your `settings.json`:
 
@@ -70,6 +62,19 @@ Then edit `~/.pi/agent/settings.json` (create it if it doesn't exist):
 ```
 
 Restart pi — the extension will be loaded from the local clone.
+
+
+### From GitHub
+
+```
+pi install git:github.com/pchampio/pi-nvim-embedded
+```
+
+### Test without installing
+
+```
+pi -e git:github.com/pchampio/pi-nvim-embedded
+```
 
 ## Configuration
 
@@ -97,10 +102,11 @@ cp config.example.json config.json
 | `tmux.clipboard` | `boolean` | `true` | Enable tmux clipboard integration (`Ctrl+V` paste, `Y` yank) |
 | `tmux.binary` | `string` | `"tmux"` | Path to the tmux binary |
 | `tmux.paneKeys` | `Record<string, string[]>` | `{"ctrl+h": [...], ...}` | Tmux pane navigation keybindings. Set to `{}` to disable |
-| `tmux.extraKeys` | `Record<string, string[]>` | `{"alt+k": ["copy-mode", "-H"]}` | Additional tmux keybindings |
 | `cursor.insert` | `string` | `"\x1b[6 q"` | Insert mode cursor shape escape sequence (bar) |
 | `cursor.normal` | `string` | `"\x1b[2 q"` | Normal mode cursor shape escape sequence (block) |
 | `nvimInitLua` | `string[]` | `[]` | Extra Lua commands run after neovim boot (executed via `nvim_exec_lua`) |
+| `piKeys` | `string[]` | `["ctrl+d", "ctrl+o", "alt+up", "alt+return", "ctrl+t", "ctrl+\\"]` | Keys that bypass neovim and are forwarded directly to pi |
+| `maxCompletionItems` | `number` | `5` | Maximum number of items visible in the completion popup menu |
 | `borderChar` | `string` | `"-"` | Character used to replace `─` on editor border lines. Set to `""` to keep the original `─` character |
 
 ### Example: disable tmux integration
@@ -110,7 +116,6 @@ cp config.example.json config.json
   "tmux": {
     "clipboard": false,
     "paneKeys": {},
-    "extraKeys": {}
   }
 }
 ```
