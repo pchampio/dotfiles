@@ -9,14 +9,13 @@ const configPath = join(extensionDir, "..", "config.json");
 
 const DEFAULT_DISABLED_KEYS = [":", "/", "?", "q:", "q/", "q?", "Q", "gQ", "q"];
 
+const DEFAULT_PI_KEYS = ["ctrl+d", "ctrl+o", "alt+up", "alt+return", "ctrl+t", "ctrl+\\"];
+
 const DEFAULT_TMUX_PANE_KEYS: Record<string, string[]> = {
   "ctrl+h": ["select-pane", "-L"],
   "ctrl+j": ["select-pane", "-D"],
   "ctrl+k": ["select-pane", "-U"],
   "ctrl+l": ["select-pane", "-R"],
-};
-
-const DEFAULT_TMUX_EXTRA_KEYS: Record<string, string[]> = {
   "alt+k": ["copy-mode", "-H", ";", "send-keys", "-X", "cursor-up"],
 };
 
@@ -55,12 +54,12 @@ export async function loadSettings(): Promise<NvimEmbeddedSettings> {
       clipboard: config.tmux?.clipboard ?? true,
       binary: config.tmux?.binary ?? "tmux",
       paneKeys: config.tmux?.paneKeys ?? DEFAULT_TMUX_PANE_KEYS,
-      extraKeys: config.tmux?.extraKeys ?? DEFAULT_TMUX_EXTRA_KEYS,
     },
     cursor: {
       insert: config.cursor?.insert ?? "\x1b[6 q",
       normal: config.cursor?.normal ?? "\x1b[2 q",
     },
+    piKeys: config.piKeys ?? DEFAULT_PI_KEYS,
     nvimInitLua: config.nvimInitLua ?? [],
     borderChar: "borderChar" in config ? (config.borderChar?.length ? config.borderChar[0]! : null) : "-",
     maxCompletionItems: config.maxCompletionItems ?? 5,

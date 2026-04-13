@@ -40,6 +40,8 @@ type EditorInternals = {
 
 // ── NvimEditor ────────────────────────────────────────────────────────
 
+let userBashRunning = false;
+
 class NvimEditor extends CustomEditor {
   private nvim = new NvimClient();
   private ready = false;
@@ -504,17 +506,19 @@ class NvimEditor extends CustomEditor {
   }
 
   // Keys bypassed to pi (used by pump + batch check)
-  private static readonly PI_KEYS = ["ctrl+d", "ctrl+o", "alt+up", "alt+return"];
+  private get piKeys(): string[] {
+    return this.settings.piKeys;
+  }
 
-  /** Merged tmux keys from settings (paneKeys + extraKeys). */
+  /** Merged tmux keys from settings (paneKeys). */
   private get tmuxKeys(): Record<string, string[]> {
-    return { ...this.settings.tmux.paneKeys, ...this.settings.tmux.extraKeys };
+    return { ...this.settings.tmux.paneKeys };
   }
 
   /** Process the input queue serially — each key waits for neovim to finish. */
   private async pump(): Promise<void> {
     this.busy = true;
-    const PI_KEYS = NvimEditor.PI_KEYS;
+    const PI_KEYS = this.piKeys;
     const TMUX_KEYS = this.tmuxKeys;
     try {
       while (this.queue.length > 0) {
@@ -581,8 +585,17 @@ class NvimEditor extends CustomEditor {
           continue;
         }
 
-        // Ctrl+C in pure normal mode → pi (abort); otherwise → neovim (cancel pending op)
+        // Ctrl+C in pure normal mode:
+        // 1. Call onEscape() to abort user bash / agent (if running)
+        // Ctrl+C in pure normal mode:
+        // - If user bash is running, call onEscape to abort it.
+        // - Always call super.handleInput for the "clear" action (double Ctrl+C exit).
+        // In other modes → neovim handles it (cancel pending op).
         if (matchesKey(data, "ctrl+c") && this.isPureNormal()) {
+          if (this.onEscape && userBashRunning) {
+            this.onEscape();
+            userBashRunning = false;
+          }
           super.handleInput(data);
           continue;
         }
@@ -1294,6 +1307,7 @@ function collectPiCommands(pi: ExtensionAPI): { name: string; description: strin
 
 export default function (pi: ExtensionAPI) {
   let inputUnsub: (() => void) | null = null;
+
   let currentEditor: NvimEditor | null = null;
   let lastEscTime = 0;
   let pendingEscTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1360,11 +1374,17 @@ export default function (pi: ExtensionAPI) {
     if (cancelled) ctx.ui.notify("All operations cancelled (ESC ESC)", "warning");
   }
 
+  pi.on("user_bash", async () => {
+    userBashRunning = true;
+  });
+
   pi.on("agent_start", async (_event, ctx) => {
+    userBashRunning = false;
     if (ctx.hasUI) ctx.ui.setStatus("esc-hint", "\x1b[2m ESC ESC to cancel\x1b[0m");
   });
 
   pi.on("agent_end", async (_event, ctx) => {
+    userBashRunning = false;
     if (ctx.hasUI) ctx.ui.setStatus("esc-hint", undefined);
     if (settings) updateTmuxPromptVars(settings.tmux.binary);
   });
@@ -1422,6 +1442,15 @@ export default function (pi: ExtensionAPI) {
       if (data === "\x1b[O") {
         process.stdout.write("\x1b[0 q\x1b[?25l"); // reset shape + hide
         return { consume: true };
+      }
+
+      // Ctrl+C: cancel agent/subagent operations if any are running,
+      // then fall through to the editor's normal handling.
+      if (matchesKey(data, "ctrl+c")) {
+        const isIdle = ctx.isIdle();
+        const hasOps = hasRunningOperations();
+        if (!isIdle || hasOps) cancelAll(ctx);
+        return undefined;
       }
 
       // ESC double-tap cancel (only in pure normal mode while something runs)

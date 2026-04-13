@@ -1,0 +1,10 @@
+node_modules/
+artifacts/
+*.gif
+!assets/demo.gif
+*.html
+*.log
+*.tmp
+*.tgz
+.DS_Store
+.old
