@@ -44,5 +44,5 @@
     "+extensions/path-guard.ts",
     "+extensions/true-queue.ts"
   ],
-  "hideThinkingBlock": true
+  "hideThinkingBlock": false
 }

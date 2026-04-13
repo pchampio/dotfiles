@@ -1034,6 +1034,24 @@ class NvimEditor extends CustomEditor {
         .replace(/(\x1b_pi:c\x07)\x1b\[7m(.)\x1b\[27m/g, "$1$2");
     }
 
+    // Find cursor's actual render row from pi's APC cursor marker.
+    // When pi truncates content ("↑ N more" / "↓ N more" indicators),
+    // buffer rows no longer map 1:1 to render line indices.
+    let cursorRenderRow = this.nCursorRow;
+    for (let i = 1; i < lines.length - 1; i++) {
+      if (lines[i]!.includes("\x1b_pi:c\x07")) {
+        cursorRenderRow = i;
+        break;
+      }
+    }
+    const rowOffset = cursorRenderRow - this.nCursorRow;
+
+    // Detect truncation indicator lines so overlays skip them
+    const hasTopTrunc = lines.length > 2 && /↑/.test(lines[1]!);
+    const hasBottomTrunc = lines.length > 2 && /↓/.test(lines[lines.length - 2]!);
+    const contentFirstIdx = hasTopTrunc ? 2 : 1;
+    const contentLastIdx = hasBottomTrunc ? lines.length - 3 : lines.length - 2;
+
     // Apply visual selection highlight
     const mode = this.getMode();
     if (mode === "visual" && this.vStartRow > 0) {
@@ -1041,8 +1059,8 @@ class NvimEditor extends CustomEditor {
       const isBlock = this.nMode === "\x16" || this.nMode === "\x16s";
       // Content lines are between the border lines (index 1 to lines.length-2)
       for (let bufRow = this.vStartRow; bufRow <= this.vEndRow && bufRow <= this.nLines.length; bufRow++) {
-        const renderIdx = bufRow; // border top is line 0, content starts at 1
-        if (renderIdx <= 0 || renderIdx >= lines.length - 1) continue;
+        const renderIdx = bufRow + rowOffset;
+        if (renderIdx < contentFirstIdx || renderIdx > contentLastIdx) continue;
 
         const lineText = this.nLines[bufRow - 1] ?? "";
         let selStart: number, selEnd: number;
@@ -1107,7 +1125,7 @@ class NvimEditor extends CustomEditor {
       const ghostOn = "\x1b[2;3m";
       const ghostOff = "\x1b[22;23m";
       const padX = this.getPaddingX();
-      const cursorRenderIdx = this.nCursorRow;
+      const cursorRenderIdx = cursorRenderRow;
 
       if (cursorRenderIdx > 0 && cursorRenderIdx < lines.length - 1) {
         const col = padX + this.nCursorCol;
@@ -1159,8 +1177,8 @@ class NvimEditor extends CustomEditor {
       );
       const popupWidth = popupInnerWidth;
 
-      // Popup position: below cursor row. Content starts at render index 1 (after top border).
-      const popupStartRow = this.nCursorRow + 1;
+      // Popup position: below cursor row, using actual render position.
+      const popupStartRow = cursorRenderRow + 1;
       const popupCol = Math.min(this.nCursorCol + 1, width - popupWidth - 1);
 
       // Inject blank lines before the bottom border if the popup extends past content
