@@ -50,6 +50,16 @@ export interface NvimEmbeddedConfigFile {
 
   /** Maximum number of items visible in the completion popup menu (default: 5) */
   maxCompletionItems?: number;
+
+  /** Copilot context injection — feeds previous LM responses into nvim buffer (hidden) for better inline suggestions */
+  copilotContext?: {
+    /** Enable context injection (default: true) */
+    enabled?: boolean;
+    /** Max lines of context to inject (default: 100) */
+    maxLines?: number;
+    /** Filetype for the nvim buffer — affects Copilot's language detection (default: "markdown") */
+    filetype?: string;
+  };
 }
 
 /** Resolved settings with all fields guaranteed present. */
@@ -81,4 +91,10 @@ export interface NvimEmbeddedSettings {
   borderChar: string | null;
 
   maxCompletionItems: number;
+
+  copilotContext: {
+    enabled: boolean;
+    maxLines: number;
+    filetype: string;
+  };
 }

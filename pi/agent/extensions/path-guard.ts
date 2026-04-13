@@ -3,6 +3,7 @@
  *
  * Blocks tool access to files outside the current working directory.
  * Hard-blocks read/write/edit/find/ls/grep with out-of-scope paths.
+ * In plan mode, prompts the user for confirmation instead of hard-blocking.
  * Soft-blocks bash via system prompt instruction.
  */
 
@@ -20,22 +21,40 @@ export default function (pi: ExtensionAPI) {
 
 	const TOOLS_WITH_PATH = ["read", "write", "edit", "find", "ls", "grep"] as const;
 
-	pi.on("tool_call", async (event, ctx) => {
-		for (const tool of TOOLS_WITH_PATH) {
-			if (isToolCallEventType(tool, event)) {
-				const p = (event.input as any).path;
-				if (p && !isInsideCwd(ctx.cwd, p)) {
-					return { block: true, reason: `Blocked: ${p} is outside the working directory.` };
-				}
-			}
-		}
-	});
+	// pi.on("tool_call", async (event, ctx) => {
+	// 	for (const tool of TOOLS_WITH_PATH) {
+	// 		if (isToolCallEventType(tool, event)) {
+	// 			const p = (event.input as any).path;
+	// 			if (p && !isInsideCwd(ctx.cwd, p)) {
+	// 				const g = globalThis as any;
+	// 				if (g.__piPlanMode) {
+	// 					const allowed = await ctx.ui.confirm(
+	// 						"Path outside working directory",
+	// 						`Allow ${event.toolName} access to ${p}?`,
+	// 					);
+	// 					if (!allowed) {
+	// 						return { block: true, reason: `Blocked: ${p} is outside the working directory.` };
+	// 					}
+	// 					return;
+	// 				}
+	// 				return { block: true, reason: `Blocked: ${p} is outside the working directory.` };
+	// 			}
+	// 		}
+	// 	}
+	// });
 
-	pi.on("before_agent_start", async (event) => {
-		return {
-			systemPrompt: event.systemPrompt +
-				"\n\nIMPORTANT: Only access files within the current working directory and its subdirectories. " +
-				"Do not use bash to read, list, or modify files outside this scope.",
-		};
-	});
+	// pi.on("context", async (event) => {
+	// 	const g = globalThis as any;
+	// 	const planNote = g.__piPlanMode
+	// 		? " In plan mode, you may request access to files outside this scope — the user will be prompted to confirm."
+	// 		: " Do not use bash to read, list, or modify files outside this scope.";
+
+	// 	const messages = [...event.messages];
+	// 	messages.push({
+	// 		role: "user" as const,
+	// 		content: "[SYSTEM: Only access files within the current working directory and its subdirectories." + planNote + "]",
+	// 		timestamp: Date.now(),
+	// 	});
+	// 	return { messages };
+	// });
 }

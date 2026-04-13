@@ -29,6 +29,7 @@ Spawns `nvim --embed` as a subprocess, forwards all keystrokes via msgpack-RPC, 
 - `Enter` in normal mode submits the buffer; `Enter` on an empty last line in insert mode submits
 - `Tab` in normal mode toggles plan mode
 - Double-tap `ESC` cancels all running operations (agents, chains, pipelines, teams)
+- Copilot context injection — previous LM responses are fed as hidden (folded) lines for better inline suggestions
 - Graceful fallback to the default editor if neovim is not available
 
 ## Prerequisites
@@ -108,6 +109,9 @@ cp config.example.json config.json
 | `piKeys` | `string[]` | `["ctrl+d", "ctrl+o", "alt+up", "alt+return", "ctrl+t", "ctrl+\\"]` | Keys that bypass neovim and are forwarded directly to pi |
 | `maxCompletionItems` | `number` | `5` | Maximum number of items visible in the completion popup menu |
 | `borderChar` | `string` | `"-"` | Character used to replace `─` on editor border lines. Set to `""` to keep the original `─` character |
+| `copilotContext.enabled` | `boolean` | `true` | Inject previous LM response as hidden context for Copilot inline suggestions |
+| `copilotContext.maxLines` | `number` | `100` | Maximum lines of context to inject |
+| `copilotContext.filetype` | `string` | `"markdown"` | Neovim filetype for the buffer (affects Copilot language detection) |
 
 ### Example: disable tmux integration
 
@@ -136,6 +140,16 @@ cp config.example.json config.json
 ```json
 {
   "disabledKeys": []
+}
+```
+
+### Example: disable Copilot context injection
+
+```json
+{
+  "copilotContext": {
+    "enabled": false
+  }
 }
 ```
 

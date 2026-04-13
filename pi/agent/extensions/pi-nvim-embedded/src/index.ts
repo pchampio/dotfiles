@@ -85,6 +85,10 @@ class NvimEditor extends CustomEditor {
   // Peak render height: prevents editor from shrinking after completion popup closes
   private peakHeight = 0;
 
+  // Copilot context: hidden lines at top of nvim buffer for better inline suggestions
+  private contextLines: string[] = [];
+  private contextLineCount = 0; // contextLines.length (0 when disabled)
+
   // Flush synchronization: resolves when neovim finishes processing input.
   private flushResolve: (() => void) | null = null;
 
@@ -136,8 +140,33 @@ class NvimEditor extends CustomEditor {
       await this.nvim.request("nvim_set_option_value", ["signcolumn", "no", {}]);
       // Force completion popup to always show (even for single match)
       await this.nvim.request("nvim_set_option_value", ["completeopt", "menu,menuone,noselect", {}]);
-      // Set a neutral filetype so LSP clients (e.g. Copilot) can attach
-      await this.nvim.request("nvim_set_option_value", ["filetype", "text", { buf: 0 }]);
+      // Set filetype for LSP clients (e.g. Copilot) — configurable for better suggestions
+      await this.nvim.request("nvim_set_option_value", ["filetype", this.settings.copilotContext.filetype, { buf: 0 }]);
+      // Give the buffer a meaningful name so Copilot treats it as a real file
+      await this.nvim.request("nvim_buf_set_name", [0, `/tmp/pi-prompt.${this.settings.copilotContext.filetype === "markdown" ? "md" : this.settings.copilotContext.filetype}`]);
+      // Set up context concealment: extmarks + cursor clamp autocmd
+      await this.nvim.request("nvim_exec_lua", [`
+        -- Create namespace for context concealment
+        _G._pi_ctx_ns = vim.api.nvim_create_namespace('pi_context')
+        -- Hidden highlight: fg and bg both transparent/background color
+        vim.api.nvim_set_hl(0, 'PiContextHidden', { fg = 'bg', bg = 'bg', sp = 'bg', nocombine = true })
+        -- Track context line count
+        _G._pi_ctx_count = 0
+        -- CursorMoved autocmd: clamp cursor below context lines
+        vim.api.nvim_create_autocmd({'CursorMoved', 'CursorMovedI'}, {
+          buffer = 0,
+          callback = function()
+            local ctx_count = _G._pi_ctx_count or 0
+            if ctx_count == 0 then return end
+            local row = vim.fn.line('.')
+            if row <= ctx_count then
+              local line_count = vim.api.nvim_buf_line_count(0)
+              local target = math.min(ctx_count + 1, line_count)
+              pcall(vim.api.nvim_win_set_cursor, 0, {target, 0})
+            end
+          end
+        })
+      `, []]);
       // Disable features that block or are invisible in embedded mode
       const tmuxClipboard = this.settings.tmux.clipboard;
       const disabledKeysJson = JSON.stringify(this.settings.disabledKeys);
@@ -747,12 +776,12 @@ class NvimEditor extends CustomEditor {
     e.historyIndex = newIdx;
     const text = newIdx === -1 ? (this.historyDraft ?? "") : history[newIdx]!;
 
-    // Push to neovim
+    // Push to neovim (replace only user content, preserve context lines)
     const lines = text ? text.split("\n") : [""];
     try {
-      await this.nvim.request("nvim_buf_set_lines", [0, 0, -1, false, lines]);
-      // Move cursor to end of buffer
-      await this.nvim.request("nvim_win_set_cursor", [0, [lines.length, 0]]);
+      await this.nvim.request("nvim_buf_set_lines", [0, this.contextLineCount, -1, false, lines]);
+      // Move cursor to end of buffer (offset by context lines)
+      await this.nvim.request("nvim_win_set_cursor", [0, [this.contextLineCount + lines.length, 0]]);
       await this.waitForFlush(50);
       await this.sync();
     } catch {}
@@ -787,6 +816,13 @@ class NvimEditor extends CustomEditor {
     this.nCursorCol = 0;
     this.nMode = "n";
     this.peakHeight = 0;
+    this.contextLines = [];
+    this.contextLineCount = 0;
+    // Clear context extmarks and cursor clamp
+    this.nvim.request("nvim_exec_lua", [`
+      if _G._pi_ctx_ns then vim.api.nvim_buf_clear_namespace(0, _G._pi_ctx_ns, 0, -1) end
+      _G._pi_ctx_count = 0
+    `, []]).catch(() => {});
     this.pushToEditor();
 
     const onSubmit = (this as any).onSubmit as ((text: string) => void) | undefined;
@@ -806,8 +842,11 @@ class NvimEditor extends CustomEditor {
       ]);
 
       const prevMode = this.nMode;
-      this.nLines = lines.length > 0 ? lines : [""];
-      this.nCursorRow = cursor[0] ?? 1;
+      // Strip context lines from buffer — only expose user content
+      const allLines = lines.length > 0 ? lines : [""];
+      this.nLines = this.contextLineCount > 0 ? allLines.slice(this.contextLineCount) : allLines;
+      if (this.nLines.length === 0) this.nLines = [""];
+      this.nCursorRow = Math.max(1, (cursor[0] ?? 1) - this.contextLineCount);
       this.nCursorCol = cursor[1] ?? 0;
       this.nMode = mode ?? "n";
 
@@ -846,8 +885,10 @@ class NvimEditor extends CustomEditor {
             this.nvim.request("nvim_win_get_cursor", [0]) as Promise<number[]>,
             this.nvim.request("nvim_exec_lua", ["return vim.fn.mode(1)", []]) as Promise<string>,
           ]);
-          this.nLines = lines2.length > 0 ? lines2 : [""];
-          this.nCursorRow = cursor2[0] ?? 1;
+          const allLines2 = lines2.length > 0 ? lines2 : [""];
+          this.nLines = this.contextLineCount > 0 ? allLines2.slice(this.contextLineCount) : allLines2;
+          if (this.nLines.length === 0) this.nLines = [""];
+          this.nCursorRow = Math.max(1, (cursor2[0] ?? 1) - this.contextLineCount);
           this.nCursorCol = cursor2[1] ?? 0;
           this.nMode = mode2 ?? "n";
         } catch {}
@@ -968,10 +1009,71 @@ class NvimEditor extends CustomEditor {
     if (!text) this.peakHeight = 0;
     if (!this.ready) return;
     const lines = text ? text.split("\n") : [""];
-    this.nvim.request("nvim_buf_set_lines", [0, 0, -1, false, lines]).then(() => {
+    // Replace only user content (after context lines)
+    this.nvim.request("nvim_buf_set_lines", [0, this.contextLineCount, -1, false, lines]).then(() => {
       this.nLines = lines;
       this.pushToEditor();
     }).catch(() => {});
+  }
+
+  /** Inject context text into the top of the nvim buffer (hidden via extmarks). */
+  async setContext(text: string): Promise<void> {
+    if (!this.settings.copilotContext.enabled || !this.ready) return;
+
+    // Trim to maxLines
+    const maxLines = this.settings.copilotContext.maxLines;
+    let ctxLines = text.split("\n");
+    if (ctxLines.length > maxLines) {
+      ctxLines = ctxLines.slice(ctxLines.length - maxLines);
+    }
+
+    // Save current user content
+    const userLines = [...this.nLines];
+
+    this.contextLines = ctxLines;
+    this.contextLineCount = ctxLines.length;
+
+    try {
+      // Replace entire buffer: context + user content
+      const allLines = [...ctxLines, ...userLines];
+      await this.nvim.request("nvim_buf_set_lines", [0, 0, -1, false, allLines]);
+
+      // Hide context lines via extmarks + update cursor clamp
+      if (ctxLines.length > 0) {
+        await this.nvim.request("nvim_exec_lua", [`
+          local ns = _G._pi_ctx_ns
+          local count = ${ctxLines.length}
+          -- Clear old extmarks
+          vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+          -- Apply hidden highlight to each context line
+          for i = 0, count - 1 do
+            vim.api.nvim_buf_set_extmark(0, ns, i, 0, {
+              end_row = i + 1,
+              end_col = 0,
+              hl_group = 'PiContextHidden',
+              hl_eol = true,
+              priority = 10000,
+            })
+          end
+          -- Update context count for cursor clamp
+          _G._pi_ctx_count = count
+        `, []]);
+      }
+
+      // Move cursor to first user content line
+      const cursorRow = this.contextLineCount + Math.max(1, this.nCursorRow);
+      await this.nvim.request("nvim_win_set_cursor", [0, [cursorRow, this.nCursorCol]]);
+      await this.waitForFlush(50);
+      await this.sync();
+    } catch (err: any) {
+      // Revert on failure
+      this.contextLines = [];
+      this.contextLineCount = 0;
+      this.nvim.request("nvim_exec_lua", [`
+        if _G._pi_ctx_ns then vim.api.nvim_buf_clear_namespace(0, _G._pi_ctx_ns, 0, -1) end
+        _G._pi_ctx_count = 0
+      `, []]).catch(() => {});
+    }
   }
 
   /** Splice `content` into `rendered` at visible column `col`, replacing `contentWidth` visible characters. */
@@ -1401,10 +1503,34 @@ export default function (pi: ExtensionAPI) {
     if (ctx.hasUI) ctx.ui.setStatus("esc-hint", "\x1b[2m ESC ESC to cancel\x1b[0m");
   });
 
-  pi.on("agent_end", async (_event, ctx) => {
+  pi.on("agent_end", async (event, ctx) => {
     userBashRunning = false;
     if (ctx.hasUI) ctx.ui.setStatus("esc-hint", undefined);
     if (settings) updateTmuxPromptVars(settings.tmux.binary);
+
+    // Inject last assistant response as hidden context for Copilot
+    if (currentEditor && settings?.copilotContext.enabled) {
+      try {
+        const msgs = (event as any).messages ?? [];
+        const assistantText = msgs
+          .filter((m: any) => m.role === "assistant")
+          .map((m: any) => {
+            if (typeof m.content === "string") return m.content;
+            if (Array.isArray(m.content)) {
+              return m.content
+                .filter((c: any) => c.type === "text")
+                .map((c: any) => c.text)
+                .join("\n");
+            }
+            return "";
+          })
+          .join("\n")
+          .trim();
+        if (assistantText) {
+          await currentEditor.setContext(assistantText);
+        }
+      } catch {}
+    }
   });
 
   pi.on("session_start", async (_event, ctx) => {
@@ -1431,6 +1557,35 @@ export default function (pi: ExtensionAPI) {
       if (currentEditor) currentEditor.close();
       const editor = new NvimEditor(tui, theme, kb, colorizers, s, piCommands);
       currentEditor = editor;
+
+      // Restore context from session history for Copilot
+      if (s.copilotContext.enabled) {
+        setTimeout(async () => {
+          try {
+            const branch = ctx.sessionManager.getBranch();
+            let lastAssistantText = "";
+            for (let i = branch.length - 1; i >= 0; i--) {
+              const entry = branch[i] as any;
+              if (entry?.type === "message" && entry.message?.role === "assistant") {
+                const msg = entry.message;
+                if (typeof msg.content === "string") {
+                  lastAssistantText = msg.content;
+                } else if (Array.isArray(msg.content)) {
+                  lastAssistantText = msg.content
+                    .filter((c: any) => c.type === "text")
+                    .map((c: any) => c.text)
+                    .join("\n");
+                }
+                if (lastAssistantText.trim()) break;
+              }
+            }
+            if (lastAssistantText.trim()) {
+              await editor.setContext(lastAssistantText.trim());
+            }
+          } catch {}
+        }, 500);
+      }
+
       return editor;
     });
 

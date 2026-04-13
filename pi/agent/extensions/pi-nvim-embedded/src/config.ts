@@ -63,5 +63,10 @@ export async function loadSettings(): Promise<NvimEmbeddedSettings> {
     nvimInitLua: config.nvimInitLua ?? [],
     borderChar: "borderChar" in config ? (config.borderChar?.length ? config.borderChar[0]! : null) : "-",
     maxCompletionItems: config.maxCompletionItems ?? 5,
+    copilotContext: {
+      enabled: config.copilotContext?.enabled ?? true,
+      maxLines: config.copilotContext?.maxLines ?? 100,
+      filetype: config.copilotContext?.filetype ?? "markdown",
+    },
   };
 }

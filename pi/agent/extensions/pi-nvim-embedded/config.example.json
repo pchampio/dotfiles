@@ -26,5 +26,10 @@
   "piKeys": ["ctrl+d", "ctrl+o", "alt+up", "alt+return", "ctrl+t", "ctrl+\\"],
   "nvimInitLua": [],
   "borderChar": "-",
-  "maxCompletionItems": 5
+  "maxCompletionItems": 5,
+  "copilotContext": {
+    "enabled": true,
+    "maxLines": 100,
+    "filetype": "markdown"
+  }
 }
