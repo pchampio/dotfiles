@@ -137,7 +137,7 @@ function setupFooter(pi: ExtensionAPI, ctx: any, stats: ConversationStats, onUns
 				// Last response time
 				let timeStr = "";
 				if (stats.lastResponseMs != null) {
-					timeStr = theme.fg("dim", "⏱ ") + theme.fg("text", formatDuration(stats.lastResponseMs));
+					timeStr = theme.fg("warning", formatDuration(stats.lastResponseMs));
 				}
 
 				// Build left side: mode | provider/model | context | tokens | time | dir
