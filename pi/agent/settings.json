@@ -1,6 +1,6 @@
 {
   "diffColors": {
-    "shikiTheme": "github-light",
+    "shikiTheme": "solarized-light",
     "bgAdd": "#e6ffec",
     "bgDel": "#ffebe9",
     "bgAddHighlight": "#abf2bc",
