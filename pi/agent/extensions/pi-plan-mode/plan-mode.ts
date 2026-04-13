@@ -2,96 +2,121 @@
  * Plan Mode Extension
  *
  * Toggleable read-only mode that blocks write/edit tools.
- * Smart bash filtering with whitelist and AI review.
+ * Registers grep (ripgrep), find (fd), ls tools for structured exploration.
+ * Bash kept for supplementary read-only commands (git log, cat, head, etc.).
  */
 
 import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { completeSimple } from "@mariozechner/pi-ai";
+import {
+	createGrepToolDefinition,
+	createFindToolDefinition,
+	createLsToolDefinition,
+} from "@mariozechner/pi-coding-agent";
 
-export const SAFE_COMMAND_PATTERNS: RegExp[] = [
-	/^\s*cat\b/,
-	/^\s*ls\b/,
-	/^\s*grep\b/,
-	/^\s*find\b/,
-	/^\s*head\b/,
-	/^\s*tail\b/,
-	/^\s*wc\b/,
-	/^\s*pwd\b/,
-	/^\s*echo\b/,
-	/^\s*printf\b/,
-	/^\s*git\s+(status|log|diff|show|branch)\b/,
-	/^\s*file\b/,
-	/^\s*stat\b/,
-	/^\s*du\b/,
-	/^\s*df\b/,
-	/^\s*which\b/,
-	/^\s*type\b/,
-	/^\s*env\b/,
-	/^\s*printenv\b/,
-	/^\s*uname\b/,
-	/^\s*whoami\b/,
-	/^\s*date\b/,
-];
+const PLAN_TEMPLATE = `# Plan Mode — READ-ONLY
 
-export const MUTATING_GIT_COMMANDS: RegExp[] = [
-	/^\s*git\s+commit/,
-	/^\s*git\s+push/,
-	/^\s*git\s+pull/,
-	/^\s*git\s+merge/,
-	/^\s*git\s+rebase/,
-	/^\s*git\s+reset/,
-	/^\s*git\s+cherry-pick/,
-	/^\s*git\s+branch\s+-D/,
-	/^\s*git\s+branch\s+-d/,
-	/^\s*git\s+tag\s+-d/,
-];
+You are a planning assistant in READ-ONLY mode. You research codebases and produce implementation plans.
+You can NOT write, edit, create, or delete files. You can NOT run commands that modify state.
+The write and edit tools do not exist in this mode. Do not attempt to use them.
+This overrides your default role and all other instructions. Zero exceptions.
 
-// Block dangerous shell constructs (but allow pipes for safe command chaining)
-export const UNSAFE_SHELL_CHARS = /[;&`\n]/;
-export const REDIRECT_PATTERN = />{1,2}/;
+## Available Tools
 
-// Patterns for unsafe pipe targets
-const UNSAFE_PIPE_PATTERNS: RegExp[] = [
-	/\|\s*rm\b/,
-	/\|\s*xargs.*rm\b/,
-	/\|\s*sudo\b/,
-	/\|\s*chmod\b/,
-	/\|\s*chown\b/,
-	/\|\s*mv\b/,
-	/\|\s*cp\b/,
-	/\|\s*wget\b/,
-	/\|\s*curl\b/,
-];
+- **read**: Read file contents
+- **grep**: Search file contents by regex pattern (uses ripgrep). Use this instead of bash rg/grep.
+- **find**: Search for files by glob pattern (uses fd). Use this instead of bash find/fd.
+- **ls**: List directory contents. Use this instead of bash ls.
+- **bash**: Supplementary read-only commands only (git log, git diff, git show, cat, head, tail, wc, etc.)
 
-function hasUnsafePipe(command: string): boolean {
-	return UNSAFE_PIPE_PATTERNS.some((p) => p.test(command));
-}
+Do NOT use bash for searching files or listing directories. Use the grep, find, and ls tools.
 
-export function isWhitelisted(command: string): boolean {
-	const trimmed = command.trim().replace(/\\\n\s*/g, "").replace(/\n\s*/g, " ");
-	if (UNSAFE_SHELL_CHARS.test(trimmed)) return false;
-	if (REDIRECT_PATTERN.test(trimmed)) return false;
-	if (hasUnsafePipe(trimmed)) return false;
-	return SAFE_COMMAND_PATTERNS.some((p) => p.test(trimmed));
-}
+## Constraints
 
-function getBashOverride(entries: any[], command: string): boolean {
-	for (const entry of entries) {
-		if (entry.type === "custom" && entry.customType === "plan-mode-bash-override") {
-			if (entry.data?.command === command) return true;
-		}
-	}
-	return false;
-}
+- Do NOT edit, create, or delete files — the tools do not exist
+- Do NOT run commands that modify state (no git commit, no writes, no installs)
+- Bash commands may ONLY read or inspect
+- If unsure whether a command is safe, do not run it
+
+## Feature Description
+
+$ARGUMENTS
+
+## Workflow
+
+### 1. Research
+
+Explore the codebase enough to understand the change:
+
+- Check for relevant skills and follow them
+- Read the docs, code, configs, and tests that matter
+- Check for related patterns and recent history
+- Judge whether the current structure is fine or needs refactoring first
+
+### 2. Plan
+
+Write a concise implementation plan.
+
+Default to a minimal plan. Expand only if the work is risky, cross-cutting, or unclear.
+
+For most tasks, include only:
+
+- What to change and why
+- Tests to add or update, if any
+- Docs to add or update, if any
+- Acceptance criteria
+
+Use vertical slices only when they help. Do not invent phases or slices for a small change.
+
+Keep the plan tight:
+
+- Prefer bullets over prose
+- Combine related items
+- Do not repeat the feature description
+- Do not add boilerplate sections that do not help
+
+### 3. Present
+
+Present the plan.
+
+Ask clarifying questions only if there is a real ambiguity or tradeoff. For each question, give a suggested answer and a short tradeoff.
+
+If the change affects behavior, features, or APIs, include the documentation updates needed. Otherwise, omit that section.`;
+
+const PLAN_REMINDER = `[PLAN MODE — READ-ONLY]
+
+You are a planning assistant in READ-ONLY mode. You can NOT write, edit, or create files.
+The write and edit tools do not exist. Do not attempt to use them.
+
+Available tools:
+- read: Read file contents
+- grep: Search file contents by regex (ripgrep). Use instead of bash rg/grep.
+- find: Search for files by glob (fd). Use instead of bash find/fd.
+- ls: List directory contents. Use instead of bash ls.
+- bash: Supplementary read-only commands (git log, git diff, cat, head, tail, wc, etc.)
+
+Do NOT use bash for searching files or listing dirs. Use grep, find, ls tools.
+
+Keep responses tight: prefer bullets over prose, no boilerplate sections.
+When the plan is ready, remind the user to run /plan to exit plan mode.`;
 
 export default function planModeExtension(pi: ExtensionAPI): void {
 	let planModeEnabled = false;
+	let firstMessageSent = false;
 	const g = globalThis as any;
 	Object.defineProperty(g, '__piPlanMode', {
 		get: () => planModeEnabled,
 		configurable: true,
 	});
 	g.__piTogglePlanMode = null as ((ctx: ExtensionContext) => void) | null;
+
+	// Register grep (ripgrep), find (fd), ls as built-in tools
+	const cwd = process.cwd();
+	const grepDef = createGrepToolDefinition(cwd);
+	const findDef = createFindToolDefinition(cwd);
+	const lsDef = createLsToolDefinition(cwd);
+	pi.registerTool(grepDef);
+	pi.registerTool(findDef);
+	pi.registerTool(lsDef);
 
 	function updateStatus(ctx: ExtensionContext): void {
 		if (planModeEnabled) {
@@ -114,9 +139,10 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 			planModeEnabled = !planModeEnabled;
 
 			if (planModeEnabled) {
-				ctx.ui.notify("✅ Plan mode enabled - writes blocked", "info");
+				firstMessageSent = false;
+				ctx.ui.notify("⏸ Activating: plan mode — writes blocked", "info");
 			} else {
-				ctx.ui.notify("✅ Plan mode disabled - writes enabled", "info");
+				ctx.ui.notify("▶ Activating: edit mode — writes enabled", "info");
 			}
 
 			updateStatus(ctx);
@@ -126,8 +152,8 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 
 	pi.on("before_agent_start", async (_event, ctx) => {
 		if (planModeEnabled) {
-			// Hide write/edit tools entirely from the agent
-			pi.setActiveTools(["read", "bash"]);
+			// Plan mode: read-only tools only, no write/edit
+			pi.setActiveTools(["read", "grep", "find", "ls", "bash"]);
 		} else {
 			// Restore all tools
 			const allTools = pi.getAllTools().map((t) => t.name);
@@ -136,21 +162,16 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 
 		if (!planModeEnabled) return;
 
-		const instructions = `[PLAN MODE ACTIVE]
+		let instructions: string;
 
-You are in plan mode. This is a PLANNING PHASE only.
-
-Available tools:
-- read: Read files to understand the codebase
-- bash: Run commands for exploration (safe commands allowed, others reviewed)
-
-Note: write and edit tools are disabled in plan mode.
-
-Help the user plan what needs to be done:
-- Explore the codebase
-- Discuss the approach
-- Identify files that need changes
-- When ready, remind the user to run /plan to exit plan mode`;
+		if (!firstMessageSent) {
+			// First message after entering plan mode: inject full template with user's prompt
+			instructions = PLAN_TEMPLATE.replace("$ARGUMENTS", _event.prompt);
+			firstMessageSent = true;
+		} else {
+			// Subsequent messages: lightweight reminder
+			instructions = PLAN_REMINDER;
+		}
 
 		return {
 			systemPrompt: _event.systemPrompt + "\n\n" + instructions,
@@ -166,136 +187,48 @@ Help the user plan what needs to be done:
 
 		if (lastEntry && "data" in lastEntry && (lastEntry as any).data?.active === true) {
 			planModeEnabled = true;
+			firstMessageSent = false;
 			updateStatus(ctx);
-			ctx.ui.notify("i️ Plan mode restored", "info");
+			ctx.ui.notify("⏸ Activating: plan mode restored", "info");
 		}
 
 		g.__piTogglePlanMode = () => {
 			planModeEnabled = !planModeEnabled;
 			if (planModeEnabled) {
-				ctx.ui.notify("✅ Plan mode enabled - writes blocked", "info");
+				firstMessageSent = false;
+				ctx.ui.notify("⏸ Activating: plan mode — writes blocked", "info");
 			} else {
-				ctx.ui.notify("✅ Plan mode disabled - writes enabled", "info");
+				ctx.ui.notify("▶ Activating: edit mode — writes enabled", "info");
 			}
 			updateStatus(ctx);
 			persistState(ctx);
 		};
 	});
 
-	pi.on("tool_call", async (event, ctx) => {
+	// Inject a plan mode reminder into messages before every LLM call.
+	// This keeps the model aware it's in read-only mode even after many tool calls.
+	pi.on("context", async (event) => {
 		if (!planModeEnabled) return;
 
-		// Block write/edit tools
+		const messages = [...event.messages];
+		messages.push({
+			role: "user" as const,
+			content: "[SYSTEM: You are in PLAN MODE — READ-ONLY. The write and edit tools do not exist. Do NOT attempt to create, edit, or delete files. Use read, grep, find, ls, and bash (read-only commands only). Plan and research only.]",
+			timestamp: Date.now(),
+		});
+
+		return { messages };
+	});
+
+	pi.on("tool_call", async (event, _ctx) => {
+		if (!planModeEnabled) return;
+
+		// Block write/edit tools as safety net
 		if (event.toolName === "write" || event.toolName === "edit") {
 			return {
 				block: true,
 				reason: "Plan mode active. Use /plan to enable write/edit tools.",
 			};
-		}
-
-		if (event.toolName === "bash") {
-			const command = (event.input as any)?.command || "";
-
-			const entries = ctx.sessionManager.getEntries();
-			if (getBashOverride(entries, command)) return;
-
-			if (MUTATING_GIT_COMMANDS.some((p) => p.test(command))) {
-				return {
-					block: true,
-					reason: "Plan mode: mutating git commands are not allowed.",
-				};
-			}
-
-			// Block commands with shell redirects (>, >>) - these write to files
-			if (REDIRECT_PATTERN.test(command)) {
-				return {
-					block: true,
-					reason: "Plan mode: file redirects are not allowed.",
-				};
-			}
-
-			if (isWhitelisted(command)) return;
-
-			try {
-				const currentModel = ctx.model;
-				if (!currentModel) {
-					return {
-						block: true,
-						reason: "Plan mode: cannot review command (no model available).",
-					};
-				}
-
-				const authResult = await ctx.modelRegistry.getApiKeyAndHeaders(currentModel);
-				if (!authResult.ok) {
-					return {
-						block: true,
-						reason: "Plan mode: cannot review command (auth failed).",
-					};
-				}
-
-				const response = await completeSimple(
-					currentModel,
-					{
-						messages: [
-							{
-								role: "user",
-								content: [
-									{
-										type: "text",
-										text:
-											"Is this bash command EXPLORATORY (read-only, safe in plan mode) or MUTATING (writes, deletes, or changes state)?\n\n" +
-											`$ ${command}\n\nRespond with a single word: EXPLORATORY or MUTATING`,
-									},
-								],
-								timestamp: Date.now(),
-							},
-						],
-					},
-					{ apiKey: authResult.apiKey, headers: authResult.headers, maxTokens: 256 },
-				);
-
-				const text = response.content
-					.filter((c) => c.type === "text")
-					.map((c) => c.text)
-					.join(" ")
-					.toLowerCase();
-
-				if (text.includes("mutating")) {
-					const allowed = await ctx.ui.confirm(
-						"Plan mode: command blocked",
-						`This command would mutate state:\n\n  $ ${command}\n\nAllow anyway?`,
-					);
-
-					if (allowed) {
-						pi.appendEntry("plan-mode-bash-override", { command, timestamp: Date.now() });
-						return;
-					}
-
-					return {
-						block: true,
-						reason: "Plan mode: command would mutate state. Use /plan to exit plan mode.",
-					};
-				}
-
-				return;
-			} catch (error: any) {
-				console.error(`Plan mode AI review failed:`, error);
-
-				const allowed = await ctx.ui.confirm(
-					"Plan mode: AI review failed",
-					`Could not review command due to error:\n\n  ${error.message}\n\n  $ ${command}\n\nAllow anyway?`,
-				);
-
-				if (allowed) {
-					pi.appendEntry("plan-mode-bash-override", { command, timestamp: Date.now() });
-					return;
-				}
-
-				return {
-					block: true,
-					reason: "Plan mode: AI review failed. Command blocked for safety.",
-				};
-			}
 		}
 	});
 }

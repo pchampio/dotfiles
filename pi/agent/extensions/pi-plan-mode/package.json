@@ -30,7 +30,6 @@
     "prepublishOnly": "npm run typecheck"
   },
   "peerDependencies": {
-    "@mariozechner/pi-ai": "*",
     "@mariozechner/pi-coding-agent": "^0.63.0"
   },
   "devDependencies": {

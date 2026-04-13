@@ -26,5 +26,6 @@
     "normal": "\u001b[2 q"
   },
   "nvimInitLua": [],
-  "borderChar": "-"
+  "borderChar": "-",
+  "maxCompletionItems": 5
 }

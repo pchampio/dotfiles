@@ -1,6 +1,17 @@
 [
   {
     "kind": "resolve",
+    "cacheKey": "pi-coding-agent::prompt templates plan mode",
+    "objectKey": "aa2d2c528036a62680e71ed2",
+    "libraryName": "pi-coding-agent",
+    "normalizedLibraryName": "pi-coding-agent",
+    "query": "prompt templates plan mode",
+    "createdAt": "2026-04-10T21:50:28.814Z",
+    "expiresAt": "2026-04-17T21:50:28.814Z",
+    "resultCount": 5
+  },
+  {
+    "kind": "resolve",
     "cacheKey": "pi::color scheme theme customization",
     "objectKey": "137c99d90ad345888bcb6e1e",
     "libraryName": "pi",

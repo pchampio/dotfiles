@@ -2,7 +2,16 @@
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/2e6541ae-974a-4465-ab62-e47595849136" width="80%"/>
+
 </p>
+
+<details>
+  <summary>👾 Click to see more GIFs</summary>
+  
+![2026-04-10 11-20-43](https://github.com/user-attachments/assets/14d7e323-78fa-480b-8d2c-5ca4e210128a)
+
+
+</details>
 
 
 Embedded neovim editor extension for [pi](https://github.com/badlogic/pi-mono) -- full vim keybindings in the pi coding agent prompt.

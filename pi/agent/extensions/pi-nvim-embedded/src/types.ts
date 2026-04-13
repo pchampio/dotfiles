@@ -46,6 +46,9 @@ export interface NvimEmbeddedConfigFile {
 
   /** Character to replace ─ with on border lines. If unset, no replacement is done. */
   borderChar?: string;
+
+  /** Maximum number of items visible in the completion popup menu (default: 5) */
+  maxCompletionItems?: number;
 }
 
 /** Resolved settings with all fields guaranteed present. */
@@ -74,4 +77,6 @@ export interface NvimEmbeddedSettings {
 
   nvimInitLua: string[];
   borderChar: string | null;
+
+  maxCompletionItems: number;
 }

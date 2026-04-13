@@ -80,6 +80,9 @@ class NvimEditor extends CustomEditor {
   private msgTimer: ReturnType<typeof setTimeout> | null = null;
   private static readonly MSG_TIMEOUT = 4000;
 
+  // Peak render height: prevents editor from shrinking after completion popup closes
+  private peakHeight = 0;
+
   // Flush synchronization: resolves when neovim finishes processing input.
   private flushResolve: (() => void) | null = null;
 
@@ -770,6 +773,7 @@ class NvimEditor extends CustomEditor {
     this.nCursorRow = 1;
     this.nCursorCol = 0;
     this.nMode = "n";
+    this.peakHeight = 0;
     this.pushToEditor();
 
     const onSubmit = (this as any).onSubmit as ((text: string) => void) | undefined;
@@ -947,6 +951,8 @@ class NvimEditor extends CustomEditor {
 
   override setText(text: string): void {
     super.setText(text);
+    // Reset peak height when editor is cleared (e.g. after submission)
+    if (!text) this.peakHeight = 0;
     if (!this.ready) return;
     const lines = text ? text.split("\n") : [""];
     this.nvim.request("nvim_buf_set_lines", [0, 0, -1, false, lines]).then(() => {
@@ -1111,7 +1117,7 @@ class NvimEditor extends CustomEditor {
 
     // Render popup menu overlay
     if (this.pmenuVisible && this.pmenuItems.length > 0) {
-      const MAX_VISIBLE = 10;
+      const MAX_VISIBLE = this.settings.maxCompletionItems;
       const items = this.pmenuItems;
       const sel = this.pmenuSelected;
 
@@ -1222,6 +1228,20 @@ class NvimEditor extends CustomEditor {
       }
     } else if (visibleWidth(lines[last]!) >= visibleWidth(rawLabel)) {
       lines[last] = truncateToWidth(lines[last]!, width - visibleWidth(rawLabel), "") + label;
+    }
+
+    // Maintain peak height: prevent editor from shrinking after completion popup closes.
+    // When the popup adds extra lines, peakHeight grows. When it hides, we pad to keep
+    // the editor at the same height so the UI doesn't jump.
+    if (lines.length > this.peakHeight) {
+      this.peakHeight = lines.length;
+    } else if (lines.length < this.peakHeight) {
+      const bottomBorder = lines.length - 1;
+      const padCount = this.peakHeight - lines.length;
+      const blankLine = " ".repeat(width);
+      for (let p = 0; p < padCount; p++) {
+        lines.splice(bottomBorder, 0, blankLine);
+      }
     }
 
     // Always re-assert cursor shape — pi may reset it between renders

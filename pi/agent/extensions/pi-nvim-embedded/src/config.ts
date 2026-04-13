@@ -63,5 +63,6 @@ export async function loadSettings(): Promise<NvimEmbeddedSettings> {
     },
     nvimInitLua: config.nvimInitLua ?? [],
     borderChar: "borderChar" in config ? (config.borderChar?.length ? config.borderChar[0]! : null) : "-",
+    maxCompletionItems: config.maxCompletionItems ?? 5,
   };
 }

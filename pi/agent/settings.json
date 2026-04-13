@@ -1,20 +1,20 @@
 {
   "diffColors": {
-    "shikiTheme":     "github-light",
-    "bgAdd":          "#e6ffec",
-    "bgDel":          "#ffebe9",
+    "shikiTheme": "github-light",
+    "bgAdd": "#e6ffec",
+    "bgDel": "#ffebe9",
     "bgAddHighlight": "#abf2bc",
     "bgDelHighlight": "#ffc1ba",
-    "bgGutterAdd":    "#ccffd8",
-    "bgGutterDel":    "#ffd7d5",
-    "bgEmpty":        "#f0e8d4",
-    "fgAdd":          "#1a7f37",
-    "fgDel":          "#cf222e",
-    "fgDim":          "#909995",
-    "fgLnum":         "#b2b3a5",
-    "fgRule":         "#d5cdb6",
-    "fgStripe":       "#ddd5be",
-    "fgSafeMuted":    "#53676d"
+    "bgGutterAdd": "#ccffd8",
+    "bgGutterDel": "#ffd7d5",
+    "bgEmpty": "#f0e8d4",
+    "fgAdd": "#1a7f37",
+    "fgDel": "#cf222e",
+    "fgDim": "#909995",
+    "fgLnum": "#b2b3a5",
+    "fgRule": "#d5cdb6",
+    "fgStripe": "#ddd5be",
+    "fgSafeMuted": "#53676d"
   },
   "lastChangelogVersion": "0.66.1",
   "defaultProvider": "github-copilot",
@@ -24,7 +24,8 @@
   "showHardwareCursor": true,
   "packages": [
     "extensions/pi-nvim-embedded",
-    "extensions/pi-diff"
+    "extensions/pi-diff",
+    "npm:pi-annotate"
   ],
   "extensions_source": [
     "https://github.com/qmx/pi-plan-mode",
@@ -36,7 +37,6 @@
     "+extensions/footer.ts",
     "+extensions/pi-rewind-hook/index.ts",
     "+extensions/pi-plan-mode/plan-mode.ts",
-    "+extensions/usage-extension/index.ts",
-    "+extensions/context7/index.ts"
+    "+extensions/usage-extension/index.ts"
   ]
 }
