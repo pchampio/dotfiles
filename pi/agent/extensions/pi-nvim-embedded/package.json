@@ -32,7 +32,7 @@
     "@mariozechner/pi-tui": "*"
   },
   "devDependencies": {
-    "@mariozechner/pi-coding-agent": "^0.63.0",
+    "@mariozechner/pi-coding-agent": "^0.63.0"
   },
   "license": "MIT"
 }
