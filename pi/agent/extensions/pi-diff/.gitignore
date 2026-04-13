@@ -16,3 +16,7 @@ pnpm-debug.log*
 !.env.example
 !biome.json
 .DS_Store
+.old
+media/
+biome.json
+LICENSE
