@@ -17,8 +17,8 @@
     "fgSafeMuted": "#53676d"
   },
   "lastChangelogVersion": "0.66.1",
-  "defaultProvider": "github-copilot",
-  "defaultModel": "claude-opus-4.6",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-6",
   "theme": "selenized-light",
   "defaultThinkingLevel": "off",
   "showHardwareCursor": true,
@@ -37,6 +37,7 @@
     "+extensions/footer.ts",
     "+extensions/pi-rewind-hook/index.ts",
     "+extensions/pi-plan-mode/plan-mode.ts",
-    "+extensions/usage-extension/index.ts"
+    "+extensions/usage-extension/index.ts",
+    "+extensions/path-guard.ts"
   ]
 }
