@@ -40,6 +40,8 @@ type EditorInternals = {
 
 // ── NvimEditor ────────────────────────────────────────────────────────
 
+let userBashRunning = false;
+
 class NvimEditor extends CustomEditor {
   private nvim = new NvimClient();
   private ready = false;
@@ -79,6 +81,9 @@ class NvimEditor extends CustomEditor {
   private msgKind = "";
   private msgTimer: ReturnType<typeof setTimeout> | null = null;
   private static readonly MSG_TIMEOUT = 4000;
+
+  // Peak render height: prevents editor from shrinking after completion popup closes
+  private peakHeight = 0;
 
   // Flush synchronization: resolves when neovim finishes processing input.
   private flushResolve: (() => void) | null = null;
@@ -501,17 +506,19 @@ class NvimEditor extends CustomEditor {
   }
 
   // Keys bypassed to pi (used by pump + batch check)
-  private static readonly PI_KEYS = ["ctrl+d", "ctrl+o", "alt+up", "alt+return"];
+  private get piKeys(): string[] {
+    return this.settings.piKeys;
+  }
 
-  /** Merged tmux keys from settings (paneKeys + extraKeys). */
+  /** Merged tmux keys from settings (paneKeys). */
   private get tmuxKeys(): Record<string, string[]> {
-    return { ...this.settings.tmux.paneKeys, ...this.settings.tmux.extraKeys };
+    return { ...this.settings.tmux.paneKeys };
   }
 
   /** Process the input queue serially — each key waits for neovim to finish. */
   private async pump(): Promise<void> {
     this.busy = true;
-    const PI_KEYS = NvimEditor.PI_KEYS;
+    const PI_KEYS = this.piKeys;
     const TMUX_KEYS = this.tmuxKeys;
     try {
       while (this.queue.length > 0) {
@@ -578,8 +585,17 @@ class NvimEditor extends CustomEditor {
           continue;
         }
 
-        // Ctrl+C in pure normal mode → pi (abort); otherwise → neovim (cancel pending op)
+        // Ctrl+C in pure normal mode:
+        // 1. Call onEscape() to abort user bash / agent (if running)
+        // Ctrl+C in pure normal mode:
+        // - If user bash is running, call onEscape to abort it.
+        // - Always call super.handleInput for the "clear" action (double Ctrl+C exit).
+        // In other modes → neovim handles it (cancel pending op).
         if (matchesKey(data, "ctrl+c") && this.isPureNormal()) {
+          if (this.onEscape && userBashRunning) {
+            this.onEscape();
+            userBashRunning = false;
+          }
           super.handleInput(data);
           continue;
         }
@@ -770,6 +786,7 @@ class NvimEditor extends CustomEditor {
     this.nCursorRow = 1;
     this.nCursorCol = 0;
     this.nMode = "n";
+    this.peakHeight = 0;
     this.pushToEditor();
 
     const onSubmit = (this as any).onSubmit as ((text: string) => void) | undefined;
@@ -947,6 +964,8 @@ class NvimEditor extends CustomEditor {
 
   override setText(text: string): void {
     super.setText(text);
+    // Reset peak height when editor is cleared (e.g. after submission)
+    if (!text) this.peakHeight = 0;
     if (!this.ready) return;
     const lines = text ? text.split("\n") : [""];
     this.nvim.request("nvim_buf_set_lines", [0, 0, -1, false, lines]).then(() => {
@@ -1015,6 +1034,24 @@ class NvimEditor extends CustomEditor {
         .replace(/(\x1b_pi:c\x07)\x1b\[7m(.)\x1b\[27m/g, "$1$2");
     }
 
+    // Find cursor's actual render row from pi's APC cursor marker.
+    // When pi truncates content ("↑ N more" / "↓ N more" indicators),
+    // buffer rows no longer map 1:1 to render line indices.
+    let cursorRenderRow = this.nCursorRow;
+    for (let i = 1; i < lines.length - 1; i++) {
+      if (lines[i]!.includes("\x1b_pi:c\x07")) {
+        cursorRenderRow = i;
+        break;
+      }
+    }
+    const rowOffset = cursorRenderRow - this.nCursorRow;
+
+    // Detect truncation indicator lines so overlays skip them
+    const hasTopTrunc = lines.length > 2 && /↑/.test(lines[1]!);
+    const hasBottomTrunc = lines.length > 2 && /↓/.test(lines[lines.length - 2]!);
+    const contentFirstIdx = hasTopTrunc ? 2 : 1;
+    const contentLastIdx = hasBottomTrunc ? lines.length - 3 : lines.length - 2;
+
     // Apply visual selection highlight
     const mode = this.getMode();
     if (mode === "visual" && this.vStartRow > 0) {
@@ -1022,8 +1059,8 @@ class NvimEditor extends CustomEditor {
       const isBlock = this.nMode === "\x16" || this.nMode === "\x16s";
       // Content lines are between the border lines (index 1 to lines.length-2)
       for (let bufRow = this.vStartRow; bufRow <= this.vEndRow && bufRow <= this.nLines.length; bufRow++) {
-        const renderIdx = bufRow; // border top is line 0, content starts at 1
-        if (renderIdx <= 0 || renderIdx >= lines.length - 1) continue;
+        const renderIdx = bufRow + rowOffset;
+        if (renderIdx < contentFirstIdx || renderIdx > contentLastIdx) continue;
 
         const lineText = this.nLines[bufRow - 1] ?? "";
         let selStart: number, selEnd: number;
@@ -1088,7 +1125,7 @@ class NvimEditor extends CustomEditor {
       const ghostOn = "\x1b[2;3m";
       const ghostOff = "\x1b[22;23m";
       const padX = this.getPaddingX();
-      const cursorRenderIdx = this.nCursorRow;
+      const cursorRenderIdx = cursorRenderRow;
 
       if (cursorRenderIdx > 0 && cursorRenderIdx < lines.length - 1) {
         const col = padX + this.nCursorCol;
@@ -1111,7 +1148,7 @@ class NvimEditor extends CustomEditor {
 
     // Render popup menu overlay
     if (this.pmenuVisible && this.pmenuItems.length > 0) {
-      const MAX_VISIBLE = 10;
+      const MAX_VISIBLE = this.settings.maxCompletionItems;
       const items = this.pmenuItems;
       const sel = this.pmenuSelected;
 
@@ -1140,8 +1177,8 @@ class NvimEditor extends CustomEditor {
       );
       const popupWidth = popupInnerWidth;
 
-      // Popup position: below cursor row. Content starts at render index 1 (after top border).
-      const popupStartRow = this.nCursorRow + 1;
+      // Popup position: below cursor row, using actual render position.
+      const popupStartRow = cursorRenderRow + 1;
       const popupCol = Math.min(this.nCursorCol + 1, width - popupWidth - 1);
 
       // Inject blank lines before the bottom border if the popup extends past content
@@ -1224,6 +1261,20 @@ class NvimEditor extends CustomEditor {
       lines[last] = truncateToWidth(lines[last]!, width - visibleWidth(rawLabel), "") + label;
     }
 
+    // Maintain peak height: prevent editor from shrinking after completion popup closes.
+    // When the popup adds extra lines, peakHeight grows. When it hides, we pad to keep
+    // the editor at the same height so the UI doesn't jump.
+    if (lines.length > this.peakHeight) {
+      this.peakHeight = lines.length;
+    } else if (lines.length < this.peakHeight) {
+      const bottomBorder = lines.length - 1;
+      const padCount = this.peakHeight - lines.length;
+      const blankLine = " ".repeat(width);
+      for (let p = 0; p < padCount; p++) {
+        lines.splice(bottomBorder, 0, blankLine);
+      }
+    }
+
     // Always re-assert cursor shape — pi may reset it between renders
     const shape = mode === "insert" ? cursorInsert : cursorNormal;
     currentCursorShape = shape;
@@ -1274,6 +1325,7 @@ function collectPiCommands(pi: ExtensionAPI): { name: string; description: strin
 
 export default function (pi: ExtensionAPI) {
   let inputUnsub: (() => void) | null = null;
+
   let currentEditor: NvimEditor | null = null;
   let lastEscTime = 0;
   let pendingEscTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1340,11 +1392,17 @@ export default function (pi: ExtensionAPI) {
     if (cancelled) ctx.ui.notify("All operations cancelled (ESC ESC)", "warning");
   }
 
+  pi.on("user_bash", async () => {
+    userBashRunning = true;
+  });
+
   pi.on("agent_start", async (_event, ctx) => {
+    userBashRunning = false;
     if (ctx.hasUI) ctx.ui.setStatus("esc-hint", "\x1b[2m ESC ESC to cancel\x1b[0m");
   });
 
   pi.on("agent_end", async (_event, ctx) => {
+    userBashRunning = false;
     if (ctx.hasUI) ctx.ui.setStatus("esc-hint", undefined);
     if (settings) updateTmuxPromptVars(settings.tmux.binary);
   });
@@ -1402,6 +1460,15 @@ export default function (pi: ExtensionAPI) {
       if (data === "\x1b[O") {
         process.stdout.write("\x1b[0 q\x1b[?25l"); // reset shape + hide
         return { consume: true };
+      }
+
+      // Ctrl+C: cancel agent/subagent operations if any are running,
+      // then fall through to the editor's normal handling.
+      if (matchesKey(data, "ctrl+c")) {
+        const isIdle = ctx.isIdle();
+        const hasOps = hasRunningOperations();
+        if (!isIdle || hasOps) cancelAll(ctx);
+        return undefined;
       }
 
       // ESC double-tap cancel (only in pure normal mode while something runs)

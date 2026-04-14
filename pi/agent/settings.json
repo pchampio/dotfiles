@@ -1,6 +1,6 @@
 {
   "diffColors": {
-    "shikiTheme": "github-light",
+    "shikiTheme": "solarized-light",
     "bgAdd": "#e6ffec",
     "bgDel": "#ffebe9",
     "bgAddHighlight": "#abf2bc",
@@ -16,27 +16,33 @@
     "fgStripe": "#ddd5be",
     "fgSafeMuted": "#53676d"
   },
-  "lastChangelogVersion": "0.67.1",
+  "lastChangelogVersion": "0.66.1",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-4-6",
   "theme": "selenized-light",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "showHardwareCursor": true,
   "packages": [
     "extensions/pi-nvim-embedded",
-    "extensions/pi-diff"
+    "extensions/pi-diff",
+    "extensions/pi-bash-live-view",
+    "npm:pi-annotate"
   ],
   "extensions_source": [
     "https://github.com/qmx/pi-plan-mode",
     "https://github.com/heyhuynhgiabuu/pi-diff/",
     "https://github.com/nicobailon/pi-rewind-hook",
-    "https://github.com/tmustier/pi-extensions/blob/main/usage-extension/index.ts"
+    "https://github.com/tmustier/pi-extensions/blob/main/usage-extension/index.ts",
+    "https://github.com/Krystofee/true-queue",
+    "https://github.com/lucasmeijer/pi-bash-live-view"
   ],
   "extensions": [
     "+extensions/footer.ts",
     "+extensions/pi-rewind-hook/index.ts",
     "+extensions/pi-plan-mode/plan-mode.ts",
     "+extensions/usage-extension/index.ts",
-    "+extensions/context7/index.ts"
-  ]
+    "+extensions/path-guard.ts",
+    "+extensions/true-queue.ts"
+  ],
+  "hideThinkingBlock": false
 }

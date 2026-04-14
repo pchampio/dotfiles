@@ -29,8 +29,6 @@ export interface NvimEmbeddedConfigFile {
     binary?: string;
     /** Tmux pane navigation keybindings. Set to {} to disable. */
     paneKeys?: Record<string, string[]>;
-    /** Extra tmux keys, e.g. {"alt+k": ["copy-mode", "-H"]} */
-    extraKeys?: Record<string, string[]>;
   };
 
   /** Cursor shape settings */
@@ -44,8 +42,14 @@ export interface NvimEmbeddedConfigFile {
   /** Extra nvim init commands run after boot (Lua strings executed via nvim_exec_lua) */
   nvimInitLua?: string[];
 
+  /** Keys that bypass neovim and are forwarded directly to pi (default: ["ctrl+d", "ctrl+o", "alt+up", "alt+return", "ctrl+t", "ctrl+\\"]) */
+  piKeys?: string[];
+
   /** Character to replace ─ with on border lines. If unset, no replacement is done. */
   borderChar?: string;
+
+  /** Maximum number of items visible in the completion popup menu (default: 5) */
+  maxCompletionItems?: number;
 }
 
 /** Resolved settings with all fields guaranteed present. */
@@ -64,7 +68,6 @@ export interface NvimEmbeddedSettings {
     clipboard: boolean;
     binary: string;
     paneKeys: Record<string, string[]>;
-    extraKeys: Record<string, string[]>;
   };
 
   cursor: {
@@ -73,5 +76,9 @@ export interface NvimEmbeddedSettings {
   };
 
   nvimInitLua: string[];
+  piKeys: string[];
+
   borderChar: string | null;
+
+  maxCompletionItems: number;
 }
