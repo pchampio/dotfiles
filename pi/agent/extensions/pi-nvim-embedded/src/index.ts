@@ -82,8 +82,16 @@ class NvimEditor extends CustomEditor {
   private msgTimer: ReturnType<typeof setTimeout> | null = null;
   private static readonly MSG_TIMEOUT = 4000;
 
+  // Mode tracking from redraw notifications (no RPC needed)
+  private modeInfoList: { short_name: string }[] = [];
+
   // Peak render height: prevents editor from shrinking after completion popup closes
   private peakHeight = 0;
+
+  // Layout width for visual-line navigation (j/k), updated each render
+  private layoutWidth = 80;
+  // Sticky visual column for gj/gk movement (like vim's curswant)
+  private preferredVisualCol: number | null = null;
 
   // Copilot context: hidden lines at top of nvim buffer for better inline suggestions
   private contextLines: string[] = [];
@@ -216,6 +224,11 @@ class NvimEditor extends CustomEditor {
             -- Completion: Tab/S-Tab cycle
             vim.keymap.set('i', '<Tab>', '<C-n>', { noremap = true })
             vim.keymap.set('i', '<S-Tab>', '<C-p>', { noremap = true })
+
+            -- gj/gk: set flag for TypeScript visual-line nav
+            -- (pi's word-wrap differs from neovim's, so native gj/gk won't align)
+            vim.keymap.set({'n', 'v'}, 'gj', function() vim.g._pi_visual_move = 1 end, { noremap = true })
+            vim.keymap.set({'n', 'v'}, 'gk', function() vim.g._pi_visual_move = -1 end, { noremap = true })
 
             -- Ctrl-C cancels operator-pending
             vim.keymap.set({'n', 'o'}, '<C-c>', '<Esc>', { noremap = true })
@@ -370,6 +383,23 @@ class NvimEditor extends CustomEditor {
             this.msgText = "";
             this.msgKind = "";
             if (this.msgTimer) { clearTimeout(this.msgTimer); this.msgTimer = null; }
+          } else if (event === "mode_info_set") {
+            // mode_info_set: [cursor_style_enabled, mode_info_list]
+            const args = batch[1] as [boolean, Record<string, unknown>[]];
+            if (Array.isArray(args[1])) {
+              this.modeInfoList = args[1].map(m => ({
+                short_name: String((m as any).short_name ?? "n"),
+              }));
+            }
+          } else if (event === "mode_change") {
+            // mode_change: [mode_name, mode_idx]
+            for (let k = 1; k < batch.length; k++) {
+              const args = batch[k] as [string, number];
+              const idx = args[1];
+              if (this.modeInfoList[idx]) {
+                this.nMode = this.modeInfoList[idx].short_name;
+              }
+            }
           }
         }
       });
@@ -607,6 +637,8 @@ class NvimEditor extends CustomEditor {
           continue;
         }
 
+
+
         // ESC in pure normal mode → pi (agent abort)
         // In operator-pending / replace-char / Ctrl-O sub-modes → neovim (cancel pending op)
         if (this.isEsc(data) && this.isPureNormal()) {
@@ -641,6 +673,9 @@ class NvimEditor extends CustomEditor {
           continue;
         }
 
+        // Any key that reaches neovim resets the sticky visual column
+        this.clearPreferredVisualCol();
+
         // ── forward to neovim ──
         // Batch: send this key + any remaining queued keys to neovim at once,
         // then flush + sync only once. This makes multi-key commands (diw, "0p, etc.) fast.
@@ -660,9 +695,26 @@ class NvimEditor extends CustomEditor {
             this.queue.shift();
             batch += this.translateKey(next);
           }
+          // Set up flush listener BEFORE sending input so we don't
+          // miss the flush that arrives while nvim_input is processing.
+          const flushP = this.waitForFlushResult(50);
           await this.nvim.request("nvim_input", [batch]);
-          await this.waitForFlush(50);
-          await this.sync();
+          // If more keys already queued, skip sync and process them.
+          if (this.queue.length > 0) continue;
+          // Wait for flush (listener was set up before nvim_input).
+          const flushed = await flushP;
+          // Keys may have arrived during the flush wait.
+          if (this.queue.length > 0) continue;
+          // No flush = neovim in getchar/pending state — skip sync.
+          if (!flushed) continue;
+          // Sync with timeout: if neovim is blocked in getchar(),
+          // the RPC will hang — bail out after 50ms.
+          try {
+            await Promise.race([
+              this.sync(),
+              new Promise<never>((_, rej) => setTimeout(() => rej("sync_timeout"), 50)),
+            ]);
+          } catch {}
         } catch (err: any) {
           try { await this.sync(); } catch {}
         }
@@ -744,6 +796,155 @@ class NvimEditor extends CustomEditor {
         }
       }, timeoutMs);
     });
+  }
+
+  /** Like waitForFlush but returns true if flushed, false if timed out. */
+  private waitForFlushResult(timeoutMs: number): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.flushResolve = () => resolve(true);
+      setTimeout(() => {
+        if (this.flushResolve) {
+          this.flushResolve = null;
+          resolve(false);
+        }
+      }, timeoutMs);
+    });
+  }
+
+  // ── visual line navigation (j/k within wrapped lines) ─────────────
+
+  /**
+   * Word-wrap a line at the given width.
+   * Exact port of pi's Editor.wordWrapLine (from pi-tui) so wrap points match.
+   */
+  private wordWrapLine(line: string, maxWidth: number): { startCol: number; endCol: number }[] {
+    if (!line || maxWidth <= 0) return [{ startCol: 0, endCol: 0 }];
+    const lineWidth = visibleWidth(line);
+    if (lineWidth <= maxWidth) return [{ startCol: 0, endCol: line.length }];
+
+    const segments = [...new Intl.Segmenter().segment(line)];
+    const chunks: { startCol: number; endCol: number }[] = [];
+    let currentWidth = 0;
+    let chunkStart = 0;
+    let wrapOppIndex = -1;
+    let wrapOppWidth = 0;
+
+    const isWs = (s: string) => /^\s$/.test(s);
+
+    for (let i = 0; i < segments.length; i++) {
+      const seg = segments[i]!;
+      const grapheme = seg.segment;
+      const gWidth = visibleWidth(grapheme);
+      const charIndex = seg.index;
+
+      if (currentWidth + gWidth > maxWidth) {
+        if (wrapOppIndex >= 0 && currentWidth - wrapOppWidth + gWidth <= maxWidth) {
+          chunks.push({ startCol: chunkStart, endCol: wrapOppIndex });
+          chunkStart = wrapOppIndex;
+          currentWidth -= wrapOppWidth;
+        } else if (chunkStart < charIndex) {
+          chunks.push({ startCol: chunkStart, endCol: charIndex });
+          chunkStart = charIndex;
+          currentWidth = 0;
+        }
+        wrapOppIndex = -1;
+      }
+
+      if (gWidth > maxWidth) {
+        const subChunks = this.wordWrapLine(grapheme, maxWidth);
+        for (let j = 0; j < subChunks.length - 1; j++) {
+          const sc = subChunks[j]!;
+          chunks.push({ startCol: charIndex + sc.startCol, endCol: charIndex + sc.endCol });
+        }
+        const last = subChunks[subChunks.length - 1]!;
+        chunkStart = charIndex + last.startCol;
+        currentWidth = visibleWidth(grapheme.slice(last.startCol));
+        wrapOppIndex = -1;
+        continue;
+      }
+
+      currentWidth += gWidth;
+
+      const next = segments[i + 1];
+      if (isWs(grapheme) && next && !isWs(next.segment)) {
+        wrapOppIndex = next.index;
+        wrapOppWidth = currentWidth;
+      }
+    }
+
+    chunks.push({ startCol: chunkStart, endCol: line.length });
+    return chunks;
+  }
+
+  /**
+   * Build a full visual line map for all buffer lines.
+   * Returns flat array of { bufLine (0-indexed), startCol, endCol } per visual line.
+   */
+  private buildVisualLineMap(): { bufLine: number; startCol: number; endCol: number }[] {
+    const w = this.layoutWidth;
+    const map: { bufLine: number; startCol: number; endCol: number }[] = [];
+    for (let i = 0; i < this.nLines.length; i++) {
+      const chunks = this.wordWrapLine(this.nLines[i]!, w);
+      for (const chunk of chunks) {
+        map.push({ bufLine: i, startCol: chunk.startCol, endCol: chunk.endCol });
+      }
+    }
+    return map;
+  }
+
+  /**
+   * Move cursor up/down by visual (wrapped) lines.
+   * dir=1 moves down, dir=-1 moves up.
+   */
+  private async moveVisualLine(dir: 1 | -1): Promise<void> {
+    const map = this.buildVisualLineMap();
+    const curBufLine = this.nCursorRow - 1; // 0-indexed
+    const curCol = this.nCursorCol;
+
+    // Find current visual line
+    let curVisIdx = 0;
+    for (let i = 0; i < map.length; i++) {
+      const vl = map[i]!;
+      if (vl.bufLine === curBufLine && curCol >= vl.startCol && curCol < vl.endCol) {
+        curVisIdx = i;
+        break;
+      }
+      // Handle cursor at end of line (curCol === line.length)
+      if (vl.bufLine === curBufLine && curCol >= vl.startCol) {
+        curVisIdx = i;
+      }
+    }
+
+    const targetVisIdx = curVisIdx + dir;
+    if (targetVisIdx < 0 || targetVisIdx >= map.length) {
+      // At top/bottom boundary — clear preferred col
+      this.preferredVisualCol = null;
+      return;
+    }
+
+    const target = map[targetVisIdx]!;
+    const localCol = curCol - (map[curVisIdx]!).startCol;
+
+    // Sticky column: remember the widest visual column we've been at
+    if (this.preferredVisualCol === null) {
+      this.preferredVisualCol = localCol;
+    }
+
+    const targetLineWidth = target.endCol - target.startCol;
+    const desiredLocalCol = Math.min(this.preferredVisualCol, Math.max(0, targetLineWidth - 1));
+    const newCol = target.startCol + desiredLocalCol;
+    const newRow = target.bufLine + 1; // 1-indexed for neovim
+
+    try {
+      await this.nvim.request("nvim_win_set_cursor", [0, [newRow + this.contextLineCount, newCol]]);
+      await this.waitForFlush(50);
+      await this.sync();
+    } catch {}
+  }
+
+  /** Reset preferred visual column (call on any non-j/k cursor movement). */
+  private clearPreferredVisualCol(): void {
+    this.preferredVisualCol = null;
   }
 
   /** Navigate message history. dir=-1 is older (K), dir=+1 is newer (J). */
@@ -834,12 +1035,22 @@ class NvimEditor extends CustomEditor {
   /** Read buffer lines, cursor, mode from neovim and update pi's Editor. */
   private async sync(): Promise<void> {
     try {
-      // Use nvim_exec_lua for mode (nvim_get_mode can hang in embedded mode).
-      const [lines, cursor, mode] = await Promise.all([
-        this.nvim.request("nvim_buf_get_lines", [0, 0, -1, false]) as Promise<string[]>,
-        this.nvim.request("nvim_win_get_cursor", [0]) as Promise<number[]>,
-        this.nvim.request("nvim_exec_lua", ["return vim.fn.mode(1)", []]) as Promise<string>,
-      ]);
+      // Single Lua call to fetch all core state at once (1 RPC instead of 3)
+      const state = await this.nvim.request("nvim_exec_lua", [`
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        local mode = vim.fn.mode(1)
+        local yanked = nil
+        if vim.g._pi_yanked then
+          yanked = vim.g._pi_yanked
+          vim.g._pi_yanked = nil
+        end
+        return {lines, cursor, mode, yanked}
+      `, []]) as [string[], number[], string, string | null];
+      const lines = state[0];
+      const cursor = state[1];
+      const mode = state[2];
+      const yanked = state[3];
 
       const prevMode = this.nMode;
       // Strip context lines from buffer — only expose user content
@@ -905,61 +1116,61 @@ class NvimEditor extends CustomEditor {
         this.ghostLines = [];
       }
 
-      // Poll nvim-cmp popup state (if nvim-cmp is installed)
-      try {
-        const cmpState = await this.nvim.request("nvim_exec_lua", [`
-          local ok, cmp = pcall(require, 'cmp')
-          if not ok or not cmp.visible() then return nil end
-          local entries = cmp.get_entries()
-          if #entries == 0 then return nil end
-          local items = {}
-          for _, entry in ipairs(entries) do
-            local ci = entry:get_completion_item()
-            local kind = ''
-            if entry.source.name == 'pi' then
-              kind = 'pi'
-            elseif ci.kind then
-              local names = vim.lsp.protocol.CompletionItemKind
-              if type(names) == 'table' then kind = names[ci.kind] or '' end
+      // Poll nvim-cmp popup state only in insert mode (expensive Lua call)
+      if (this.getMode() === "insert") {
+        try {
+          const cmpState = await this.nvim.request("nvim_exec_lua", [`
+            local ok, cmp = pcall(require, 'cmp')
+            if not ok or not cmp.visible() then return nil end
+            local entries = cmp.get_entries()
+            if #entries == 0 then return nil end
+            local items = {}
+            for _, entry in ipairs(entries) do
+              local ci = entry:get_completion_item()
+              local kind = ''
+              if entry.source.name == 'pi' then
+                kind = 'pi'
+              elseif ci.kind then
+                local names = vim.lsp.protocol.CompletionItemKind
+                if type(names) == 'table' then kind = names[ci.kind] or '' end
+              end
+              table.insert(items, {ci.label or '', '[' .. kind .. ']', ci.detail or '', ''})
             end
-            table.insert(items, {ci.label or '', '[' .. kind .. ']', ci.detail or '', ''})
-          end
-          local sel = -1
-          local selected = cmp.get_selected_entry()
-          if selected then
-            for i, entry in ipairs(entries) do
-              if entry == selected then sel = i - 1; break end
+            local sel = -1
+            local selected = cmp.get_selected_entry()
+            if selected then
+              for i, entry in ipairs(entries) do
+                if entry == selected then sel = i - 1; break end
+              end
             end
-          end
-          return {items, sel}
-        `, []]) as [unknown[][], number] | null;
+            return {items, sel}
+          `, []]) as [unknown[][], number] | null;
 
-        if (cmpState) {
-          this.pmenuItems = (cmpState[0] as unknown[][]).map(
-            (item) => [String(item[0]), String(item[1]), String(item[2]), String(item[3])] as [string, string, string, string],
-          );
-          this.pmenuSelected = cmpState[1] as number;
-          this.pmenuVisible = true;
-          this.pmenuSource = "cmp";
-        } else if (this.pmenuSource === "cmp") {
-          this.pmenuVisible = false;
-          this.pmenuItems = [];
-          this.pmenuSelected = -1;
-          this.pmenuSource = null;
-        }
-      } catch {
-        // nvim-cmp not installed or errored — fall back to ext_popupmenu events
+          if (cmpState) {
+            this.pmenuItems = (cmpState[0] as unknown[][]).map(
+              (item) => [String(item[0]), String(item[1]), String(item[2]), String(item[3])] as [string, string, string, string],
+            );
+            this.pmenuSelected = cmpState[1] as number;
+            this.pmenuVisible = true;
+            this.pmenuSource = "cmp";
+          } else if (this.pmenuSource === "cmp") {
+            this.pmenuVisible = false;
+            this.pmenuItems = [];
+            this.pmenuSelected = -1;
+            this.pmenuSource = null;
+          }
+        } catch {}
+      } else if (this.pmenuSource === "cmp") {
+        // Left insert mode — clear cmp popup
+        this.pmenuVisible = false;
+        this.pmenuItems = [];
+        this.pmenuSelected = -1;
+        this.pmenuSource = null;
       }
 
-      // Check for yanked text and copy to tmux
-      if (this.settings.tmux.clipboard) {
-        try {
-          const yanked = await this.nvim.request("nvim_get_var", ["_pi_yanked"]) as string;
-          if (yanked) {
-            execFile(this.settings.tmux.binary, ["set-buffer", "-w", yanked], () => {});
-            await this.nvim.request("nvim_del_var", ["_pi_yanked"]);
-          }
-        } catch {} // var doesn't exist = no yank
+      // Copy yanked text to tmux (already fetched in the main batch above)
+      if (this.settings.tmux.clipboard && yanked) {
+        execFile(this.settings.tmux.binary, ["set-buffer", "-w", yanked], () => {});
       }
 
       this.pushToEditor();
@@ -1121,6 +1332,15 @@ class NvimEditor extends CustomEditor {
   render(width: number): string[] {
     const lines = super.render(width);
     if (lines.length === 0) return lines;
+
+
+
+    // Read the exact layout width the base Editor used for wrapping.
+    // super.render() sets this.lastWidth = layoutWidth internally.
+    const baseLastWidth = (this as any).lastWidth;
+    if (typeof baseLastWidth === "number" && baseLastWidth > 0) {
+      this.layoutWidth = baseLastWidth;
+    }
 
     // OSC 133;D (command finished) + 133;A (prompt start) — enables tmux K/J prompt navigation
     lines[0] = "\x1b]133;D\x07\x1b]133;A\x07" + lines[0];
