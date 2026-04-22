@@ -4,6 +4,14 @@ import { buildAbortError, buildExitCodeError, buildSuccessfulBashResult, buildTi
 import { hideWidget, showWidget, type LiveSession } from './widget.ts';
 import { PtyTerminalSession } from './pty-session.ts';
 
+const activeSessions = new Set<PtyTerminalSession>();
+
+export function killAllActiveSessions() {
+  for (const session of activeSessions) {
+    session.kill();
+  }
+}
+
 export const WIDGET_DELAY_MS = 100;
 export const WIDGET_HEIGHT = 15;
 export const DEFAULT_PTY_COLS = 100;
@@ -29,6 +37,7 @@ async function runPtyCommand(
     shell: shellConfig.shell,
     shellArgs: shellConfig.args,
   });
+  activeSessions.add(ptySession);
 
   const session: LiveSession = {
     id,
@@ -92,6 +101,7 @@ async function runPtyCommand(
     session.disposed = true;
     hideWidget(ctx, session);
     unsubscribe();
+    activeSessions.delete(ptySession);
     ptySession.dispose();
   }
 }

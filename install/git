@@ -42,4 +42,4 @@ git() {
 }
 EOF
 
-success "[GIT] Success"
+success "[GIT] Done"

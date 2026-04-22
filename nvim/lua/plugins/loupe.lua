@@ -3,6 +3,7 @@
 return {
   event = 'VeryLazy',
   'miallo/loupe',
+  'https://git.prr.re/Drakirus/loupe.vim',
   keys = {
     { '<NOP>', '<Plug>(LoupeGOctothorpe)', desc = '  Search backwards word under cursor' },
     { 'g*', '<Plug>(LoupeGStar)', desc = '  Search word under cursor' },

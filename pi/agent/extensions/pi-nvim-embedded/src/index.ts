@@ -48,6 +48,8 @@ class NvimEditor extends CustomEditor {
   private fallback = false;
   private queue: string[] = [];
   private busy = false;
+  private syncing = false;
+  private needsSync = false;
 
   // Shadow state (last-known neovim state, always current between keystrokes)
   private nLines: string[] = [""];
@@ -88,7 +90,14 @@ class NvimEditor extends CustomEditor {
   // Peak render height: prevents editor from shrinking after completion popup closes
   private peakHeight = 0;
 
-  // Layout width for visual-line navigation (j/k), updated each render
+  // Double ctrl+c tracking for exit
+  private lastCtrlCTime = 0;
+  private static readonly DOUBLE_CTRLC_MS = 500;
+
+
+
+  // Layout width for visual-line navigation (j/k), updated each render.
+  // Initialized from tmux pane width in boot(), falls back to 80.
   private layoutWidth = 80;
   // Sticky visual column for gj/gk movement (like vim's curswant)
   private preferredVisualCol: number | null = null;
@@ -341,6 +350,10 @@ class NvimEditor extends CustomEditor {
               this.flushResolve = null;
               resolve();
             }
+            // Trigger deferred sync when neovim flushes and pump is idle
+            if (this.needsSync && !this.busy) {
+              this.triggerDeferredSync();
+            }
           } else if (event === "popupmenu_show") {
             const args = batch[1] as [unknown[][], number, number, number];
             this.pmenuItems = (args[0] as unknown[][]).map(
@@ -408,6 +421,21 @@ class NvimEditor extends CustomEditor {
       await this.waitForFlush(100);
       await this.fetchHighlightColors();
       await this.sync();
+
+      // Set layoutWidth from tmux pane width (if in tmux), otherwise keep default 80
+      if (process.env.TMUX) {
+        try {
+          const tw = await new Promise<number>((resolve) => {
+            execFile(this.settings.tmux.binary, ["display-message", "-p", "#{pane_width}"], (err, stdout) => {
+              const w = parseInt(stdout?.trim(), 10);
+              resolve(!err && w > 0 ? w : 80);
+            });
+          });
+          this.layoutWidth = tw;
+        } catch {
+          this.layoutWidth = 80;
+        }
+      }
 
       this.ready = true;
 
@@ -533,6 +561,28 @@ class NvimEditor extends CustomEditor {
       return;
     }
 
+    // Intercept ctrl+c SYNCHRONOUSLY before queuing.
+    // app.clear is unbound in keybindings.json — we handle clear ourselves.
+    // Don't pass to super to prevent pi's app-level abort during streaming.
+    const isCtrlC = matchesKey(data, "ctrl+c") || data === "\x03";
+    if (isCtrlC && this.isPureNormal()) {
+      const now = Date.now();
+      if (now - this.lastCtrlCTime < NvimEditor.DOUBLE_CTRLC_MS) {
+        // Double ctrl+c → send /quit for clean exit
+        this.lastCtrlCTime = 0;
+        const onSubmit = (this as any).onSubmit as ((text: string) => void) | undefined;
+        if (onSubmit) onSubmit("/quit");
+        return;
+      }
+      this.lastCtrlCTime = now;
+      // Queue async buffer clear (handled in pump as __clear__)
+      this.queue.push("__clear__");
+      if (this.ready && !this.busy) {
+        this.pump();
+      }
+      return;
+    }
+
     // Bracketed paste: \x1b[200~<text>\x1b[201~
     if (data.includes("\x1b[200~")) {
       const text = data.replace(/\x1b\[200~/g, "").replace(/\x1b\[201~/g, "");
@@ -632,9 +682,18 @@ class NvimEditor extends CustomEditor {
         }
 
         // J/K in normal mode → message history navigation
-        if (this.settings.historyNavigation && (data === "K" || data === "J") && this.isPureNormal()) {
-          await this.navigateHistory(data === "K" ? -1 : 1);
-          continue;
+        if (this.settings.historyNavigation && (data === "K" || data === "J")) {
+          // Mode may be stale after rapid key sequences — refresh if needed
+          if (!this.isPureNormal()) {
+            try {
+              const mode = await this.nvim.request("nvim_exec_lua", ["return vim.fn.mode(1)", []]) as string;
+              if (mode) this.nMode = mode;
+            } catch {}
+          }
+          if (this.isPureNormal()) {
+            await this.navigateHistory(data === "K" ? -1 : 1);
+            continue;
+          }
         }
 
 
@@ -647,21 +706,33 @@ class NvimEditor extends CustomEditor {
         }
 
         // Ctrl+C in pure normal mode:
-        // 1. Call onEscape() to abort user bash / agent (if running)
-        // Ctrl+C in pure normal mode:
-        // - If user bash is running, call onEscape to abort it.
-        // - Always call super.handleInput for the "clear" action (double Ctrl+C exit).
+        // - Double ctrl+c → pass to pi for exit
+        // - Single ctrl+c → clear the editor (handled here, not by pi, to avoid agent abort)
         // In other modes → neovim handles it (cancel pending op).
-        if (matchesKey(data, "ctrl+c") && this.isPureNormal()) {
-          if (this.onEscape && userBashRunning) {
-            this.onEscape();
-            userBashRunning = false;
-          }
-          super.handleInput(data);
+        // Handle __clear__ sentinel from synchronous ctrl+c interception
+        if (data === "__clear__") {
+          try {
+            await this.nvim.request("nvim_buf_set_lines", [0, this.contextLineCount, -1, false, [""]]);
+            await this.nvim.request("nvim_win_set_cursor", [0, [this.contextLineCount + 1, 0]]);
+            await this.waitForFlush(50);
+            await this.sync();
+          } catch {}
           continue;
         }
 
+        // ctrl+c in insert/visual mode still goes to neovim (cancel pending op)
+        // ctrl+c in pure normal mode is handled synchronously in handleInput()
+
         // ── submission check ──
+        // Force flush + sync before submission to ensure nLines reflects neovim's buffer.
+        // nvim_input queues keys asynchronously; a blocking RPC forces neovim to
+        // process pending typeahead before we read the buffer.
+        if (this.isEnter(data)) {
+          try {
+            await this.nvim.request("nvim_eval", ["0"]);
+            await this.sync();
+          } catch {}
+        }
         // Normal mode: Enter submits the full buffer
         if (this.settings.enterInNormalSubmits && this.isEnter(data) && this.isPureNormal() && this.getText().trim() !== "") {
           await this.submit(false);
@@ -695,33 +766,42 @@ class NvimEditor extends CustomEditor {
             this.queue.shift();
             batch += this.translateKey(next);
           }
-          // Set up flush listener BEFORE sending input so we don't
-          // miss the flush that arrives while nvim_input is processing.
-          const flushP = this.waitForFlushResult(50);
           await this.nvim.request("nvim_input", [batch]);
-          // If more keys already queued, skip sync and process them.
-          if (this.queue.length > 0) continue;
-          // Wait for flush (listener was set up before nvim_input).
-          const flushed = await flushP;
-          // Keys may have arrived during the flush wait.
-          if (this.queue.length > 0) continue;
-          // No flush = neovim in getchar/pending state — skip sync.
-          if (!flushed) continue;
-          // Sync with timeout: if neovim is blocked in getchar(),
-          // the RPC will hang — bail out after 50ms.
-          try {
-            await Promise.race([
-              this.sync(),
-              new Promise<never>((_, rej) => setTimeout(() => rej("sync_timeout"), 50)),
-            ]);
-          } catch {}
+          this.needsSync = true;
+          // Don't sync here — any RPC can hang if neovim is in
+          // getchar/operator-pending. Sync is triggered by flush
+          // notification (asynchronously, after neovim finishes).
         } catch (err: any) {
           try { await this.sync(); } catch {}
         }
       }
     } finally {
       this.busy = false;
+      // Sync after pump exits (flush may have arrived while busy)
+      if (this.needsSync) {
+        this.triggerDeferredSync();
+      }
     }
+  }
+
+  /** Fire-and-forget async sync, guarded against re-entry. */
+  private triggerDeferredSync(): void {
+    if (this.syncing || this.busy) return;
+    this.needsSync = false;
+    this.syncing = true;
+    (async () => {
+      try {
+        await Promise.race([
+          this.sync(),
+          new Promise<never>((_, rej) => setTimeout(() => rej("sync_timeout"), 100)),
+        ]);
+      } catch {}
+      this.syncing = false;
+      // If pump ran while we were syncing and set needsSync, re-trigger
+      if (this.needsSync && !this.busy) {
+        this.triggerDeferredSync();
+      }
+    })();
   }
 
   // ── helpers ────────────────────────────────────────────────────────
@@ -798,18 +878,7 @@ class NvimEditor extends CustomEditor {
     });
   }
 
-  /** Like waitForFlush but returns true if flushed, false if timed out. */
-  private waitForFlushResult(timeoutMs: number): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      this.flushResolve = () => resolve(true);
-      setTimeout(() => {
-        if (this.flushResolve) {
-          this.flushResolve = null;
-          resolve(false);
-        }
-      }, timeoutMs);
-    });
-  }
+
 
   // ── visual line navigation (j/k within wrapped lines) ─────────────
 
@@ -1000,9 +1069,15 @@ class NvimEditor extends CustomEditor {
   }
 
   private async submit(stripLastLine: boolean): Promise<void> {
+    // Read buffer directly from neovim to avoid stale nLines
+    let lines = this.nLines;
+    try {
+      const fresh = await this.nvim.request("nvim_buf_get_lines", [0, this.contextLineCount, -1, false]) as string[];
+      if (fresh && fresh.length > 0) lines = fresh;
+    } catch {}
     const text = stripLastLine
-      ? this.nLines.slice(0, -1).join("\n")
-      : this.nLines.join("\n").trimEnd();
+      ? lines.slice(0, -1).join("\n")
+      : lines.join("\n").trimEnd();
 
     // Clear neovim buffer and go to normal mode
     try {
@@ -1045,12 +1120,15 @@ class NvimEditor extends CustomEditor {
           yanked = vim.g._pi_yanked
           vim.g._pi_yanked = nil
         end
-        return {lines, cursor, mode, yanked}
-      `, []]) as [string[], number[], string, string | null];
+        local visual_move = vim.g._pi_visual_move
+        if visual_move then vim.g._pi_visual_move = nil end
+        return {lines, cursor, mode, yanked, visual_move}
+      `, []]) as [string[], number[], string, string | null, number | null];
       const lines = state[0];
       const cursor = state[1];
       const mode = state[2];
       const yanked = state[3];
+      const visualMove = state[4];
 
       const prevMode = this.nMode;
       // Strip context lines from buffer — only expose user content
@@ -1171,6 +1249,13 @@ class NvimEditor extends CustomEditor {
       // Copy yanked text to tmux (already fetched in the main batch above)
       if (this.settings.tmux.clipboard && yanked) {
         execFile(this.settings.tmux.binary, ["set-buffer", "-w", yanked], () => {});
+      }
+
+      // Handle gj/gk visual line movement (flag set by neovim keymap)
+      if (visualMove) {
+        this.pushToEditor();
+        await this.moveVisualLine(visualMove as 1 | -1);
+        return;
       }
 
       this.pushToEditor();
@@ -1342,8 +1427,8 @@ class NvimEditor extends CustomEditor {
       this.layoutWidth = baseLastWidth;
     }
 
-    // OSC 133;D (command finished) + 133;A (prompt start) — enables tmux K/J prompt navigation
-    lines[0] = "\x1b]133;D\x07\x1b]133;A\x07" + lines[0];
+    // OSC 133 prompt markers now handled by pi's UserMessageComponent (v0.68+)
+    // Removed duplicate 133;D+A emission that conflicted with pi's 133;A/B/C markers
 
     const IS_BORDER_LINE = /^([^─]*─){6,}/;
     for (let i = 0; i < lines.length; i++) {
@@ -1837,12 +1922,9 @@ export default function (pi: ExtensionAPI) {
         return { consume: true };
       }
 
-      // Ctrl+C: cancel agent/subagent operations if any are running,
-      // then fall through to the editor's normal handling.
+      // Ctrl+C: fall through to the editor's normal handling.
+      // Agent abort is handled by double-ESC only.
       if (matchesKey(data, "ctrl+c")) {
-        const isIdle = ctx.isIdle();
-        const hasOps = hasRunningOperations();
-        if (!isIdle || hasOps) cancelAll(ctx);
         return undefined;
       }
 

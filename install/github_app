@@ -29,4 +29,4 @@ install_github_app pi "badlogic/pi-mono" "https.*pi-linux-x64.*gz$" &
 
 wait
 
-success "[Github APP] Success"
+success "[Github APP] Done"

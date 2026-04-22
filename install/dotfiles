@@ -91,4 +91,4 @@ if [[ "$ssh_url" != "$url" ]]; then
     git config pull.rebase false # small config
 fi
 
-success "[DOTFILES] Success"
+success "[DOTFILES] Done"

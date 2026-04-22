@@ -61,4 +61,4 @@ then
   sudo update-desktop-database
 fi
 
-success "[WEZTERM] Success"
+success "[WEZTERM] Done"

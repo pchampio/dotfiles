@@ -19,6 +19,8 @@ run_with_spinner git clone https://git.prr.re/Drakirus/tmux-last "$HOME/.tmux-la
 # This is to get the pscheck
 [ -d "$HOME/.tmux-scroll/" ] && rm -rf "$HOME/.tmux-scroll/"
 run_with_spinner git clone https://github.com/noscript/tmux-mighty-scroll "$HOME/.tmux-scroll/" --depth=1
+
+export PATH="$HOME/.local/bin:$PATH"
 sh ~/.tmux-scroll/mighty-scroll.tmux # compile pscheck
 
 explain "Compile tmux_update_statusbar"
@@ -96,4 +98,4 @@ screen-256color|tmux with 256 colors,
 EOF
 # End of tic
 
-success "[TMUX] Success"
+success "[TMUX] Done"

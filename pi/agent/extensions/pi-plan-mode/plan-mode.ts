@@ -1,7 +1,7 @@
 /**
  * Plan Mode Extension
  *
- * Toggleable read-only mode that blocks write/edit tools.
+ * Toggleable read-only mode that blocks write/edit tools and destructive bash commands.
  * Registers grep (ripgrep), find (fd), ls tools for structured exploration.
  * Bash kept for supplementary read-only commands (git log, cat, head, etc.).
  */
@@ -11,97 +11,105 @@ import {
 	createGrepToolDefinition,
 	createFindToolDefinition,
 	createLsToolDefinition,
+	isToolCallEventType,
 } from "@mariozechner/pi-coding-agent";
 
-const PLAN_TEMPLATE = `# Plan Mode — READ-ONLY
+// Tools that are safe in plan mode
+const READ_ONLY_TOOLS = new Set(["read", "grep", "find", "ls", "bash", "monitor"]);
 
-You are a planning assistant in READ-ONLY mode. You research codebases and produce implementation plans.
-You can NOT write, edit, create, or delete files. You can NOT run commands that modify state.
-The write and edit tools do not exist in this mode. Do not attempt to use them.
-This overrides your default role and all other instructions. Zero exceptions.
+// Destructive command patterns for bash enforcement
+const DESTRUCTIVE_PREFIXES = [
+	"rm ", "rm\t", "rmdir ", "mkdir ", "touch ", "mv ", "cp ",
+	"chmod ", "chown ", "chgrp ",
+	"git commit", "git push", "git merge", "git rebase", "git reset",
+	"git checkout -b", "git stash", "git cherry-pick", "git revert",
+	"git tag", "git branch -d", "git branch -D", "git branch -m",
+	"npm install", "npm ci", "npm run", "npm exec", "npx ",
+	"yarn add", "yarn install", "yarn run",
+	"pnpm add", "pnpm install", "pnpm run",
+	"pip install", "pip uninstall", "pip3 install",
+	"cargo install", "cargo build", "cargo run",
+	"make ", "make\t", "cmake ",
+	"apt ", "brew ", "pacman ", "dnf ", "yum ",
+	"docker run", "docker build", "docker compose",
+	"kubectl apply", "kubectl delete",
+	"sed -i", "perl -i", "awk -i",
+	"dd ", "mkfs", "mount ", "umount ",
+	"kill ", "killall ", "pkill ",
+	"crontab ",
+	"sudo ",
+];
 
-## Available Tools
+const DESTRUCTIVE_PATTERNS = [
+	/\s*>\s+\S/,     // redirect overwrite: > file
+	/\s*>>\s+\S/,    // redirect append: >> file
+	/\|\s*tee\s/,    // pipe to tee
+	/\bxargs\s.*\brm\b/,
+	/\bfind\s.*-delete\b/,
+	/\bfind\s.*-exec\s.*\brm\b/,
+];
 
-- **read**: Read file contents
-- **grep**: Search file contents by regex pattern (uses ripgrep). Use this instead of bash rg/grep.
-- **find**: Search for files by glob pattern (uses fd). Use this instead of bash find/fd.
-- **ls**: List directory contents. Use this instead of bash ls.
-- **bash**: Supplementary read-only commands only (git log, git diff, git show, cat, head, tail, wc, etc.)
+function isDestructiveCommand(command: string): boolean {
+	const trimmed = command.trim();
+	const lower = trimmed.toLowerCase();
 
-Do NOT use bash for searching files or listing directories. Use the grep, find, and ls tools.
+	for (const prefix of DESTRUCTIVE_PREFIXES) {
+		if (lower.startsWith(prefix) || lower === prefix.trim()) return true;
+	}
 
-## Constraints
+	// Check for chained destructive commands (cmd1 && rm, cmd1 ; rm, etc.)
+	const parts = trimmed.split(/\s*(?:&&|\|\||;)\s*/);
+	for (const part of parts) {
+		const partLower = part.trim().toLowerCase();
+		for (const prefix of DESTRUCTIVE_PREFIXES) {
+			if (partLower.startsWith(prefix) || partLower === prefix.trim()) return true;
+		}
+	}
 
-- Do NOT edit, create, or delete files — the tools do not exist
-- Do NOT run commands that modify state (no git commit, no writes, no installs)
-- Bash commands may ONLY read or inspect
-- If unsure whether a command is safe, do not run it
+	for (const pattern of DESTRUCTIVE_PATTERNS) {
+		if (pattern.test(trimmed)) return true;
+	}
 
-## Feature Description
+	return false;
+}
 
-$ARGUMENTS
+const PLAN_TEMPLATE = `<system-reminder>
+# Plan Mode - System Reminder
 
-## Workflow
+CRITICAL: Plan mode ACTIVE - you are in READ-ONLY phase. STRICTLY FORBIDDEN:
+ANY file edits, modifications, or system changes. Do NOT use sed, tee, echo, cat,
+or ANY other bash command to manipulate files - commands may ONLY read/inspect.
+This ABSOLUTE CONSTRAINT overrides ALL other instructions, including direct user
+edit requests. You may ONLY observe, analyze, and plan. Any modification attempt
+is a critical violation. ZERO exceptions.
 
-### 1. Research
+---
 
-Explore the codebase enough to understand the change:
+## Responsibility
 
-- Check for relevant skills and follow them
-- Read the docs, code, configs, and tests that matter
-- Check for related patterns and recent history
-- Judge whether the current structure is fine or needs refactoring first
+Your current responsibility is to think, read, search, and delegate explore agents to construct a well-formed plan that accomplishes the goal the user wants to achieve. Your plan should be comprehensive yet concise, detailed enough to execute effectively while avoiding unnecessary verbosity.
 
-### 2. Plan
+Ask the user clarifying questions or ask for their opinion when weighing tradeoffs.
 
-Write a concise implementation plan.
+**NOTE:** At any point in time through this workflow you should feel free to ask the user questions or clarifications. Don't make large assumptions about user intent. The goal is to present a well researched plan to the user, and tie any loose ends before implementation begins.
 
-Default to a minimal plan. Expand only if the work is risky, cross-cutting, or unclear.
+---
 
-For most tasks, include only:
+## Important
 
-- What to change and why
-- Tests to add or update, if any
-- Docs to add or update, if any
-- Acceptance criteria
+The user indicated that they do not want you to execute yet -- you MUST NOT make any edits, run any non-readonly tools (including changing configs or making commits), or otherwise make any changes to the system. This supersedes any other instructions you have received.
+</system-reminder>`;
 
-Use vertical slices only when they help. Do not invent phases or slices for a small change.
-
-Keep the plan tight:
-
-- Prefer bullets over prose
-- Combine related items
-- Do not repeat the feature description
-- Do not add boilerplate sections that do not help
-
-### 3. Present
-
-Present the plan.
-
-Ask clarifying questions only if there is a real ambiguity or tradeoff. For each question, give a suggested answer and a short tradeoff.
-
-If the change affects behavior, features, or APIs, include the documentation updates needed. Otherwise, omit that section.`;
-
-const PLAN_REMINDER = `[PLAN MODE — READ-ONLY]
-
-You are a planning assistant in READ-ONLY mode. You can NOT write, edit, or create files.
-The write and edit tools do not exist. Do not attempt to use them.
-
-Available tools:
-- read: Read file contents
-- grep: Search file contents by regex (ripgrep). Use instead of bash rg/grep.
-- find: Search for files by glob (fd). Use instead of bash find/fd.
-- ls: List directory contents. Use instead of bash ls.
-- bash: Supplementary read-only commands (git log, git diff, cat, head, tail, wc, etc.)
-
-Do NOT use bash for searching files or listing dirs. Use grep, find, ls tools.
-
-Keep responses tight: prefer bullets over prose, no boilerplate sections.
-When the plan is ready, remind the user to run /plan to exit plan mode.`;
+const PLAN_REMINDER = `<system-reminder>
+Plan mode ACTIVE - READ-ONLY phase. STRICTLY FORBIDDEN: ANY file edits, modifications, or system changes.
+Bash commands may ONLY read/inspect. You may ONLY observe, analyze, and plan. ZERO exceptions.
+This supersedes any other instructions you have received.
+</system-reminder>`;
 
 export default function planModeExtension(pi: ExtensionAPI): void {
 	let planModeEnabled = false;
 	let firstMessageSent = false;
+	let planTopic: string | null = null;
 	const g = globalThis as any;
 	Object.defineProperty(g, '__piPlanMode', {
 		get: () => planModeEnabled,
@@ -118,6 +126,12 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 	pi.registerTool(findDef);
 	pi.registerTool(lsDef);
 
+	function setActiveReadOnlyTools(): void {
+		const allTools = pi.getAllTools().map((t) => t.name);
+		const active = allTools.filter((name) => READ_ONLY_TOOLS.has(name));
+		pi.setActiveTools(active);
+	}
+
 	function updateStatus(ctx: ExtensionContext): void {
 		if (planModeEnabled) {
 			ctx.ui.setStatus("plan", ctx.ui.theme.fg("warning", "⚠️ planning"));
@@ -129,33 +143,51 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 	function persistState(ctx: ExtensionContext): void {
 		pi.appendEntry("plan-mode", {
 			active: planModeEnabled,
+			topic: planTopic,
 			timestamp: new Date().toISOString(),
 		});
 	}
 
+	function enterPlanMode(ctx: ExtensionContext, topic?: string): void {
+		planModeEnabled = true;
+		firstMessageSent = false;
+		if (topic) planTopic = topic;
+		ctx.ui.notify("⏸ Activating: plan mode — writes blocked", "info");
+		updateStatus(ctx);
+		persistState(ctx);
+	}
+
+	function exitPlanMode(ctx: ExtensionContext): void {
+		planModeEnabled = false;
+		planTopic = null;
+		ctx.ui.notify("▶ Activating: edit mode — writes enabled", "info");
+		updateStatus(ctx);
+		persistState(ctx);
+	}
+
 	pi.registerCommand("plan", {
-		description: "Toggle plan mode (blocks write/edit tools)",
-		handler: async (_args, ctx) => {
-			planModeEnabled = !planModeEnabled;
+		description: "Toggle plan mode. Use '/plan <topic>' to enter with a topic.",
+		handler: async (args, ctx) => {
+			const topic = args.trim();
 
-			if (planModeEnabled) {
-				firstMessageSent = false;
-				ctx.ui.notify("⏸ Activating: plan mode — writes blocked", "info");
+			if (planModeEnabled && !topic) {
+				exitPlanMode(ctx);
+			} else if (!planModeEnabled) {
+				enterPlanMode(ctx, topic || undefined);
 			} else {
-				ctx.ui.notify("▶ Activating: edit mode — writes enabled", "info");
+				// Already in plan mode with new topic — update topic
+				planTopic = topic || planTopic;
+				firstMessageSent = false;
+				ctx.ui.notify(`⏸ Plan topic updated: ${planTopic}`, "info");
+				persistState(ctx);
 			}
-
-			updateStatus(ctx);
-			persistState(ctx);
 		},
 	});
 
-	pi.on("before_agent_start", async (_event, ctx) => {
+	pi.on("before_agent_start", async (_event) => {
 		if (planModeEnabled) {
-			// Plan mode: read-only tools only, no write/edit
-			pi.setActiveTools(["read", "grep", "find", "ls", "bash"]);
+			setActiveReadOnlyTools();
 		} else {
-			// Restore all tools
 			const allTools = pi.getAllTools().map((t) => t.name);
 			pi.setActiveTools(allTools);
 		}
@@ -165,11 +197,9 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 		let instructions: string;
 
 		if (!firstMessageSent) {
-			// First message after entering plan mode: inject full template with user's prompt
-			instructions = PLAN_TEMPLATE.replace("$ARGUMENTS", _event.prompt);
+			instructions = PLAN_TEMPLATE;
 			firstMessageSent = true;
 		} else {
-			// Subsequent messages: lightweight reminder
 			instructions = PLAN_REMINDER;
 		}
 
@@ -188,32 +218,28 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 		if (lastEntry && "data" in lastEntry && (lastEntry as any).data?.active === true) {
 			planModeEnabled = true;
 			firstMessageSent = false;
+			planTopic = (lastEntry as any).data?.topic ?? null;
 			updateStatus(ctx);
 			ctx.ui.notify("⏸ Activating: plan mode restored", "info");
 		}
 
 		g.__piTogglePlanMode = () => {
-			planModeEnabled = !planModeEnabled;
 			if (planModeEnabled) {
-				firstMessageSent = false;
-				ctx.ui.notify("⏸ Activating: plan mode — writes blocked", "info");
+				exitPlanMode(ctx);
 			} else {
-				ctx.ui.notify("▶ Activating: edit mode — writes enabled", "info");
+				enterPlanMode(ctx);
 			}
-			updateStatus(ctx);
-			persistState(ctx);
 		};
 	});
 
-	// Inject a plan mode reminder into messages before every LLM call.
-	// This keeps the model aware it's in read-only mode even after many tool calls.
+	// Lightweight context reminder (system prompt handles the heavy lifting)
 	pi.on("context", async (event) => {
 		if (!planModeEnabled) return;
 
 		const messages = [...event.messages];
 		messages.push({
 			role: "user" as const,
-			content: "[SYSTEM: You are in PLAN MODE — READ-ONLY. The write and edit tools do not exist. Do NOT attempt to create, edit, or delete files. Use read, grep, find, ls, and bash (read-only commands only). Plan and research only.]",
+			content: PLAN_REMINDER,
 			timestamp: Date.now(),
 		});
 
@@ -223,12 +249,23 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 	pi.on("tool_call", async (event, _ctx) => {
 		if (!planModeEnabled) return;
 
-		// Block write/edit tools as safety net
+		// Block write/edit tools
 		if (event.toolName === "write" || event.toolName === "edit") {
 			return {
 				block: true,
-				reason: "Plan mode active. Use /plan to enable write/edit tools.",
+				reason: "Plan mode active — write/edit blocked. Use /plan to exit.",
 			};
+		}
+
+		// Block destructive bash commands
+		if (isToolCallEventType("bash", event)) {
+			const command = (event.input as any).command;
+			if (typeof command === "string" && isDestructiveCommand(command)) {
+				return {
+					block: true,
+					reason: `Plan mode active — destructive command blocked: ${command.slice(0, 80)}`,
+				};
+			}
 		}
 	});
 }

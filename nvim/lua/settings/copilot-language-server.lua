@@ -91,5 +91,8 @@ return {
 
     vim.g.inline_completion_enabled = true
     vim.lsp.inline_completion.enable(true, { bufnr = bufnr })
+    vim.api.nvim_set_hl(0, "LspInlayHint", {
+      italic = true
+    })
   end,
 }

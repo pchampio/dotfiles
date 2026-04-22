@@ -37,4 +37,4 @@ I_TITLE="[Tools] Opencode" run_with_spinner "PATH=$HOME/.opencode/bin:$PATH curl
 apply_sed_to_dotfiles '/^# opencode$/,+1d'
 
 
-success "[NVIM] Success"
+success "[NVIM] Done"

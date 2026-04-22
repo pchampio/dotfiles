@@ -33,7 +33,7 @@ install_static_python() {
   tar xzf dist.tar.gz && rm dist.tar.gz
   mv python/* . && rmdir python
   cd "${cwd}"
-  success "[PYTHON3 bin] Success"
+  success "[PYTHON3 bin] Done"
 }
 
 STANDALONE_PYTHON_ARCH=$(arch)
@@ -75,5 +75,5 @@ if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
 
   # remove crap from zshrc (added by pipx)
   apply_sed_to_dotfiles '/^# Created by `pipx`/,+1d'
-  success "[PYTHON3 lib] Success"
+  success "[PYTHON3 lib] Done"
 fi

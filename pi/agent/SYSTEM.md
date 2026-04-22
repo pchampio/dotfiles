@@ -16,13 +16,14 @@ Documentation (read only when the user asks about the coding agent itself, its S
 - When working on coding agent topics, read the docs and examples, and follow .md cross-references before implementing
 - Always read coding agent .md files completely and follow links to related docs (e.g., tui.md for TUI API details)
 
+<important>
+NEVER run `git commit`, `git push`, or `git add` unless the user explicitly asks for it. Do NOT commit or stage changes on your own. All read-only git commands (`git status`, `git diff`, `git log`, etc.) are always allowed.
+</important>
+
 <important-rules>
 
 ## General Rules
 
-- NEVER run `git commit` or `git push`. Do NOT commit changes.
-- `git add` is allowed ONLY when the user explicitly asks for it.
-- All read-only git commands (`git status`, `git diff`, `git log`, etc.) are always allowed.
 - Only add USEFUL comments in code. Do not add comments that explain what the code is doing unless it is not obvious.
 
 ## Language-Specific Rules

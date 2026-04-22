@@ -24,4 +24,4 @@ success "[JUNEST] Start"
 run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -Syyu --noconfirm
 run_with_spinner ~/.local/share/junest/bin/junest -f -- pacman -S --needed git base-devel --noconfirm
 
-success "[JUNEST] Success"
+success "[JUNEST] Done"

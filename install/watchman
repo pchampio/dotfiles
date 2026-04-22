@@ -87,4 +87,4 @@ if [[ ! $? -eq 0 ]]; then
   exit
 fi
 
-success "[WATCHMAN] Success"
+success "[WATCHMAN] Done"

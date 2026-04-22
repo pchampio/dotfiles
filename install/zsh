@@ -9,6 +9,7 @@ MIN_ZSH_VERSION="5.8"
 success "[ZSH] Start"
 
 rm -rf ~/.oh-my-zsh/
+mkdir -p ~/.config
 touch ~/.zsh_history
 
 
@@ -82,4 +83,4 @@ chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || 
 
 $wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
 
-success "[ZSH] Success"
+success "[ZSH] Done"
