@@ -1,9 +1,9 @@
 {
   "lastChangelogVersion": "0.68.1",
   "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-6",
+  "defaultModel": "claude-opus-4-7",
   "theme": "selenized-light",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "high",
   "showHardwareCursor": true,
   "packages": [
     "extensions/pi-nvim-embedded",
