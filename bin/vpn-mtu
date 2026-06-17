@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+#
+# vpn-mtu-fix.sh — fix the "ping works, SSH/HTTPS stall" MTU black hole on the
+# FortiClient IPsec tunnel when tethering through a low-MTU mobile link.
+#
+# It auto-detects the interface carrying the VPN address, lowers its MTU so the
+# advertised TCP MSS fits under the IPsec path MTU, persists that via
+# NetworkManager, and adds an MSS clamp as a backstop.
+#
+# Usage:
+#   sudo ./vpn-mtu-fix.sh apply     # detect, apply, and persist (default)
+#   sudo ./vpn-mtu-fix.sh status    # show current state, change nothing
+#   sudo ./vpn-mtu-fix.sh revert    # undo MTU override + remove the clamp
+#
+# Override detection / tuning via env vars, e.g.:
+#   sudo IFACE=enx0c5b8f279a64 MTU=1180 ./vpn-mtu-fix.sh apply
+
+set -euo pipefail
+
+# ---- tunables ---------------------------------------------------------------
+VPN_PREFIX="${VPN_PREFIX:-10.4.}"        # how to spot the VPN address on an iface
+VPN_NET="${VPN_NET:-10.4.0.0/16}"        # destination subnet for the MSS clamp
+MTU="${MTU:-1180}"                       # path MTU is ~1198; 1180 leaves margin
+MSS="${MSS:-$((MTU - 40))}"             # MSS = MTU - 40 (TCP/IP headers)
+IFACE="${IFACE:-}"                       # leave empty to auto-detect
+# -----------------------------------------------------------------------------
+
+die() { echo "error: $*" >&2; exit 1; }
+
+need_root() {
+  [ "$(id -u)" -eq 0 ] || die "must run as root (use sudo)"
+}
+
+detect_iface() {
+  # First interface whose IPv4 address starts with $VPN_PREFIX.
+  ip -o -4 addr show \
+    | awk -v p="^${VPN_PREFIX//./\\.}" '$4 ~ p {print $2; exit}'
+}
+
+list_ifaces() {
+  # One line per interface: "<dev>  <mtu>  <ipv4s>  <nm-profile>  [note]".
+  # The VPN-bearing interface (if any) is emitted first so it lands under
+  # fzf's cursor by default. Device name is always field 1 for safe extraction.
+  local auto dev mtu addrs conn note
+  auto="$(detect_iface || true)"
+  { [ -n "$auto" ] && echo "$auto"
+    for p in /sys/class/net/*; do basename "$p"; done; } \
+  | awk '!seen[$0]++' \
+  | while read -r dev; do
+      [ "$dev" = "lo" ] && continue
+      mtu="$(cat "/sys/class/net/$dev/mtu" 2>/dev/null || echo '?')"
+      addrs="$(ip -o -4 addr show dev "$dev" 2>/dev/null \
+                 | awk '{print $4}' | paste -sd, -)"
+      [ -n "$addrs" ] || addrs='-'
+      conn="$(nm_conn_for "$dev")"; [ -n "$conn" ] || conn='-'
+      note=''; [ "$dev" = "$auto" ] && note='<- detected'
+      printf '%s\t%s\t%s\t%s\t%s\n' "$dev" "$mtu" "$addrs" "$conn" "$note"
+    done
+}
+
+pick_iface() {
+  # Interactive fzf picker. Returns the chosen device name, or non-zero if
+  # fzf is unavailable / no tty / the user aborts (so callers can fall back).
+  command -v fzf >/dev/null 2>&1 || return 1
+  [ -t 0 ] && [ -t 1 ] || return 1   # need a real terminal
+  local sel
+  sel="$(list_ifaces \
+    | column -t -s$'\t' \
+    | fzf --reverse --height=45% \
+          --header=$'pick the VPN interface\n  IFACE  MTU  IPv4  NM-PROFILE' \
+    )" || return 1
+  [ -n "$sel" ] || return 1
+  awk '{print $1}' <<<"$sel"   # device name is always field 1
+}
+
+resolve_iface() {
+  if [ -z "$IFACE" ]; then
+    if [ "${NO_FZF:-0}" != "1" ] && IFACE="$(pick_iface)" && [ -n "$IFACE" ]; then
+      echo "selected interface: $IFACE"
+    else
+      IFACE="$(detect_iface || true)"
+      [ -n "$IFACE" ] || die "no interface holds a ${VPN_PREFIX}* address — is the VPN up?"
+      echo "auto-detected VPN interface: $IFACE"
+    fi
+  fi
+  ip link show "$IFACE" >/dev/null 2>&1 || die "interface '$IFACE' not found"
+}
+
+nm_conn_for() {
+  # NetworkManager connection name bound to the device, empty if unmanaged.
+  nmcli -g GENERAL.CONNECTION device show "$1" 2>/dev/null || true
+}
+
+clamp_exists() {
+  iptables -t mangle -C OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+    -d "$VPN_NET" -j TCPMSS --set-mss "$MSS" 2>/dev/null
+}
+
+cmd_status() {
+  resolve_iface
+  local cur_mtu conn
+  cur_mtu="$(cat "/sys/class/net/$IFACE/mtu")"
+  conn="$(nm_conn_for "$IFACE")"
+  echo "interface : $IFACE"
+  echo "MTU now   : $cur_mtu  (target $MTU)"
+  echo "NM profile: ${conn:-<none / unmanaged>}"
+  if clamp_exists; then
+    echo "MSS clamp : present (-> $MSS for $VPN_NET)"
+  else
+    echo "MSS clamp : absent"
+  fi
+}
+
+cmd_apply() {
+  need_root
+  resolve_iface
+
+  echo "setting MTU $MTU on $IFACE (live)"
+  ip link set dev "$IFACE" mtu "$MTU"
+
+  local conn
+  conn="$(nm_conn_for "$IFACE")"
+  if [ -n "$conn" ]; then
+    echo "persisting MTU on NetworkManager profile: $conn"
+    nmcli connection modify "$conn" 802-3-ethernet.mtu "$MTU"
+    # re-apply so it survives reconnects; ignore if it briefly drops the link
+    nmcli connection up "$conn" >/dev/null 2>&1 || true
+  else
+    echo "warning: '$IFACE' is not managed by NetworkManager — MTU set live only,"
+    echo "         it will reset on reconnect. Re-run this script after reconnecting."
+  fi
+
+  if clamp_exists; then
+    echo "MSS clamp already present, skipping"
+  else
+    echo "adding MSS clamp ($MSS) for $VPN_NET"
+    iptables -t mangle -A OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+      -d "$VPN_NET" -j TCPMSS --set-mss "$MSS"
+  fi
+
+  echo
+  echo "done. test with:  ssh -vvv user@<vpn-host>   and   curl -vk https://<vpn-host>/"
+  echo "note: the iptables rule is not saved across reboot — see netfilter-persistent below."
+}
+
+cmd_revert() {
+  need_root
+  resolve_iface
+
+  local conn
+  conn="$(nm_conn_for "$IFACE")"
+  if [ -n "$conn" ]; then
+    echo "clearing MTU override on $conn (back to auto)"
+    nmcli connection modify "$conn" 802-3-ethernet.mtu 0
+    nmcli connection up "$conn" >/dev/null 2>&1 || true
+  fi
+  echo "restoring live MTU to 1500 on $IFACE"
+  ip link set dev "$IFACE" mtu 1500 2>/dev/null || true
+
+  if clamp_exists; then
+    echo "removing MSS clamp"
+    iptables -t mangle -D OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+      -d "$VPN_NET" -j TCPMSS --set-mss "$MSS"
+  fi
+  echo "reverted."
+}
+
+case "${1:-apply}" in
+  apply)  cmd_apply  ;;
+  status) cmd_status ;;
+  revert) cmd_revert ;;
+  *) die "unknown command '$1' (use: apply | status | revert)" ;;
+esac
