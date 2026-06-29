@@ -445,12 +445,11 @@ forti() {
 
   info "Connecting to VPN: $VPN_NAME"
 
-  forti_output=$(
+  # forti_output=$(
     /opt/forticlient/forticlient-cli vpn connect "$VPN_NAME" \
       --username "$VPN_USER" \
-      --save-password \
-      2> >(sed 's/^/\x1b[31m/' >&2; sed 's/$/\x1b[0m/' >&2)
-  )
+      --save-password # 2> >(sed 's/^/\x1b[31m/' >&2; sed 's/$/\x1b[0m/' >&2) 
+  # )
   fc_status=$?
 
   if (( fc_status == 0 )); then
