@@ -11,7 +11,7 @@ run_with_spinner git clone https://github.com/tmux-plugins/tmux-resurrect "$HOME
 [ -d "$HOME/.tmux-ssh-split/" ] && rm -rf "$HOME/.tmux-ssh-split/"
 run_with_spinner git clone https://git.prr.re/Drakirus/tmux-ssh-split "$HOME/.tmux-ssh-split/" --depth=1
 [ -d "$HOME/.tmux-extrakto/" ] && rm -rf "$HOME/.tmux-extrakto/"
-run_with_spinner git clone https://github.com/laktak/extrakto "$HOME/.tmux-extrakto/" --depth=1
+run_with_spinner git clone https://git.prr.re/Drakirus/tmux-extrakto "$HOME/.tmux-extrakto/" --depth=1
 [ -d "$HOME/.tmux-thumbs/" ] && rm -rf "$HOME/.tmux-thumbs/"
 run_with_spinner git clone https://github.com/fcsonline/tmux-thumbs "$HOME/.tmux-thumbs/" --depth=1
 [ -d "$HOME/.tmux-last/" ] && rm -rf "$HOME/.tmux-last/"

@@ -445,12 +445,11 @@ forti() {
 
   info "Connecting to VPN: $VPN_NAME"
 
-  forti_output=$(
+  # forti_output=$(
     /opt/forticlient/forticlient-cli vpn connect "$VPN_NAME" \
       --username "$VPN_USER" \
-      --save-password \
-      2> >(sed 's/^/\x1b[31m/' >&2; sed 's/$/\x1b[0m/' >&2)
-  )
+      --save-password # 2> >(sed 's/^/\x1b[31m/' >&2; sed 's/$/\x1b[0m/' >&2) 
+  # )
   fc_status=$?
 
   if (( fc_status == 0 )); then
@@ -545,4 +544,24 @@ gclouds() {
   fi
   arr=(${arr[@]/\/usr\/bin\/ssh/tssh --download-path /tmp/})
   eval $arr
+}
+
+# Sum RX/TX bytes across physical network interfaces since boot.
+# Skips loopback, docker/bridge, and veth interfaces.
+netusage() {
+  awk '
+    function fmt(b) { return sprintf("%8.2f MiB (%.2f GiB)", b/1048576, b/1073741824) }
+    NR > 2 {
+      iface = $1; sub(":", "", iface)
+      if (iface == "lo") next
+      if (iface ~ /^(docker|br-|veth|bond|virbr|tun|tap)/) next
+      rx += $2; tx += $10
+      printf "  %-20s RX %s   TX %s\n", iface, fmt($2), fmt($10)
+    }
+    END {
+      printf "  %-20s RX %s   TX %s\n", "TOTAL", fmt(rx), fmt(tx)
+      printf "  %-20s    %s\n", "TOTAL (RX+TX)", fmt(rx+tx)
+    }
+  ' /proc/net/dev
+  echo "  since: $(uptime -s)  ($(uptime -p))"
 }

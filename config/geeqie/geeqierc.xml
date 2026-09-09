@@ -382,8 +382,8 @@
         style = "0" 
         order = "123" 
         dir_view_type = "0" 
-        file_view_type = "0" 
-        file_view_list_sort.method = "3" 
+        file_view_type = "1" 
+        file_view_list_sort.method = "1" 
         file_view_list_sort.ascend = "true" 
         file_view_list_sort.case_sensitive = "true" 
         dir_view_list_sort.method = "1" 
@@ -398,9 +398,9 @@
 
         main_window.x = "0" 
         main_window.y = "0" 
-        main_window.w = "1150" 
-        main_window.h = "647" 
-        main_window.maximized = "false" 
+        main_window.w = "951" 
+        main_window.h = "704" 
+        main_window.maximized = "true" 
         main_window.hdivider_pos = "347" 
         main_window.vdivider_pos = "210" 
         workspace = "0" 
@@ -409,15 +409,15 @@
 
         float_window.x = "0" 
         float_window.y = "0" 
-        float_window.w = "954" 
-        float_window.h = "1037" 
+        float_window.w = "951" 
+        float_window.h = "535" 
         float_window.vdivider_pos = "323" 
 
         properties_window.w = "0" 
         properties_window.h = "0" 
 
         tools_float = "false" 
-        tools_hidden = "true" 
+        tools_hidden = "false" 
 
         show_info_pixel = "false" 
         ignore_alpha = "false" 
@@ -454,7 +454,7 @@
         advanced_exif_window.h = "600" 
 
         animate = "false" >
-        <bar enabled = "true" width = "694" >
+        <bar enabled = "true" width = "552" >
             <clear/>
             <pane_histogram id = "histogram" title = "Linear Histogram on RGB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />

@@ -1,0 +1,193 @@
+#!/usr/bin/env bash
+#
+# vpn-mtu-fix.sh — fix the "ping works, SSH/HTTPS stall" MTU black hole on the
+# FortiClient IPsec tunnel when tethering through a low-MTU mobile link.
+#
+# It auto-detects the interface carrying the VPN address, lowers its MTU so the
+# advertised TCP MSS fits under the IPsec path MTU, persists that via
+# NetworkManager, and adds an MSS clamp as a backstop.
+#
+# Run it WITHOUT sudo — it escalates only the privileged commands itself, so
+# the fzf picker runs as you (your terminal, your fzf config). It will prompt
+# for your sudo password once, just before it touches the network config.
+#
+# Usage:
+#   vpn-mtu-fix          apply (default): detect/pick, apply, and persist
+#   vpn-mtu-fix status   show current state, change nothing
+#   vpn-mtu-fix revert   undo MTU override + remove the clamp
+#
+# Override detection / tuning via env vars, e.g.:
+#   IFACE=enx0c5b8f279a64 MTU=1180 vpn-mtu apply
+
+set -euo pipefail
+
+# ---- tunables ---------------------------------------------------------------
+VPN_PREFIX="${VPN_PREFIX:-10.4.}"        # how to spot the VPN address on an iface
+VPN_NET="${VPN_NET:-10.4.0.0/16}"        # destination subnet for the MSS clamp
+MTU="${MTU:-1180}"                       # path MTU is ~1198; 1180 leaves margin
+MSS="${MSS:-$((MTU - 40))}"             # MSS = MTU - 40 (TCP/IP headers)
+IFACE="${IFACE:-}"                       # leave empty to auto-detect
+# -----------------------------------------------------------------------------
+
+die() { echo "error: $*" >&2; exit 1; }
+
+# $SUDO is empty when already root, else "sudo". Privileged commands are
+# prefixed with it so the script can be invoked as a normal user.
+SUDO=""
+if [ "$(id -u)" -ne 0 ]; then
+  command -v sudo >/dev/null 2>&1 || die "not root and sudo not found"
+  SUDO="sudo"
+fi
+
+ensure_sudo() {
+  # Prompt for and cache credentials up front, so the password prompt doesn't
+  # land in the middle of the run (or after fzf has grabbed the terminal).
+  [ -n "$SUDO" ] || return 0
+  sudo -v || die "sudo authentication failed"
+}
+
+have_priv() {
+  # True if privileged commands can run without prompting (root, or cached sudo).
+  [ -z "$SUDO" ] || sudo -n true 2>/dev/null
+}
+
+detect_iface() {
+  # First interface whose IPv4 address starts with $VPN_PREFIX.
+  ip -o -4 addr show \
+    | awk -v p="^${VPN_PREFIX//./\\.}" '$4 ~ p {print $2; exit}'
+}
+
+list_ifaces() {
+  # One line per interface: "<dev>  <mtu>  <ipv4s>  <nm-profile>  [note]".
+  # The VPN-bearing interface (if any) is emitted first so it lands under
+  # fzf's cursor by default. Device name is always field 1 for safe extraction.
+  local auto dev mtu addrs conn note
+  auto="$(detect_iface || true)"
+  { [ -n "$auto" ] && echo "$auto"
+    for p in /sys/class/net/*; do basename "$p"; done; } \
+  | awk '!seen[$0]++' \
+  | while read -r dev; do
+      [ "$dev" = "lo" ] && continue
+      mtu="$(cat "/sys/class/net/$dev/mtu" 2>/dev/null || echo '?')"
+      addrs="$(ip -o -4 addr show dev "$dev" 2>/dev/null \
+                 | awk '{print $4}' | paste -sd, -)"
+      [ -n "$addrs" ] || addrs='-'
+      conn="$(nm_conn_for "$dev")"; [ -n "$conn" ] || conn='-'
+      note=''; [ "$dev" = "$auto" ] && note='<- detected'
+      printf '%s\t%s\t%s\t%s\t%s\n' "$dev" "$mtu" "$addrs" "$conn" "$note"
+    done
+}
+
+pick_iface() {
+  # Interactive fzf picker. Returns the chosen device name, or non-zero if
+  # fzf is unavailable / no tty / the user aborts (so callers can fall back).
+  command -v fzf >/dev/null 2>&1 || return 1
+  [ -t 0 ] && [ -t 1 ] || return 1   # need a real terminal
+  local sel
+  sel="$(list_ifaces \
+    | column -t -s$'\t' \
+    | fzf --reverse --height=45% \
+          --header=$'pick the VPN interface\n  IFACE  MTU  IPv4  NM-PROFILE' \
+    )" || return 1
+  [ -n "$sel" ] || return 1
+  awk '{print $1}' <<<"$sel"   # device name is always field 1
+}
+
+resolve_iface() {
+  if [ -z "$IFACE" ]; then
+    if [ "${NO_FZF:-0}" != "1" ] && IFACE="$(pick_iface)" && [ -n "$IFACE" ]; then
+      echo "selected interface: $IFACE"
+    else
+      IFACE="$(detect_iface || true)"
+      [ -n "$IFACE" ] || die "no interface holds a ${VPN_PREFIX}* address — is the VPN up?"
+      echo "auto-detected VPN interface: $IFACE"
+    fi
+  fi
+  ip link show "$IFACE" >/dev/null 2>&1 || die "interface '$IFACE' not found"
+}
+
+nm_conn_for() {
+  # NetworkManager connection name bound to the device, empty if unmanaged.
+  nmcli -g GENERAL.CONNECTION device show "$1" 2>/dev/null || true
+}
+
+clamp_exists() {
+  $SUDO iptables -t mangle -C OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+    -d "$VPN_NET" -j TCPMSS --set-mss "$MSS" 2>/dev/null
+}
+
+cmd_status() {
+  resolve_iface
+  local cur_mtu conn
+  cur_mtu="$(cat "/sys/class/net/$IFACE/mtu")"
+  conn="$(nm_conn_for "$IFACE")"
+  echo "interface : $IFACE"
+  echo "MTU now   : $cur_mtu  (target $MTU)"
+  echo "NM profile: ${conn:-<none / unmanaged>}"
+  if have_priv; then
+    if clamp_exists; then
+      echo "MSS clamp : present (-> $MSS for $VPN_NET)"
+    else
+      echo "MSS clamp : absent"
+    fi
+  else
+    echo "MSS clamp : unknown (run 'sudo -v' first to check without applying)"
+  fi
+}
+
+cmd_apply() {
+  resolve_iface          # interactive picker runs as the normal user
+  ensure_sudo            # one password prompt, after the picker, before changes
+
+  echo "setting MTU $MTU on $IFACE (live)"
+  $SUDO ip link set dev "$IFACE" mtu "$MTU"
+
+  local conn
+  conn="$(nm_conn_for "$IFACE")"
+  if [ -n "$conn" ]; then
+    echo "persisting MTU on NetworkManager profile: $conn"
+    $SUDO nmcli connection modify "$conn" 802-3-ethernet.mtu "$MTU"
+    # re-apply so it survives reconnects; ignore if it briefly drops the link
+    $SUDO nmcli connection up "$conn" >/dev/null 2>&1 || true
+  else
+    echo "warning: '$IFACE' is not managed by NetworkManager — MTU set live only,"
+    echo "         it will reset on reconnect. Re-run this script after reconnecting."
+  fi
+
+  if clamp_exists; then
+    echo "MSS clamp already present, skipping"
+  else
+    echo "adding MSS clamp ($MSS) for $VPN_NET"
+    $SUDO iptables -t mangle -A OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+      -d "$VPN_NET" -j TCPMSS --set-mss "$MSS"
+  fi
+}
+
+cmd_revert() {
+  resolve_iface
+  ensure_sudo
+
+  local conn
+  conn="$(nm_conn_for "$IFACE")"
+  if [ -n "$conn" ]; then
+    echo "clearing MTU override on $conn (back to auto)"
+    $SUDO nmcli connection modify "$conn" 802-3-ethernet.mtu 0
+    $SUDO nmcli connection up "$conn" >/dev/null 2>&1 || true
+  fi
+  echo "restoring live MTU to 1500 on $IFACE"
+  $SUDO ip link set dev "$IFACE" mtu 1500 2>/dev/null || true
+
+  if clamp_exists; then
+    echo "removing MSS clamp"
+    $SUDO iptables -t mangle -D OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+      -d "$VPN_NET" -j TCPMSS --set-mss "$MSS"
+  fi
+  echo "reverted."
+}
+
+case "${1:-apply}" in
+  apply)  cmd_apply  ;;
+  status) cmd_status ;;
+  revert) cmd_revert ;;
+  *) die "unknown command '$1' (use: apply | status | revert)" ;;
+esac

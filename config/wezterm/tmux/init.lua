@@ -24,10 +24,13 @@ local last_fallback_time = 0
 -- If no pane exists, sends the original key+mods to the terminal
 local function smart_pane_nav(window, pane, direction, key, mods)
   local current_pane = pane:pane_id()
-  window:perform_action(act.ActivatePaneDirection(direction), pane)
-  local new_pane = window:active_pane():pane_id()
+  local new_pane = nil
+  if direction == "Down" or direction == "Up" then
+    window:perform_action(act.ActivatePaneDirection(direction), pane)
+    new_pane = window:active_pane():pane_id()
+  end
 
-  if new_pane == current_pane then
+  if new_pane == current_pane or new_pane == nil then
     -- No pane in that direction: send original key + modifiers
     window:perform_action(act.SendKey{ key = key, mods = mods }, pane)
   end
@@ -43,12 +46,12 @@ function M.move_or_send(direction, key)
     overrides.cursor_blink_rate = 0
     window:set_config_overrides(overrides)
 
-    if is_inside_tmux(pane) then
-      -- send Ctrl+key to tmux
-      window:perform_action(act.SendKey({ key = key, mods = "CTRL" }), pane)
-    else
+    -- if is_inside_tmux(pane) then
+    --   -- send Ctrl+key to tmux
+    --   window:perform_action(act.SendKey({ key = key, mods = "CTRL" }), pane)
+    -- else
       smart_pane_nav(window, pane, direction, key, "CTRL")
-    end
+    -- end
   end)
 end
 

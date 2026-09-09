@@ -33,20 +33,16 @@ if [[ "$target_file" =~ \.zshrc$ ]]; then
   exit 0
 fi
 
-# Determine proper exec line based on shell type
-if [[ "$target_file" =~ \.cshrc$|\.login$|\.tcshrc$ ]]; then
-    exec_line="if ( -f $wherezsh ) exec $wherezsh -l"
-else
-    exec_line="[ -f $wherezsh ] && [ \"\${JUNEST_ENV}\" != \"1\" ] && exec $wherezsh -l"
-fi
+exec_line="if ( -f $wherezsh ) exec $wherezsh -l"
+exec_line2="[ -f $wherezsh ] && [ \"\${JUNEST_ENV}\" != \"1\" ] && exec $wherezsh -l"
 
 # Prompt user
-read -p "[FAKE chsh] Add exec '$wherezsh' to $target_file ? [y] " -n 1 -r
+read -p "[FAKE chsh] Add exec 'zsh' to $target_file & .profile ? [y] " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     [[ ! -f "$target_file" ]] && touch "$target_file"
     echo "$exec_line" >> "$target_file"
-    echo "Updated $target_file"
+    echo "$exec_line2" >> $HOME/.profile
 fi
 
 success "[ASK] End"
