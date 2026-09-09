@@ -8,7 +8,8 @@
   "packages": [
     "extensions/pi-nvim-embedded",
     "extensions/pi-bash-live-view",
-    "extensions/anycopy"
+    "extensions/anycopy",
+    "npm:@plannotator/pi-extension"
   ],
   "extensions_source": [
     "https://github.com/qmx/pi-plan-mode",

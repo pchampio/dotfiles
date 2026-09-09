@@ -60,3 +60,5 @@ doc/*
 node_modules/*
 
 vendor
+
+**/.claude/settings.local.json
