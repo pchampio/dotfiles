@@ -1,0 +1,126 @@
+#!/bin/bash
+
+# Show or pin the BSSID (AP lock) for the active Wi-Fi connection.
+#
+# Locking the profile to its current BSSID makes NetworkManager skip
+# configuring wpa_supplicant's bgscan module (nm-supplicant-config.c: "Don't
+# scan when the connection is locked to a specific AP"). On multi-AP networks
+# bgscan is "simple:30:-65:300": a full-spectrum background scan every 300s
+# that takes the radio off-channel for several seconds — enough to stall a
+# game stream. The trade-off is no roaming to other APs while locked.
+#
+# Usage: network-lock-ap [lock|unlock]
+# Status output (tab-separated, parsed by the network panel's parseKeyValue):
+#   current	<bssid of the AP currently associated, lowercase>
+#   locked	<bssid pinned in the profile, lowercase; empty when unlocked>
+
+set -euo pipefail
+
+nm_get() {
+  LC_ALL=C nmcli -e no -g "$@"
+}
+
+wifi_device() {
+  nm_get DEVICE,TYPE,STATE device status |
+    awk -F: '$2 == "wifi" && $3 == "connected" && !found { print $1; found = 1 }'
+}
+
+wifi_profile() {
+  nm_get GENERAL.CON-UUID device show "$1"
+}
+
+current_bssid() {
+  # Use NetworkManager's cached AP list; do not trigger a background scan.
+  nm_get IN-USE,BSSID device wifi list ifname "$1" --rescan no |
+    awk '/^\*:/ && !found { print tolower(substr($0, 3)); found = 1 }'
+}
+
+locked_bssid() {
+  nm_get 802-11-wireless.bssid connection show uuid "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+print_status() {
+  local device profile current locked
+
+  device=$(wifi_device)
+  [[ -n $device ]] || return 0
+
+  current=$(current_bssid "$device")
+  profile=$(wifi_profile "$device")
+  locked=""
+  if [[ -n $profile && $profile != "--" ]]; then
+    locked=$(locked_bssid "$profile")
+  fi
+  printf 'current\t%s\nlocked\t%s\n' "$current" "$locked"
+}
+
+set_lock() {
+  local action=$1
+  local device profile previous desired
+
+  device=$(wifi_device)
+  if [[ -z $device ]]; then
+    echo "Error: no connected Wi-Fi device." >&2
+    exit 1
+  fi
+
+  profile=$(wifi_profile "$device")
+  if [[ -z $profile || $profile == "--" ]]; then
+    echo "Error: no active Wi-Fi connection profile." >&2
+    exit 1
+  fi
+
+  if [[ $action == "lock" ]]; then
+    desired=$(current_bssid "$device")
+    if [[ ! $desired =~ ^([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}$ ]]; then
+      echo "Error: could not determine the current BSSID." >&2
+      exit 1
+    fi
+  else
+    desired=""
+  fi
+
+  previous=$(locked_bssid "$profile")
+  [[ $previous == "$desired" ]] && exit 0
+
+  nmcli connection modify uuid "$profile" 802-11-wireless.bssid "$desired" >/dev/null
+
+  # The bgscan setting only changes on reassociation, so bounce the connection.
+  # If it cannot come back (the AP vanished between read and lock), restore the
+  # previous setting and reconnect rather than leaving the machine offline.
+  if ! nmcli --wait 30 connection up uuid "$profile" ifname "$device" >/dev/null; then
+    if ! nmcli connection modify uuid "$profile" 802-11-wireless.bssid "$previous" >/dev/null; then
+      echo "Error: AP ${action} failed and the previous setting could not be restored." >&2
+      exit 1
+    fi
+    if nmcli --wait 30 connection up uuid "$profile" ifname "$device" >/dev/null; then
+      echo "Error: could not reconnect with AP ${action}; previous setting and connection restored." >&2
+    else
+      echo "Error: AP ${action} failed; previous setting restored, but reconnect failed." >&2
+    fi
+    exit 1
+  fi
+}
+
+usage() {
+  echo "Usage: network-lock-ap [lock|unlock]" >&2
+}
+
+if (($# > 1)) || { (($# == 1)) && [[ $1 != lock && $1 != unlock ]]; }; then
+  usage
+  exit 1
+fi
+
+if ! command -v nmcli >/dev/null 2>&1; then
+  echo "Error: nmcli is required. Install NetworkManager with:" >&2
+  echo "  Debian/Ubuntu: sudo apt install network-manager" >&2
+  echo "  Arch Linux:   sudo pacman -S networkmanager" >&2
+  exit 1
+fi
+
+if (($# == 0)); then
+  print_status
+  exit 0
+fi
+
+set_lock "$1"

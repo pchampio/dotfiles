@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+# Rootless voice input: ./install/parakeet --remote ampere
+set -euo pipefail
+BASEDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+DOTFILES=$(cd "$BASEDIR/.." && pwd)
+. "$BASEDIR/inc/functions"
+
+case "${1:---server}" in
+  --remote)
+    host=${2:-ampere}
+    # Transfer only this feature, without changing the remote dotfiles checkout.
+    tar -C "$DOTFILES" -cf - install/parakeet install/inc/functions config/wezterm/voice |
+      ssh "$host" 'mkdir -p "$HOME/.local/share/parakeet-voice/bootstrap" && tar -xf - -C "$HOME/.local/share/parakeet-voice/bootstrap"'
+    ssh "$host" 'bash "$HOME/.local/share/parakeet-voice/bootstrap/install/parakeet" --server'
+    exit
+    ;;
+  --client)
+    for command in python3 parecord wezterm ssh; do
+      command -v "$command" >/dev/null || { error "Missing local dependency: $command"; exit 1; }
+    done
+    python3 -c 'import curses'
+    success '[VOICE] Local prerequisites ready. Ctrl+Shift+B opens the recorder.'
+    exit
+    ;;
+  --server) ;;
+  *) echo 'Usage: install/parakeet [--server | --client | --remote SSH_HOST]'; exit 2 ;;
+esac
+
+ROOT="$HOME/.local/share/parakeet-voice"
+REV=e75de9b6b9b688fd293aa22f7e27aa724ea286f8
+MODEL_REV=bf0af9f425fa01809cadec671b3cb672709d13e9
+MODEL=nemotron-3.5-asr-streaming-0.6b-q8_0.gguf
+MODEL_SHA=ba2f13eccd4a5245be728f77e6149bd6a4fdcdd133ff2e08ac6005bcef7a99f1
+SOURCE="$ROOT/sources/$REV"
+export PATH="$HOME/.local/bin:$PATH"
+for command in python3 git curl tar g++ make sha256sum systemctl; do
+  command -v "$command" >/dev/null || { error "Missing prerequisite: $command (no system packages are installed by this script)"; exit 1; }
+done
+systemctl --user show-environment >/dev/null
+mkdir -p "$ROOT/models" "$ROOT/sources" "$HOME/.config/systemd/user"
+
+# CMake itself can be bootstrapped into the feature directory, without pip/root.
+if ! command -v cmake >/dev/null; then
+  CMAKE_VERSION=3.31.6
+  case "$(uname -m)" in x86_64|aarch64) ;; *) error 'Unsupported CMake binary architecture'; exit 1 ;; esac
+  CMAKE_ARCHIVE="cmake-$CMAKE_VERSION-linux-$(uname -m)"
+  if [[ ! -x "$ROOT/$CMAKE_ARCHIVE/bin/cmake" ]]; then
+    curl -fL --retry 3 "https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/$CMAKE_ARCHIVE.tar.gz" -o "$ROOT/cmake.tar.gz"
+    tar -xzf "$ROOT/cmake.tar.gz" -C "$ROOT"
+  fi
+  export PATH="$ROOT/$CMAKE_ARCHIVE/bin:$PATH"
+fi
+
+explain '[VOICE] Build pinned parakeet.cpp, CPU only'
+if [[ ! -d "$SOURCE/.git" ]]; then
+  git init "$SOURCE"
+  git -C "$SOURCE" remote add origin https://github.com/mudler/parakeet.cpp
+fi
+if ! git -C "$SOURCE" cat-file -e "$REV^{commit}" 2>/dev/null; then
+  git -C "$SOURCE" fetch --depth 1 origin "$REV"
+fi
+git -C "$SOURCE" checkout --detach "$REV"
+git -C "$SOURCE" submodule update --init --depth 1
+cmake -S "$SOURCE" -B "$SOURCE/build" -DCMAKE_BUILD_TYPE=Release \
+  -DPARAKEET_SHARED=ON -DPARAKEET_BUILD_CLI=OFF -DPARAKEET_BUILD_SERVER=OFF \
+  -DPARAKEET_GGML_CUDA=OFF -DPARAKEET_GGML_METAL=OFF -DPARAKEET_GGML_VULKAN=OFF -DPARAKEET_GGML_HIP=OFF
+cmake --build "$SOURCE/build" --parallel "${PARAKEET_BUILD_JOBS:-8}"
+
+explain '[VOICE] Download and verify Nemotron 3.5 streaming 0.6B (Q8_0, ~984 MB)'
+if [[ ! -f "$ROOT/models/$MODEL" ]]; then
+  curl -fL --retry 3 "https://huggingface.co/mudler/parakeet-cpp-gguf/resolve/$MODEL_REV/$MODEL" -o "$ROOT/models/$MODEL.part"
+  echo "$MODEL_SHA  $ROOT/models/$MODEL.part" | sha256sum -c -
+  mv "$ROOT/models/$MODEL.part" "$ROOT/models/$MODEL"
+else
+  echo "$MODEL_SHA  $ROOT/models/$MODEL" | sha256sum -c -
+fi
+
+cp "$DOTFILES/config/wezterm/voice/voice.py" "$ROOT/voice.py"
+PYTHON=$(command -v python3)
+printf '#!/usr/bin/env bash\nexec %q %q "$@"\n' "$PYTHON" "$ROOT/voice.py" > "$ROOT/voice"
+chmod 755 "$ROOT/voice"
+cat > "$HOME/.config/systemd/user/parakeet-voice.service" <<EOF
+[Unit]
+Description=Persistent CPU Nemotron streaming voice transcription
+
+[Service]
+Type=simple
+Environment=PARAKEET_DEVICE=cpu
+ExecStart="%h/.local/share/parakeet-voice/voice" serve --library "%h/.local/share/parakeet-voice/sources/$REV/build/libparakeet.so" --model "%h/.local/share/parakeet-voice/models/$MODEL"
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target
+EOF
+systemctl --user daemon-reload
+systemctl --user enable parakeet-voice.service
+systemctl --user restart parakeet-voice.service
+
+# Unprivileged on hosts whose policy permits users to linger. Never ask for root.
+if [[ "$(loginctl show-user "$USER" -p Linger --value)" != yes ]]; then
+  loginctl enable-linger "$USER" --no-ask-password || true
+fi
+if [[ "$(loginctl show-user "$USER" -p Linger --value)" != yes ]]; then
+  error '[VOICE] Host policy disallows user lingering: service runs while logged in, but cannot be guaranteed after logout.'
+fi
+
+explain '[VOICE] Wait for model readiness'
+"$PYTHON" - "$ROOT/voice.py" <<'PY'
+import importlib.util, socket, sys, time
+spec = importlib.util.spec_from_file_location('voice', sys.argv[1])
+voice = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(voice)
+deadline = time.monotonic() + 180
+while True:
+    try:
+        with socket.socket(socket.AF_UNIX) as sock:
+            sock.settimeout(10)
+            sock.connect(voice.socket_path())
+            with sock.makefile('rwb') as stream:
+                voice.emit(stream, {'type': 'start', 'lang': 'en-US'})
+                response = voice.read_message(stream)
+                if response.get('type') != 'ready':
+                    raise RuntimeError(str(response))
+        break
+    except (OSError, EOFError):
+        if time.monotonic() >= deadline:
+            raise SystemExit('Service did not become ready; run journalctl --user -u parakeet-voice -n 50')
+        time.sleep(1)
+PY
+success '[VOICE] CPU model loaded and ready. Logs: journalctl --user -u parakeet-voice -f'

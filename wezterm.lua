@@ -13,6 +13,10 @@ local bc = require("based_copymode")
 local tmux = require("tmux")
 local toggle_terminal = require("toggle_terminal")
 local auto_complete = require("auto_complete")
+local voice = dofile(HOME .. "/dotfiles/config/wezterm/voice/init.lua")
+local image_paste_path = HOME .. "/dotfiles/config/wezterm/image_paste/init.lua"
+wezterm.add_to_config_reload_watch_list(image_paste_path)
+local image_paste = dofile(image_paste_path)
 
 -- == Config plugins/personal functions ==
 wezterm.on("user-var-changed", function(window, pane, name, value)
@@ -123,14 +127,7 @@ config.keys = {
   {
     key = "V",
     mods = "SHIFT|CTRL",
-    action = wezterm.action_callback(function(window, pane)
-      local success, stdout, stderr = wezterm.run_child_process({ "wl-paste", "--no-newline" })
-      if success then
-        pane:paste(stdout)
-      else
-        wezterm.log_error("wl-paste failed with\n" .. stderr .. stdout)
-      end
-    end),
+    action = wezterm.action_callback(image_paste.paste),
   }, -- Or Clipboard depending on the setting
   -- OpenUrl
   { key = "x", mods = "SHIFT|CTRL", action = openUrl },
@@ -258,6 +255,7 @@ config.hyperlink_rules = {
 }
 
 toggle_terminal.apply_to_config(config)
+voice.apply_to_config(config, { host = 'ampere', lang = 'en-US' })
 
 
 local function kill_blink(window)

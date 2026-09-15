@@ -439,6 +439,61 @@ function M.apply_to_config(config, user_opts)
   })
 end
 
+-- Named command panes use the same show/hide behavior as the shell toggle,
+-- without sending commands into a shell that may already be busy.
+function M.toggle_command(window, pane, name, spawn)
+  local function find_pane(id)
+    local ok, result = pcall(mux.get_pane, id)
+    return ok and result or nil
+  end
+  local tab = pane:tab()
+  local key = tostring(tab:tab_id()) .. ':' .. name
+  -- GLOBAL exposes JSON-backed userdata: assigning nil to a nested key leaves
+  -- a JSON null, rather than deleting a Lua table entry. Work on a decoded Lua
+  -- table so stale entries can be removed, and persist it as a JSON string.
+  local saved = wezterm.GLOBAL.toggle_command_panes_json
+  local states = type(saved) == 'string' and wezterm.json_parse(saved) or {}
+  local state = states[key]
+  local command_pane = state and find_pane(state.pane_id)
+  if command_pane and command_pane:tab():tab_id() == tab:tab_id() then
+    tab:set_zoomed(false)
+    if pane:pane_id() == state.pane_id then
+      local invoker = find_pane(state.invoker_id)
+      if invoker and invoker:tab():tab_id() == tab:tab_id() then
+        invoker:activate()
+        tab:set_zoomed(true)
+      end
+    else
+      command_pane:activate()
+    end
+    return command_pane
+  end
+
+  -- Forget closed panes across config reloads; the target is captured only when
+  -- starting a fresh command, never when showing an existing recording.
+  states[key] = nil
+  for old_key, old_state in pairs(states) do
+    if not find_pane(old_state.pane_id) then
+      states[old_key] = nil
+    end
+  end
+  tab:set_zoomed(false)
+  -- action.SplitPane uses Up/Down; pane:split uses Top/Bottom.
+  local direction = spawn.direction or M.opts.direction
+  direction = ({ Up = 'Top', Down = 'Bottom' })[direction] or direction
+  command_pane = pane:split({
+    direction = direction,
+    size = spawn.size or 0.4,
+    domain = spawn.domain or { DomainName = 'local' },
+    cwd = spawn.cwd,
+    args = spawn.args,
+  })
+  states[key] = { pane_id = command_pane:pane_id(), invoker_id = pane:pane_id() }
+  wezterm.GLOBAL.toggle_command_panes_json = wezterm.json_encode(states)
+  command_pane:activate()
+  return command_pane
+end
+
 return M
 
 -- vim: set tabstop=2 shiftwidth=2 expandtab:
