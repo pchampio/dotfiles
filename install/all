@@ -24,3 +24,8 @@ sleep 10
 "$BASEDIR/junest"
 "$BASEDIR/watchman"
 "$BASEDIR/java"
+
+# Opt in per host: PARAKEET_VOICE_INSTALL=server (or client) ./install/all
+if [[ -n "${PARAKEET_VOICE_INSTALL:-}" ]]; then
+  "$BASEDIR/parakeet" "--$PARAKEET_VOICE_INSTALL"
+fi
