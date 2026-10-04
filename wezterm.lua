@@ -93,7 +93,7 @@ config.selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
 
 local openUrl = act.QuickSelectArgs({
   label = "open url",
-  patterns = { "https?://\\S+" },
+  patterns = { [=[https?://[^\s<>"'`()\[\]{}\\]+]=] },
   action = wezterm.action_callback(function(window, pane)
     local url = window:get_selection_text_for_pane(pane)
     wezterm.open_with(url)
