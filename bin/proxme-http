@@ -1,0 +1,307 @@
+#!/usr/bin/env python3
+"""Token login proxy for proxme.
+
+  proxme-http PORT TOKEN --proxy TARGET_PORT   forward to localhost:TARGET_PORT
+  proxme-http PORT TOKEN --dir DIR             serve DIR (python3 -m http.server)
+
+Open any URL with ?t=TOKEN: the proxy sets a login cookie and
+redirects to the same URL without the token. Requests without a valid cookie
+get a login form. The proxied app never sees the token, the login cookie,
+or the login path.
+For scripts: curl -b proxme_token=TOKEN URL
+"""
+import argparse
+import asyncio
+import functools
+import hmac
+import html
+import socket
+import subprocess
+import sys
+from urllib.parse import parse_qs, urlsplit
+
+COOKIE = "proxme_token"
+PARAM = "t"
+LOGIN_PATH = "/.proxme/login"
+
+LOGIN_PAGE = """<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prox'me - Login</title>
+<style>
+html { background: #111; }
+body {
+  color: #090;
+  width: min(520px, calc(100% - 32px));
+  margin: 50px auto;
+  font-family: Courier New, Courier, monospace;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+pre { white-space: pre-wrap; }
+header { color: #0f0; }
+header span.dim { color: #090; }
+section strong { color: #0f0; }
+.light { color: #050; }
+.error { color: #f33; }
+div.cursor {
+  display: inline-block;
+  background: #111;
+  margin-left: 1px;
+  animation: blink 2s linear 0s infinite;
+}
+@keyframes blink {
+  0% { background: #0a0 } 47% { background: #090 }
+  50% { background: #000 } 97% { background: #000 } 100% { background: #090 }
+}
+form { display: flex; gap: 1ch; align-items: baseline; }
+input {
+  font: inherit;
+  color: #00e25d;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed #050;
+  outline: none;
+  padding: 0;
+  caret-color: #0f0;
+}
+input[type=password] { flex: 1; min-width: 0; }
+input[type=submit] { color: #090; border: 0; cursor: pointer; text-decoration: underline; }
+input[type=submit]:hover { background: #00ff0080; color: #111; text-decoration: none; }
+</style>
+</head>
+<body>
+<header><pre>
+                                .
+                               *
+.oPYo.  ' oPYo. .oPYo. `o  o'    ooYoYo. .oPYo
+8    8   8  `' 8    8  `bd'     8' 8  8 8oooo8
+o    *  8     8    8  d'`b     8  8  8 8.
+88Y0P   8     `YooP' o'  `o    8  8  8 `Yooo'
+8
+8                     <span class="dim">Dead simple public URLs</span><div class="cursor">&nbsp;</div>
+
+    </pre></header>
+
+<section><pre>
+<strong>Access required</strong>
+This service is protected by a token.
+<span class="light">The token is printed by proxme when the tunnel starts.</span>
+__ERROR__</pre>
+<form method="post" action="__ACTION__">
+<span>$ token:</span>
+<input type="password" name="token" autofocus required autocomplete="off" aria-label="Token">
+<input type="hidden" name="next" value="__NEXT__">
+<input type="submit" value="[login]">
+</form>
+</section>
+</body></html>
+"""
+
+
+def is_token(value, token):
+    return hmac.compare_digest(value.encode("utf-8", "surrogateescape"), token.encode())
+
+
+def safe_next(target):
+    # Only same-site paths, so the login cannot redirect to another site.
+    if not target.startswith("/") or target.startswith(("//", "/\\")):
+        return "/"
+    return target
+
+
+def response(status, headers=(), body=b""):
+    lines = [f"HTTP/1.1 {status}", f"Content-Length: {len(body)}", "Connection: close", *headers]
+    return ("\r\n".join(lines) + "\r\n\r\n").encode("latin-1") + body
+
+
+def login_page(next_target, error=False):
+    body = (
+        LOGIN_PAGE.replace("__ACTION__", LOGIN_PATH)
+        .replace("__NEXT__", html.escape(next_target))
+        .replace("__ERROR__", '<span class="error">Wrong token.</span>\n' if error else "")
+        .encode()
+    )
+    headers = ["Content-Type: text/html; charset=utf-8", "Cache-Control: no-store"]
+    return response("401 Unauthorized", headers, body)
+
+
+async def pipe(reader, writer):
+    try:
+        while data := await reader.read(65536):
+            writer.write(data)
+            await writer.drain()
+        if writer.can_write_eof():
+            writer.write_eof()
+    except (ConnectionError, OSError):
+        pass
+
+
+async def login(client_r, headers, token):
+    try:
+        length = min(int(headers.get("content-length", 0)), 4096)
+        form = parse_qs((await client_r.readexactly(length)).decode("utf-8", "replace"))
+    except (ValueError, asyncio.IncompleteReadError):
+        form = {}
+    next_target = safe_next(form.get("next", ["/"])[0])
+    if not is_token(form.get("token", [""])[0], token):
+        await asyncio.sleep(1)
+        return login_page(next_target, error=True)
+    return logged_in(next_target, token)
+
+
+def logged_in(next_target, token):
+    cookie = f"Set-Cookie: {COOKIE}={token}; Path=/; HttpOnly; Secure; SameSite=Lax"
+    return response("303 See Other", [f"Location: {next_target}", cookie])
+
+
+def split_token_param(target):
+    """Return (token value or None, target without the token parameter)."""
+    path, sep, query = target.partition("?")
+    value, kept = None, []
+    for param in query.split("&") if sep else []:
+        name, _, v = param.partition("=")
+        if name == PARAM:
+            value = v
+        elif param:
+            kept.append(param)
+    return value, path + ("?" + "&".join(kept) if kept else "")
+
+
+async def handle(client_r, client_w, token, target_port):
+    upstream_w = None
+    try:
+        try:
+            head = await client_r.readuntil(b"\r\n\r\n")
+        except (asyncio.IncompleteReadError, asyncio.LimitOverrunError):
+            return
+        request_line, *lines = head.decode("latin-1").split("\r\n")[:-2]
+        try:
+            method, target, _version = request_line.split(" ", 2)
+        except ValueError:
+            return
+
+        headers = [line.partition(":")[::2] for line in lines]
+        headers = [(k.strip(), v.strip()) for k, v in headers]
+        names = {k.lower(): v for k, v in headers}
+
+        if method == "POST" and urlsplit(target).path == LOGIN_PATH:
+            client_w.write(await login(client_r, names, token))
+            return
+
+        # Login link: ?t=TOKEN sets the cookie, then a clean redirect.
+        value, clean_target = split_token_param(target)
+        if value is not None:
+            if is_token(value, token):
+                client_w.write(logged_in(safe_next(clean_target), token))
+            else:
+                await asyncio.sleep(1)
+                client_w.write(login_page(safe_next(clean_target), error=True))
+            return
+
+        cookies, authorized = [], False
+        for k, v in headers:
+            if k.lower() != "cookie":
+                continue
+            for part in v.split(";"):
+                name, _, value = part.strip().partition("=")
+                if name == COOKIE:
+                    authorized = authorized or is_token(value, token)
+                elif name:
+                    cookies.append(part.strip())
+        if not authorized:
+            client_w.write(login_page(safe_next(target) if method == "GET" else "/"))
+            return
+
+        # Rebuild the request: drop our cookie, and close the upstream
+        # connection after one response so each request is checked here.
+        upgrade = "upgrade" in names and "upgrade" in names.get("connection", "").lower()
+        drop = {"cookie"} if upgrade else {"cookie", "connection", "keep-alive", "proxy-connection"}
+        out = [request_line]
+        out += [f"{k}: {v}" for k, v in headers if k.lower() not in drop]
+        if cookies:
+            out.append("Cookie: " + "; ".join(cookies))
+        if not upgrade:
+            out.append("Connection: close")
+
+        try:
+            upstream_r, upstream_w = await asyncio.open_connection("localhost", target_port)
+        except OSError:
+            client_w.write(response("502 Bad Gateway"))
+            return
+        upstream_w.write(("\r\n".join(out) + "\r\n\r\n").encode("latin-1"))
+
+        to_upstream = asyncio.create_task(pipe(client_r, upstream_w))
+        await pipe(upstream_r, client_w)
+        to_upstream.cancel()
+    finally:
+        for w in (client_w, upstream_w):
+            if w is not None:
+                w.close()
+
+
+def free_port():
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+async def wait_listening(port, timeout=5):
+    for _ in range(int(timeout * 20)):
+        try:
+            _, w = await asyncio.open_connection("127.0.0.1", port)
+            w.close()
+            return
+        except OSError:
+            await asyncio.sleep(0.05)
+    sys.exit(f"proxme-http: nothing listening on port {port}")
+
+
+async def serve(port, token, target_port):
+    server = await asyncio.start_server(
+        functools.partial(handle, token=token, target_port=target_port),
+        "127.0.0.1",
+        port,
+    )
+    print(f"proxme-http: 127.0.0.1:{port} -> localhost:{target_port}", file=sys.stderr)
+    async with server:
+        await server.serve_forever()
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("port", type=int)
+    parser.add_argument("token")
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument("--proxy", type=int, metavar="TARGET_PORT")
+    target.add_argument("--dir", help="serve this directory")
+    args = parser.parse_args()
+
+    files = None
+    target_port = args.proxy
+    if args.dir:
+        target_port = free_port()
+        files = subprocess.Popen(
+            [sys.executable, "-m", "http.server", "--bind", "127.0.0.1",
+             "--directory", args.dir, str(target_port)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    try:
+        if files:
+            asyncio.run(wait_listening(target_port))
+        asyncio.run(serve(args.port, args.token, target_port))
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if files:
+            files.terminate()
+
+
+if __name__ == "__main__":
+    main()

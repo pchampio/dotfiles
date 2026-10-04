@@ -168,6 +168,7 @@ o    *  8     8    8  d'\`b     8  8  8 8.
 
 EOF
 
+  local localport
   port=8080
   vared -p ' Share local port: ' -c port
   proxmeport=$port
@@ -178,20 +179,22 @@ EOF
     echo "  rsync -avzh --progress -e 'ssh -p 2222' /PATH_FILE_SEND $(whoami)@prr.re:~/OUT --dry-run"
   else
 
-    if ! lsof -Pi :$port -sTCP:LISTEN -t >/dev/null; then
-      echo -n " Start python3 http server on $port [default Yes]: "
-      read inputs
-      if [[ $inputs =~ ^([Nn][oO]|[nN])$ ]]; then
-        echo " Not starting the http server"
-      else
-        echo " Starting http server on port $port.."
-        python3 -m http.server $port &
-      fi
+    # 12 letters and digits: about 71 bits, out of reach for online guessing.
+    token=$(python3 -c 'import secrets, string; a = string.ascii_letters + string.digits; print("".join(secrets.choice(a) for _ in range(12)))')
+    localport=$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
+    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null; then
+      echo " Starting token proxy in front of port $port.."
+      proxme-http $localport $token --proxy $port &
+    else
+      echo " Starting token protected http server for $PWD.."
+      proxme-http $localport $token --dir . &
     fi
 
-    echo " --> https://$proxmeport.proxme.prr.re/"
+    echo " --> https://$proxmeport.proxme.prr.re/?t=$token"
   fi
-  command ssh -R "${proxmeport}:localhost:${port}" share@prr.re
+  # No shared ControlMaster: it would keep the forward alive after exit.
+  command ssh -o ControlMaster=no -o ControlPath=none -o ExitOnForwardFailure=yes \
+    -R "${proxmeport}:localhost:${localport:-$port}" share@prr.re
   fg
 }
 
@@ -201,10 +204,13 @@ function proxget {
 
   # Prompt user for server URL with prefill
   vared -p "Enter port number: " -c SERVER_PORT <<<"$SERVER_PORT"
+  SERVER_TOKEN=""
+  vared -p "Enter token: " -c SERVER_TOKEN
   SERVER_URL="https://$SERVER_PORT.proxme.prr.re"
+  AUTH_COOKIE="proxme_token=$SERVER_TOKEN"
 
   # Fetch the directory listing and extract href links
-  FILE_LIST=$(curl -s "$SERVER_URL" | grep -oP 'href="\K[^"]+' | grep -v '/')
+  FILE_LIST=$(curl -s -b "$AUTH_COOKIE" "$SERVER_URL" | grep -oP 'href="\K[^"]+' | grep -v '/')
 
   # Check if any files were found
   if [ -z "$FILE_LIST" ]; then
@@ -224,7 +230,7 @@ function proxget {
   # Download selected files
   echo "$SELECTED_FILES" | while IFS= read -r FILE; do
     echo "Downloading $FILE..."
-    curl --progress-bar -O "$SERVER_URL/$FILE"
+    curl --progress-bar -b "$AUTH_COOKIE" -O "$SERVER_URL/$FILE"
   done
 
   echo "Done!"
