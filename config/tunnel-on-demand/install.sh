@@ -4,7 +4,9 @@
 #   ./install.sh --uninstall  stop and remove the service (config is kept)
 set -euo pipefail
 DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-. "$DIR/../../install/inc/functions"
+explain() { printf "\033[1;34m%s\033[0m\n" "$1"; }
+success() { printf "\033[1;32m%s\033[0m\n" "$1"; }
+error() { printf "\033[1;31m%s\033[0m\n" "$1"; }
 
 NAME=tunnel-on-demand
 UNIT="$HOME/.config/systemd/user/$NAME.service"
