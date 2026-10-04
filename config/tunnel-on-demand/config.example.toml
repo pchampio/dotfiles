@@ -1,0 +1,32 @@
+# ~/.config/tunnel-on-demand/config.toml
+# Restart after editing: systemctl --user restart tunnel-on-demand
+
+[defaults]
+host = "ampere.ch.themama.ai"
+idle_timeout = 0          # seconds without any connection before ssh is closed (0 = keep it open)
+# bind = "127.0.0.1"
+# Agent holding your key: a socket path, or a file with ssh-agent output (re-read on each connect).
+# Without it, the systemd environment agent is used (gcr keyring on COSMIC).
+ssh_auth_sock = "~/.ssh-agent-thing"
+# Private key to use (only this key is offered, plus the agent's copy of it). Optional.
+# identity_file = "~/.ssh/id_ed25519"
+# If the key/agent isn't enough (expired agent, passphrase, password, new host key),
+# the "connecting" page opens a terminal to log in. One ssh connection per host is
+# shared by all its ports, so you log in once.
+# ssh_args = ["-p", "22"]
+
+# One block per port or port range. Equivalent of: ssh -L <listen>:<remote> <host>
+#   listen: 5056 | "5050-5059" | [5056, "8000-8999"]
+#   remote: "addr" (same port as listen, required for ranges) or "addr:port" (single port only)
+#   host, identity_file, ssh_auth_sock, ssh_args: override [defaults]
+# Each port is forwarded only when it is first used.
+# Started after desktop login; ports already used by another program are skipped (not retried).
+# Ports taken by this service can't be used by programs started later (restart the service to free them).
+
+[[tunnel]]
+listen = "5050-5059"
+remote = "0.0.0.0"
+
+[[tunnel]]
+listen = "8000-8999"
+remote = "0.0.0.0"
