@@ -71,13 +71,14 @@ local function ssh_target(args)
     if arg:sub(1, 2) == '--' then
       local option, value = arg:match('^(%-%-[^=]+)=(.*)$')
       option = option or arg
-      if option == '--download-path' or option == '--upload-path' or option == '--config' then
+      if option == '--download-path' or option == '--upload-path' or option == '--upload-file' or option == '--config' then
         if not value then index = index + 1; value = args[index] end
         assert(value, 'Missing SSH option argument')
         if option == '--config' then
           table.insert(options, '-F'); table.insert(options, value)
         end
-      elseif option ~= '--dragfile' and option ~= '--trzsz' then
+      elseif option ~= '--dragfile' and option ~= '--trzsz'
+          and option ~= '--client' and option ~= '--relay' then
         error('Unsupported SSH option: ' .. option)
       end
     else
@@ -149,6 +150,12 @@ end
 
 local function destination(window, pane)
   local domain = pane:get_domain_name()
+  if domain == 'tmux' then
+    -- The native tmux pane has no local PTY. Follow its actual transport,
+    -- then use the same tmux/SSH routing as an ordinary terminal pane.
+    pane = assert(pane:get_tmux_transport_pane(), 'Cannot identify tmux transport')
+    domain = pane:get_domain_name()
+  end
   if domain ~= 'local' then
     for _, entry in ipairs(window:effective_config().ssh_domains or {}) do
       if entry.name == domain then

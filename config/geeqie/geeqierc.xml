@@ -378,18 +378,18 @@
 
 
     <layout
-        id = "main" 
+        id = "lw1" 
         style = "0" 
         order = "123" 
         dir_view_type = "0" 
         file_view_type = "1" 
-        file_view_list_sort.method = "1" 
+        file_view_list_sort.method = "9" 
         file_view_list_sort.ascend = "true" 
         file_view_list_sort.case_sensitive = "true" 
         dir_view_list_sort.method = "1" 
         dir_view_list_sort.ascend = "true" 
         dir_view_list_sort.case_sensitive = "true" 
-        show_marks = "true" 
+        show_marks = "false" 
         show_file_filter = "false" 
         show_thumbnails = "false" 
         show_directory_date = "false" 
@@ -398,20 +398,20 @@
 
         main_window.x = "0" 
         main_window.y = "0" 
-        main_window.w = "991" 
-        main_window.h = "704" 
+        main_window.w = "1432" 
+        main_window.h = "854" 
         main_window.maximized = "true" 
-        main_window.hdivider_pos = "347" 
+        main_window.hdivider_pos = "244" 
         main_window.vdivider_pos = "210" 
-        workspace = "0" 
+        workspace = "-1" 
 
         folder_window.vdivider_pos = "100" 
 
         float_window.x = "0" 
         float_window.y = "0" 
-        float_window.w = "951" 
-        float_window.h = "535" 
-        float_window.vdivider_pos = "323" 
+        float_window.w = "260" 
+        float_window.h = "450" 
+        float_window.vdivider_pos = "-1" 
 
         properties_window.w = "0" 
         properties_window.h = "0" 
@@ -422,7 +422,7 @@
         show_info_pixel = "false" 
         ignore_alpha = "false" 
 
-        bars_state.info = "true" 
+        bars_state.info = "false" 
         bars_state.sort = "false" 
         bars_state.tools_float = "false" 
         bars_state.tools_hidden = "false" 
@@ -437,9 +437,9 @@
         log_window.h = "400" 
         preferences_window.x = "0" 
         preferences_window.y = "0" 
-        preferences_window.w = "700" 
-        preferences_window.h = "600" 
-        preferences_window.page_number = "0" 
+        preferences_window.w = "1122" 
+        preferences_window.h = "677" 
+        preferences_window.page_number = "4" 
         search_window.x = "100" 
         search_window.y = "100" 
         search_window.w = "700" 
@@ -453,8 +453,8 @@
         advanced_exif_window.w = "900" 
         advanced_exif_window.h = "600" 
 
-        animate = "false" >
-        <bar enabled = "true" width = "1297" >
+        animate = "true" >
+        <bar enabled = "true" width = "1215" >
             <clear/>
             <pane_histogram id = "histogram" title = "Linear Histogram on RGB" expanded = "true" histogram_channel = "4" histogram_mode = "0" />
             <pane_comment id = "title" title = "Titre" expanded = "true" key = "Xmp.dc.title" height = "40" />
@@ -464,6 +464,23 @@
             <pane_comment id = "rating" title = "Rating" expanded = "true" key = "Xmp.xmp.Rating" height = "10" />
             <pane_exif id = "exif" title = "Exif" expanded = "true" show_all = "false" >
                 <entry key = "formatted.Camera" if_set = "true" editable = "false" />
+                <entry key = "formatted.DateTime" if_set = "true" editable = "false" />
+                <entry key = "formatted.localtime" if_set = "true" editable = "false" />
+                <entry key = "formatted.ShutterSpeed" if_set = "true" editable = "false" />
+                <entry key = "formatted.Aperture" if_set = "true" editable = "false" />
+                <entry key = "formatted.ExposureBias" if_set = "true" editable = "false" />
+                <entry key = "formatted.ISOSpeedRating" if_set = "true" editable = "false" />
+                <entry key = "formatted.FocalLength" if_set = "true" editable = "false" />
+                <entry key = "formatted.FocalLength35mmFilm" if_set = "true" editable = "false" />
+                <entry key = "formatted.Flash" if_set = "true" editable = "false" />
+                <entry key = "Exif.Photo.ExposureProgram" if_set = "true" editable = "false" />
+                <entry key = "Exif.Photo.MeteringMode" if_set = "true" editable = "false" />
+                <entry key = "Exif.Photo.LightSource" if_set = "true" editable = "false" />
+                <entry key = "formatted.ColorProfile" if_set = "true" editable = "false" />
+                <entry key = "formatted.SubjectDistance" if_set = "true" editable = "false" />
+                <entry key = "formatted.Resolution" if_set = "true" editable = "false" />
+                <entry key = "Xmp.tiff.Orientation" if_set = "true" editable = "false" />
+                <entry key = "formatted.star_rating" if_set = "true" editable = "false" />
                 <entry key = "formatted.DateTime" if_set = "true" editable = "false" />
                 <entry key = "formatted.localtime" if_set = "true" editable = "false" />
                 <entry key = "formatted.ShutterSpeed" if_set = "true" editable = "false" />

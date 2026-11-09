@@ -93,9 +93,11 @@ config.selection_word_boundary = " \t\n{}[]()\"'`,;:|│├┤"
 
 local openUrl = act.QuickSelectArgs({
   label = "open url",
-  patterns = { [=[https?://[^\s<>"'`()\[\]{}\\]+]=] },
+  -- last char must not be trailing punctuation (e.g. "foo.html," or "foo.php.")
+  patterns = { [=[https?://[^\s<>"'`()\[\]{}\\]*[^\s<>"'`()\[\]{}\\.,;:!?]]=] },
   action = wezterm.action_callback(function(window, pane)
     local url = window:get_selection_text_for_pane(pane)
+    url = url:gsub("[.,;:!?]+$", "")
     wezterm.open_with(url)
   end),
 })
