@@ -468,6 +468,7 @@ forti() {
   sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null
 
   \rm $HOME/.ssh/sockets/*themama* 2>/dev/null || true
+  vpn-mtu
 }
 
 
