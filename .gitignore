@@ -24,3 +24,4 @@ bin/gnupg/
 bin/watchman_bin
 .aider*
 bin/tmux
+/config/instant-zsh/*.zwc

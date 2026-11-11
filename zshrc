@@ -19,7 +19,7 @@ if [ $profiling = true ]; then
   zmodload zsh/zprof
 fi
 
-source $HOME/.config/instant-zsh.zsh
+source $HOME/dotfiles/config/instant-zsh/instant-zsh.zsh
 instant-zsh-pre "%004F${${(V)${(%):-%~}//\%/%%}//\///}%b%f"$'\n'"%002F\$~%f "
 
 # Path to your oh-my-zsh installation.

@@ -53,8 +53,7 @@ explain "Install oh-my-zsh"
     sudo chown $USER ~/.zsh-update
   fi
 
-explain "Install instant-zsh"
-  run_with_spinner curl --progress-bar -fsSL -o ~/.config/instant-zsh.zsh https://gist.github.com/romkatv/8b318a610dc302bdbe1487bb1847ad99/raw
+# instant-zsh is kept in dotfiles (config/instant-zsh), with one local change.
 
 explain "Install zsh-syntax-highlighting"
   run_with_spinner git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/syntax_highlighting --depth 1
@@ -81,6 +80,6 @@ chmod -R go-w ~/.zshrc ~/.zsh* ~/.zcompdump* ~/.zsh-completions 2> /dev/null || 
 #  mkdir -p ~/.oh-my-zsh/completions/
 #  curl https://raw.githubusercontent.com/yankeexe/git-worktree-switcher/master/completions/_wt_completion > ~/.oh-my-zsh/completions/_wt
 
-$wherezsh -c "zcompile $HOME/.config/instant-zsh.zsh"
+$wherezsh -c "zcompile $HOME/dotfiles/config/instant-zsh/instant-zsh.zsh"
 
 success "[ZSH] Done"
