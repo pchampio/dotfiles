@@ -1,53 +1,50 @@
-#!/bin/bash
+#!/usr/bin/env python3
+"""The tm session chooser, backed by Rex native WezTerm attachments."""
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
 
 
-export SHELL=/bin/zsh
+def main():
+    if os.getenv('REX_BLOCK_ID') or os.getenv('REX_BLOCK'):
+        sys.exit('Already inside a Rex session. Use prefix+a, t to switch sessions.')
+    nearby=Path(__file__).resolve().with_name('rex-attach')
+    helper=os.getenv('REX_ATTACH') or (str(nearby) if nearby.is_file() else shutil.which('rex-attach'))
+    helper=helper or str(Path.home()/'lab/wezterm-rex/bin/rex-attach')
+    if not Path(helper).is_file():
+        sys.exit('Install ~/lab/wezterm-rex, or set REX_ATTACH to its bin/rex-attach.')
+    if len(sys.argv)>1:
+        os.execv(helper,[helper,*sys.argv[1:]])
+    result=subprocess.run([helper,'--list'],check=True,capture_output=True,text=True)
+    sessions=json.loads(result.stdout).get('sessions',[])
+    visible=[s for s in sessions if not any(x in (s.get('label') or '') for x in ('ppt','scc'))]
+    def attach(name,independent=False):
+        os.execv(helper,[helper,*(['--independent'] if independent else []),name])
+    if not visible:
+        attach('Start')
+    def choose(title,items):
+        print(title+'\n'+'-'*len(title))
+        for i,item in enumerate(items,1):print(f'{i}) {item}')
+        while True:
+            try:
+                value=int(input('Please choose your session: '))
+                if 1<=value<=len(items):return value-1
+            except ValueError:pass
+            print('Choose a listed number.')
+    i=choose('Available Options',[s.get('label') or s['session_id'] for s in visible]+['New Session','Independent attach'])
+    if i<len(visible):attach(visible[i]['session_id'])
+    if i==len(visible):
+        name=input('Enter new session name: ').strip()
+        if name:attach(name)
+        return
+    if not sessions:return
+    i=choose('Available sessions',[s.get('label') or s['session_id'] for s in sessions])
+    attach(sessions[i]['session_id'],True)
 
-# abort if we're already inside a TMUX session
-if [ "$TMUX" != "" ]; then
-  echo "Already inside a TMUX session !!"
-  exit 1
-fi
-# startup a "default" session if non currently exists
-# tmux has-session -t _default || tmux new-session -s _default -d
-
-
-SessionNb=$( tmux list-sessions -F "#S" 2>/dev/null | grep -v "ppt\|scc" | wc -l )
-if [ $SessionNb -eq 0 ]; then
-  # read -p "Enter new session name: " SESSION_NAME
-  tmux new -s "Start" #"$SESSION_NAME"
-else
-  # present menu for user to choose which workspace to open
-  PS3="Please choose your session: "
-  options=($(tmux list-sessions -F "#S" 2>/dev/null | grep -v "ppt\|scc") "New Session" "Independent attach")
-  echo "Available Options"
-  echo "------------------"
-  echo " "
-  COLUMNS=20
-  select opt in "${options[@]}"
-  do
-    case $opt in
-      "New Session")
-        read -p "Enter new session name: " SESSION_NAME
-        tmux new -s "$SESSION_NAME"
-        break
-        ;;
-
-      "Independent attach")
-        optionsATTACH=($(tmux list-sessions -F "#S" 2>/dev/null))
-        echo " "
-        echo "Available sessions"
-        echo "------------------"
-        select optATT in "${optionsATTACH[@]}"
-        do
-          tmux new -s "Agent_infiltré" -t $optATT
-          exit 0
-        done
-        ;;
-      *)
-        tmux attach-session -t $opt
-        break
-        ;;
-    esac
-  done
-fi
+if __name__=='__main__':
+    try:main()
+    except (KeyboardInterrupt,EOFError):sys.exit(0)
+    except (OSError,subprocess.CalledProcessError,ValueError) as error:sys.exit(f'tm: {error}')
