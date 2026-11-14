@@ -163,6 +163,9 @@ install_github_app() {
     for alias in "${ALIASES[@]}"; do
         alias=$(echo "$alias" | xargs)  # trim spaces
         target="$HOME/.local/bin/$MAIN_NAME-bin/$alias"
+        if [ ! -f "$target" ] && [ -f "$HOME/.local/bin/$MAIN_NAME-bin/bin/$alias" ]; then
+            target="$HOME/.local/bin/$MAIN_NAME-bin/bin/$alias"
+        fi
         if [ -e "$alias" ]; then
             rm -f "$alias"
         fi

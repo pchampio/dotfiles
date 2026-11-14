@@ -19,12 +19,13 @@ install_github_app gotty "yudai/gotty" "https.*gotty.*linux.*amd64.*.gz" &
 install_github_app fd "sharkdp/fd" "https.*fd.*x86_64.*musl.*gz$" &
 install_github_app rg "BurntSushi/ripgrep" "https.*ripgrep.*x86_64.*musl.*gz$" &
 install_github_app atuin "atuinsh/atuin" "https.*atuin-x86_64.*linux-musl.*gz$" &
-install_github_app "rbw,rbw-agent" "doy/rbw" "https.*rbw.*linux.*amd64.*gz$" &
+install_github_app "rbw,rbw-agent" "pchampio/build-static-rbw" "https.*rbw-enhanced-linux-amd64\.tar\.gz$" &
 install_github_app fzf "junegunn/fzf" "https.*fzf.*linux.*amd64.*gz$" &
 install_github_app tssh "trzsz/trzsz-ssh" "https.*tssh.*linux_x86.*gz$" &
 install_github_app tsshd "trzsz/tsshd" "https.*tsshd.*linux_x86.*gz$" &
 install_github_app "trzsz,trz,tsz" "trzsz/trzsz-go" "https.*trzsz.*linux_x86.*gz$" &
 install_github_app jq "jqlang/jq" "https.*jq.*linux-amd64$" &
+install_github_app gh "cli/cli" "https.*gh_.*linux_amd64\.tar\.gz$" &
 install_github_app pi "badlogic/pi-mono" "https.*pi-linux-x64.*gz$" &
 
 wait

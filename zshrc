@@ -133,3 +133,6 @@ export ANDROID_HOME=$HOME/lab/commandlinetools-linux-13114758_latest/cmdline-too
 
 export PATH="${JAVA_HOME}/bin:$PATH"
 export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$ANDROID_HOME/bin:$PATH"
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
