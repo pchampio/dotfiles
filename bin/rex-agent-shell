@@ -1,0 +1,335 @@
+#!/usr/bin/env python3
+"""Run one tool command of a coding agent in its own Rex terminal.
+
+Claude Code and Codex run every shell command through this wrapper. Inside a
+Rex session the command runs in a new terminal block of the Rex server. The
+block is detached: no window shows it until you open it from the agent
+button of the status bar. A finished command keeps its terminal for a while,
+with its exit status in the block label. The agent gets the same stdout, stderr and
+exit status as without the wrapper. To stop the command, close its terminal.
+
+Outside a Rex session, or on any problem, the wrapper runs the command
+directly: the agent works as before.
+
+Usage:
+  rex-agent-shell 'COMMAND'                    Claude Code (CLAUDE_CODE_SHELL_PREFIX)
+  rex-agent-shell --agent NAME -- 'COMMAND'    Codex (PreToolUse hook)
+  rex-agent-shell --hook NAME                  Codex PreToolUse hook: rewrite the command on stdin
+  rex-agent-shell --child DIRECTORY            internal: the program of the new block
+
+Turn it off for one agent session with REX_AGENT_SHELL=0.
+REX_AGENT_SHELL_LOG=FILE records how each command was run (to check a setup).
+"""
+import base64
+import json
+import os
+import re
+import select
+import shlex
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+
+LABEL = 'agent-shell'
+START_TIMEOUT = 8.0
+# A finished command keeps its terminal for this many seconds, so the agent
+# panel can still show its output. Its label becomes "agent-shell=CODE|...".
+KEEP_SECONDS = 15 * 60
+# The most finished terminals that one agent keeps.
+KEEP_FINISHED = 12
+
+
+def log(kind, command):
+    path = os.environ.get('REX_AGENT_SHELL_LOG')
+    if path:
+        try:
+            with open(path, 'a') as file:
+                file.write('%s\t%s\n' % (kind, ' '.join(command.split())[:400]))
+        except OSError:
+            pass
+
+
+def run_directly(command, kind='direct'):
+    """The behaviour without the wrapper: the shell runs the command."""
+    log(kind, command)
+    shell = shell_for(command)
+    os.execv(shell, [shell, '-c', command])
+
+
+def shell_for(command):
+    """The shell that the agent meant for this command."""
+    # Claude Code sources a snapshot of the user's shell first.
+    match = re.search(r'snapshot-(zsh|bash)-', command)
+    names = [match.group(1)] if match else []
+    names.append(os.path.basename(os.environ.get('SHELL') or ''))
+    for name in names:
+        path = shutil.which(name) if name else None
+        if path:
+            return path
+    return '/bin/sh'
+
+
+def is_tool_command(command):
+    """Claude Code also sends hooks and MCP servers through the prefix. Only
+    a Bash tool call ends with the record of the working directory."""
+    return re.search(r'&& pwd -P >\| \S+\s*$', command) is not None
+
+
+def summary(command):
+    """The command as the user knows it, on one line."""
+    match = re.search(r"\beval (.+?) (?:\\?<|&&) ", command, re.S)
+    text = command
+    if match:
+        try:
+            text = ' '.join(shlex.split(match.group(1)))
+        except ValueError:
+            text = match.group(1)
+    text = ' '.join(text.split())
+    text = ''.join(c for c in text if c.isprintable() and c != '|')
+    return text[:60]
+
+
+def rex(method, arguments, timeout=6):
+    """Call the Rex server of this block. REX_SERVER selects it."""
+    binary = os.path.join(os.environ.get('REX_BIN_DIR', ''), 'rex')
+    if not os.path.exists(binary):
+        binary = shutil.which('rex') or 'rex'
+    reply = subprocess.run(
+        [binary, '--autostart=false', 'api', 'call', '-s', os.environ['REX_SESSION'], method, json.dumps(arguments)],
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
+    if reply.returncode != 0:
+        raise RuntimeError(reply.stderr.decode('utf-8', 'replace').strip() or 'rex api call failed')
+    return json.loads(reply.stdout or b'{}')
+
+
+def notify_gui(event, block):
+    """Tell the GUI that the list of agent shells changed. The message is a
+    user variable on the agent's own terminal, so it also crosses SSH."""
+    payload = json.dumps({'event': event, 'block': block, 'time': time.time()})
+    try:
+        with open('/dev/tty', 'w') as tty:
+            tty.write('\033]1337;SetUserVar=REX_AGENT_SHELL=%s\007' % base64.b64encode(payload.encode()).decode())
+    except OSError:
+        pass
+
+
+def wrapper(agent, command):
+    env = os.environ
+    inside_rex = env.get('REX_SERVER') and env.get('REX_SESSION') and env.get('REX_BLOCK')
+    if not inside_rex or env.get('REX_AGENT_SHELL') == '0' or env.get('REX_AGENT_SHELL_ACTIVE'):
+        run_directly(command, 'tool, not in Rex')
+    log('tool, agent shell', command)
+    directory = tempfile.mkdtemp(prefix='rex-agent-shell-')
+    block = None
+    try:
+        for name in ('out', 'err'):
+            os.mkfifo(os.path.join(directory, name), 0o600)
+        # Open the read ends first: the block's program must not wait for us.
+        streams = {os.open(os.path.join(directory, 'out'), os.O_RDONLY | os.O_NONBLOCK): sys.stdout.buffer,
+                   os.open(os.path.join(directory, 'err'), os.O_RDONLY | os.O_NONBLOCK): sys.stderr.buffer}
+        job = {'command': command, 'shell': shell_for(command), 'cwd': os.getcwd(), 'pid': os.getpid(),
+               'env': dict(env, REX_AGENT_SHELL_ACTIVE='1'), 'title': summary(command), 'agent': agent}
+        with open(os.open(os.path.join(directory, 'job.json'), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w') as file:
+            json.dump(job, file)
+        label = '|'.join([LABEL, env['REX_BLOCK'], agent, job['title']])[:128]
+        program = [sys.executable or 'python3', os.path.abspath(__file__), '--child', directory]
+        block = rex('session.new_block', {
+            'flavor': 'com.superlogical.terminal.shell', 'label': label,
+            'options': {'command': program, 'shell': 'none', 'login': False, 'cwd': job['cwd'],
+                        'size': {'columns': 120, 'rows': 32}}})['block_id']
+    except Exception as error:  # Any problem: the agent must still work.
+        shutil.rmtree(directory, ignore_errors=True)
+        if os.environ.get('REX_AGENT_SHELL_DEBUG'):
+            sys.stderr.write('rex-agent-shell: %s\n' % error)
+        run_directly(command)
+
+    def stop(signum, _frame):
+        try:
+            rex('block.close', {'block_id': block}, timeout=3)
+        except Exception:
+            pass
+        notify_gui('end', block)
+        shutil.rmtree(directory, ignore_errors=True)
+        os._exit(128 + signum)
+    for signum in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(signum, stop)
+    notify_gui('start', block)
+
+    status_path = os.path.join(directory, 'status')
+    started_path = os.path.join(directory, 'started')
+    deadline = time.monotonic() + START_TIMEOUT
+    started = False
+    while streams:
+        ready, _, _ = select.select(list(streams), [], [], 0.2)
+        for fd in ready:
+            try:
+                data = os.read(fd, 65536)
+            except BlockingIOError:
+                continue
+            if data:
+                streams[fd].write(data)
+                streams[fd].flush()
+            elif started:
+                os.close(fd)
+                del streams[fd]
+        if not started:
+            # A FIFO without a writer reads as "end of file": wait a moment.
+            time.sleep(0.01)
+            started = os.path.exists(started_path)
+            if not started and time.monotonic() > deadline:
+                # The block's program did not start: run the command here.
+                try:
+                    rex('block.close', {'block_id': block}, timeout=3)
+                except Exception:
+                    pass
+                notify_gui('end', block)
+                shutil.rmtree(directory, ignore_errors=True)
+                run_directly(command)
+    code = 143  # The terminal was closed before the command ended.
+    for _ in range(20):
+        try:
+            with open(status_path) as file:
+                code = int(file.read().strip() or 143)
+            break
+        except (OSError, ValueError):
+            time.sleep(0.05)
+    notify_gui('end', block)
+    shutil.rmtree(directory, ignore_errors=True)
+    sys.exit(code)
+
+
+def child(directory):
+    """The program of the new block: run the command, show its output in this
+    terminal and send the same bytes to the wrapper."""
+    with open(os.path.join(directory, 'job.json')) as file:
+        job = json.load(file)
+    os.unlink(os.path.join(directory, 'job.json'))
+    out = os.open(os.path.join(directory, 'out'), os.O_WRONLY)
+    err = os.open(os.path.join(directory, 'err'), os.O_WRONLY)
+    open(os.path.join(directory, 'started'), 'w').close()
+    terminal = sys.stdout.buffer
+    terminal.write(('\033[2m%s $ %s\033[0m\r\n' % (job['agent'], job['title'])).encode('utf-8', 'replace'))
+    terminal.flush()
+    process = subprocess.Popen([job['shell'], '-c', job['command']], cwd=job['cwd'], env=job['env'],
+                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               preexec_fn=os.setpgrp)
+    # The command owns this terminal: a program that asks on /dev/tty (sudo,
+    # ssh) can be answered in the popup, and Ctrl-C there stops the command.
+    try:
+        signal.signal(signal.SIGTTOU, signal.SIG_IGN)
+        os.tcsetpgrp(sys.stdin.fileno(), process.pid)
+    except (OSError, ValueError):
+        pass
+
+    def stop(*_):
+        try:
+            os.killpg(process.pid, signal.SIGTERM)
+        except OSError:
+            pass
+    for signum in (signal.SIGTERM, signal.SIGHUP, signal.SIGINT):
+        signal.signal(signum, stop)
+    targets = {process.stdout.fileno(): out, process.stderr.fileno(): err}
+    while targets:
+        ready, _, _ = select.select(list(targets), [], [], 0.5)
+        for fd in ready:
+            data = os.read(fd, 65536)
+            if not data:
+                del targets[fd]
+                continue
+            try:
+                os.write(targets[fd], data)
+            except OSError:
+                stop()  # The agent no longer reads: it stopped the command.
+            terminal.write(data.replace(b'\n', b'\r\n'))
+            terminal.flush()
+        if not ready:
+            try:
+                os.kill(job['pid'], 0)
+            except OSError:
+                stop()  # The wrapper is gone (the agent was killed).
+    code = process.wait()
+    code = 128 - code if code < 0 else code
+    with open(os.path.join(directory, 'status.tmp'), 'w') as file:
+        file.write(str(code))
+    os.rename(os.path.join(directory, 'status.tmp'), os.path.join(directory, 'status'))
+    os.close(out)
+    os.close(err)
+    terminal.write(('\033[2m[exit %d]\033[0m\r\n' % code).encode())
+    terminal.flush()
+    keep_finished(job, code)
+
+
+def keep_finished(job, code):
+    """Mark the block as finished and keep its terminal for a while. Closing
+    the terminal (Stop in the panel) ends this at once."""
+    block = os.environ.get('REX_BLOCK')
+    parent = job['env'].get('REX_BLOCK', '')
+    if not block or not os.environ.get('REX_SESSION'):
+        return
+    for name in ('REX_BIN_DIR', 'REX_SERVER'):
+        if not os.environ.get(name) and job['env'].get(name):
+            os.environ[name] = job['env'][name]
+    for signum in (signal.SIGTERM, signal.SIGHUP, signal.SIGINT):
+        signal.signal(signum, lambda *_: os._exit(0))
+    try:
+        label = '|'.join(['%s=%d' % (LABEL, code), parent, job['agent'], job['title']])[:128]
+        rex('session.set_block_label', {'block_id': block, 'label': label}, timeout=3)
+        # Only the newest finished terminals of this agent stay.
+        finished = [b['block_id'] for b in rex('session.list_blocks', {}, timeout=3).get('blocks', [])
+                    if (b.get('label') or '').startswith(LABEL + '=')
+                    and (b.get('label') or '').split('|')[1:2] == [parent]]
+        for old in sorted(finished)[:-KEEP_FINISHED]:
+            rex('block.close', {'block_id': old}, timeout=3)
+    except Exception:
+        return
+    time.sleep(KEEP_SECONDS)
+
+
+def codex_hook(agent):
+    """Codex PreToolUse hook: send the shell command through this wrapper."""
+    try:
+        hook = json.load(sys.stdin)
+        command = hook.get('tool_input', {}).get('command')
+    except (ValueError, AttributeError):
+        return
+    inside_rex = os.environ.get('REX_SERVER') and os.environ.get('REX_SESSION') and os.environ.get('REX_BLOCK')
+    if not isinstance(command, str) or not command.strip() or not inside_rex or os.environ.get('REX_AGENT_SHELL') == '0':
+        return
+    # Codex runs commands with a small environment (no REX_*, no TERM): pass
+    # the Rex variables of the agent's terminal in the command itself.
+    keep = ['REX_SERVER', 'REX_SESSION', 'REX_BLOCK', 'REX_BIN_DIR', 'REX_AGENT_SHELL_LOG', 'REX_AGENT_SHELL_DEBUG']
+    assignments = ['%s=%s' % (name, shlex.quote(os.environ[name])) for name in keep if os.environ.get(name)]
+    updated = ' '.join(['env'] + assignments + [shlex.quote(os.path.abspath(__file__)), '--agent', shlex.quote(agent), '--', shlex.quote(command)])
+    json.dump({'hookSpecificOutput': {'hookEventName': 'PreToolUse', 'permissionDecision': 'allow',
+                                      'permissionDecisionReason': 'Run in an agent shell of the Rex session',
+                                      'updatedInput': {'command': updated}}}, sys.stdout)
+
+
+def main():
+    arguments = sys.argv[1:]
+    if arguments[:1] == ['--child'] and len(arguments) == 2:
+        return child(arguments[1])
+    if arguments[:1] == ['--hook']:
+        return codex_hook(arguments[1] if len(arguments) > 1 else 'codex')
+    agent = 'claude' if os.environ.get('CLAUDECODE') else 'agent'
+    if arguments[:1] == ['--agent'] and len(arguments) >= 2:
+        agent, arguments = arguments[1], arguments[2:]
+        if arguments[:1] == ['--']:
+            arguments = arguments[1:]
+        tool = True
+    else:
+        tool = None
+    if not arguments:
+        sys.stderr.write(__doc__)
+        sys.exit(2)
+    command = arguments[0] if len(arguments) == 1 else ' '.join(shlex.quote(a) for a in arguments)
+    if tool is None and not is_tool_command(command):
+        run_directly(command, 'not a tool call')  # A hook or an MCP server of Claude Code.
+    wrapper(agent, command)
+
+
+if __name__ == '__main__':
+    main()

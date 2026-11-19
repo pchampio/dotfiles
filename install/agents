@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Coding agents (Claude Code, Codex) and the terminal:
+#   - OSC 7777 status: the tab bar shows "Working", "Needs input", the tool in use.
+#   - Agent shells: inside a Rex session each tool command runs in its own Rex
+#     terminal (bin/rex-agent-shell). Outside Rex the commands run as before.
+# Safe to run again. Remove with: install/agents --remove
+
+set -o errexit
+
+BASEDIR=$(dirname "$0")
+. "$BASEDIR/inc/functions"
+
+dir="$HOME/dotfiles"
+mode=${1:-install}
+
+success "[AGENTS] Start"
+
+explain "Claude Code: hooks and command wrapper in ~/.claude/settings.json"
+mkdir -p "$HOME/.claude"
+python3 - "$dir" "$mode" <<'PY'
+import json, os, shutil, sys, time
+dotfiles, mode = sys.argv[1], sys.argv[2]
+path = os.path.expanduser('~/.claude/settings.json')
+settings = json.load(open(path)) if os.path.exists(path) else {}
+before = json.dumps(settings, sort_keys=True)
+ours = json.load(open(dotfiles + '/config/agents/claude-hooks.json'))['hooks']
+hooks = settings.setdefault('hooks', {})
+# Take our old entries out first: the script can run many times.
+for event in list(hooks):
+    hooks[event] = [group for group in hooks[event]
+                    if not any('rex-agent-status' in hook.get('command', '') for hook in group.get('hooks', []))]
+    if not hooks[event]:
+        del hooks[event]
+env = settings.setdefault('env', {})
+wrapper = dotfiles + '/bin/rex-agent-shell'
+if env.get('CLAUDE_CODE_SHELL_PREFIX') == wrapper:
+    del env['CLAUDE_CODE_SHELL_PREFIX']
+if mode != '--remove':
+    for event, groups in ours.items():
+        hooks.setdefault(event, []).extend(groups)
+    if 'CLAUDE_CODE_SHELL_PREFIX' in env:
+        print('  CLAUDE_CODE_SHELL_PREFIX is set already (%s): kept as it is' % env['CLAUDE_CODE_SHELL_PREFIX'])
+    else:
+        env['CLAUDE_CODE_SHELL_PREFIX'] = wrapper
+for key in ('hooks', 'env'):
+    if not settings.get(key):
+        settings.pop(key, None)
+if json.dumps(settings, sort_keys=True) != before:
+    if os.path.exists(path):
+        shutil.copy2(path, path + '.before-agents-' + time.strftime('%Y%m%d-%H%M%S'))
+    with open(path + '.tmp', 'w') as file:
+        json.dump(settings, file, indent=2)
+        file.write('\n')
+    os.replace(path + '.tmp', path)
+    print('  updated ' + path)
+else:
+    print('  no change in ' + path)
+PY
+
+explain "Codex: hooks in ~/.codex/hooks.json"
+mkdir -p "$HOME/.codex"
+if [ "$mode" = "--remove" ]; then
+  if [ "$(readlink "$HOME/.codex/hooks.json" 2>/dev/null)" = "$dir/config/agents/codex-hooks.json" ]; then
+    tell rm "$HOME/.codex/hooks.json"
+  fi
+else
+  if [ -e "$HOME/.codex/hooks.json" ] && [ ! -L "$HOME/.codex/hooks.json" ]; then
+    tell mv "$HOME/.codex/hooks.json" "$HOME/.codex/hooks.json.before-agents-$(date +%Y%m%d-%H%M%S)"
+  fi
+  tell ln -sf "$dir/config/agents/codex-hooks.json" "$HOME/.codex/hooks.json"
+  explain2 "Start codex once and accept the new hooks if it asks (/hooks)."
+fi
+
+success "[AGENTS] Done"

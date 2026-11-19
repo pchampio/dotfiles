@@ -1,3 +1,16 @@
+-- The native terminal bridge works locally and through an existing SSH shell.
+-- Do not load smart-splits' wezterm CLI adapter against this custom GUI.
+if vim.env.REX_SERVER or not vim.env.TMUX then
+  vim.g.smart_splits_multiplexer_integration = false
+  return {
+    dir = vim.fn.stdpath('config') .. '/local/rex-splits.nvim',
+    name = 'rex-splits.nvim',
+    lazy = false,
+    opts = { default_amount = 6 },
+    config = function(_, opts) require('rex_splits').setup(opts) end,
+  }
+end
+
 ---@module 'lazy'
 ---@type LazySpec
 return {

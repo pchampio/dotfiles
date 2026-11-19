@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# rexterm: the WezTerm Rex GUI (github.com/pchampio/rexterm), for the desktop.
+# Not run by install/all: run it yourself on a machine with a display.
+#   ~/dotfiles/install/rexterm                 the latest build (release "continuous")
+#   REXTERM_TAG=v1.0 ~/dotfiles/install/rexterm
+# It installs the bundle in ~/.local/bin/rexterm-bin, the command rexterm, and a
+# desktop entry. The Rex server binary comes from install/github_app rex.
+# Restart rexterm after an update.
+
+set -o errexit -o pipefail
+
+BASEDIR=$(dirname "$0")
+. "$BASEDIR/inc/functions"
+
+repo=${REXTERM_REPO:-pchampio/rexterm}
+tag=${REXTERM_TAG:-continuous}
+dir="$HOME/.local/bin/rexterm-bin"
+url="https://github.com/$repo/releases/download/$tag/rexterm-linux-x86_64.tar.gz"
+
+success "[REXTERM] Start"
+
+if [ ! -x "$HOME/.local/bin/rex" ]; then
+  "$BASEDIR/github_app" rex
+fi
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+explain "Download $url"
+curl -fL --progress-bar -o "$tmp/rexterm.tar.gz" "$url"
+curl -fsSL -o "$tmp/rexterm.sha256" "$url.sha256"
+(cd "$tmp" && echo "$(cut -d' ' -f1 rexterm.sha256)  rexterm.tar.gz" | sha256sum -c --quiet)
+tar -xzf "$tmp/rexterm.tar.gz" -C "$tmp"
+(cd "$tmp/wezterm-rex" && sha256sum -c --quiet SHA256SUMS)
+# tm and the launcher use runtime-rex/bin/rex next to them.
+ln -sfn "$HOME/.local/bin/rex" "$tmp/wezterm-rex/runtime-rex/bin/rex"
+
+explain "Install in $dir ($(cat "$tmp/wezterm-rex/COMMIT" 2>/dev/null || echo "$tag"))"
+rm -rf "$dir.old"
+[ -d "$dir" ] && mv "$dir" "$dir.old"
+mv "$tmp/wezterm-rex" "$dir"
+rm -rf "$dir.old"
+ln -sfn "$dir/bin/wezterm-rex" "$HOME/.local/bin/rexterm"
+
+mkdir -p "$HOME/.local/share/applications"
+cat > "$HOME/.local/share/applications/rexterm.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=rexterm
+GenericName=Terminal
+Comment=WezTerm with native Rex sessions
+Categories=System;TerminalEmulator;Utility;
+Keywords=shell;prompt;command;commandline;cmd;rex;tmux;
+Exec=$dir/bin/wezterm-rex
+Icon=utilities-terminal
+StartupNotify=true
+StartupWMClass=org.wezfurlong.wezterm
+Terminal=false
+EOF
+command -v update-desktop-database >/dev/null && update-desktop-database "$HOME/.local/share/applications" || true
+
+command -v fzf >/dev/null || error "fzf is missing: the popup selectors need it (install/github_app fzf)."
+explain2 "Start it with: rexterm   (then tm in its shell)"
+success "[REXTERM] Done"

@@ -1,3 +1,9 @@
+-- Optional native pane navigation for local WezTerm and Rex, including SSH.
+if vim.env.REX_SERVER or not vim.env.TMUX then
+  vim.g.smart_splits_multiplexer_integration=false
+  local ok,splits=pcall(require,'rex_splits')
+  if ok then splits.setup() end
+end
 -- Loaded as a Neovim plugin. Inert outside a Rex terminal.
 if not vim.env.REX_SERVER or not vim.env.REX_SESSION or not vim.env.REX_BLOCK then return end
 local rex=(vim.env.REX_BIN_DIR and (vim.env.REX_BIN_DIR..'/rex')) or 'rex'
@@ -58,7 +64,8 @@ end
 local group=vim.api.nvim_create_augroup('WezTermRex',{clear=true})
 local exiting=false
 vim.api.nvim_create_autocmd({'VimEnter','ModeChanged'},{group=group,callback=function()
-  if not exiting then emit('\27]1337;SetUserVar=NVIM_MODE='..encode(vim.fn.mode())..'\7') end
+  local mode=vim.fn.mode()
+  vim.schedule(function()if not exiting then emit('\27]1337;SetUserVar=NVIM_MODE='..encode(mode)..'\7') end end)
 end})
 vim.api.nvim_create_autocmd('VimLeavePre',{group=group,callback=function()exiting=true;emit('\27]1337;SetUserVar=NVIM_MODE=\7')end})
 vim.api.nvim_create_autocmd('VimEnter',{group=group,callback=configure})

@@ -76,6 +76,10 @@ $HOME/.local/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/complet
 $HOME/.local/bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw
 
 
+# Coding agents (Claude Code, Codex): OSC 7777 status hooks, and each tool
+# command in its own Rex terminal (agent shells) inside WezTerm Rex.
+"$dir/install/agents"
+
 # switch this remote git from http to ssh if needed
 url=$(git remote get-url origin)
 ssh_url="${url#https://github.com/}"

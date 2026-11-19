@@ -5,6 +5,53 @@ BASEDIR=$(dirname $0)
 
 FILTER="${1:-$FILTER}"
 
+# Rex, the session server behind tm (WezTerm Rex). Not on GitHub: the snapshot
+# channel lists one build per OS and architecture, with its sha256.
+install_rex() {
+    local manifest="https://blob.superlogical.com/api/releases/rex/snapshot"
+    local dir="$HOME/.local/bin/rex-bin"
+    [ -n "$FILTER" ] && [ "$FILTER" != rex ] && return 0
+    explain "Installation of rex"
+    local release
+    release=$(curl -fsSL "$manifest" | python3 -c '
+import json, platform, sys
+release = json.load(sys.stdin)
+system = platform.system().lower()
+arch = {"x86_64": "amd64", "aarch64": "arm64"}.get(platform.machine(), platform.machine())
+builds = [a for a in release["artifacts"] if a["os"] == system and a["arch"] == arch
+          and a["filename"].endswith((".tar.gz", ".zip"))]
+builds.sort(key=lambda a: not a["filename"].endswith(".tar.gz"))
+if not builds:
+    sys.exit("rex: no %s-%s build in the snapshot release" % (system, arch))
+print(release["version"], builds[0]["sha256"], builds[0]["downloadUrl"])
+') || { error "rex: cannot read $manifest"; return 1; }
+    local version sum url
+    read -r version sum url <<< "$release"
+    if [ -x "$dir/rex" ] && [ "$(cat "$dir/version" 2>/dev/null)" = "$version" ]; then
+        explain2 "rex $version is installed already"
+        return 0
+    fi
+    local tmp
+    tmp=$(mktemp -d) || return 1
+    (
+        cd "$tmp" || exit 1
+        wget -q --show-progress "$url" || exit 1
+        echo "$sum  ${url##*/}" | sha256sum -c --quiet || exit 1
+        case $url in
+            *.tar.gz) tar xzf "${url##*/}" ;;
+            *.zip) unzip -qq "${url##*/}" ;;
+        esac
+        [ -f rex ] && chmod a+x rex
+    ) || { error "rex: download or checksum failed"; rm -rf "$tmp"; return 1; }
+    mkdir -p "$dir" || return 1
+    # A running Rex server keeps its old binary until it restarts.
+    mv -f "$tmp/rex" "$dir/rex.new" && mv -f "$dir/rex.new" "$dir/rex" || return 1
+    echo "$version" > "$dir/version"
+    rm -rf "$tmp"
+    ln -sfn "$dir/rex" "$HOME/.local/bin/rex"
+    explain2 "rex $version"
+}
+
 success "[Github APP] Start"
 
 if [ -n "$FILTER" ]; then
@@ -27,6 +74,7 @@ install_github_app "trzsz,trz,tsz" "trzsz/trzsz-go" "https.*trzsz.*linux_x86.*gz
 install_github_app jq "jqlang/jq" "https.*jq.*linux-amd64$" &
 install_github_app gh "cli/cli" "https.*gh_.*linux_amd64\.tar\.gz$" &
 install_github_app pi "badlogic/pi-mono" "https.*pi-linux-x64.*gz$" &
+install_rex &
 
 wait
 

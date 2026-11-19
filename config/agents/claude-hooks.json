@@ -1,0 +1,82 @@
+{
+  "_comment": "Merged into ~/.claude/settings.json by install/agents. OSC 7777 agent status for the terminal tab bar.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/dotfiles/bin/rex-agent-status\" claude",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

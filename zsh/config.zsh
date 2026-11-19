@@ -1,3 +1,8 @@
+# The login shell is bash, and ~/.profile execs zsh: SHELL stays /bin/bash.
+# Programs that start "your shell" read SHELL. Claude Code with SHELL=/bin/bash
+# cannot make its zsh snapshot and its background commands hang.
+[[ $SHELL == */zsh ]] || export SHELL=${commands[zsh]:-$SHELL}
+
 # Save a ton of history
 HISTSIZE=1000000
 HISTFILE=~/.zsh_history
@@ -64,6 +69,9 @@ function __prompt_precmd() {
        printf "\033]133;D;%s;aid=%s\007" "$ret" "$$"
     fi
     printf "\033]133;A;cl=m;aid=%s\007" "$$"
+    # No command runs: the terminal (WezTerm Rex) routes Ctrl-h/j/k/l to panes.
+    # (WEZTERM_PICKER too, in case an fzf of a key binding was killed.)
+    [[ -z "$TMUX" ]] && printf "\033]1337;SetUserVar=WEZTERM_PROG=\007\033]1337;SetUserVar=WEZTERM_PICKER=\007"
     _prompt_executing=0
 
     if [[ -n "$TMUX" ]]; then
@@ -81,14 +89,53 @@ function __prompt_precmd() {
         fi
     fi
 }
+# fzf started by a key binding (Ctrl-R history, Ctrl-T) runs inside zsh's own
+# process group, so the terminal cannot see it as the foreground program.
+# While fzf runs, it sets the terminal variable WEZTERM_PICKER: WezTerm (Rex)
+# then sends Ctrl-h/j/k/l to fzf instead of moving between panes. tmux finds
+# fzf in the process tree instead (pscheck), so nothing is sent inside tmux.
+function fzf() {
+    local arg
+    for arg in "$@"; do
+        case $arg in --zsh|--bash|--fish|--version|--help|--man) command fzf "$@"; return ;; esac
+    done
+    if [[ -z "$TMUX" && ( -n "$REX_SESSION" || "$TERM_PROGRAM" == WezTerm ) ]] && { : >/dev/tty } 2>/dev/null; then
+        printf '\033]1337;SetUserVar=WEZTERM_PICKER=%s\007' "$(printf fzf | base64)" >/dev/tty
+        command fzf "$@"
+        local code=$?
+        printf '\033]1337;SetUserVar=WEZTERM_PICKER=\007' >/dev/tty
+        return $code
+    fi
+    command fzf "$@"
+}
 function __prompt_preexec() {
     PS1="$_PROMPT_SAVE_PS1"
     PS2="$_PROMPT_SAVE_PS2"
     printf "\033]133;C;\007"
+    # The running command line, also through SSH: the terminal sends Ctrl-j/k
+    # to a picker (j/zjump runs fzf) instead of moving between panes.
+    [[ -z "$TMUX" ]] && printf "\033]1337;SetUserVar=WEZTERM_PROG=%s\007" "$(printf '%s' "$1" | head -c 200 | base64 | tr -d '\n')"
     _prompt_executing=1
 }
 preexec_functions+=(__prompt_preexec)
 precmd_functions+=(__prompt_precmd)
+
+# Codex runs its sessions in a shared background server by default. That
+# server has no terminal and no Rex variables: its hooks cannot report the
+# agent status to WezTerm, and its commands cannot get their own Rex
+# terminals. In a Rex session or in WezTerm, an interactive Codex keeps its
+# session in its own process. CODEX_DAEMON=1 keeps the shared server.
+function codex() {
+    local -a subcommands=(exec e review login logout mcp mcp-server plugin app-server remote-control
+                          completion update doctor sandbox debug apply a queue archive delete migrate-rollouts
+                          agents cloud features help)
+    if [[ -z "$CODEX_DAEMON" && ( -n "$REX_SESSION" || "$TERM_PROGRAM" == WezTerm ) ]] \
+        && (( ! ${subcommands[(Ie)$1]} )) && (( ! ${@[(Ie)--remote]} )) && (( ! ${@[(Ie)--no-daemon]} )); then
+        command codex --no-daemon "$@"
+    else
+        command codex "$@"
+    fi
+}
 
 # TRAPINT to handle Ctrl-C with OSC 133 sequences
 # Such that on incomplete (but with text) cmdline ctrl-c I still get the cmdline up/down navigation

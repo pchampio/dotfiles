@@ -1,50 +1,259 @@
 #!/usr/bin/env python3
-"""The tm session chooser, backed by Rex native WezTerm attachments."""
+"""tm: Rex sessions as native WezTerm Rex tabs (the tmux replacement).
+
+  tm                        choose a session (or New Session, Independent attach)
+  tm NAME                   attach the session NAME (Rex makes it if it does not exist)
+  tm --independent NAME     attach, but keep this GUI's active tab and pane independent
+  tm --list                 print the sessions as JSON
+
+Run it in a WezTerm Rex shell, also after SSH: the attachment goes through this terminal.
+It starts this host's private Rex server if necessary (socket
+$XDG_RUNTIME_DIR/wezterm-rex/tm/server.sock) with the WezTerm companion
+config/rex/server.lua next to this script's directory.
+
+The rex server binary: --rex, else runtime-rex/bin/rex next to this script's
+directory (the WezTerm Rex bundle), else rex on PATH (~/dotfiles/install/github_app rex).
+rex-attach is the same program: without NAME it attaches "main" instead of the chooser."""
+import argparse
+import asyncio
+import base64
 import json
 import os
 from pathlib import Path
+import secrets
 import shutil
 import subprocess
 import sys
+import termios
+import tty
+
+# Hidden from the chooser list (still in Independent attach).
+HIDDEN_LABELS = ('ppt', 'scc')
+REQUIRED_ACTIONS = {'wezterm_save', 'wezterm_restore', 'wezterm_capture', 'wezterm_environment',
+                    'wezterm_split_context', 'wezterm_input_processes', 'wezterm_buffer_begin',
+                    'wezterm_buffer_append', 'wezterm_buffer_read'}
 
 
 def main():
-    if os.getenv('REX_BLOCK_ID') or os.getenv('REX_BLOCK'):
+    chooser = Path(sys.argv[0]).name != 'rex-attach'
+    parser = argparse.ArgumentParser(prog=Path(sys.argv[0]).name, description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('session', nargs='?', help='session name or id' + ('' if chooser else ' (default: main)'))
+    parser.add_argument('--endpoint', help='an existing Rex server (unix://PATH) instead of the private one')
+    parser.add_argument('--rex', help='the rex executable')
+    parser.add_argument('--independent', action='store_true', help="keep this GUI's active tab and pane independent of other clients")
+    parser.add_argument('--list', action='store_true', help='print the sessions as JSON and exit')
+    args = parser.parse_args()
+    if chooser and not args.list and (os.getenv('REX_BLOCK_ID') or os.getenv('REX_BLOCK')):
         sys.exit('Already inside a Rex session. Use prefix+a, t to switch sessions.')
-    nearby=Path(__file__).resolve().with_name('rex-attach')
-    helper=os.getenv('REX_ATTACH') or (str(nearby) if nearby.is_file() else shutil.which('rex-attach'))
-    helper=helper or str(Path.home()/'lab/wezterm-rex/bin/rex-attach')
-    if not Path(helper).is_file():
-        sys.exit('Install ~/lab/wezterm-rex, or set REX_ATTACH to its bin/rex-attach.')
-    if len(sys.argv)>1:
-        os.execv(helper,[helper,*sys.argv[1:]])
-    result=subprocess.run([helper,'--list'],check=True,capture_output=True,text=True)
-    sessions=json.loads(result.stdout).get('sessions',[])
-    visible=[s for s in sessions if not any(x in (s.get('label') or '') for x in ('ppt','scc'))]
-    def attach(name,independent=False):
-        os.execv(helper,[helper,*(['--independent'] if independent else []),name])
+    root = Path(__file__).resolve().parent.parent
+    rex = Rex(args.rex or bundled(root) or shutil.which('rex'), args.endpoint, root)
+    if args.list:
+        print(json.dumps({'sessions': rex.sessions()}))
+        return
+    if args.session or args.independent or not chooser:
+        attach(rex, args.session or 'main', args.independent)
+    name, independent = choose(rex.sessions())
+    if name:
+        attach(rex, name, independent)
+
+
+def bundled(root):
+    path = root/'runtime-rex/bin/rex'
+    return str(path) if path.is_file() else None
+
+
+class Rex:
+    def __init__(self, binary, endpoint, root):
+        if not binary:
+            sys.exit('tm: no rex executable. Install it with ~/dotfiles/install/github_app rex, or pass --rex PATH.')
+        self.binary, self.endpoint, self.root, self.ready = binary, endpoint, root, False
+
+    def call(self, *args, **options):
+        return subprocess.run([self.binary, '-S', self.endpoint, '--autostart=false', *args], check=True, **options)
+
+    def start(self):
+        """Start (or find) the private server with the companion, and make sure the server has it."""
+        if self.ready:
+            return
+        if not self.endpoint:
+            config = self.root/'config/rex/server.lua'
+            if not config.is_file():
+                sys.exit(f'tm: the WezTerm companion {config} is missing.')
+            runtime = Path(os.getenv('XDG_RUNTIME_DIR') or f'/tmp/wezterm-rex-{os.getuid()}')/'wezterm-rex/tm'
+            runtime.mkdir(parents=True, exist_ok=True, mode=0o700)
+            runtime.chmod(0o700)
+            state = Path(os.getenv('XDG_DATA_HOME') or Path.home()/'.local/share')/'wezterm/rex/tm'
+            self.endpoint = 'unix://' + str(runtime/'server.sock')
+            env = {k: v for k, v in os.environ.items() if k not in ('TMUX', 'TMUX_PANE', 'WEZTERM_UNIX_SOCKET')}
+            subprocess.run([self.binary, '-S', self.endpoint, 'server', 'start', '--config', str(config),
+                            '--state-dir', str(state)], check=True, env=env, stdout=subprocess.DEVNULL)
+            self.call('config', 'reload', stdout=subprocess.DEVNULL)
+        if not self.endpoint.startswith('unix://'):
+            sys.exit('tm: the attachment needs a Unix socket on this host (unix://PATH).')
+        keymap = json.loads(self.call('api', 'call', 'client.keymap', '{}', text=True, capture_output=True).stdout)
+        if not REQUIRED_ACTIONS <= {a['name'] for a in keymap.get('actions', [])}:
+            sys.exit('tm: this Rex server has no WezTerm companion. Use the private server, '
+                     'or load config/rex/server.lua in that server.')
+        self.ready = True
+
+    def sessions(self):
+        self.start()
+        result = self.call('api', 'call', 'session.list', '{}', text=True, capture_output=True)
+        return json.loads(result.stdout).get('sessions', [])
+
+
+def choose(sessions):
+    """The legacy tm menu. Returns (session, independent), or (None, False)."""
+    def label(s):
+        return s.get('label') or s['session_id']
+    visible = [s for s in sessions if not any(x in (s.get('label') or '') for x in HIDDEN_LABELS)]
     if not visible:
-        attach('Start')
-    def choose(title,items):
-        print(title+'\n'+'-'*len(title))
-        for i,item in enumerate(items,1):print(f'{i}) {item}')
+        return 'Start', False
+
+    def pick(title, items):
+        print(title + '\n' + '-'*len(title))
+        for i, item in enumerate(items, 1):
+            print(f'{i}) {item}')
         while True:
             try:
-                value=int(input('Please choose your session: '))
-                if 1<=value<=len(items):return value-1
-            except ValueError:pass
+                value = int(input('Please choose your session: '))
+                if 1 <= value <= len(items):
+                    return value - 1
+            except ValueError:
+                pass
             print('Choose a listed number.')
-    i=choose('Available Options',[s.get('label') or s['session_id'] for s in visible]+['New Session','Independent attach'])
-    if i<len(visible):attach(visible[i]['session_id'])
-    if i==len(visible):
-        name=input('Enter new session name: ').strip()
-        if name:attach(name)
-        return
-    if not sessions:return
-    i=choose('Available sessions',[s.get('label') or s['session_id'] for s in sessions])
-    attach(sessions[i]['session_id'],True)
+    i = pick('Available Options', [label(s) for s in visible] + ['New Session', 'Independent attach'])
+    if i < len(visible):
+        return visible[i]['session_id'], False
+    if i == len(visible):
+        return input('Enter new session name: ').strip() or None, False
+    return sessions[pick('Available sessions', [label(s) for s in sessions])]['session_id'], True
 
-if __name__=='__main__':
-    try:main()
-    except (KeyboardInterrupt,EOFError):sys.exit(0)
-    except (OSError,subprocess.CalledProcessError,ValueError) as error:sys.exit(f'tm: {error}')
+
+def attach(rex, session, independent):
+    if not os.isatty(0) or not os.isatty(1):
+        sys.exit('tm: run it in a WezTerm Rex shell (or after ssh -t).')
+    rex.start()
+    previous = termios.tcgetattr(0)
+    try:
+        tty.setraw(0)
+        asyncio.run(bridge(rex.endpoint[7:], session, independent))
+    finally:
+        termios.tcsetattr(0, termios.TCSADRAIN, previous)
+    sys.exit(0)
+
+
+async def bridge(socket, session, independent=False):
+    """Carry the GUI's Rex connections over this terminal: DCS messages out, JSON lines in."""
+    token = secrets.token_hex(16)
+    loop = asyncio.get_running_loop()
+    incoming = asyncio.Queue(maxsize=256)
+    output_lock = asyncio.Lock()
+    pending = bytearray()
+    channels = {}
+    tasks = set()
+
+    async def emit(message):
+        message['token'] = token
+        packet = b'\x1bP+r' + json.dumps(message, separators=(',', ':')).encode() + b'\x1b\\'
+        def write_all():
+            view = memoryview(packet)
+            while view:
+                view = view[os.write(1, view):]
+        async with output_lock:
+            await loop.run_in_executor(None, write_all)
+
+    def read_input():
+        try:
+            data = os.read(0, 65536)
+            if not data:
+                loop.remove_reader(0)
+                incoming.put_nowait(None)
+                return
+            if b'\x03' in data:
+                incoming.put_nowait({'type': 'request_detach', 'token': token})
+                return
+            pending.extend(data)
+            if len(pending) > 1024*1024:
+                raise ValueError('oversized bridge input')
+            while b'\n' in pending:
+                line, _, rest = pending.partition(b'\n')
+                pending[:] = rest
+                message = json.loads(line)
+                if message.get('token') == token:
+                    incoming.put_nowait(message)
+        except Exception:
+            loop.remove_reader(0)
+            if not incoming.full(): incoming.put_nowait(None)
+
+    async def open_socket(channel):
+        writer = None
+        try:
+            reader, writer = await asyncio.open_unix_connection(socket)
+            channels[channel] = writer
+            await emit({'type': 'opened', 'id': channel})
+            while data := await reader.read(12*1024):
+                await emit({'type': 'data', 'id': channel, 'data': base64.b64encode(data).decode()})
+        except (OSError, ConnectionError):
+            pass
+        finally:
+            channels.pop(channel, None)
+            if writer: writer.close()
+            await emit({'type': 'closed', 'id': channel})
+
+    loop.add_reader(0, read_input)
+    opening = {}
+    try:
+        await emit({'type': 'hello', 'version': 1, 'session': session, 'pid': os.getpid(), 'endpoint': 'unix://' + socket, 'cwd': os.getcwd(), 'remote': bool(os.getenv('SSH_CONNECTION') or os.getenv('PROMPT_PURE_SSH_CONNECTION')), 'independent': independent})
+        first = True
+        while True:
+            try:
+                message = await asyncio.wait_for(incoming.get(), 15 if first else None)
+            except asyncio.TimeoutError:
+                raise RuntimeError('no WezTerm Rex attachment response; launch the custom WezTerm build first')
+            first = False
+            if message is None or message['type'] == 'detach': break
+            if message['type'] == 'request_detach':
+                await emit({'type': 'bye'})
+                continue
+            channel = message.get('id')
+            if not isinstance(channel, int) or channel < 1: continue
+            kind = message['type']
+            if kind == 'open':
+                if channel in opening or len(opening) >= 256: continue
+                task = asyncio.create_task(open_socket(channel))
+                opening[channel] = task
+                tasks.add(task)
+                task.add_done_callback(tasks.discard)
+                task.add_done_callback(lambda done, channel=channel: opening.pop(channel, None) if opening.get(channel) is done else None)
+            elif kind == 'data':
+                # An open is immediately followed by the HTTP upgrade bytes;
+                # wait for its Unix connect without delaying other channels.
+                for _ in range(1000):
+                    if channel in channels or channel not in opening or opening[channel].done(): break
+                    await asyncio.sleep(.001)
+                writer = channels.get(channel)
+                if writer:
+                    encoded = message.get('data', '')
+                    if len(encoded) > 65536: raise ValueError('oversized bridge data')
+                    writer.write(base64.b64decode(encoded, validate=True))
+                    await writer.drain()
+            elif kind == 'close':
+                task = opening.pop(channel, None)
+                if task: task.cancel()
+    finally:
+        loop.remove_reader(0)
+        for task in list(tasks): task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        for writer in list(channels.values()): writer.close()
+        await emit({'type': 'bye'})
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except (KeyboardInterrupt, EOFError):
+        sys.exit(0)
+    except (RuntimeError, ValueError, OSError, subprocess.CalledProcessError) as error:
+        sys.exit(f'{Path(sys.argv[0]).name}: {error}')
