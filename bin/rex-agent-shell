@@ -40,6 +40,8 @@ START_TIMEOUT = 8.0
 KEEP_SECONDS = 15 * 60
 # The most finished terminals that one agent keeps.
 KEEP_FINISHED = 12
+# Rex refuses a block label longer than this many characters.
+LABEL_MAX = 128
 
 
 def log(kind, command):
@@ -79,7 +81,7 @@ def is_tool_command(command):
 
 
 def summary(command):
-    """The command as the user knows it, on one line."""
+    """The whole command as the user knows it, on one line."""
     match = re.search(r"\beval (.+?) (?:\\?<|&&) ", command, re.S)
     text = command
     if match:
@@ -88,8 +90,16 @@ def summary(command):
         except ValueError:
             text = match.group(1)
     text = ' '.join(text.split())
-    text = ''.join(c for c in text if c.isprintable() and c != '|')
-    return text[:60]
+    return ''.join(c for c in text if c.isprintable() and c != '|')
+
+
+def block_label(head, parent, agent, title):
+    """The block label. Rex refuses labels over 128 characters: a long
+    command is cut and ends with an ellipsis."""
+    room = LABEL_MAX - len('|'.join([head, parent, agent, '']))
+    if len(title) > room:
+        title = title[:max(room - 1, 0)].rstrip() + '\u2026'
+    return '|'.join([head, parent, agent, title])[:LABEL_MAX]
 
 
 def rex(method, arguments, timeout=6):
@@ -132,9 +142,11 @@ def wrapper(agent, command):
                    os.open(os.path.join(directory, 'err'), os.O_RDONLY | os.O_NONBLOCK): sys.stderr.buffer}
         job = {'command': command, 'shell': shell_for(command), 'cwd': os.getcwd(), 'pid': os.getpid(),
                'env': dict(env, REX_AGENT_SHELL_ACTIVE='1'), 'title': summary(command), 'agent': agent}
+        # The finished label ("agent-shell=CODE") is longer: keep room for it.
+        label = block_label(LABEL + '=-999', env['REX_BLOCK'], agent, job['title']).replace(LABEL + '=-999', LABEL, 1)
+        job['cut'] = not label.endswith(job['title'])
         with open(os.open(os.path.join(directory, 'job.json'), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), 'w') as file:
             json.dump(job, file)
-        label = '|'.join([LABEL, env['REX_BLOCK'], agent, job['title']])[:128]
         program = [sys.executable or 'python3', os.path.abspath(__file__), '--child', directory]
         block = rex('session.new_block', {
             'flavor': 'com.superlogical.terminal.shell', 'label': label,
@@ -211,8 +223,11 @@ def child(directory):
     err = os.open(os.path.join(directory, 'err'), os.O_WRONLY)
     open(os.path.join(directory, 'started'), 'w').close()
     terminal = sys.stdout.buffer
-    terminal.write(('\033[2m%s $ %s\033[0m\r\n' % (job['agent'], job['title'])).encode('utf-8', 'replace'))
-    terminal.flush()
+    # The popup frame shows the command from the block label. When the label
+    # had to cut it, the terminal starts with the whole command.
+    if job.get('cut'):
+        terminal.write(('\033[2m$ %s\033[0m\r\n' % job['title']).encode('utf-8', 'replace'))
+        terminal.flush()
     process = subprocess.Popen([job['shell'], '-c', job['command']], cwd=job['cwd'], env=job['env'],
                                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                preexec_fn=os.setpgrp)
@@ -275,7 +290,7 @@ def keep_finished(job, code):
     for signum in (signal.SIGTERM, signal.SIGHUP, signal.SIGINT):
         signal.signal(signum, lambda *_: os._exit(0))
     try:
-        label = '|'.join(['%s=%d' % (LABEL, code), parent, job['agent'], job['title']])[:128]
+        label = block_label('%s=%d' % (LABEL, code), parent, job['agent'], job['title'])
         rex('session.set_block_label', {'block_id': block, 'label': label}, timeout=3)
         # Only the newest finished terminals of this agent stay.
         finished = [b['block_id'] for b in rex('session.list_blocks', {}, timeout=3).get('blocks', [])
