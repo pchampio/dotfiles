@@ -313,3 +313,27 @@ rex.action{
     local eof=file:read(1)==nil;file:close();return {text=text,eof=eof}
   end,
 }
+-- tmux kill-server: destroy every session, so the next start begins with none, then stop.
+-- Calls from this action reach only the calling session, so a detached rex client does it.
+rex.action{
+  name='wezterm_kill_server',title='Kill every session and stop the server',
+  run=function(ctx)
+    local status=call('server.status');local endpoint
+    for _,listener in ipairs(status.listeners or {}) do if listener.primary or not endpoint then endpoint=listener.endpoint end end
+    assert(endpoint,'The server has no listener')
+    local binary=rex.exec{'readlink','/proc/'..assert(status.pid)..'/exe'}
+    binary=binary and binary.ok and binary.stdout:gsub('%s+$','') or 'rex'
+    local argv={'sh','-c',[[
+      exe=$1 endpoint=$2; shift 2
+      ( sleep 0.3
+        for id; do "$exe" -S "$endpoint" --autostart=false api call session.destroy "{\"session_id\":\"$id\"}"; done
+        "$exe" -S "$endpoint" --autostart=false server stop ) </dev/null >/dev/null 2>&1 &]],'kill-server',binary,endpoint}
+    local count=0
+    for _,s in ipairs(call('session.list').sessions) do
+      if s.session_id~=ctx.session_id then argv[#argv+1]=s.session_id;count=count+1 end
+    end
+    if ctx.session_id then argv[#argv+1]=ctx.session_id;count=count+1 end
+    exec(argv)
+    return {sessions=count}
+  end,
+}
