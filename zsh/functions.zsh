@@ -190,7 +190,19 @@ EOF
       proxme-http $localport $token --dir . &
     fi
 
-    echo " --> https://$proxmeport.proxme.prr.re/?t=$token"
+    local url="https://$proxmeport.proxme.prr.re/?t=$token"
+    echo " --> $url"
+    # QR code for phones. qrterminal comes from install/github_app: it draws
+    # a sixel image when the terminal supports it, text blocks otherwise.
+    if (( $+commands[qrencode] && $+commands[imgcat] )); then
+      qrencode -s 8 -m 2 -o - "$url" | imgcat --height 16
+    elif (( $+commands[qrterminal] )); then
+      qrterminal -q 2 "$url"
+    elif (( $+commands[qrencode] )); then
+      qrencode -t ANSIUTF8 -m 2 "$url"
+    else
+      echo " (no QR code: run ~/dotfiles/install/github_app qrterminal)"
+    fi
   fi
   # No shared ControlMaster: it would keep the forward alive after exit.
   command ssh -o ControlMaster=no -o ControlPath=none -o ExitOnForwardFailure=yes \

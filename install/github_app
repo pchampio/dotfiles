@@ -74,6 +74,7 @@ install_github_app "trzsz,trz,tsz" "trzsz/trzsz-go" "https.*trzsz.*linux_x86.*gz
 install_github_app jq "jqlang/jq" "https.*jq.*linux-amd64$" &
 install_github_app gh "cli/cli" "https.*gh_.*linux_amd64\.tar\.gz$" &
 install_github_app pi "badlogic/pi-mono" "https.*pi-linux-x64.*gz$" &
+install_github_app qrterminal "mdp/qrterminal" "https.*qrterminal_Linux_x86_64\.tar\.gz$" &
 install_rex &
 
 wait
