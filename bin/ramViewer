@@ -246,8 +246,25 @@ def getMemStats(pid):
     Swap = 0
     Swap_pss = 0
 
+    lines = None
     if os.path.exists(proc.path(pid, 'smaps')):  # stat
-        lines = proc.open(pid, 'smaps').readlines()  # open
+        try:
+            lines = proc.open(pid, 'smaps').readlines()  # open
+        except PermissionError:
+            # Not root and not our process: smaps needs ptrace access,
+            # but status is readable by everyone. Use RSS (no PSS).
+            status = {}
+            for line in proc.open(pid, 'status'):
+                key, _, val = line.partition(':')
+                status[key] = val.split()
+            def kib(key):
+                return int(status[key][0]) if key in status else 0
+            Private = kib('RssAnon')
+            Shared = kib('RssFile') + kib('RssShmem')
+            Swap = kib('VmSwap')
+            return (Private, Shared, mem_id, Swap, Swap)
+
+    if lines is not None:
         # Note we checksum smaps as maps is usually but
         # not always different for separate processes.
         mem_id = hash(''.join(lines))
@@ -304,7 +321,12 @@ def getCmdName(pid, split_args, discriminate_by_pid):
         if (val.errno == errno.ENOENT or # either kernel thread or process gone
             val.errno == errno.EPERM):
             raise LookupError
-        raise
+        if val.errno != errno.EACCES:
+            raise
+        # Not root and not our process: guess the path from cmdline.
+        if not cmdline or not cmdline[0]:
+            raise LookupError  # kernel thread
+        path = cmdline[0]
 
     if split_args:
         return " ".join(cmdline)
@@ -540,9 +562,10 @@ def print_memory_usage(sorted_cmds, shareds, count, total, swaps, total_swap,
 
 def verify_environment():
     if os.geteuid() != 0:
-        sys.stderr.write("Sorry, root permission required.\n")
-        sys.stderr.close()
-        sys.exit(1)
+        sys.stderr.write(
+          "Note: not root. For processes of other users, RAM used is RSS\n"
+          "(shared pages counted in full), so their values and the total\n"
+          "are too large. Run with sudo for exact values.\n\n")
 
     try:
         kernel_ver()
