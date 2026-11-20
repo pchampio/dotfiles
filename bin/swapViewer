@@ -1,19 +1,36 @@
 #!/usr/bin/env bash
 # List processes using swap, sorted from most to least.
-# Usage: swapViewer [N]   (show top N, default all)
+# Usage: swapViewer [-w] [N]
+#   N    show only the top N processes (default: all)
+#   -w   do not cut lines to the terminal width
 # Run with sudo to see processes of other users.
 
-limit=${1:-0}
+limit=0
+width=0
+[[ -t 1 ]] && width=$(tput cols 2>/dev/null || echo 0)
+
+for arg in "$@"; do
+  case $arg in
+    -w) width=0 ;;
+    -h|--help) sed -n '2,6p' "$0" | sed 's/^# \?//'; exit 0 ;;
+    *[!0-9]*|'') echo "swapViewer: invalid argument: $arg" >&2; exit 1 ;;
+    *) limit=$arg ;;
+  esac
+done
 
 for status in /proc/[0-9]*/status; do
-  awk '
+  line=$(awk '
     /^Name:/   { name = $2 }
     /^Pid:/    { pid = $2 }
     /^Uid:/    { uid = $2 }
     /^VmSwap:/ { swap = $2 }
     END { if (swap > 0) print swap, pid, uid, name }
-  ' "$status" 2>/dev/null
-done | sort -k1,1nr | awk -v limit="$limit" '
+  ' "$status" 2>/dev/null) || continue
+  [[ -z $line ]] && continue
+  read -r swap pid uid name <<<"$line"
+  args=$(tr '\0' ' ' <"/proc/$pid/cmdline" 2>/dev/null)
+  printf '%s %s %s %s\n' "$swap" "$pid" "$uid" "${args:-[$name]}"
+done | sort -k1,1nr | awk -v limit="$limit" -v width="$width" '
   function human(kb) {
     if (kb >= 1048576) return sprintf("%.1fG", kb / 1048576)
     if (kb >= 1024)    return sprintf("%.1fM", kb / 1024)
@@ -27,7 +44,11 @@ done | sort -k1,1nr | awk -v limit="$limit" '
       u = ""; cmd | getline u; close(cmd)
       users[$3] = (u != "" ? u : $3)
     }
-    printf "%8s  %8s  %-12s  %s\n", human($1), $2, users[$3], $4
+    args = $0
+    sub(/^[^ ]+ [^ ]+ [^ ]+ /, "", args)
+    out = sprintf("%8s  %8s  %-12s  %s", human($1), $2, users[$3], args)
+    if (width > 3 && length(out) > width) out = substr(out, 1, width - 3) "..."
+    print out
     total += $1
   }
   END { printf "%8s  total\n", human(total) }
