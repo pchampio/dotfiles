@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# List processes using swap, sorted from most to least.
+# Usage: swapViewer [N]   (show top N, default all)
+# Run with sudo to see processes of other users.
+
+limit=${1:-0}
+
+for status in /proc/[0-9]*/status; do
+  awk '
+    /^Name:/   { name = $2 }
+    /^Pid:/    { pid = $2 }
+    /^Uid:/    { uid = $2 }
+    /^VmSwap:/ { swap = $2 }
+    END { if (swap > 0) print swap, pid, uid, name }
+  ' "$status" 2>/dev/null
+done | sort -k1,1nr | awk -v limit="$limit" '
+  function human(kb) {
+    if (kb >= 1048576) return sprintf("%.1fG", kb / 1048576)
+    if (kb >= 1024)    return sprintf("%.1fM", kb / 1024)
+    return kb "K"
+  }
+  BEGIN { printf "%8s  %8s  %-12s  %s\n", "SWAP", "PID", "USER", "COMMAND" }
+  {
+    if (limit > 0 && NR > limit) exit
+    if (!($3 in users)) {
+      cmd = "id -nu " $3 " 2>/dev/null"
+      u = ""; cmd | getline u; close(cmd)
+      users[$3] = (u != "" ? u : $3)
+    }
+    printf "%8s  %8s  %-12s  %s\n", human($1), $2, users[$3], $4
+    total += $1
+  }
+  END { printf "%8s  total\n", human(total) }
+'
