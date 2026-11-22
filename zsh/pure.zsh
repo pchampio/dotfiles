@@ -169,6 +169,13 @@ prompt_pure_preprompt_render() {
     )
 
     PROMPT="${(j..)ps1}"
+    # zsh/config.zsh puts OSC 133;P before the prompt and 133;B after it. The
+    # rebuild above keeps 133;B (it follows the newline) but drops 133;P, so
+    # a redraw (the async Git status) wrote the first prompt line as typed
+    # input, and the terminal highlighted it as the command. Put 133;P back.
+    if [[ $PROMPT == *$'\e]133;B'* && $PROMPT != $'%{\e]133;P'* ]]; then
+        PROMPT=$'%{\e]133;P;k=i\a%}'$PROMPT
+    fi
 
     # Expand the prompt for future comparision.
     local expanded_prompt
