@@ -55,6 +55,18 @@ _prompt_generate_lookup_fmt() {
     echo "$result"
 }
 
+# OSC 7: tell the terminal the current directory (file://HOST/PATH, the
+# path percent-encoded). WezTerm (also through SSH and Rex) then knows the
+# directory of the pane: prefix . copies it, new splits start there.
+function __osc7_cwd() {
+    local LC_ALL=C c out= i
+    for (( i = 1; i <= ${#PWD}; i++ )); do
+        c=${PWD[i]}
+        if [[ $c == [a-zA-Z0-9/._~-] ]]; then out+=$c; else out+=%${(l:2::0:)$(( [##16] #c & 255 ))}; fi
+    done
+    printf '\033]7;file://%s%s\007' "${HOST}" "$out"
+}
+
 function __prompt_precmd() {
     local ret="$status"
     if test "$_prompt_executing" != "0"
@@ -69,6 +81,7 @@ function __prompt_precmd() {
        printf "\033]133;D;%s;aid=%s\007" "$ret" "$$"
     fi
     printf "\033]133;A;cl=m;aid=%s\007" "$$"
+    __osc7_cwd
     # No command runs: the terminal (WezTerm Rex) routes Ctrl-h/j/k/l to panes.
     # (WEZTERM_PICKER too, in case an fzf of a key binding was killed.)
     [[ -z "$TMUX" ]] && printf "\033]1337;SetUserVar=WEZTERM_PROG=\007\033]1337;SetUserVar=WEZTERM_PICKER=\007"
