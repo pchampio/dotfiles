@@ -78,7 +78,7 @@ function nodeenv {
 
 # Play audio files (or one clipped range) on the desktop that runs rexterm:
 # wezterm-audio sends the sound through the terminal (OSC 7377), also over
-# SSH and inside tmux.
+# SSH and Rex.
 #   audio FILE ["00:00:44.729 --> 00:00:53.509"]   (-b is accepted and ignored)
 function audio {
   local file="" range="" start="" end="" tmpfile=""
@@ -206,9 +206,8 @@ function proxget {
 # Share your terminal as a web application
 # https://github.com/yudai/gotty
 share() {
-  cmd="tmux -2 attach-session -t $(tmux display -p '#S')"
+  cmd="tm"
   echo "User = pair"
-  unset TMUX
 
   passwd=pierre
   args=""

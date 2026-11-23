@@ -14,8 +14,7 @@ toggle remains independent. Sending or cancelling closes the recording pane.
 - **Esc / Cancel** discards the recording and closes the window.
 - Buttons are also clickable. Use Shift-selection to copy visible text if needed.
 
-The target is a WezTerm pane: if you change the active tmux pane inside it during
-recording, the paste goes to that newly active tmux pane.
+The target is the WezTerm pane that was active when the recording started.
 
 ## Install (no root)
 

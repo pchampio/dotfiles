@@ -211,11 +211,6 @@ prompt_pure_precmd() {
     psvar[12]=
     # Check if a Conda environment is active and display its name.
     if [[ -n $CONDA_DEFAULT_ENV ]]; then
-        if [ -n "$TMUX" ]; then
-            # ADD own local TMUX bin app to PATH
-            export PATH=$HOME/.local/bin:$PATH
-            async_job my_async_task tmux set-option -gq "@CONDA_ENV_$(tmux display-message -p '#S')" ${CONDA_DEFAULT_ENV}/bin/
-        fi
         psvar[12]="${CONDA_DEFAULT_ENV//[$'\t\r\n']}"
         psvar[12]="${psvar[12]%/*}"; psvar[12]="${psvar[12]##*/}"
         export VIRTUAL_ENV_DISABLE_PROMPT=12
@@ -609,8 +604,8 @@ prompt_pure_state_setup() {
                 ssh_connection=$MATCH
 
                     # Export variable to allow detection propagation inside
-                    # shells spawned by this one (e.g. tmux does not always
-                    # inherit the same tty, which breaks detection).
+                    # shells spawned by this one (a multiplexer does not
+                    # always inherit the same tty, which breaks detection).
                     export PROMPT_PURE_SSH_CONNECTION=$ssh_connection
             fi
             unset MATCH MBEGIN MEND
@@ -680,9 +675,6 @@ prompt_pure_setup() {
     prompt_pure_colors=("${(@kv)prompt_pure_colors_default}")
 
 
-    if [ -n "$TMUX" ]; then
-        async_start_worker my_async_task -n
-    fi
     add-zsh-hook precmd prompt_pure_precmd
     add-zsh-hook preexec prompt_pure_preexec
 

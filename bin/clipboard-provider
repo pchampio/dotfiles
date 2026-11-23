@@ -8,9 +8,9 @@
 #exec 2>> ~/clipboard-provider.out
 #set -x
 
-: ${COPY_PROVIDERS:=tmux desktop}
-: ${PASTE_PROVIDERS:=tmux desktop}
-: ${TTY:=`(tty || tmux display-message -p '#{pane_tty}') 2>/dev/null | grep /dev/`}
+: ${COPY_PROVIDERS:=desktop}
+: ${PASTE_PROVIDERS:=desktop}
+: ${TTY:=`tty 2>/dev/null | grep /dev/`}
 
 main() {
   declare p status=99
@@ -34,14 +34,6 @@ main() {
 # N.B. buffer is global for simplicity
 slurp() { buffer=$(base64); }
 spit() { base64 --decode <<<"$buffer"; }
-
-tmux-provider() {
-  [[ -n $TMUX ]] || return 1
-  case $1 in
-    copy) spit | tmux load-buffer - ;;
-    paste) tmux save-buffer - ;;
-  esac
-}
 
 desktop-provider() {
   wayland-provider "$@" || xclip-provider "$@" || osc52-provider "$@"

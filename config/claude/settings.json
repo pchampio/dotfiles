@@ -63,7 +63,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "title='Claude'; msg=$(basename \"$PWD\"); full_msg=\"$title — $msg\"; printf '\\033Ptmux;\\033\\033]1337;SetUserVar=%s=%s\\007\\033\\\\' wez_notif $(printf '%s' \"$full_msg\" | base64 -w0)"
+            "command": "title='Claude'; msg=$(basename \"$PWD\"); full_msg=\"$title — $msg\"; printf '\\033]1337;SetUserVar=%s=%s\\007' wez_notif $(printf '%s' \"$full_msg\" | base64 -w0)"
           }
         ]
       }
@@ -74,7 +74,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "title='Claude Notification'; msg=$(basename \"$PWD\"); full_msg=\"$title — $msg\"; printf '\\033Ptmux;\\033\\033]1337;SetUserVar=%s=%s\\007\\033\\\\' wez_notif $(printf '%s' \"$full_msg\" | base64 -w0)"
+            "command": "title='Claude Notification'; msg=$(basename \"$PWD\"); full_msg=\"$title — $msg\"; printf '\\033]1337;SetUserVar=%s=%s\\007' wez_notif $(printf '%s' \"$full_msg\" | base64 -w0)"
           }
         ]
       }

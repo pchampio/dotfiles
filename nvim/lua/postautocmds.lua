@@ -6,7 +6,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 vim.cmd [[
-  hi YankyYankedTmux guifg=#d33682 gui=underline,bold
+  hi YankyYankedCopy guifg=#d33682 gui=underline,bold
   hi YankyYankedSystem guifg=#366ad3 gui=underline,bold
 ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -20,7 +20,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
       }
     else
       vim.highlight.on_yank {
-        higroup = 'YankyYankedTmux',
+        higroup = 'YankyYankedCopy',
         timeout = 250,
       }
     end

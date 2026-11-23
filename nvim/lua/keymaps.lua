@@ -82,10 +82,6 @@ end, { desc = '  Change Directory', silent = false })
 
 vim.keymap.set('n', '<leader>.', function()
   local path = vim.fn.expand('%:p')
-  if vim.env.TMUX then
-    vim.fn.setreg('*', path)
-  else
-    vim.fn.setreg('+', path)
-  end
+  vim.fn.setreg('+', path)
   print('Copied realpath: ' .. path)
 end, { noremap = true, silent = true, desc = '󰈞  Copy File Path' })

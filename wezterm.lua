@@ -9,8 +9,6 @@ local config = wezterm.config_builder()
 
 
 -- Plugins
-local bc = require("based_copymode")
-local tmux = require("tmux")
 local toggle_terminal = require("toggle_terminal")
 local auto_complete = require("auto_complete")
 local voice = dofile(HOME .. "/dotfiles/config/wezterm/voice/init.lua")
@@ -117,10 +115,6 @@ config.keys = {
   { key = "-", mods = "CTRL", action = act.DecreaseFontSize },
   { key = "0", mods = "CTRL", action = act.ResetFontSize },
   { key = "=", mods = "CTRL", action = act.IncreaseFontSize },
-  { key = "h", mods = "CTRL", action = tmux.move_or_send("Left", "h") },
-  { key = "j", mods = "CTRL", action = tmux.move_or_send("Down", "j") },
-  { key = "k", mods = "CTRL", action = tmux.move_or_send("Up", "k") },
-  { key = "l", mods = "CTRL", action = tmux.move_or_send("Right", "l") },
   -- clipboard
   { key = "C", mods = "SHIFT|CTRL", action = act.CopyTo("ClipboardAndPrimarySelection") },
   {
@@ -146,25 +140,17 @@ config.mouse_bindings = {
   {
     event = { Up = { streak = 1, button = "Left" } },
     action = wezterm.action_callback(function(window, pane)
-      if tmux.is_inside_tmux(pane) then
-        window:perform_action(bc.single_streak_click, pane)
-      else
-        window:perform_action(act.CompleteSelection("ClipboardAndPrimarySelection"), pane)
-        wezterm.sleep_ms(250)
-        window:perform_action(act.ClearSelection, pane)
-      end
+      window:perform_action(act.CompleteSelection("ClipboardAndPrimarySelection"), pane)
+      wezterm.sleep_ms(250)
+      window:perform_action(act.ClearSelection, pane)
     end),
   },
   {
     event = { Up = { streak = 2, button = "Left" } },
     action = wezterm.action_callback(function(window, pane)
-      if tmux.is_inside_tmux(pane) then
-        window:perform_action(bc.double_streak_click, pane)
-      else
-        window:perform_action(act.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"), pane)
-        wezterm.sleep_ms(250)
-        window:perform_action(act.ClearSelection, pane)
-      end
+      window:perform_action(act.CompleteSelectionOrOpenLinkAtMouseCursor("ClipboardAndPrimarySelection"), pane)
+      wezterm.sleep_ms(250)
+      window:perform_action(act.ClearSelection, pane)
     end),
   },
 }

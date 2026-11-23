@@ -1,5 +1,5 @@
 -- Companion server-side Lua. The GUI owns all bindings and appearance.
--- Save/restore keeps the tmux-resurrect policy: restart only ssh and tail.
+-- Save/restore restarts only ssh and tail.
 local restart={ssh=true,tail=true}
 local shells={sh=true,bash=true,zsh=true,fish=true,dash=true}
 local function call(method,args) return assert(rex.call(method,args or {})) end
@@ -313,7 +313,7 @@ rex.action{
     local eof=file:read(1)==nil;file:close();return {text=text,eof=eof}
   end,
 }
--- tmux kill-server: destroy every session, so the next start begins with none, then stop.
+-- kill-server (prefix ; prompt): destroy every session, so the next start begins with none, then stop.
 -- Calls from this action reach only the calling session, so a detached rex client does it.
 rex.action{
   name='wezterm_kill_server',title='Kill every session and stop the server',

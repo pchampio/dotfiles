@@ -12,7 +12,6 @@ gcc*
 /bin/wezterm
 /bin/jq
 *.zwc
-/bin/tmux_update_statusbar
 zsh/priv.zsh
 /man
 /share
@@ -20,5 +19,4 @@ zsh/priv.zsh
 bin/gnupg/
 bin/watchman_bin
 .aider*
-bin/tmux
 /config/instant-zsh/*.zwc

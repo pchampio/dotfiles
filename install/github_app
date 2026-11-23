@@ -59,7 +59,6 @@ if [ -n "$FILTER" ]; then
 fi
 
 install_github_app pinentry "pchampio/build-static-pinentry" "https.*pinentry.*stripped.gz$" &
-install_github_app tmux "pchampio/build-static-tmux" "https.*tmux.*amd64.*stripped.gz$" &
 install_github_app difft "Wilfred/difftastic" "https.*difft.*x86_64.*musl.*gz$" &
 install_github_app diff-so-fancy "so-fancy/diff-so-fancy" "https.*diff-so-fancy$" &
 install_github_app gotty "yudai/gotty" "https.*gotty.*linux.*amd64.*.gz" &

@@ -18,9 +18,7 @@ return {
       },
       cli = {
         mux = {
-          backend = 'tmux',
-          enabled = true,
-          create = 'split',
+          enabled = false,
         },
       },
       tools = {

@@ -112,41 +112,8 @@ local function foreground(tty)
   return result
 end
 
-local function tmux_tty(process, tty)
-  local command, args = { process.args[1] }, process.args
-  local explicit_socket = false
-  for index = 2, #args do
-    local flag, value = args[index]:match('^(%-[LS])(.*)$')
-    if flag then
-      if value == '' then value = args[index + 1] end
-      assert(value, 'Missing tmux socket argument')
-      table.insert(command, flag); table.insert(command, value)
-      explicit_socket = true
-      break
-    end
-  end
-  if not explicit_socket then
-    local env = read('/proc/' .. process.pid .. '/environ') or ''
-    local socket = ('\0' .. env):match('%zTMUX=([^,%z]+),')
-    if socket then table.insert(command, '-S'); table.insert(command, socket) end
-  end
-  for _, arg in ipairs({ 'list-clients', '-F', '#{client_pid}\t#{client_tty}\t#{pane_tty}' }) do
-    table.insert(command, arg)
-  end
-  for pid, client_tty, pane_tty in run(command):gmatch('([^\t\n]+)\t([^\t\n]+)\t([^\n]+)') do
-    if pid == process.pid and client_tty == tty then return pane_tty end
-  end
-  error('Cannot identify the active pane for this tmux client')
-end
-
 local function destination(window, pane)
   local domain = pane:get_domain_name()
-  if domain == 'tmux' then
-    -- The native tmux pane has no local PTY. Follow its actual transport,
-    -- then use the same tmux/SSH routing as an ordinary terminal pane.
-    pane = assert(pane:get_tmux_transport_pane(), 'Cannot identify tmux transport')
-    domain = pane:get_domain_name()
-  end
   if domain ~= 'local' then
     for _, entry in ipairs(window:effective_config().ssh_domains or {}) do
       if entry.name == domain then
@@ -165,38 +132,30 @@ local function destination(window, pane)
     assert(host, 'Cannot determine SSH destination for domain ' .. domain)
     return { host = host, options = {} }
   end
-  local tty, seen = pane:get_tty_name(), {}
-  for _ = 1, 8 do
-    assert(not seen[tty], 'Circular tmux pane routing')
-    seen[tty] = true
-    local transports, tmux = {}, nil
-    for _, process in ipairs(foreground(tty)) do
-      local name = basename(process.args[1])
-      if name == 'ssh' or name == 'autossh' then
-        table.insert(transports, process)
-      elseif name == 'tmux' then
-        tmux = process
-      elseif name == 'mosh' or name == 'mosh-client' then
-        error('Mosh image routing is not supported')
-      end
+  local tty = pane:get_tty_name()
+  local transports = {}
+  for _, process in ipairs(foreground(tty)) do
+    local name = basename(process.args[1])
+    if name == 'ssh' or name == 'autossh' then
+      table.insert(transports, process)
+    elseif name == 'mosh' or name == 'mosh-client' then
+      error('Mosh image routing is not supported')
     end
-    -- Proxy/jump helpers can share their parent's foreground process group.
-    -- The group leader is the interactive connection, not its transport helper.
-    for _, process in ipairs(transports) do
-      if process.pid == process.group then return ssh_target(process.args) end
-    end
-    if #transports == 1 then return ssh_target(transports[1].args) end
-    if #transports > 1 then
-      local ids = {}
-      for _, process in ipairs(transports) do
-        table.insert(ids, basename(process.args[1]) .. ':' .. process.pid)
-      end
-      error('Cannot select the main SSH process on ' .. tty .. ': ' .. table.concat(ids, ', '))
-    end
-    if not tmux then return nil end
-    tty = tmux_tty(tmux, tty)
   end
-  error('Too many nested tmux sessions')
+  -- Proxy/jump helpers can share their parent's foreground process group.
+  -- The group leader is the interactive connection, not its transport helper.
+  for _, process in ipairs(transports) do
+    if process.pid == process.group then return ssh_target(process.args) end
+  end
+  if #transports == 1 then return ssh_target(transports[1].args) end
+  if #transports > 1 then
+    local ids = {}
+    for _, process in ipairs(transports) do
+      table.insert(ids, basename(process.args[1]) .. ':' .. process.pid)
+    end
+    error('Cannot select the main SSH process on ' .. tty .. ': ' .. table.concat(ids, ', '))
+  end
+  return nil
 end
 
 local function transfer(path, extension, remote)

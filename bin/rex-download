@@ -4,7 +4,7 @@
   rex-download FILE...
 
 In a Rex pane, rexterm fetches each file through the Rex server
-(download_begin) and says where it put it. Also inside tmux.
+(download_begin) and says where it put it.
 """
 import base64, json, os, sys, uuid
 
@@ -17,8 +17,6 @@ def main():
         print('rex-download: not a file: ' + ', '.join(missing), file=sys.stderr);return 1
     value = base64.b64encode(json.dumps({'paths': paths, 'id': str(uuid.uuid4())}).encode()).decode()
     seq = '\033]1337;SetUserVar=WEZTERM_DOWNLOAD=%s\007' % value
-    if os.environ.get('TMUX'):
-        seq = '\033Ptmux;' + seq.replace('\033', '\033\033') + '\033\\'
     with open('/dev/tty', 'w') as tty:
         tty.write(seq)
     print('rex-download: asked rexterm for %d file(s); they go to its /tmp' % len(paths))

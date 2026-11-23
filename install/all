@@ -13,7 +13,6 @@ BASEDIR="$(dirname "$0")"
 "$BASEDIR/python"
 "$BASEDIR/neovim"
 "$BASEDIR/node"
-"$BASEDIR/tmux"
 "$BASEDIR/git"
 
 trap "echo -e '\nAbort optional installations.'; exit" SIGINT

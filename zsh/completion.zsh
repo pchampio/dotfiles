@@ -78,7 +78,7 @@ atuin-setup() {
 
     local atuin_opts="--cmd-only --print0 --limit ${ATUIN_LIMIT:-5000}"
     local fzf_opts=(
-            --height=${FZF_TMUX_HEIGHT:-80%}
+            --height=80%
             --tac
             "-n2..,.."
             --tiebreak=index

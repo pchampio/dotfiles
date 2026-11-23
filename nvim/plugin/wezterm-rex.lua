@@ -1,5 +1,5 @@
 -- Optional native pane navigation for local WezTerm and Rex, including SSH.
-if vim.env.REX_SERVER or not vim.env.TMUX then
+do
   vim.g.smart_splits_multiplexer_integration=false
   local ok,splits=pcall(require,'rex_splits')
   if ok then splits.setup() end
@@ -26,6 +26,8 @@ local function encode(text)
   return table.concat(pieces)
 end
 local function emit(text)
+  -- Neovim 0.12+: in order with the UI's own output (see nvim-smart-splits.lua).
+  if vim.api.nvim_ui_send and #vim.api.nvim_list_uis()>0 then vim.api.nvim_ui_send(text);return end
   local file=io.open('/dev/tty','w')
   if file then file:write(text);file:flush();file:close()
   elseif #vim.api.nvim_list_uis()>0 then io.stdout:write(text);io.stdout:flush() end

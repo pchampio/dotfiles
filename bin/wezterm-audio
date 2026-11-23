@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Play audio files on the machine that runs WezTerm, from a shell inside it.
 
-Meant for SSH sessions (also inside tmux): the sound travels in the terminal
+Meant for SSH and Rex sessions: the sound travels in the terminal
 stream as OSC 7377 escape sequences. Only Python 3 and ffmpeg (to decode) are
 needed where this runs; copy the script to remote hosts as is.
 
@@ -22,14 +22,6 @@ import array, base64, os, select, signal, subprocess, sys, termios, threading, t
 RATE, CHANNELS, FRAME = 48000, 2, 4          # s16le stereo
 CHUNK = RATE * FRAME // 50                   # 20 ms
 LEAD = 0.15                                  # seconds sent ahead of real time
-
-
-def wrap(seq):
-    # tmux forwards passthrough sequences (allow-passthrough on); with tmux -CC
-    # the WezTerm mirror reads the same bytes from the pane output.
-    if os.environ.get('TMUX'):
-        return b'\x1bPtmux;' + seq.replace(b'\x1b', b'\x1b\x1b') + b'\x1b\\'
-    return seq
 
 
 def clock(seconds):
@@ -79,7 +71,7 @@ class Player:
     # --- terminal stream ---------------------------------------------------
     def osc(self, body):
         # One write per sequence, so nothing else can split it.
-        os.write(self.out, wrap(b'\x1b]7377;' + body + b'\x1b\\'))
+        os.write(self.out, b'\x1b]7377;' + body + b'\x1b\\')
 
     def open_stream(self):
         self.stream = (self.stream + 1) & 0x7fffffff

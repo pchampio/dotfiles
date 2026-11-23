@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tm: Rex sessions as native WezTerm Rex tabs (the tmux replacement).
+"""tm: Rex sessions as native WezTerm Rex tabs.
 
   tm                        choose a session (or New Session, Independent attach)
   tm NAME                   attach the session NAME (Rex makes it if it does not exist)
@@ -85,7 +85,7 @@ class Rex:
             runtime.chmod(0o700)
             state = Path(os.getenv('XDG_DATA_HOME') or Path.home()/'.local/share')/'wezterm/rex/tm'
             self.endpoint = 'unix://' + str(runtime/'server.sock')
-            env = {k: v for k, v in os.environ.items() if k not in ('TMUX', 'TMUX_PANE', 'WEZTERM_UNIX_SOCKET')}
+            env = {k: v for k, v in os.environ.items() if k != 'WEZTERM_UNIX_SOCKET'}
             subprocess.run([self.binary, '-S', self.endpoint, 'server', 'start', '--config', str(config),
                             '--state-dir', str(state)], check=True, env=env, stdout=subprocess.DEVNULL)
             self.call('config', 'reload', stdout=subprocess.DEVNULL)

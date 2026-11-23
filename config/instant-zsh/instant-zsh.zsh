@@ -103,9 +103,9 @@ function instant-zsh-pre() {
     _clear-loading-prompt() {
       # dotfiles change: upstream turns prompt_cr and prompt_sp back on here,
       # which undoes `unsetopt prompt_cr prompt_sp` in zsh/config.zsh. They
-      # stay off: prompt_sp writes a row of spaces before each prompt, tmux
-      # keeps it as text and wraps it when a pane gets narrower, so the prompt
-      # jumped down one line after a pane resize.
+      # stay off: prompt_sp writes a row of spaces before each prompt, the
+      # terminal keeps it as text and wraps it when a pane gets narrower, so
+      # the prompt jumped down one line after a pane resize.
       unsetopt localoptions
       () {
         emulate -L zsh

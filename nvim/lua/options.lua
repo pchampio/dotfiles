@@ -65,10 +65,9 @@ vim.opt.isfname:remove ':'
 vim.g.matchparen_timeout = 1        -- https://github.com/neovim/neovim/blob/master/runtime/plugin/matchparen.vim#L15
 vim.g.matchparen_insert_timeout = 1 -- https://github.com/neovim/neovim/blob/master/runtime/plugin/matchparen.vim#L18
 
--- Lower y yank to/from * by default (tmux only, not system)
+-- Lower y yank to/from * by default (inside nvim only, not system)
 vim.o.clipboard = 'unnamed'
 -- Upper Y yank to system clipboard
-local is_tmux = os.getenv 'TMUX' ~= nil
 
 -- Define the clipboard configuration
 local clipboard_provider_path = vim.fn.expand '~'
@@ -84,22 +83,12 @@ local clipboard_config = {
   },
 }
 
--- Add tmux-specific configuration if tmux is running
-if is_tmux then
-  clipboard_config.copy['*'] = 'env COPY_PROVIDERS=tmux '
-      .. clipboard_provider_path
-      .. ' copy'
-  clipboard_config.paste['*'] = 'env PASTE_PROVIDERS=tmux '
-      .. clipboard_provider_path
-      .. ' paste'
-else
-  clipboard_config.copy['*'] = function(lines, regtype)
-    -- Store clipboard in vim var instead of tmux var
-    vim.g.prr_internal_clip_board = { lines, regtype }
-  end
-  clipboard_config.paste['*'] = function()
-    return vim.g.prr_internal_clip_board or {}
-  end
+-- The * register stays inside nvim (a vim variable).
+clipboard_config.copy['*'] = function(lines, regtype)
+  vim.g.prr_internal_clip_board = { lines, regtype }
+end
+clipboard_config.paste['*'] = function()
+  return vim.g.prr_internal_clip_board or {}
 end
 
 -- Set the clipboard configuration

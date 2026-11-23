@@ -31,7 +31,7 @@ return {
     vim.keymap.set('n', 'gP', '<Plug>(YankyPutIndentBeforeLinewise)', { desc = '󰱘  Paste Line Above' })
 
 
-    -- Tmux / System clipboard integration yanks to '*' which can double or make
+    -- The clipboard integration yanks to '*' which can double or make
     -- empty entries in the yank history. With the above yanky.ring.ignore_registers
     -- config and this autocmd, we intercept the yank and manually add it to the
     -- yanky history after filtering.

@@ -1,6 +1,6 @@
 -- lua config/wezterm/image_paste/test.lua
 local commands, removed, notices, pasted = {}, {}, {}, {}
-local clipboard, remote_failure, mime, ps, proc, client_rows = nil, false, 'image/png', {}, {}, ''
+local clipboard, remote_failure, mime, ps, proc = nil, false, 'image/png', {}, {}
 local text, local_file = 'plain text', false
 local missing_tools = {}
 local copy_failure = false
@@ -26,7 +26,6 @@ function fake.run_child_process(args)
     return true, missing, ''
   end
   if args[1] == 'ps' then return true, assert(ps[args[3]]), '' end
-  if args[1] == 'tmux' then return true, client_rows, '' end
   if args[1] == 'wl-paste' then return true, args[2] == '--list-types' and mime .. '\n' or text, '' end
   if args[1] == 'sh' and args[4] == 'image-paste-copy' then
     if copy_failure then return false, '', 'clipboard unavailable' end
@@ -103,7 +102,7 @@ plugin.paste(window, pane)
 assert(pasted[1] == 'plain text', 'Missing image tools must not block ordinary text paste')
 
 reset()
-proc['/proc/10/cmdline'] = 'ssh\0-p2222\0-J\0jump\0ampere\0tmux attach\0'
+proc['/proc/10/cmdline'] = 'ssh\0-p2222\0-J\0jump\0ampere\0htop\0'
 local target = plugin.destination(window, pane)
 assert(target.host == 'ampere' and table.concat(target.options, ' ') == '-p 2222 -J jump')
 -- A ProxyJump helper is in the same foreground group, but is not the target.
@@ -114,16 +113,13 @@ plugin.paste(window, pane)
 assert(clipboard == '/tmp/wezterm-image-REMOTE123.png' and #removed == 1 and pasted[1] == clipboard)
 local transfer
 for _, args in ipairs(commands) do if args[2] == '30s' then transfer = args end end
-assert(transfer and not table.concat(transfer, ' '):find('tmux attach', 1, true))
+assert(transfer and not table.concat(transfer, ' '):find('htop', 1, true))
 
 reset()
-proc['/proc/10/cmdline'] = 'tmux\0-L\0work\0attach\0'
-client_rows = '55\t/dev/pts/9\t/dev/pts/8\n10\t/dev/pts/1\t/dev/pts/4\n'
-ps['pts/4'] = '20 20 20\n'
-proc['/proc/20/cmdline'] = 'ssh\0-o\0RemoteCommand=bad\0-R\08080:localhost:80\0ampere\0'
+proc['/proc/10/cmdline'] = 'ssh\0-o\0RemoteCommand=bad\0-R\08080:localhost:80\0ampere\0'
 assert(plugin.destination(window, pane).host == 'ampere')
 assert(#plugin.destination(window, pane).options == 0)
-proc['/proc/20/cmdline'] = 'codex\0'
+proc['/proc/10/cmdline'] = 'codex\0'
 assert(plugin.destination(window, pane) == nil)
 
 reset()
@@ -159,4 +155,4 @@ window.effective_config = function()
 end
 local native = plugin.destination(window, remote_pane)
 assert(native.host == 'server' and table.concat(native.options, ' ') == '-p 2222 -l alice')
-print('Image paste tests passed: local, text, SSH, targeted tmux, native SSH, transfer failure')
+print('Image paste tests passed: local, text, SSH, SSH options, native SSH, transfer failure')

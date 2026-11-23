@@ -21,9 +21,6 @@ Destination detection:
 
 - Local foreground shell/application: local `/tmp`.
 - Foreground `ssh`: `/tmp` on that SSH destination.
-- Local tmux: follows the attached client's active pane, including nested local
-  tmux sessions, then checks that pane for SSH. Other clients/background SSH jobs
-  do not determine the destination.
 - Native WezTerm SSH domain: uses its configured remote address and username.
 
 SSH aliases, ports, identities, and jump hosts are retained. A separate SSH
@@ -48,7 +45,7 @@ python3 config/wezterm/image_paste/test_copy.py
 ```
 
 On failure a toast and the WezTerm log show the error; the plugin does not silently
-save locally when it cannot identify an SSH or tmux destination.
+save locally when it cannot identify an SSH destination.
 
 Clipboard path copying detaches the background clipboard owner's output pipes
 so insertion does not wait for another screenshot or clipboard change. Startup
