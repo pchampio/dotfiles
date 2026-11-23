@@ -21,6 +21,16 @@ for arg in "$@"; do
   esac
 done
 
+label_docker_users() {
+  local helper
+  helper="$(dirname -- "$(readlink -f -- "$0")")/viewer_docker_users.py"
+  if [[ -r $helper ]] && command -v python3 >/dev/null; then
+    python3 "$helper"
+  else
+    cat
+  fi
+}
+
 for status in /proc/[0-9]*/status; do
   line=$(awk '
     /^Name:/   { name = $2 }
@@ -33,7 +43,7 @@ for status in /proc/[0-9]*/status; do
   read -r swap pid uid name <<<"$line"
   args=$(tr '\0' ' ' <"/proc/$pid/cmdline" 2>/dev/null)
   printf '%s %s %s %s\n' "$swap" "$pid" "$uid" "${args:-[$name]}"
-done | sort -k1,1nr | awk -v limit="$limit" -v percent="$percent" -v width="$width" '
+done | label_docker_users | sort -k1,1nr | awk -v limit="$limit" -v percent="$percent" -v width="$width" '
   function human(kb) {
     if (kb >= 1048576) return sprintf("%.1fG", kb / 1048576)
     if (kb >= 1024)    return sprintf("%.1fM", kb / 1024)
@@ -51,14 +61,18 @@ done | sort -k1,1nr | awk -v limit="$limit" -v percent="$percent" -v width="$wid
     n--
     for (i = n; i >= 1; i--) {
       split(line[i], f, " ")
-      if (!(f[3] in users)) {
-        cmd = "id -nu " f[3] " 2>/dev/null"
-        u = ""; cmd | getline u; close(cmd)
-        users[f[3]] = (u != "" ? u : f[3])
+      user = f[3]
+      if (user ~ /^[0-9]+$/) {
+        if (!(user in users)) {
+          cmd = "id -nu " user " 2>/dev/null"
+          u = ""; cmd | getline u; close(cmd)
+          users[user] = (u != "" ? u : user)
+        }
+        user = users[user]
       }
       args = line[i]
       sub(/^[^ ]+ [^ ]+ [^ ]+ /, "", args)
-      out = sprintf("%8s  %8s  %-12s  %s", human(f[1]), f[2], users[f[3]], args)
+      out = sprintf("%8s  %8s  %-12s  %s", human(f[1]), f[2], user, args)
       if (width > 3 && length(out) > width) out = substr(out, 1, width - 3) "..."
       print out
     }

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# Try to determine how much RAM is currently being used per program.
-# Note per _program_, not per process. So for example this script
-# will report RAM used by all httpd process together. In detail it reports:
+# Try to determine how much RAM is currently being used per program and user.
+# For example, this script reports RAM used by all httpd processes running
+# under the same user together. In detail it reports:
 # sum(private RAM for program processes) + sum(Shared RAM for program processes)
 # The shared RAM is problematic to calculate, and this script automatically
 # selects the most accurate method available for your kernel.
@@ -77,7 +77,10 @@ import getopt
 import time
 import errno
 import os
+import pwd
 import sys
+
+from viewer_docker_users import DockerUsers
 
 # The following exits cleanly on Ctrl-C or EPIPE
 # while treating other exceptions as before.
@@ -195,7 +198,7 @@ def parse_options():
 
 def help():
     help_msg = 'Usage: ps_mem [OPTION]...\n' \
-        'Show program core memory usage\n' \
+        'Show program core memory usage by user\n' \
         '\n' \
         '  -h, -help                   Show this help\n' \
         '  -p <pid>[,pid2,...pidN]     Only show memory usage PIDs in the '\
@@ -305,7 +308,7 @@ def getMemStats(pid):
     return (Private, Shared, mem_id, Swap, Swap_pss)
 
 
-def getCmdName(pid, split_args, discriminate_by_pid):
+def get_process_identity(pid, split_args, discriminate_by_pid):
     cmdline = proc.open(pid, 'cmdline').read().split("\0")
     if cmdline[-1] == '' and len(cmdline) > 1:
         cmdline = cmdline[:-1]
@@ -328,8 +331,17 @@ def getCmdName(pid, split_args, discriminate_by_pid):
             raise LookupError  # kernel thread
         path = cmdline[0]
 
+    with proc.open(pid, 'status') as status:
+        cmd = status.readline()[6:-1]
+        for line in status:
+            if line.startswith('Uid:'):
+                uid = int(line.split()[2])  # Effective UID follows the real UID.
+                break
+        else:
+            raise LookupError
+
     if split_args:
-        return " ".join(cmdline)
+        return " ".join(cmdline), uid
     if path.endswith(" (deleted)"):
         path = path[:-10]
         if os.path.exists(path):
@@ -343,7 +355,6 @@ def getCmdName(pid, split_args, discriminate_by_pid):
             else:
                 path += " [deleted]"
     exe = os.path.basename(path)
-    cmd = proc.open(pid, 'status').readline()[6:-1]
     if exe.startswith(cmd):
         cmd = exe #show non truncated version
         #Note because we show the non truncated name
@@ -354,7 +365,7 @@ def getCmdName(pid, split_args, discriminate_by_pid):
         cmd = cmd.encode(errors='replace').decode()
     if discriminate_by_pid:
         cmd = '%s [%d]' % (cmd, pid)
-    return cmd
+    return cmd, uid
 
 
 #The following matches "du -h" output
@@ -431,6 +442,7 @@ def show_shared_val_accuracy( possible_inacc, only_total=False ):
 
 def get_memory_usage(pids_to_show, split_args, discriminate_by_pid,
                      include_self=False, only_self=False):
+    docker_users = DockerUsers(proc.proc)
     cmds = {}
     shareds = {}
     mem_ids = {}
@@ -451,37 +463,32 @@ def get_memory_usage(pids_to_show, split_args, discriminate_by_pid,
             continue
 
         try:
-            cmd = getCmdName(pid, split_args, discriminate_by_pid)
-        except LookupError:
-            #operation not permitted
-            #kernel threads don't have exe links or
-            #process gone
-            continue
-
-        try:
+            cmd, uid = get_process_identity(pid, split_args, discriminate_by_pid)
             private, shared, mem_id, swap, swap_pss = getMemStats(pid)
-        except RuntimeError:
-            continue #process gone
-        if shareds.get(cmd):
+        except (LookupError, RuntimeError):
+            continue  # Process exited or its details are unavailable.
+        docker_label = docker_users.label(pid) if uid == 0 else None
+        group = cmd, uid, docker_label
+        if shareds.get(group):
             if have_pss: #add shared portion of PSS together
-                shareds[cmd] += shared
-            elif shareds[cmd] < shared: #just take largest shared val
-                shareds[cmd] = shared
+                shareds[group] += shared
+            elif shareds[group] < shared: #just take largest shared val
+                shareds[group] = shared
         else:
-            shareds[cmd] = shared
-        cmds[cmd] = cmds.setdefault(cmd, 0) + private
-        if cmd in count:
-            count[cmd] += 1
+            shareds[group] = shared
+        cmds[group] = cmds.setdefault(group, 0) + private
+        if group in count:
+            count[group] += 1
         else:
-            count[cmd] = 1
-        mem_ids.setdefault(cmd, {}).update({mem_id: None})
+            count[group] = 1
+        mem_ids.setdefault(group, {}).update({mem_id: None})
 
         # Swap (overcounting for now...)
-        swaps[cmd] = swaps.setdefault(cmd, 0) + swap
+        swaps[group] = swaps.setdefault(group, 0) + swap
         if have_swap_pss:
-            shared_swaps[cmd] = shared_swaps.setdefault(cmd, 0) + swap_pss
+            shared_swaps[group] = shared_swaps.setdefault(group, 0) + swap_pss
         else:
-            shared_swaps[cmd] = 0
+            shared_swaps[group] = 0
 
     # Total swaped mem for each program
     total_swap = 0
@@ -492,19 +499,19 @@ def get_memory_usage(pids_to_show, split_args, discriminate_by_pid,
     # Add shared mem for each program
     total = 0
 
-    for cmd in cmds:
-        cmd_count = count[cmd]
-        if len(mem_ids[cmd]) == 1 and cmd_count > 1:
+    for group in cmds:
+        cmd_count = count[group]
+        if len(mem_ids[group]) == 1 and cmd_count > 1:
             # Assume this program is using CLONE_VM without CLONE_THREAD
             # so only account for one of the processes
-            cmds[cmd] /= cmd_count
+            cmds[group] /= cmd_count
             if have_pss:
-                shareds[cmd] /= cmd_count
-        cmds[cmd] = cmds[cmd] + shareds[cmd]
-        total += cmds[cmd]  # valid if PSS available
-        total_swap += swaps[cmd]
+                shareds[group] /= cmd_count
+        cmds[group] = cmds[group] + shareds[group]
+        total += cmds[group]  # valid if PSS available
+        total_swap += swaps[group]
         if have_swap_pss:
-            total_shared_swap += shared_swaps[cmd]
+            total_shared_swap += shared_swaps[group]
 
     sorted_cmds = sorted(cmds.items(), key=lambda x:x[1])
     sorted_cmds = [x for x in sorted_cmds if x[1]]
@@ -517,9 +524,9 @@ def print_header(show_swap, discriminate_by_pid):
     output_string = " Private  +   Shared  =  RAM used"
     if show_swap:
         if have_swap_pss:
-            output_string += " " * 5 + "Shared Swap"
+            output_string += "%16s" % "Shared Swap"
         output_string += "   Swap used"
-    output_string += "\tProgram"
+    output_string += "\t%-12s Program" % "User"
     if discriminate_by_pid:
         output_string += "[pid]"
     output_string += "\n\n"
@@ -528,19 +535,26 @@ def print_header(show_swap, discriminate_by_pid):
 
 def print_memory_usage(sorted_cmds, shareds, count, total, swaps, total_swap,
                        shared_swaps, total_shared_swap, show_swap):
-    for cmd in sorted_cmds:
+    user_names = {}
+    for group, ram in sorted_cmds:
+        cmd, uid, docker_label = group
+        if not docker_label and uid not in user_names:
+            try:
+                user_names[uid] = pwd.getpwuid(uid).pw_name
+            except KeyError:
+                user_names[uid] = str(uid)
 
         output_string = "%9s + %9s = %9s"
-        output_data = (human(cmd[1]-shareds[cmd[0]]),
-                       human(shareds[cmd[0]]), human(cmd[1]))
+        output_data = (human(ram - shareds[group]),
+                       human(shareds[group]), human(ram))
         if show_swap:
             if have_swap_pss:
                 output_string += "\t%9s"
-                output_data += (human(shared_swaps[cmd[0]]),)
+                output_data += (human(shared_swaps[group]),)
             output_string += "   %9s"
-            output_data += (human(swaps[cmd[0]]),)
-        output_string += "\t%s\n"
-        output_data += (cmd_with_count(cmd[0], count[cmd[0]]),)
+            output_data += (human(swaps[group]),)
+        output_string += "\t%-12s %s\n"
+        output_data += (docker_label or user_names[uid], cmd_with_count(cmd, count[group]))
 
         sys.stdout.write(output_string % output_data)
 
@@ -585,12 +599,10 @@ def main():
 
     verify_environment()
 
-    if not only_total:
-        print_header(show_swap, discriminate_by_pid)
-
     if watch is not None:
         try:
             sorted_cmds = True
+            header_swap_pss = None
             while sorted_cmds:
                 sorted_cmds, shareds, count, total, swaps, shared_swaps, \
                     total_swap, total_shared_swap = \
@@ -599,6 +611,9 @@ def main():
                 if only_total and have_pss:
                     sys.stdout.write(human(total, units=1)+'\n')
                 elif not only_total:
+                    if header_swap_pss != (show_swap and have_swap_pss):
+                        print_header(show_swap, discriminate_by_pid)
+                        header_swap_pss = show_swap and have_swap_pss
                     print_memory_usage(sorted_cmds, shareds, count, total,
                                        swaps, total_swap, shared_swaps,
                                        total_shared_swap, show_swap)
@@ -617,6 +632,7 @@ def main():
         if only_total and have_pss:
             sys.stdout.write(human(total, units=1)+'\n')
         elif not only_total:
+            print_header(show_swap, discriminate_by_pid)
             print_memory_usage(sorted_cmds, shareds, count, total, swaps,
                                total_swap, shared_swaps, total_shared_swap,
                                show_swap)
