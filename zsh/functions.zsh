@@ -76,73 +76,28 @@ function nodeenv {
   source "$NVM_DIR/nvm.sh"
 }
 
+# Play audio files (or one clipped range) on the desktop that runs rexterm:
+# wezterm-audio sends the sound through the terminal (OSC 7377), also over
+# SSH and inside tmux.
+#   audio FILE ["00:00:44.729 --> 00:00:53.509"]   (-b is accepted and ignored)
 function audio {
-  local force=1
-  local flag_f=""
-  local args=()
-  local file=""
-  local range=""
-  local start=""
-  local end=""
-  local tmpfile=""
-  local state_file="${TMPDIR:-/tmp}/wez_audio_last.tmp"
-
-  # Clean up previous temp file (if any)
-  if [ -f "$state_file" ]; then
-    old_tmp=$(cat "$state_file")
-    if [ -n "$old_tmp" ] && [ -f "$old_tmp" ]; then
-      \rm -f "$old_tmp"
-    fi
-    \rm -f "$state_file"
-  fi
-
-  # Detect range like "00:00:44.729 --> 00:00:53.509"
-  is_range() {
-    [[ "$1" =~ ^[0-9:.]+[[:space:]]*--\>[[:space:]]*[0-9:.]+$ ]]
-  }
-
-  # Parse arguments
+  local file="" range="" start="" end="" tmpfile=""
   for arg in "$@"; do
-    if [ "$arg" = "-b" ]; then
-      force=0
-      flag_f="-f"
-      continue
-    fi
-    if is_range "$arg"; then
-      range="$arg"
-      continue
-    fi
-    args+=("$arg")
-    if [ -z "$file" ]; then
-      file="$arg"
-    fi
+    if [ "$arg" = "-b" ]; then continue; fi
+    if [[ "$arg" =~ ^[0-9:.]+[[:space:]]*--\>[[:space:]]*[0-9:.]+$ ]]; then range="$arg"; continue; fi
+    [ -z "$file" ] && file="$arg"
   done
-
-  # Clip the audio if a range is given
+  [ -n "$file" ] || { echo "usage: audio FILE [START --> END]" >&2; return 2; }
   if [ -n "$range" ]; then
     start=$(echo "$range" | awk -F'-->' '{print $1}' | xargs)
     end=$(echo "$range"   | awk -F'-->' '{print $2}' | xargs)
-
     tmpfile=$(mktemp --suffix ".mp3")
     ffmpeg -nostdin -y -i "$file" -ss "$start" -to "$end" -acodec mp3 "$tmpfile" &>/dev/null
     file="$tmpfile"
-
-    echo "$tmpfile" > "$state_file"
   fi
-
-  # Transfer before play (blocking)
-  if [ "$force" -eq 1 ]; then
-    tsz "$file" -y -B 8M
-  fi
-
-  printf "\033Ptmux;\033\033]1337;SetUserVar=%s=%s\007\033\\" \
-    wez_audio "$(printf '{"file":"%s","flag":"%s"}' "$file" "$flag_f" | base64 -w0)"
-
-  # Play + transfer (non-blocking)
-  if [ "$force" -eq 0 ]; then
-    sleep 2
-    tsz "$file" -y -B 1K -f
-  fi
+  wezterm-audio "$file"
+  [ -n "$tmpfile" ] && \rm -f "$tmpfile"
+  return 0
 }
 
 # Show all 256 colors with color number
@@ -397,10 +352,6 @@ fkill() {
   fi
 }
 
-tssh() {
-  ssh
-  command tssh --download-path /tmp/ $@
-}
 sssh() {
   command ssh $@
 }
@@ -425,7 +376,7 @@ ssh() {
     fi
   fi
   if [ "$line_count" -ge 2 ] && [ $# -ne 0 ]; then
-    command tssh --download-path /tmp/ $@
+    command ssh "$@"
     return
   fi
   echo "Using vault to get the ssh keys (Use sssh otherwise)"
@@ -433,7 +384,7 @@ ssh() {
   rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_ed25519' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'Ed25519.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 12h -
   rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'raw_id_rsa' | base64 --decode | SSH_PASS=$(rbw get "6ed8aac4-1443-43ed-b42e-c484ca281610" --field 'RSA.passphrase') DISPLAY=1 SSH_ASKPASS=$HOME/dotfiles/bin/auto-add-key ssh-add -t 12h -
   if [ $# -ne 0 ]; then
-    command tssh --download-path /tmp/ $@
+    command ssh "$@"
     return
   fi
 }
@@ -561,7 +512,6 @@ gclouds() {
     gcloud auth login
     arr=($(gcloud compute ssh "$@" --dry-run --quiet --zone us-central1-a))
   fi
-  arr=(${arr[@]/\/usr\/bin\/ssh/tssh --download-path /tmp/})
   eval $arr
 }
 

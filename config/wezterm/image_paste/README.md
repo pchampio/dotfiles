@@ -20,7 +20,7 @@ the terminal input stream. Failed transfers leave the clipboard unchanged.
 Destination detection:
 
 - Local foreground shell/application: local `/tmp`.
-- Foreground `ssh` or `tssh`: `/tmp` on that SSH destination.
+- Foreground `ssh`: `/tmp` on that SSH destination.
 - Local tmux: follows the attached client's active pane, including nested local
   tmux sessions, then checks that pane for SSH. Other clients/background SSH jobs
   do not determine the destination.
@@ -33,8 +33,7 @@ No remote plugin installation or root access is needed.
 
 The destination is the first SSH host reached from the local pane. A further
 SSH connection launched *inside* that remote session cannot be inferred from
-local process information. Mosh and an unresolved interactive tssh host picker
-are not supported. Those cases require an explicit destination integration.
+local process information. Mosh is not supported. Those cases require an explicit destination integration.
 
 Missing local prerequisites produce a WezTerm notification listing the missing
 tools when you press Ctrl+Shift+V. Successful checks are cached until config reload;

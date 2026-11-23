@@ -71,16 +71,7 @@ local function ssh_target(args)
     if arg:sub(1, 2) == '--' then
       local option, value = arg:match('^(%-%-[^=]+)=(.*)$')
       option = option or arg
-      if option == '--download-path' or option == '--upload-path' or option == '--upload-file' or option == '--config' then
-        if not value then index = index + 1; value = args[index] end
-        assert(value, 'Missing SSH option argument')
-        if option == '--config' then
-          table.insert(options, '-F'); table.insert(options, value)
-        end
-      elseif option ~= '--dragfile' and option ~= '--trzsz'
-          and option ~= '--client' and option ~= '--relay' then
-        error('Unsupported SSH option: ' .. option)
-      end
+      error('Unsupported SSH option: ' .. option)
     else
       for position = 2, #arg do
         local flag = arg:sub(position, position)
@@ -181,7 +172,7 @@ local function destination(window, pane)
     local transports, tmux = {}, nil
     for _, process in ipairs(foreground(tty)) do
       local name = basename(process.args[1])
-      if name == 'ssh' or name == 'tssh' or name == 'autossh' then
+      if name == 'ssh' or name == 'autossh' then
         table.insert(transports, process)
       elseif name == 'tmux' then
         tmux = process

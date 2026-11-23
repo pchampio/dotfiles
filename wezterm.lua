@@ -19,15 +19,12 @@ wezterm.add_to_config_reload_watch_list(image_paste_path)
 local image_paste = dofile(image_paste_path)
 
 -- == Config plugins/personal functions ==
+-- A toast from a shell (also over SSH): set the user variable wez_notif.
+-- Audio plays through wezterm-audio (zsh audio), files download with
+-- rex-download.
 wezterm.on("user-var-changed", function(window, pane, name, value)
-  -- play audio on host once downloaded with tssh
   if name == "wez_notif" then
     window:toast_notification('wezterm', value, nil, 1000)
-  end
-  if name == "wez_audio" then
-    local cmd_context = wezterm.json_parse(value)
-      toggle_terminal.toggle_terminal(window, pane)
-      toggle_terminal.send_command_to_tab(window,  "wait-and-play " .. cmd_context.file .. " " .. cmd_context.flag .. "")
   end
 end)
 

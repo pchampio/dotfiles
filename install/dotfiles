@@ -68,9 +68,6 @@ EOF
 chmod 600 "$HOME"/.ssh/config
 fi
 
-if ! grep -q "PromptThemeLayout" "$HOME/.tssh.conf" 2>/dev/null; then
-    echo 'PromptThemeLayout = tiny' >> "$HOME/.tssh.conf"
-fi
 
 $HOME/.local/bin/atuin gen-completions --shell zsh > ~/.oh-my-zsh/custom/completions/_atuin
 $HOME/.local/bin/rbw gen-completions zsh > ~/.oh-my-zsh/custom/completions/_rbw

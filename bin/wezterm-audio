@@ -1,0 +1,312 @@
+#!/usr/bin/env python3
+"""Play audio files on the machine that runs WezTerm, from a shell inside it.
+
+Meant for SSH sessions (also inside tmux): the sound travels in the terminal
+stream as OSC 7377 escape sequences. Only Python 3 and ffmpeg (to decode) are
+needed where this runs; copy the script to remote hosts as is.
+
+  wezterm-audio FILE...
+
+Keys (mpv defaults):
+  SPACE, p        pause / play          q, Ctrl-C  quit
+  LEFT / RIGHT    seek -5 / +5 s        DOWN / UP  seek -1 / +1 min
+  PGDWN / PGUP    seek -10 / +10 min    HOME       restart the file
+  [ / ]           speed -10% / +10%     { / }      halve / double speed
+  BACKSPACE       reset speed           9 / 0      volume -2 / +2
+  / and *         volume -2 / +2        m          mute
+  < / >           previous / next file  ENTER      next file
+  o, i            show position / file information
+"""
+import array, base64, os, select, signal, subprocess, sys, termios, threading, time, tty
+
+RATE, CHANNELS, FRAME = 48000, 2, 4          # s16le stereo
+CHUNK = RATE * FRAME // 50                   # 20 ms
+LEAD = 0.15                                  # seconds sent ahead of real time
+
+
+def wrap(seq):
+    # tmux forwards passthrough sequences (allow-passthrough on); with tmux -CC
+    # the WezTerm mirror reads the same bytes from the pane output.
+    if os.environ.get('TMUX'):
+        return b'\x1bPtmux;' + seq.replace(b'\x1b', b'\x1b\x1b') + b'\x1b\\'
+    return seq
+
+
+def clock(seconds):
+    seconds = max(0, int(seconds))
+    h, rest = divmod(seconds, 3600)
+    return ('%d:%02d:%02d' % (h, rest // 60, rest % 60)) if h else '%d:%02d' % divmod(rest, 60)
+
+
+def duration(path):
+    try:
+        out = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
+                              '-of', 'csv=p=0', path], capture_output=True, text=True, timeout=20)
+        return float(out.stdout.strip())
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return None
+
+
+def atempo(speed):
+    # ffmpeg's atempo takes 0.5..2 per instance; chain for other speeds.
+    parts = []
+    while speed > 2.0:
+        parts.append(2.0)
+        speed /= 2.0
+    while speed < 0.5:
+        parts.append(0.5)
+        speed /= 0.5
+    parts.append(speed)
+    return ','.join('atempo=%.6f' % p for p in parts)
+
+
+class Player:
+    def __init__(self, files, out):
+        self.files = files
+        self.index = 0
+        self.out = out
+        self.lock = threading.Lock()
+        self.stream = os.getpid() & 0xffff
+        self.speed = 1.0
+        self.volume = 100
+        self.muted = False
+        self.paused = False
+        self.quit = False
+        self.message = ''
+        self.message_until = 0
+        self.load()
+
+    # --- terminal stream ---------------------------------------------------
+    def osc(self, body):
+        # One write per sequence, so nothing else can split it.
+        os.write(self.out, wrap(b'\x1b]7377;' + body + b'\x1b\\'))
+
+    def open_stream(self):
+        self.stream = (self.stream + 1) & 0x7fffffff
+        self.osc(b'a=o;i=%d;r=%d;c=%d;f=s16le' % (self.stream, RATE, CHANNELS))
+
+    def stop_stream(self, drain=False):
+        # x drops what the host still buffers: pause and seek take effect now.
+        self.osc(b'a=%s;i=%d' % (b'e' if drain else b'x', self.stream))
+
+    # --- decoding ----------------------------------------------------------
+    def load(self):
+        self.path = self.files[self.index]
+        self.length = duration(self.path)
+        self.position = 0.0
+        self.decoder = None
+        self.generation = 0
+
+    def restart(self):
+        """(Re)start decoding at self.position with the current speed."""
+        with self.lock:
+            self.generation += 1
+            if self.decoder:
+                self.decoder.kill()
+                self.decoder.wait()
+                self.decoder = None
+            self.stop_stream()
+            if self.paused or self.quit:
+                return
+            self.open_stream()
+            self.decoder = subprocess.Popen(
+                ['ffmpeg', '-loglevel', 'error', '-nostdin', '-ss', '%.3f' % self.position,
+                 '-i', self.path, '-vn', '-af', atempo(self.speed), '-f', 's16le',
+                 '-ac', str(CHANNELS), '-ar', str(RATE), '-'],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            threading.Thread(target=self.pump, args=(self.decoder, self.generation, self.stream),
+                             daemon=True).start()
+
+    def pump(self, decoder, generation, stream):
+        """Send decoded PCM in 20 ms chunks, at most LEAD seconds ahead."""
+        start = time.monotonic()
+        origin = self.position
+        sent = 0.0
+        while True:
+            pcm = decoder.stdout.read(CHUNK)
+            if not pcm:
+                break
+            ahead = sent - (time.monotonic() - start)
+            if ahead > LEAD:
+                time.sleep(ahead - LEAD)
+            with self.lock:
+                if generation != self.generation:
+                    return
+                gain = 0 if self.muted else self.volume / 100
+                if gain != 1:
+                    samples = array.array('h', pcm[:len(pcm) // 2 * 2])
+                    samples = array.array('h', (max(-32768, min(32767, int(s * gain))) for s in samples))
+                    pcm = samples.tobytes()
+                self.osc(b'a=d;i=%d;' % stream + base64.b64encode(pcm))
+                sent += len(pcm) / (RATE * FRAME)
+                # Media time advances `speed` times faster than the sound.
+                heard = max(0.0, sent - LEAD)
+                self.position = origin + heard * self.speed
+        with self.lock:
+            if generation != self.generation:
+                return
+            self.stop_stream(drain=True)
+            self.decoder = None
+        time.sleep(LEAD)
+        self.next_file(+1, finished=True)
+
+    # --- controls ----------------------------------------------------------
+    def say(self, text, seconds=1.5):
+        self.message, self.message_until = text, time.monotonic() + seconds
+
+    def seek(self, delta=None, to=None):
+        self.position = to if to is not None else self.position + delta
+        if self.length:
+            self.position = min(self.position, max(0.0, self.length - 0.05))
+        self.position = max(0.0, self.position)
+        self.restart()
+
+    def set_speed(self, speed):
+        self.speed = min(100.0, max(0.01, speed))
+        self.say('Speed: %.2f' % self.speed)
+        self.restart()
+
+    def next_file(self, step, finished=False):
+        target = self.index + step
+        if not 0 <= target < len(self.files):
+            if finished or step > 0:
+                self.quit = True
+            return
+        self.index = target
+        self.load()
+        self.say(os.path.basename(self.path), 3)
+        self.restart()
+
+    def key(self, k):
+        if k in ('q', 'Q'):
+            self.quit = True
+        elif k in (' ', 'p'):
+            self.paused = not self.paused
+            self.restart()
+        elif k == 'LEFT':
+            self.seek(-5)
+        elif k == 'RIGHT':
+            self.seek(5)
+        elif k == 'DOWN':
+            self.seek(-60)
+        elif k == 'UP':
+            self.seek(60)
+        elif k == 'PGDWN':
+            self.seek(-600)
+        elif k == 'PGUP':
+            self.seek(600)
+        elif k == 'HOME':
+            self.seek(to=0)
+        elif k == '[':
+            self.set_speed(self.speed / 1.1)
+        elif k == ']':
+            self.set_speed(self.speed * 1.1)
+        elif k == '{':
+            self.set_speed(self.speed / 2)
+        elif k == '}':
+            self.set_speed(self.speed * 2)
+        elif k == 'BS':
+            self.set_speed(1.0)
+        elif k in ('9', '/'):
+            self.volume = max(0, self.volume - 2)
+            self.say('Volume: %d%%' % self.volume)
+        elif k in ('0', '*'):
+            self.volume = min(130, self.volume + 2)
+            self.say('Volume: %d%%' % self.volume)
+        elif k == 'm':
+            self.muted = not self.muted
+            self.say('Mute: %s' % ('yes' if self.muted else 'no'))
+        elif k in ('>', 'ENTER'):
+            self.next_file(+1)
+        elif k == '<':
+            self.next_file(-1)
+        elif k in ('o', 'i'):
+            self.say('%s (%d/%d)' % (os.path.basename(self.path), self.index + 1, len(self.files)), 3)
+
+    def status(self):
+        icon = '||' if self.paused else '>'
+        total = ' / ' + clock(self.length) if self.length else ''
+        line = '%s %s%s  x%.2f  vol %d%%%s' % (icon, clock(self.position), total, self.speed,
+                                               self.volume, ' (muted)' if self.muted else '')
+        if self.message and time.monotonic() < self.message_until:
+            line += '   ' + self.message
+        return line
+
+
+KEYS = {b'\x1b[A': 'UP', b'\x1b[B': 'DOWN', b'\x1b[C': 'RIGHT', b'\x1b[D': 'LEFT',
+        b'\x1bOA': 'UP', b'\x1bOB': 'DOWN', b'\x1bOC': 'RIGHT', b'\x1bOD': 'LEFT',
+        b'\x1b[5~': 'PGUP', b'\x1b[6~': 'PGDWN', b'\x1b[H': 'HOME', b'\x1b[1~': 'HOME',
+        b'\x1bOH': 'HOME', b'\x7f': 'BS', b'\x08': 'BS', b'\r': 'ENTER', b'\n': 'ENTER',
+        b'\x1b': 'ESC', b'\x03': 'q'}
+
+
+def read_keys(fd):
+    data = os.read(fd, 64)
+    keys = []
+    while data:
+        for seq in sorted(KEYS, key=len, reverse=True):
+            if data.startswith(seq):
+                keys.append(KEYS[seq])
+                data = data[len(seq):]
+                break
+        else:
+            if data[:1] == b'\x1b':
+                # Unknown escape sequence: drop it whole.
+                end = next((i for i in range(1, len(data)) if 0x40 <= data[i] <= 0x7e and i > 1), len(data) - 1)
+                data = data[end + 1:]
+            else:
+                keys.append(data[:1].decode('latin-1'))
+                data = data[1:]
+    return keys
+
+
+def main(argv):
+    if not argv or argv[0] in ('-h', '--help'):
+        print(__doc__.strip())
+        return 0
+    if subprocess.run(['sh', '-c', 'command -v ffmpeg'], stdout=subprocess.DEVNULL).returncode:
+        print('wezterm-audio: ffmpeg is needed to decode audio', file=sys.stderr)
+        return 1
+    missing = [f for f in argv if not os.path.exists(f) and '://' not in f]
+    if missing:
+        print('wezterm-audio: no such file: ' + ', '.join(missing), file=sys.stderr)
+        return 1
+    try:
+        out = os.open('/dev/tty', os.O_RDWR)
+    except OSError:
+        print('wezterm-audio: needs a terminal', file=sys.stderr)
+        return 1
+    saved = termios.tcgetattr(out)
+    player = Player(argv, out)
+    signal.signal(signal.SIGTERM, lambda *_: setattr(player, 'quit', True))
+    try:
+        tty.setcbreak(out)
+        attrs = termios.tcgetattr(out)
+        attrs[3] &= ~termios.ISIG  # Ctrl-C is a key (quit), as in mpv
+        termios.tcsetattr(out, termios.TCSANOW, attrs)
+        player.say(os.path.basename(player.path), 3)
+        player.restart()
+        shown = None
+        while not player.quit:
+            if select.select([out], [], [], 0.2)[0]:
+                for k in read_keys(out):
+                    player.key(k)
+                    if player.quit:
+                        break
+            line = player.status()
+            if line != shown:
+                os.write(out, b'\r\x1b[K' + line.encode())
+                shown = line
+    finally:
+        player.quit = True
+        player.generation += 1
+        if player.decoder:
+            player.decoder.kill()
+        player.stop_stream()
+        termios.tcsetattr(out, termios.TCSANOW, saved)
+        os.write(out, b'\r\x1b[K')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))

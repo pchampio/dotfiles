@@ -103,7 +103,7 @@ plugin.paste(window, pane)
 assert(pasted[1] == 'plain text', 'Missing image tools must not block ordinary text paste')
 
 reset()
-proc['/proc/10/cmdline'] = 'tssh\0--download-path\0/tmp/\0-p2222\0-J\0jump\0ampere\0tmux attach\0'
+proc['/proc/10/cmdline'] = 'ssh\0-p2222\0-J\0jump\0ampere\0tmux attach\0'
 local target = plugin.destination(window, pane)
 assert(target.host == 'ampere' and table.concat(target.options, ' ') == '-p 2222 -J jump')
 -- A ProxyJump helper is in the same foreground group, but is not the target.
@@ -135,7 +135,7 @@ assert(notices[1][1] == 'Image paste failed')
 
 reset()
 mime, text, local_file = 'text/plain', '/tmp/wezterm-image-LOCAL123.png', true
-proc['/proc/10/cmdline'] = 'tssh\0ampere\0'
+proc['/proc/10/cmdline'] = 'ssh\0ampere\0'
 plugin.paste(window, pane)
 assert(clipboard == '/tmp/wezterm-image-REMOTE123.png' and pasted[1] == clipboard)
 assert(#removed == 0, 'Keep the original local image for reuse')
@@ -159,4 +159,4 @@ window.effective_config = function()
 end
 local native = plugin.destination(window, remote_pane)
 assert(native.host == 'server' and table.concat(native.options, ' ') == '-p 2222 -l alice')
-print('Image paste tests passed: local, text, SSH/tssh, targeted tmux, native SSH, transfer failure')
+print('Image paste tests passed: local, text, SSH, targeted tmux, native SSH, transfer failure')
