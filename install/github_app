@@ -52,38 +52,6 @@ print(release["version"], builds[0]["sha256"], builds[0]["downloadUrl"])
     explain2 "rex $version"
 }
 
-# nvtop's own prebuilt AppImage, unpacked once: it runs without FUSE and
-# without compiling nvtop.
-install_nvtop() {
-    local dir="$HOME/.local/bin/nvtop-bin"
-    [ -n "$FILTER" ] && [ "$FILTER" != nvtop ] && return 0
-    explain "Installation of nvtop"
-    local url
-    url=$(curl -fsSL "https://api.github.com/repos/Syllo/nvtop/releases/latest" \
-          | grep -o "https://[^\"]*-$(uname -m)\.AppImage" | head -1)
-    [ -n "$url" ] || { error "nvtop: no $(uname -m) AppImage in the latest release"; return 1; }
-    if [ -x "$dir/AppRun" ] && [ "$(cat "$dir/version" 2>/dev/null)" = "$url" ]; then
-        explain2 "nvtop ${url##*/} is installed already"
-        return 0
-    fi
-    local tmp
-    tmp=$(mktemp -d) || return 1
-    (
-        cd "$tmp" || exit 1
-        wget -q --show-progress "$url" -O nvtop.AppImage || exit 1
-        chmod a+x nvtop.AppImage
-        ./nvtop.AppImage --appimage-extract >/dev/null || exit 1
-        [ -x squashfs-root/AppRun ]
-    ) || { error "nvtop: download or unpacking failed"; rm -rf "$tmp"; return 1; }
-    rm -rf "$dir" && mv "$tmp/squashfs-root" "$dir" || return 1
-    echo "$url" > "$dir/version"
-    rm -rf "$tmp"
-    rm -f "$HOME/.local/bin/nvtop"
-    printf '#!/bin/sh\nexec "%s/AppRun" "$@"\n' "$dir" > "$HOME/.local/bin/nvtop"
-    chmod a+x "$HOME/.local/bin/nvtop"
-    explain2 "nvtop ${url##*/}"
-}
-
 success "[Github APP] Start"
 
 if [ -n "$FILTER" ]; then
@@ -104,7 +72,6 @@ install_github_app gh "cli/cli" "https.*gh_.*linux_amd64\.tar\.gz$" &
 install_github_app pi "badlogic/pi-mono" "https.*pi-linux-x64.*gz$" &
 install_github_app qrterminal "mdp/qrterminal" "https.*qrterminal_Linux_x86_64\.tar\.gz$" &
 install_github_app btop "aristocratos/btop" "https.*btop-$(uname -m)-unknown-linux-musl\.tar\.gz$" &
-install_nvtop &
 install_rex &
 
 wait

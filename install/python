@@ -64,14 +64,17 @@ if [ ! -f "$HOME/.local/share/pytool/bin/pipx" ]; then
   success "[PYTHON3 lib] Start"
 
   bpyversion=$($bpython -c 'import sys; vi=sys.version_info; print(f"Python: {vi.major}.{vi.minor}.{vi.micro} ({vi.releaselevel})")')
-  explain "pip install my tools (pipx imgcat trash sshuttle..) for $bpyversion"
+  explain "pip install my tools (pipx imgcat trash sshuttle nvitop..) for $bpyversion"
 
   run_with_spinner $bpython -m ensurepip --upgrade
   run_with_spinner $bpython -m pip install --upgrade pip pipx --force
   run_with_spinner $bpython -m pip install --upgrade setuptools pynvim pillow wheel ensurepath
 
   \rm "$HOME/.local/share/pipx" -rf
-  run_with_spinner $bpython -m pipx install pyright beads-mcp imgcat sshuttle trash-cli argcomplete --force
+  run_with_spinner $bpython -m pipx install pyright beads-mcp imgcat sshuttle trash-cli argcomplete nvitop --force
+  # nvitop replaces the nvtop AppImage that install/github_app used to unpack.
+  if grep -qs nvtop-bin "$HOME/.local/bin/nvtop"; then rm -f "$HOME/.local/bin/nvtop"; fi
+  rm -rf "$HOME/.local/bin/nvtop-bin"
 
   # remove crap from zshrc (added by pipx)
   apply_sed_to_dotfiles '/^# Created by `pipx`/,+1d'
