@@ -17,6 +17,16 @@ explain "Create symlink for files config"
 [ -d ~/.config/ ] || mkdir ~/.config/
 tell cp -f --recursive --symbolic-link $dir/config/* ~/.config
 
+# btop rewrites btop.conf when it exits, so the file stays local: only pick
+# the selenized-light theme (config/btop/themes) on the terminal background.
+btop_conf=~/.config/btop/btop.conf
+if [ -f "$btop_conf" ] && grep -q '^color_theme' "$btop_conf"; then
+  sed -i 's/^color_theme = .*/color_theme = "selenized-light"/; s/^theme_background = .*/theme_background = false/' "$btop_conf"
+else
+  mkdir -p ~/.config/btop
+  printf 'color_theme = "selenized-light"\ntheme_background = false\n' >> "$btop_conf"
+fi
+
 explain "Symlink nvim config"
 \rm -rf ~/.config/nvim 2> /dev/null || true
 tell ln -sf $dir/nvim ~/.config/nvim

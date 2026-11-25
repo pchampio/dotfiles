@@ -1,0 +1,58 @@
+# Selenized light for btop, the palette of nvim's selenized-light
+# (resolarized.nvim). install/dotfiles selects it in btop.conf.
+# bg_0 #fbf3db  bg_1 #ece3cc  bg_2 #d5cdb6  dim_0 #909995  fg_0 #53676d  fg_1 #3a4d53
+# red #d2212d  green #489100  yellow #ad8900  blue #0072d4
+# magenta #ca4898  cyan #009c8f  orange #c25d1e  violet #8762c6
+
+theme[main_bg]="#fbf3db"
+theme[main_fg]="#53676d"
+theme[title]="#3a4d53"
+theme[hi_fg]="#d2212d"
+theme[selected_bg]="#d5cdb6"
+theme[selected_fg]="#3a4d53"
+theme[inactive_fg]="#909995"
+theme[graph_text]="#3a4d53"
+theme[meter_bg]="#d5cdb6"
+theme[proc_misc]="#009c8f"
+
+theme[cpu_box]="#0072d4"
+theme[mem_box]="#489100"
+theme[net_box]="#8762c6"
+theme[proc_box]="#c25d1e"
+theme[div_line]="#d5cdb6"
+
+theme[temp_start]="#489100"
+theme[temp_mid]="#ad8900"
+theme[temp_end]="#d2212d"
+
+theme[cpu_start]="#009c8f"
+theme[cpu_mid]="#0072d4"
+theme[cpu_end]="#8762c6"
+
+theme[free_start]="#009c8f"
+theme[free_mid]=""
+theme[free_end]="#489100"
+
+theme[cached_start]="#0072d4"
+theme[cached_mid]=""
+theme[cached_end]="#8762c6"
+
+theme[available_start]="#ad8900"
+theme[available_mid]=""
+theme[available_end]="#c25d1e"
+
+theme[used_start]="#c25d1e"
+theme[used_mid]=""
+theme[used_end]="#d2212d"
+
+theme[download_start]="#0072d4"
+theme[download_mid]=""
+theme[download_end]="#8762c6"
+
+theme[upload_start]="#ca4898"
+theme[upload_mid]=""
+theme[upload_end]="#d2212d"
+
+theme[process_start]="#489100"
+theme[process_mid]="#ad8900"
+theme[process_end]="#d2212d"
