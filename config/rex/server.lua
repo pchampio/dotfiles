@@ -195,46 +195,6 @@ rex.action{
 }
 
 rex.action{
-  name='wezterm_split_context',title='Resolve shell or SSH split',
-  run=function(ctx,args)
-    local session,block=assert(ctx.session_id),assert(ctx.block_id)
-    local p=snapshot_process(session,block)
-    if p.name~='ssh' then return {cwd=p.cwd} end
-    -- Preserve connection options, strip the old remote command, and request
-    -- an interactive PTY. Arguments remain an array throughout the API.
-    local argv=p.argv;local command={argv[1]};local i=2;local host
-    local takes_value={B=true,b=true,c=true,D=true,E=true,e=true,F=true,I=true,i=true,J=true,L=true,l=true,m=true,O=true,o=true,p=true,Q=true,R=true,S=true,W=true,w=true}
-    while i<=#argv do
-      local arg=argv[i]
-      if arg=='--' then i=i+1;host=argv[i];break end
-      if arg:sub(1,1)~='-' then host=arg;break end
-      local flags=arg:sub(2);local kept='';local j=1
-      while j<=#flags do
-        local flag=flags:sub(j,j)
-        if takes_value[flag] then
-          if kept~='' then command[#command+1]='-'..kept;kept='' end
-          local value=flags:sub(j+1)
-          if value=='' then i=i+1;value=assert(argv[i],'Missing SSH option value') end
-          if flag~='O' and flag~='W' and flag~='Q' and not (flag=='o' and value:lower():match('^remotecommand[= ]')) then
-            command[#command+1]='-'..flag;command[#command+1]=value
-          end
-          break
-        elseif flag~='N' and flag~='n' and flag~='f' and flag~='T' then kept=kept..flag end
-        j=j+1
-      end
-      if kept~='' then command[#command+1]='-'..kept end
-      i=i+1
-    end
-    assert(host,'Cannot find SSH destination')
-    command[#command+1]='-t';command[#command+1]='-o';command[#command+1]='RemoteCommand=none';command[#command+1]=host
-    if args and args.remote_cwd then
-      command[#command+1]='cd -- '..quote(args.remote_cwd)..' && exec "${SHELL:-/bin/sh}" -l'
-    end
-    return {cwd=p.cwd,command=command}
-  end,
-}
-
-rex.action{
   name='wezterm_environment',title='Find pane environment',
   run=function(ctx)
     local p=process(assert(ctx.session_id),assert(ctx.block_id));p=p.foreground or p.child or {}

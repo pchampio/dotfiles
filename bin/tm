@@ -30,7 +30,7 @@ import tty
 # Hidden from the chooser list (still in Independent attach).
 HIDDEN_LABELS = ('ppt', 'scc')
 REQUIRED_ACTIONS = {'wezterm_save', 'wezterm_restore', 'wezterm_capture', 'wezterm_environment',
-                    'wezterm_split_context', 'wezterm_input_processes', 'wezterm_buffer_begin',
+                    'wezterm_input_processes', 'wezterm_buffer_begin',
                     'wezterm_buffer_append', 'wezterm_buffer_read', 'wezterm_kill_server'}
 
 
