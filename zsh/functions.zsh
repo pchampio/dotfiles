@@ -161,9 +161,36 @@ EOF
       echo " (no QR code: run ~/dotfiles/install/github_app qrterminal)"
     fi
   fi
-  # No shared ControlMaster: it would keep the forward alive after exit.
-  command ssh -o ControlMaster=no -o ControlPath=none -o ExitOnForwardFailure=yes \
-    -R "${proxmeport}:localhost:${localport:-$port}" share@prr.re
+  # Reconnect when the link drops (ssh exits 255), keeping the same local
+  # proxy, so the same URL and token keep working. Retry every 1s for the
+  # first 10s, every 5s up to 1 min, then every 30s, and give up after 10 min.
+  # A forward still held by the dead session on the server also exits 255,
+  # so it is retried until the server drops it. Ctrl-C stops retrying.
+  setopt localoptions localtraps
+  local rc start down=0 stop=0 delay
+  trap 'stop=1' INT
+  while (( ! stop )); do
+    start=$SECONDS
+    # No shared ControlMaster: it would keep the forward alive after exit.
+    command ssh -o ControlMaster=no -o ControlPath=none -o ExitOnForwardFailure=yes \
+      -o ServerAliveInterval=10 -o ServerAliveCountMax=3 \
+      -R "${proxmeport}:localhost:${localport:-$port}" share@prr.re
+    rc=$?
+    (( rc == 255 && ! stop )) || break
+    # A session that lasted a while was a real connection: restart the clock.
+    (( SECONDS - start >= 30 || down == 0 )) && down=$SECONDS
+    if (( SECONDS - down >= 600 )); then
+      echo " Connection lost for 10 min, giving up."
+      break
+    fi
+    if (( SECONDS - down < 10 )); then delay=1
+    elif (( SECONDS - down < 60 )); then delay=5
+    else delay=30
+    fi
+    echo " Connection lost, retrying in ${delay}s (Ctrl-C to stop).."
+    sleep $delay
+  done
+  trap - INT
   fg
 }
 
