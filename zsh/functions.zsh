@@ -137,7 +137,9 @@ EOF
     # 12 letters and digits: about 71 bits, out of reach for online guessing.
     token=$(python3 -c 'import secrets, string; a = string.ascii_letters + string.digits; print("".join(secrets.choice(a) for _ in range(12)))')
     localport=$(python3 -c 'import socket; s=socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
-    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null; then
+    # Connect test, not lsof: lsof misses listeners owned by other processes,
+    # like sshd holding a port forwarded into this machine (ssh -R).
+    if python3 -c 'import socket, sys; socket.create_connection(("localhost", int(sys.argv[1])), 1).close()' $port 2>/dev/null; then
       echo " Starting token proxy in front of port $port.."
       proxme-http $localport $token --proxy $port &
     else
