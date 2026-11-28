@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Report the status of a coding agent to the terminal with OSC 7777.
+"""Report the status of a coding agent to the terminal.
 
 Claude Code and Codex call this from their hooks. The hook event arrives as
 JSON on stdin. The script writes escape sequences to the terminal of the
@@ -9,19 +9,28 @@ SSH and in a Rex session.
 
 Usage (in a hook):  rex-agent-status claude|codex
 
-Wire form: ESC ] 7777 ; EVENT ; DATA BEL
-  status;working|idle|needs_input    agent;NAME    title;TEXT    message;TEXT    tool;TEXT
-  clear
+The state goes as OSC 7501 (the Rex program status protocol, revision 0.4),
+in the record with the agent's name as its id:
+  ESC ] 7501 ; state=STATE:id=AGENT:app=APP[:kind=KIND][:title=B64][:msg=B64] ESC \
+STATE is working, blocked (kind permission or question), done (the turn
+ended) or idle (interrupted); clear removes the record. Rex and the terminal
+drop working and blocked by themselves when the agent exits or the shell
+prompt comes back, so a crashed agent does not stay "Working".
 
-Every report also names the agent (agent;NAME): the tab shows its tile.
+The details that OSC 7501 has no key for go as OSC 7777 (Wezmux):
+  ESC ] 7777 ; EVENT ; DATA BEL
+  agent;NAME    title;TEXT    message;TEXT    tool;TEXT    clear
 
 The script never fails a hook: it prints nothing and always exits 0.
 """
+import base64
 import json
 import os
 import sys
 
 LIMIT = 160
+# OSC 7501 app names (the stable program identifier).
+APPS = {'claude': 'claude-code', 'codex': 'codex'}
 
 
 def terminal():
@@ -72,30 +81,72 @@ def tool_summary(name, tool_input):
     return name
 
 
+def session_title(agent, hook):
+    """The agent and the directory it works in: claude — myproject."""
+    cwd = hook.get('cwd') or os.getcwd()
+    return '%s — %s' % (agent, os.path.basename(cwd.rstrip('/')) or cwd)
+
+
+def fit(text, size):
+    """TEXT cut to SIZE bytes of UTF-8 (OSC 7501 rejects a longer report)."""
+    data = text.encode()
+    if len(data) <= size:
+        return text
+    return data[:size - 3].decode(errors='ignore') + '…'
+
+
 def events(agent, hook):
-    """The OSC 7777 events for one hook call."""
+    """The reports for one hook call: (EVENT, DATA) pairs, where EVENT is a
+    7777 event or 'state' (DATA is then (STATE, KIND, TEXT) for OSC 7501)."""
     name = hook.get('hook_event_name') or ''
     if name == 'SessionStart':
-        cwd = hook.get('cwd') or os.getcwd()
-        return [('title', '%s — %s' % (agent, os.path.basename(cwd.rstrip('/')) or cwd)), ('status', 'idle')]
+        return [('title', session_title(agent, hook)), ('state', ('idle', None, ''))]
     if name == 'UserPromptSubmit':
-        return [('status', 'working'), ('tool', ''), ('message', hook.get('prompt') or '')]
+        prompt = hook.get('prompt') or ''
+        return [('tool', ''), ('message', prompt), ('state', ('working', None, prompt))]
     if name == 'PreToolUse':
-        return [('status', 'working'), ('tool', tool_summary(hook.get('tool_name') or 'tool', hook.get('tool_input')))]
+        tool = tool_summary(hook.get('tool_name') or 'tool', hook.get('tool_input'))
+        return [('tool', tool), ('state', ('working', None, tool))]
     if name == 'PostToolUse':
         return [('tool', '')]
     if name in ('Notification', 'PermissionRequest'):
-        message = hook.get('message') or hook.get('title') or hook.get('tool_name') or 'Needs input'
+        kind = hook.get('notification_type') or ''
         # Claude Code also sends a notification when it only waits for the
-        # next prompt: that is idle, not a question.
-        if hook.get('notification_type') == 'idle_prompt':
-            return [('status', 'idle')]
-        return [('status', 'needs_input'), ('message', message)]
-    if name in ('Stop', 'Interrupt'):
-        return [('status', 'idle'), ('tool', '')]
+        # next prompt (that is idle, not a question) and after a sign-in.
+        if kind == 'idle_prompt':
+            return [('state', ('idle', None, ''))]
+        if kind == 'auth_success':
+            return []
+        message = hook.get('message') or hook.get('title') or hook.get('tool_name') or 'Needs input'
+        blocked = 'question' if kind == 'elicitation_dialog' else 'permission'
+        return [('message', message), ('state', ('blocked', blocked, message))]
+    if name == 'Stop':
+        return [('tool', ''), ('state', ('done', None, ''))]
+    if name == 'Interrupt':
+        return [('tool', ''), ('state', ('idle', None, ''))]
     if name == 'SessionEnd':
-        return [('clear', '')]
+        return [('clear', ''), ('state', ('clear', None, ''))]
     return []
+
+
+def b64(text):
+    return base64.b64encode(text.encode()).decode()
+
+
+def program_status(agent, state, kind, text, title):
+    """One OSC 7501 report for the record of this agent."""
+    agent_id = ''.join(c for c in agent if c.isalnum() or c in '_.+-')[:32] or 'agent'
+    pairs = ['state=' + state, 'id=' + agent_id]
+    if state != 'clear':
+        app = APPS.get(agent, agent_id)
+        pairs.append('app=' + app)
+        if kind:
+            pairs.append('kind=' + kind)
+        if title:
+            pairs.append('title=' + b64(fit(clean(title), 192)))
+        if text:
+            pairs.append('msg=' + b64(fit(text, 2048)))
+    return '\033]7501;%s\033\\' % ':'.join(pairs)
 
 
 def main():
@@ -111,6 +162,10 @@ def main():
     if reports and reports[0][0] != 'clear':
         reports.insert(0, ('agent', agent))
     for event, data in reports:
+        if event == 'state':
+            state, kind, text = data
+            sequences.append(program_status(agent, state, kind, clean(text), session_title(agent, hook)))
+            continue
         data = clean(data)
         sequences.append('\033]7777;%s%s\007' % (event, ';' + data if data or event != 'clear' else ''))
     if not sequences:

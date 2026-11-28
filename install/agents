@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Coding agents (Claude Code, Codex) and the terminal:
-#   - OSC 7777 status: the tab bar shows "Working", "Needs input", the tool in use.
+#   - Status hooks (bin/rex-agent-status): the state as OSC 7501, the tool and
+#     message as OSC 7777. The tab bar shows "Working", "Needs input", the tool.
 #   - Agent shells: inside a Rex session each tool command runs in its own Rex
 #     terminal (bin/rex-agent-shell). Outside Rex the commands run as before.
 # Safe to run again. Remove with: install/agents --remove
